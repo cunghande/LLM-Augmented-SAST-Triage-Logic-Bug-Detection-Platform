@@ -1,0 +1,494 @@
+[
+  {
+    "finding_id": "SG-93DDDE3C211A",
+    "scanner": "semgrep",
+    "rule_id": "dockerfile.security.missing-user.missing-user",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\backend\\Dockerfile",
+    "start_line": 13,
+    "end_line": 13,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'.",
+      "cwe": [
+        "CWE-250: Execution with Unnecessary Privileges"
+      ],
+      "owasp": [
+        "A04:2021 - Insecure Design",
+        "A06:2025 - Insecure Design"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L1-L13",
+      "surrounding_code": "   1 |    FROM python:3.10-slim\n   2 |    \n   3 |    WORKDIR /workspace\n   4 |    \n   5 |    COPY backend/requirements.txt backend/requirements.txt\n   6 |    RUN pip install --no-cache-dir -r backend/requirements.txt\n   7 |    \n   8 |    COPY backend backend/\n   9 |    COPY ml/checkpoints ml/checkpoints/\n  10 |    \n  11 |    EXPOSE 8000\n  12 |    \n  13 | >> CMD [\"uvicorn\", \"backend.app.main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.85,
+    "reasoning": "The Dockerfile lacks a USER instruction, causing containers to run as root by default. This exposes the container to privilege escalation risks if exploited. The CMD line is the last instruction, so no USER is explicitly set.",
+    "evidence": [
+      "The Dockerfile contains no USER directive (lines 1-13)",
+      "CMD is the final instruction without USER specification"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "201c92a8e740c49d3d9d9e4f75c439557132b7b158886bce21f26de77e2e5a8a",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-FC61806617D5",
+    "scanner": "semgrep",
+    "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\backend\\app\\db\\queries.py",
+    "start_line": 20,
+    "end_line": 20,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "fetch_products",
+      "line_window": "L5-L35",
+      "surrounding_code": "   5 |        \"\"\"Lay danh sach san pham co tim kiem va phan trang tu MySQL.\"\"\"\n   6 |        conn = get_connection()\n   7 |        try:\n   8 |            cursor = conn.cursor(dictionary=True)\n   9 |            where_clauses = []\n  10 |            params = []\n  11 |            if category:\n  12 |                where_clauses.append(\"category = %s\")\n  13 |                params.append(category)\n  14 |            if search:\n  15 |                where_clauses.append(\"title LIKE %s\")\n  16 |                params.append(f\"%{search}%\")\n  17 |    \n  18 |            where_sql = (\"WHERE \" + \" AND \".join(where_clauses)) if where_clauses else \"\"\n  19 |            offset = (page - 1) * limit\n  20 | >>         cursor.execute(f\"SELECT COUNT(*) as total FROM products {where_sql}\", params)\n  21 |            total = cursor.fetchone()[\"total\"]\n  22 |            cursor.execute(\n  23 |                f\"SELECT product_id as asin, title, category, price, image_url as img_url FROM products {where_sql} LIMIT %s OFFSET %s\",\n  24 |                params + [limit, offset],\n  25 |            )\n  26 |            products = cursor.fetchall()\n  27 |            cursor.close()\n  28 |            return {\"total\": total, \"page\": page, \"limit\": limit, \"products\": products}\n  29 |        finally:\n  30 |            conn.close()\n  31 |    \n  32 |    \n  33 |    def fetch_categories() -> list[str]:\n  34 |        \"\"\"Lay danh sach category hien co trong bang products.\"\"\"\n  35 |        conn = get_connection()",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.5,
+    "reasoning": "Failed to parse structured JSON from model output: {\n  \"verdict\": \"TP\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The code constructs SQL queries using f-s...",
+    "evidence": [
+      "Unparseable model output format"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "26ad6483bb68db3cd4cb0fc27fe87240c33d241db2b95ae5d43e4cdaa5711162",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-4ED80B458C64",
+    "scanner": "semgrep",
+    "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\backend\\app\\db\\queries.py",
+    "start_line": 22,
+    "end_line": 25,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "fetch_products",
+      "line_window": "L7-L40",
+      "surrounding_code": "   7 |        try:\n   8 |            cursor = conn.cursor(dictionary=True)\n   9 |            where_clauses = []\n  10 |            params = []\n  11 |            if category:\n  12 |                where_clauses.append(\"category = %s\")\n  13 |                params.append(category)\n  14 |            if search:\n  15 |                where_clauses.append(\"title LIKE %s\")\n  16 |                params.append(f\"%{search}%\")\n  17 |    \n  18 |            where_sql = (\"WHERE \" + \" AND \".join(where_clauses)) if where_clauses else \"\"\n  19 |            offset = (page - 1) * limit\n  20 |            cursor.execute(f\"SELECT COUNT(*) as total FROM products {where_sql}\", params)\n  21 |            total = cursor.fetchone()[\"total\"]\n  22 | >>         cursor.execute(\n  23 | >>             f\"SELECT product_id as asin, title, category, price, image_url as img_url FROM products {where_sql} LIMIT %s OFFSET %s\",\n  24 | >>             params + [limit, offset],\n  25 | >>         )\n  26 |            products = cursor.fetchall()\n  27 |            cursor.close()\n  28 |            return {\"total\": total, \"page\": page, \"limit\": limit, \"products\": products}\n  29 |        finally:\n  30 |            conn.close()\n  31 |    \n  32 |    \n  33 |    def fetch_categories() -> list[str]:\n  34 |        \"\"\"Lay danh sach category hien co trong bang products.\"\"\"\n  35 |        conn = get_connection()\n  36 |        try:\n  37 |            cursor = conn.cursor()\n  38 |            cursor.execute(\"SELECT DISTINCT category FROM products WHERE category IS NOT NULL ORDER BY category\")\n  39 |            categories = [row[0] for row in cursor.fetchall()]\n  40 |            cursor.close()",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "26ad6483bb68db3cd4cb0fc27fe87240c33d241db2b95ae5d43e4cdaa5711162",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-1E814D18BCE2",
+    "scanner": "semgrep",
+    "rule_id": "python.fastapi.security.wildcard-cors.wildcard-cors",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\backend\\app\\main.py",
+    "start_line": 13,
+    "end_line": 13,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "CORS policy allows any origin (using wildcard '*'). This is insecure and should be avoided.",
+      "cwe": [
+        "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      ],
+      "owasp": [
+        "A05:2021 - Security Misconfiguration",
+        "A02:2025 - Security Misconfiguration"
+      ],
+      "impact": "LOW",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "create_app",
+      "line_window": "L1-L28",
+      "surrounding_code": "   1 |    from fastapi import FastAPI\n   2 |    from fastapi.middleware.cors import CORSMiddleware\n   3 |    \n   4 |    from backend.app.core.config import settings\n   5 |    from backend.app.routers import auth, health, interactions, products, recommendations, users\n   6 |    \n   7 |    \n   8 |    def create_app() -> FastAPI:\n   9 |        \"\"\"Khoi tao FastAPI va dang ky cac router theo tung nhom nghiep vu.\"\"\"\n  10 |        app = FastAPI(title=settings.app_name, version=settings.app_version)\n  11 |        app.add_middleware(\n  12 |            CORSMiddleware,\n  13 | >>         allow_origins=[\"*\"],\n  14 |            allow_credentials=True,\n  15 |            allow_methods=[\"*\"],\n  16 |            allow_headers=[\"*\"],\n  17 |        )\n  18 |        app.include_router(health.router)\n  19 |        app.include_router(auth.router)\n  20 |        app.include_router(products.router)\n  21 |        app.include_router(interactions.router)\n  22 |        app.include_router(recommendations.router)\n  23 |        app.include_router(users.router)\n  24 |        return app\n  25 |    \n  26 |    \n  27 |    app = create_app()\n  28 |    ",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.5,
+    "reasoning": "Failed to parse structured JSON from model output: {\n  \"verdict\": \"TP\",\n  \"confidence\": 0.85,\n  \"reasoning\": \"The CORS middleware explicitly allows all...",
+    "evidence": [
+      "Unparseable model output format"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "eb13afbb60ec7cce881933b1fa95b227a1f4695c52eda6abc4533fa7d68f81bd",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-2F51D9DAFF0D",
+    "scanner": "semgrep",
+    "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\backend\\services\\recommender.py",
+    "start_line": 76,
+    "end_line": 76,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+      "cwe": [
+        "CWE-502: Deserialization of Untrusted Data"
+      ],
+      "owasp": [
+        "A08:2017 - Insecure Deserialization",
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "_load_artifacts",
+      "line_window": "L61-L91",
+      "surrounding_code": "  61 |                for filename in filenames:\n  62 |                    path = checkpoint_dir / filename\n  63 |                    if path.exists():\n  64 |                        return path\n  65 |            return None\n  66 |    \n  67 |        def _load_artifacts(self) -> None:\n  68 |            \"\"\"Nạp mapping item/user, metadata fallback và lịch sử train từ model_artifacts.pkl.\"\"\"\n  69 |            artifact_path = self._first_existing_file([\"model_artifacts.pkl\"])\n  70 |            if not artifact_path:\n  71 |                print(\"[WARNING] model_artifacts.pkl not found\")\n  72 |                return\n  73 |    \n  74 |            try:\n  75 |                with artifact_path.open(\"rb\") as file:\n  76 | >>                 self.artifacts = pickle.load(file)\n  77 |    \n  78 |                mappings = self.artifacts.get(\"mappings\", {})\n  79 |                self.cfg = self.artifacts.get(\"config\", {})\n  80 |                self.meta = mappings.get(\"meta\", {})\n  81 |                self.id2item = mappings.get(\"id2item\", {})\n  82 |                self.item2id = mappings.get(\"item2id\") or {asin: item_id for item_id, asin in self.id2item.items()}\n  83 |                self.train_data = self.artifacts.get(\"sequences\", {}).get(\"train\", {})\n  84 |                print(f\"[OK] Loaded artifacts from {artifact_path}\")\n  85 |            except Exception as exc:\n  86 |                print(f\"[ERROR] Error loading artifacts: {exc}\")\n  87 |    \n  88 |        def _load_metadata_from_db(self) -> None:\n  89 |            \"\"\"Nạp metadata sản phẩm từ MySQL để API trả dữ liệu mới nhất cho frontend.\"\"\"\n  90 |            try:\n  91 |                rows = self._fetch_all(",
+      "imports": [
+        "import json",
+        "import re",
+        "import pickle",
+        "import torch"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.7,
+    "reasoning": "The code uses pickle.load() to deserialize data from a file, which could be manipulated to execute arbitrary code. The artifact file may be tampered with if not properly secured, creating a code execution vulnerability.",
+    "evidence": [
+      "self.artifacts = pickle.load(file)"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "0389e28ddd62043cde7b444052f7e9ff0bf62ddc2218151ebbc19d82a53c101e",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-FD15B2B6EB93",
+    "scanner": "semgrep",
+    "rule_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\backend\\services\\recommender.py",
+    "start_line": 262,
+    "end_line": 262,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+      "cwe": [
+        "CWE-939: Improper Authorization in Handler for Custom URL Scheme"
+      ],
+      "owasp": "A01:2017 - Injection",
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "_predict_with_colab",
+      "line_window": "L247-L277",
+      "surrounding_code": " 247 |                return []\n 248 |    \n 249 |            history = [item_id for item_id in history if item_id > 0]\n 250 |            if not history:\n 251 |                return []\n 252 |    \n 253 |            payload = json.dumps({\"sequence\": history, \"top_k\": top_k}).encode(\"utf-8\")\n 254 |            request = url_request.Request(\n 255 |                endpoint,\n 256 |                data=payload,\n 257 |                headers={\"Content-Type\": \"application/json\"},\n 258 |                method=\"POST\",\n 259 |            )\n 260 |    \n 261 |            try:\n 262 | >>             with url_request.urlopen(request, timeout=settings.colab_model_timeout_seconds) as response:\n 263 |                    data = json.loads(response.read().decode(\"utf-8\"))\n 264 |            except (OSError, TimeoutError, ValueError, url_error.URLError, url_error.HTTPError) as exc:\n 265 |                print(f\"[WARNING] Colab model unavailable, using local recommender: {exc}\")\n 266 |                return []\n 267 |    \n 268 |            recommendations = data.get(\"recommendations\", [])\n 269 |            result: list[dict] = []\n 270 |            seen = set(history)\n 271 |            for item in recommendations:\n 272 |                try:\n 273 |                    item_id = int(item.get(\"item_id\"))\n 274 |                    score = float(item.get(\"score\", 0.0))\n 275 |                except (TypeError, ValueError):\n 276 |                    continue\n 277 |                if item_id <= 0 or item_id in seen:",
+      "imports": [
+        "import json",
+        "import re",
+        "import pickle",
+        "import torch"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "c0526c50bd1d9928d01d1815659b52c0314e13c523cff1e7e34014cac698e06a",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-CAE46A44427E",
+    "scanner": "semgrep",
+    "rule_id": "yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\docker-compose.yml",
+    "start_line": 4,
+    "end_line": 4,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Service 'db' allows for privilege escalation via setuid or setgid binaries. Add 'no-new-privileges:true' in 'security_opt' to prevent this.",
+      "cwe": [
+        "CWE-732: Incorrect Permission Assignment for Critical Resource"
+      ],
+      "owasp": [
+        "A05:2021 - Security Misconfiguration",
+        "A06:2017 - Security Misconfiguration",
+        "A02:2025 - Security Misconfiguration"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L1-L19",
+      "surrounding_code": "   1 |    version: '3.8'\n   2 |    \n   3 |    services:\n   4 | >>   db:\n   5 |        image: mysql:8.0\n   6 |        restart: always\n   7 |        environment:\n   8 |          MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-your_mysql_password}\n   9 |          MYSQL_DATABASE: ${DB_NAME:-your_database_name}\n  10 |        ports:\n  11 |          - \"3306:3306\"\n  12 |        volumes:\n  13 |          - db_data:/var/lib/mysql\n  14 |          - ./database/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql\n  15 |    \n  16 |      backend:\n  17 |        build: \n  18 |          context: .\n  19 |          dockerfile: backend/Dockerfile",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.7,
+    "reasoning": "The docker-compose service lacks 'no-new-privileges' security_opt which could allow privilege escalation via setuid/setgid binaries. This matches the scanner's recommendation for mitigating CWE-732 security misconfiguration.",
+    "evidence": [
+      "Service 'db' configuration missing 'security_opt: no-new-privileges:true' despite being a MySQL container that could potentially run setuid binaries"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "2976a44208fe05148cd151bf64335563e76ff3885161abb561bf2415cc2265cd",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-133FD7033798",
+    "scanner": "semgrep",
+    "rule_id": "yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\docker-compose.yml",
+    "start_line": 4,
+    "end_line": 4,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Service 'db' is running with a writable root filesystem. This may allow malicious applications to download and run additional payloads, or modify container files. If an application inside a container has to save something temporarily consider using a tmpfs. Add 'read_only: true' to this service to prevent this.",
+      "cwe": [
+        "CWE-732: Incorrect Permission Assignment for Critical Resource"
+      ],
+      "owasp": [
+        "A05:2021 - Security Misconfiguration",
+        "A06:2017 - Security Misconfiguration",
+        "A02:2025 - Security Misconfiguration"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L1-L19",
+      "surrounding_code": "   1 |    version: '3.8'\n   2 |    \n   3 |    services:\n   4 | >>   db:\n   5 |        image: mysql:8.0\n   6 |        restart: always\n   7 |        environment:\n   8 |          MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-your_mysql_password}\n   9 |          MYSQL_DATABASE: ${DB_NAME:-your_database_name}\n  10 |        ports:\n  11 |          - \"3306:3306\"\n  12 |        volumes:\n  13 |          - db_data:/var/lib/mysql\n  14 |          - ./database/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql\n  15 |    \n  16 |      backend:\n  17 |        build: \n  18 |          context: .\n  19 |          dockerfile: backend/Dockerfile",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "4d7208244be3bfd2188c8d2992e85390e8a6ef9554c647e51a3a3c8adb83fa3f",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-8621617066D4",
+    "scanner": "semgrep",
+    "rule_id": "dockerfile.security.missing-user.missing-user",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\frontend\\Dockerfile",
+    "start_line": 24,
+    "end_line": 24,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'.",
+      "cwe": [
+        "CWE-250: Execution with Unnecessary Privileges"
+      ],
+      "owasp": [
+        "A04:2021 - Insecure Design",
+        "A06:2025 - Insecure Design"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L9-L24",
+      "surrounding_code": "   9 |    # Copy source and build\n  10 |    COPY . .\n  11 |    RUN npm run build\n  12 |    \n  13 |    # Production image\n  14 |    FROM node:18-alpine AS runner\n  15 |    WORKDIR /app\n  16 |    \n  17 |    ENV NODE_ENV=production\n  18 |    \n  19 |    COPY --from=builder /app/public ./public\n  20 |    COPY --from=builder /app/.next/standalone ./\n  21 |    COPY --from=builder /app/.next/static ./.next/static\n  22 |    \n  23 |    EXPOSE 3000\n  24 | >> CMD [\"node\", \"server.js\"]",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.95,
+    "reasoning": "The Dockerfile lacks a USER instruction, causing processes to run as root by default. This creates a security risk as attackers could exploit container privileges if they compromise the application.",
+    "evidence": [
+      "The Dockerfile does not contain a USER directive, resulting in root privileges for the CMD execution",
+      "The CMD instruction runs as root by default when no USER is specified"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "2c0671fd082156a4b583949797860f0e6ba68fdd7238a38636f007e468692a87",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-69A95904404F",
+    "scanner": "semgrep",
+    "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+    "repository": "Sequential-Recommender",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Sequential-Recommender\\ml\\colab_model_api.py",
+    "start_line": 81,
+    "end_line": 81,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+      "cwe": [
+        "CWE-502: Deserialization of Untrusted Data"
+      ],
+      "owasp": [
+        "A08:2017 - Insecure Deserialization",
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "load_model",
+      "line_window": "L66-L96",
+      "surrounding_code": "  66 |    \n  67 |    class SequenceRecommendRequest(BaseModel):\n  68 |        sequence: list[int]\n  69 |        top_k: Optional[int] = 16\n  70 |    \n  71 |    \n  72 |    def load_model():\n  73 |        artifact_path = CHECKPOINT_DIR / \"model_artifacts.pkl\"\n  74 |        model_path = CHECKPOINT_DIR / \"GRU4Rec_best.pt\"\n  75 |        if not artifact_path.exists():\n  76 |            raise FileNotFoundError(f\"Missing artifact: {artifact_path}\")\n  77 |        if not model_path.exists():\n  78 |            raise FileNotFoundError(f\"Missing model checkpoint: {model_path}\")\n  79 |    \n  80 |        with artifact_path.open(\"rb\") as file:\n  81 | >>         artifacts = pickle.load(file)\n  82 |    \n  83 |        cfg = artifacts.get(\"config\", {})\n  84 |        model = GRU4Rec(\n  85 |            cfg.get(\"num_items\", 1000),\n  86 |            cfg.get(\"emb_dim\", 64),\n  87 |            cfg.get(\"hidden\", 128),\n  88 |            cfg.get(\"n_layers\", 1),\n  89 |            cfg.get(\"dropout\", 0.2),\n  90 |        ).to(DEVICE)\n  91 |        model.load_state_dict(torch.load(model_path, map_location=DEVICE, weights_only=True))\n  92 |        model.eval()\n  93 |        return model, cfg\n  94 |    \n  95 |    \n  96 |    app = FastAPI(title=\"SeqRec Colab Model API\")",
+      "imports": [
+        "import os",
+        "import pickle",
+        "import torch",
+        "import torch.nn as nn",
+        "import torch.nn.utils.rnn as rnn_utils"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.85,
+    "reasoning": "The code uses pickle.load() to deserialize untrusted data from a file, which is a known risk for code execution vulnerabilities (CWE-502). The scanner correctly identifies this as insecure deserialization, and the context shows this is production code handling model artifacts, not test data.",
+    "evidence": [
+      "pickle.load(file) is used to deserialize data from a file without validation",
+      "The code is part of a production API endpoint (FastAPI) handling model loading"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "9fea34ec5707160cba2f7ee3c55f82412af42672a65422954dfc05d08c963fee",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  }
+]

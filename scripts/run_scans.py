@@ -37,30 +37,39 @@ def run_semgrep_for_repo(repo_dir: Path, scan_dir: Path):
     return res1.returncode
 
 
-def scan_single_repo(repo_dir: Path):
+def scan_single_repo(repo_dir: Path, skip_existing: bool = False):
     if not repo_dir.exists() or not repo_dir.is_dir():
         print(f"[!] Target repository directory {repo_dir} does not exist.")
         return
 
     repo_name = repo_dir.name
     scan_dir = SCANS_BASE_DIR / repo_name
+    
+    gitleaks_file = scan_dir / "gitleaks.json"
+    semgrep_file = scan_dir / "semgrep.json"
+
+    if skip_existing and gitleaks_file.exists() and semgrep_file.exists():
+        print(f"[*] Skipping {repo_name} (scan files already exist in {scan_dir}).")
+        return
+
     print(f"\n==================================================")
     print(f"=== Scanning Repository: {repo_name} ===")
     print(f"==================================================")
     
     run_gitleaks_for_repo(repo_dir, scan_dir)
     run_semgrep_for_repo(repo_dir, scan_dir)
-    print(f"[✓] Finished scanning {repo_name}. Outputs saved in {scan_dir}\n")
+    print(f"[OK] Finished scanning {repo_name}. Outputs saved in {scan_dir}\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Automated SAST Scan Runner for Repositories")
-    parser.add_argument("--repo", help="Specific repository folder name under repos/ (e.g. CN_WEB)")
+    parser.add_argument("--repo", help="Specific repository folder name under repos/ (e.g. Sequential-Recommender)")
+    parser.add_argument("--skip-existing", action="store_true", help="Skip repositories that already have scan results")
     args = parser.parse_args()
 
     if args.repo:
         target_dir = REPOS_BASE_DIR / args.repo
-        scan_single_repo(target_dir)
+        scan_single_repo(target_dir, skip_existing=args.skip_existing)
     else:
         # Discover all subdirectories under repos/
         repo_dirs = [d for d in REPOS_BASE_DIR.iterdir() if d.is_dir() and not d.name.startswith(".")]
@@ -69,7 +78,7 @@ def main():
             return
         
         for rdir in repo_dirs:
-            scan_single_repo(rdir)
+            scan_single_repo(rdir, skip_existing=args.skip_existing)
 
 
 if __name__ == "__main__":

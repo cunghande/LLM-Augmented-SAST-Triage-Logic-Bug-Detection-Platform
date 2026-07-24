@@ -16,7 +16,7 @@ def generate_json_report(findings: List[UnifiedFinding], output_path: Union[str,
 
 
 def generate_markdown_report(findings: List[UnifiedFinding], output_path: Union[str, Path]) -> str:
-    """Save summary markdown report of triaged findings."""
+    """Save clean summary markdown report of triaged findings."""
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
