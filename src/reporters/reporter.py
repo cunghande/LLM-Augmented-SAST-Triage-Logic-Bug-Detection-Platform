@@ -112,3 +112,99 @@ def evaluate_triage_performance(
         "f1_score": round(f1, 4),
         "fp_reduction_rate_pct": round(fp_reduction_rate, 2),
     }
+
+
+def generate_priority_report(
+    findings: List[UnifiedFinding],
+    output_path: Union[str, Path],
+    repo_name: str = "CN_WEB",
+) -> str:
+    """Generate S2-07 Priority Report - sorted by Risk Score with Executive Summary."""
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    from src.core.schema import Severity
+
+    # Sort by risk_score descending
+    sorted_findings = sorted(
+        [f for f in findings if f.verdict == TriageVerdict.TRUE_POSITIVE],
+        key=lambda f: f.risk_score or 0.0,
+        reverse=True
+    )
+
+    total = len(findings)
+    tp_count = sum(1 for f in findings if f.verdict == TriageVerdict.TRUE_POSITIVE)
+    fp_count = sum(1 for f in findings if f.verdict == TriageVerdict.FALSE_POSITIVE)
+    nr_count = sum(1 for f in findings if f.verdict == TriageVerdict.NEEDS_REVIEW or f.verdict is None)
+
+    critical_count = sum(1 for f in sorted_findings if f.risk_score and f.risk_score >= 4.2)
+    high_count = sum(1 for f in sorted_findings if f.risk_score and 3.4 <= f.risk_score < 4.2)
+    medium_count = sum(1 for f in sorted_findings if f.risk_score and f.risk_score < 3.4)
+
+    md = [
+        f"# Security Priority Report — {repo_name}",
+        "",
+        f"> **Generated**: {__import__('datetime').datetime.utcnow().strftime('%Y-%m-%d')} | **Repository**: `{repo_name}`",
+        "",
+        "---",
+        "",
+        "## Executive Summary",
+        "",
+        f"Platform scanned **{repo_name}** and discovered **{total} findings** from automated SAST scanners.",
+        f"After LLM-augmented triage by **Qwen 3:8b**, the results were reduced and prioritized as follows:",
+        "",
+        f"| Metric | Value |",
+        f"|---|---|",
+        f"| Total Findings | **{total}** |",
+        f"| True Positives (Confirmed) | **{tp_count}** |",
+        f"| False Positives (Suppressed) | **{fp_count}** |",
+        f"| Needs Manual Review | **{nr_count}** |",
+        f"| Critical Risk Findings | **{critical_count}** |",
+        f"| High Risk Findings | **{high_count}** |",
+        f"| Medium Risk Findings | **{medium_count}** |",
+        "",
+        "---",
+        "",
+        "## Priority Action List (Sorted by Risk Score)",
+        "",
+        "| Priority | Finding ID | Rule / Bug Type | File:Line | Risk Score | Level | Remediation Summary |",
+        "|:---:|---|---|---|:---:|:---:|---|",
+    ]
+
+    for idx, f in enumerate(sorted_findings, 1):
+        score = f.risk_score or 0.0
+        if score >= 4.2:
+            level = "🔴 CRITICAL"
+        elif score >= 3.4:
+            level = "🟠 HIGH"
+        elif score >= 2.5:
+            level = "🟡 MEDIUM"
+        else:
+            level = "🟢 LOW"
+
+        remediation_summary = "See remediation_report.json"
+        if f.remediation and isinstance(f.remediation, dict):
+            remediation_summary = f.remediation.get("summary", remediation_summary)[:60] + "..."
+
+        short_path = f.file_path.replace("\\", "/").split("/repos/")[-1] if "/repos/" in f.file_path.replace("\\", "/") else f.file_path[-50:]
+        md.append(f"| **#{idx}** | `{f.finding_id}` | `{f.rule_id}` | `{short_path}:{f.start_line}` | **{score:.2f}** | {level} | {remediation_summary} |")
+
+    md.extend([
+        "",
+        "---",
+        "",
+        "## Recommended Next Steps",
+        "",
+        "1. **Immediate Action (Critical/High)**: Address all Critical and High risk findings within 1 sprint.",
+        "2. **Scheduled Remediation (Medium)**: Address Medium risk findings in the next 2 sprints.",
+        "3. **Manual Review**: Verify all NEEDS_REVIEW findings with AppSec team.",
+        "4. **Re-scan**: After applying fixes, re-run the triage pipeline to confirm remediation.",
+        "",
+        "---",
+        "",
+        f"*Full technical details available in `triage_result.json`, `risk_report.json`, and `remediation_report.json`.*",
+    ])
+
+    output_path.write_text("\n".join(md), encoding="utf-8")
+    return str(output_path)
+

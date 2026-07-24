@@ -9,20 +9,21 @@ from src.parsers.gitleaks import parse_gitleaks_json
 from src.parsers.semgrep import parse_semgrep_sarif, parse_semgrep_json
 from src.triage.engine import TriageEngine
 from src.triage.llm_client import LLMClient
-from src.reporters.reporter import generate_json_report, generate_markdown_report, evaluate_triage_performance
+from src.reporters.reporter import generate_json_report, generate_markdown_report, evaluate_triage_performance, generate_priority_report
+from src.logic_bugs.detector import LogicBugDetector
+from src.risk.scorer import RiskScorer
+from src.remediation.generator import RemediationGenerator
 
 
 def load_scans_from_dir(scans_dir: Path, repo_name: str = "CN_WEB") -> List[UnifiedFinding]:
     """Discover and parse all scan files under scans_dir."""
     findings: List[UnifiedFinding] = []
 
-    # Look for Gitleaks JSON
     gitleaks_files = list(scans_dir.glob("**/*gitleaks*.json")) + list(scans_dir.glob("**/gitleaks.json"))
     for gf in set(gitleaks_files):
         print(f"[+] Parsing Gitleaks report: {gf}")
         findings.extend(parse_gitleaks_json(gf, repo_name))
 
-    # Look for Semgrep JSON / SARIF
     semgrep_sarif_files = list(scans_dir.glob("**/*.sarif"))
     for sf in set(semgrep_sarif_files):
         print(f"[+] Parsing Semgrep SARIF report: {sf}")
@@ -30,7 +31,6 @@ def load_scans_from_dir(scans_dir: Path, repo_name: str = "CN_WEB") -> List[Unif
 
     semgrep_json_files = list(scans_dir.glob("**/*semgrep*.json"))
     for sj in set(semgrep_json_files):
-        # Ignore already unified output files
         if "unified" in sj.name:
             continue
         print(f"[+] Parsing Semgrep JSON report: {sj}")
@@ -40,7 +40,7 @@ def load_scans_from_dir(scans_dir: Path, repo_name: str = "CN_WEB") -> List[Unif
 
 
 def main():
-    parser = argparse.ArgumentParser(description="LLM-Augmented SAST Triage Platform CLI")
+    parser = argparse.ArgumentParser(description="LLM-Augmented SAST Triage & Logic Bug Platform CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Subcommand: parse
@@ -63,6 +63,28 @@ def main():
     eval_cmd = subparsers.add_parser("evaluate", help="Evaluate triage performance against ground truth benchmark")
     eval_cmd.add_argument("--triage-result", required=True, help="Triaged findings JSON file")
     eval_cmd.add_argument("--benchmark", required=True, help="Ground truth benchmark JSON file")
+
+    # Subcommand: detect-logic-bugs (Sprint 2)
+    lb_cmd = subparsers.add_parser("detect-logic-bugs", help="Detect business logic vulnerabilities using AST/CPG + LLM")
+    lb_cmd.add_argument("--repo-dir", required=True, help="Path to target repository code")
+    lb_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
+    lb_cmd.add_argument("--output", default="reports/CN_WEB/logic_bugs.json", help="Output logic bugs JSON path")
+
+    # Subcommand: score-risk (Sprint 2)
+    risk_cmd = subparsers.add_parser("score-risk", help="Calculate Risk Scores for findings")
+    risk_cmd.add_argument("--input", required=True, help="Input triaged findings JSON file")
+    risk_cmd.add_argument("--output", default="reports/CN_WEB/risk_report.json", help="Output risk scored JSON path")
+
+    # Subcommand: generate-remediation (Sprint 2)
+    patch_cmd = subparsers.add_parser("generate-remediation", help="Generate code diff patches for TP findings")
+    patch_cmd.add_argument("--input", required=True, help="Input triaged findings JSON file")
+    patch_cmd.add_argument("--output", default="reports/CN_WEB/remediation_report.json", help="Output remediation JSON path")
+
+    # Subcommand: priority-report (Sprint 2 - S2-07)
+    priority_cmd = subparsers.add_parser("priority-report", help="Generate priority ranked security report with Executive Summary (S2-07)")
+    priority_cmd.add_argument("--input", required=True, help="Input risk-scored findings JSON file")
+    priority_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
+    priority_cmd.add_argument("--output", default="reports/CN_WEB/priority_report.md", help="Output priority Markdown report path")
 
     args = parser.parse_args()
 
@@ -96,13 +118,20 @@ def main():
             print("[!] No findings found to triage.")
             sys.exit(0)
 
-        # Initialize LLM Client and Triage Engine
         client = LLMClient(api_base=args.api_base, model=args.model)
         print(f"[*] Initialized LLM Client -> Endpoint: {client.api_base} | Model: {client.model}")
 
         engine = TriageEngine(llm_client=client)
         print("[*] Running LLM triage pipeline...")
         triaged = engine.triage_batch(findings, repo_dir)
+
+        # Calculate risk scores automatically
+        scorer = RiskScorer()
+        triaged = scorer.score_batch(triaged)
+
+        # Generate remediation patches for TPs automatically
+        remediation_gen = RemediationGenerator()
+        triaged = remediation_gen.generate_remediation_batch(triaged)
 
         json_out = generate_json_report(triaged, args.output)
         md_out = generate_markdown_report(triaged, Path(args.output).with_suffix(".md"))
@@ -135,6 +164,56 @@ def main():
         for key, val in metrics.items():
             print(f"  {key:25s}: {val}")
         print("="*50 + "\n")
+
+    elif args.command == "detect-logic-bugs":
+        repo_dir = Path(args.repo_dir)
+        print(f"[*] Extracting AST/CPG Code Graph for {args.repo_name}...")
+        client = LLMClient()
+        detector = LogicBugDetector(llm_client=client)
+        logic_findings = detector.detect_bugs_in_repo(repo_dir, args.repo_name)
+        
+        out_file = generate_json_report(logic_findings, args.output)
+        print(f"[OK] Logic bug detection complete! Found {len(logic_findings)} logic flaws.")
+        print(f"     - Output JSON: {out_file}")
+
+    elif args.command == "score-risk":
+        in_path = Path(args.input)
+        with open(in_path, "r", encoding="utf-8") as f:
+            findings_data = json.load(f)
+        findings = [UnifiedFinding(**item) for item in findings_data]
+        
+        scorer = RiskScorer()
+        scored = scorer.score_batch(findings)
+        out_file = generate_json_report(scored, args.output)
+        print(f"[OK] Risk scoring complete for {len(scored)} findings! Saved to {out_file}")
+
+    elif args.command == "generate-remediation":
+        in_path = Path(args.input)
+        with open(in_path, "r", encoding="utf-8") as f:
+            findings_data = json.load(f)
+        findings = [UnifiedFinding(**item) for item in findings_data]
+        
+        gen = RemediationGenerator()
+        remediated = gen.generate_remediation_batch(findings)
+        out_file = generate_json_report(remediated, args.output)
+        print(f"[OK] Remediation patch generation complete! Saved to {out_file}")
+
+    elif args.command == "priority-report":
+        in_path = Path(args.input)
+        with open(in_path, "r", encoding="utf-8") as f:
+            findings_data = json.load(f)
+        findings = [UnifiedFinding(**item) for item in findings_data]
+
+        # Ensure risk scores are present (recalculate if missing)
+        scorer = RiskScorer()
+        findings = scorer.score_batch(findings)
+
+        # Ensure remediation patches are present
+        gen = RemediationGenerator()
+        findings = gen.generate_remediation_batch(findings)
+
+        out_file = generate_priority_report(findings, args.output, repo_name=args.repo_name)
+        print(f"[OK] Priority Report generated! Saved to {out_file}")
 
 
 if __name__ == "__main__":

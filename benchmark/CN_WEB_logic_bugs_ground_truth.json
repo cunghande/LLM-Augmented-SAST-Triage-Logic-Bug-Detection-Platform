@@ -1,0 +1,62 @@
+[
+  {
+    "finding_id": "LB-MANUAL-001",
+    "service": "Order Service",
+    "file_path": "backend/src/controllers/order.controller.js",
+    "line_number": 109,
+    "entrypoint": "GET /api/orders/:id",
+    "bug_type": "IDOR",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer": "Manual AppSec Review",
+    "reviewer_notes": "Route GET /orders/:id có xác thực authenticate + kiểm tra ownership rõ ràng tại dòng 113: if (req.user.role !== 'admin' && order.user_id !== req.user.id). Không có IDOR. Scanner CPG bắt được luồng nhưng LLM cần xác nhận thêm ngữ cảnh check ownership này.",
+    "poc": null,
+    "root_cause": null,
+    "remediation_ticket": null
+  },
+  {
+    "finding_id": "LB-MANUAL-002",
+    "service": "Coupon Service",
+    "file_path": "backend/src/controllers/coupon.controller.js",
+    "line_number": 57,
+    "entrypoint": "POST /api/coupons/:id/claim",
+    "bug_type": "BUSINESS_RULE_BYPASS",
+    "ground_truth_verdict": "NEEDS_REVIEW",
+    "confidence_level": "MEDIUM",
+    "reviewer": "Manual AppSec Review",
+    "reviewer_notes": "Hàm claimCoupon gọi Coupon.claim(req.params.id, req.user.id) nhưng toàn bộ logic kiểm tra giới hạn claim_limit, thời hạn hiệu lực và điều kiện tái sử dụng nằm trong model Coupon.claim(). Cần review thêm model Coupon để xác nhận có check đủ điều kiện không.",
+    "poc": "POST /api/coupons/{valid_coupon_id}/claim với header Authorization của một user hợp lệ, thử gửi lại request nhiều lần liên tiếp để kiểm tra claim_limit enforcement.",
+    "root_cause": "Chưa thể xác nhận vì logic validation nằm hoàn toàn trong tầng Model (Coupon.claim). Cần kiểm tra thêm tầng DB query.",
+    "remediation_ticket": null
+  },
+  {
+    "finding_id": "LB-MANUAL-003",
+    "service": "Auth Service",
+    "file_path": "backend/src/controllers/auth.controller.js",
+    "line_number": 104,
+    "entrypoint": "POST /api/auth/register",
+    "bug_type": "MASS_ASSIGNMENT",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer": "Manual AppSec Review",
+    "reviewer_notes": "Hàm register tại dòng 106 destructures chỉ { full_name, email, password } từ req.body và hardcode role='customer' tại dòng 123. Không có Mass Assignment. Trường role được gán cứng server-side và không thể bị ghi đè từ client.",
+    "poc": null,
+    "root_cause": null,
+    "remediation_ticket": null
+  },
+  {
+    "finding_id": "LB-MANUAL-004",
+    "service": "Auth Service",
+    "file_path": "backend/src/controllers/auth.controller.js",
+    "line_number": 148,
+    "entrypoint": "POST /api/auth/login",
+    "bug_type": "INSECURE_WORKFLOW",
+    "ground_truth_verdict": "TP",
+    "confidence_level": "HIGH",
+    "reviewer": "Manual AppSec Review",
+    "reviewer_notes": "Tại dòng 148-151, hàm login kiểm tra mật khẩu theo 2 nhánh: nếu mật khẩu bắt đầu bằng $2a$ hoặc $2b$ thì dùng bcrypt.compare(), nếu không thì so sánh bằng == (plain text comparison). Điều này cho thấy có user cũ trong DB với mật khẩu chưa được migrate sang bcrypt. Nếu kẻ tấn công biết được email và đoán được mật khẩu plain text thì có thể đăng nhập vào tài khoản cũ mà không cần biết bcrypt hash.",
+    "poc": "1. Tìm user có password chưa được hash (không có prefix $2a$). 2. POST /api/auth/login với {email: 'victim@example.com', password: 'plaintext_password'}. 3. Nếu server trả về 200 OK với token -> Xác nhận lỗi.",
+    "root_cause": "Legacy migration code cho phép so sánh mật khẩu plain text, tạo ra backdoor đăng nhập bỏ qua bcrypt protection trong quá trình chuyển đổi hệ thống.",
+    "remediation_ticket": "SEC-TICKET-001: Migrate toàn bộ mật khẩu plain text sang bcrypt hash ngay lập tức. Sau khi migrate xong, xóa nhánh so sánh plain text (dòng 150-151) và chỉ giữ bcrypt.compare()."
+  }
+]
