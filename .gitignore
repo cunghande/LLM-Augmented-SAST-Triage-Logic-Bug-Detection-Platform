@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Generated outputs
+reports/generated/
+scans/**/*.json
+scans/**/*.sarif
+scans/**/*.log
+
+# Target repositories can be large and independently versioned.
+repos/*
+!repos/.gitkeep
+!repos/README.md
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

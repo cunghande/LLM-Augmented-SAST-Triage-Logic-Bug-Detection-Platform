@@ -1,0 +1,100 @@
+[
+  {
+    "finding_id": "SG-E7A645422EA1",
+    "rule_id": "javascript.lang.security.audit.sqli.node-mysql-sqli.node-mysql-sqli",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "SQL query in run-database-files.js migration script is executed internally during database setup."
+  },
+  {
+    "finding_id": "SG-2A8A99D9289E",
+    "rule_id": "javascript.lang.security.audit.sqli.node-mysql-sqli.node-mysql-sqli",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Seed script query in seed-large-products.js."
+  },
+  {
+    "finding_id": "SG-572EC6296893",
+    "rule_id": "javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "MEDIUM",
+    "reviewer_notes": "RegExp constructor used with controlled string."
+  },
+  {
+    "finding_id": "SG-B51A4CC6AC64",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-0EA0665D6E3A",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-C1698F53992F",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-2366D7329DBB",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-F7B199D31728",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-B2076107D34C",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-4D05BB3C043F",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "SG-0F7B14947234",
+    "rule_id": "generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash",
+    "ground_truth_verdict": "FP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "Mock bcrypt hash in seed database script."
+  },
+  {
+    "finding_id": "CNWEB-MANUAL-001",
+    "rule_id": "jwt-fallback-secret",
+    "ground_truth_verdict": "TP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "backend/src/config/jwt.js uses fallback secret 'dev_jwt_secret_change_me' when JWT_SECRET is missing."
+  },
+  {
+    "finding_id": "CNWEB-MANUAL-002",
+    "rule_id": "insecure-file-upload",
+    "ground_truth_verdict": "TP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "upload.js relies solely on file.mimetype without extension/content magic bytes validation."
+  },
+  {
+    "finding_id": "CNWEB-MANUAL-003",
+    "rule_id": "permissive-cors-policy",
+    "ground_truth_verdict": "TP",
+    "confidence_level": "HIGH",
+    "reviewer_notes": "server.js enables cors() with default unrestricted wildcard settings."
+  }
+]
