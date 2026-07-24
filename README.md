@@ -204,7 +204,37 @@ python -m src.cli priority-report \
 | `python -m src.cli score-risk ...` | Tính điểm rủi ro 5 thành phần |
 | `python -m src.cli generate-remediation ...` | Sinh Code Diff Patch đề xuất vá lỗi |
 | `python -m src.cli priority-report ...` | Sinh Priority Report xếp hạng theo Risk Score |
-| `python -m unittest discover tests` | Chạy toàn bộ unit tests |
+| `python -m src.cli export-neo4j ...` | Xuất CPG Code Graph (31 traces) vào Neo4j Graph Database |
+| `python -m unittest discover tests` | Chạy toàn bộ unit tests (11/11 PASS) |
+
+---
+
+## Quản Lý Neo4j Graph Database (Docker)
+
+### 1. Khởi chạy Neo4j container
+```bash
+docker compose up -d
+```
+- **Browser UI**: http://localhost:7474
+- **Username**: `neo4j` | **Password**: `password123`
+
+### 2. Xuất CPG Code Graph vào Neo4j
+```bash
+python -m src.cli export-neo4j --repo-dir repos/CN_WEB --repo-name CN_WEB
+```
+
+### 3. Ví dụ truy vấn Cypher trong Neo4j Browser
+
+```cypher
+// Truy vấn tất cả Entrypoint không được bảo vệ bởi Auth Guard
+MATCH (e:Entrypoint)-[f:FLOWS_TO]->(s:Sink)
+WHERE f.has_auth_guard = false
+RETURN e.name AS Route, s.name AS SensitiveSink, e.file_path AS File
+
+// Truy vấn toàn bộ Code Graph (Entrypoint -> Guard -> Sink)
+MATCH (e:Entrypoint)-[p:PROTECTED_BY]->(g:Guard)-[r:PERMITS_FLOW_TO]->(s:Sink)
+RETURN e, g, s
+```
 
 ---
 

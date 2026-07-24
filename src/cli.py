@@ -11,6 +11,8 @@ from src.triage.engine import TriageEngine
 from src.triage.llm_client import LLMClient
 from src.reporters.reporter import generate_json_report, generate_markdown_report, evaluate_triage_performance, generate_priority_report
 from src.logic_bugs.detector import LogicBugDetector
+from src.logic_bugs.ast_graph import extract_code_graph
+from src.logic_bugs.neo4j_exporter import Neo4jExporter
 from src.risk.scorer import RiskScorer
 from src.remediation.generator import RemediationGenerator
 
@@ -85,6 +87,14 @@ def main():
     priority_cmd.add_argument("--input", required=True, help="Input risk-scored findings JSON file")
     priority_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
     priority_cmd.add_argument("--output", default="reports/CN_WEB/priority_report.md", help="Output priority Markdown report path")
+
+    # Subcommand: export-neo4j (Neo4j Integration)
+    neo_cmd = subparsers.add_parser("export-neo4j", help="Export AST/CPG Code Graph into Neo4j Graph Database")
+    neo_cmd.add_argument("--repo-dir", default="repos/CN_WEB", help="Repository directory path")
+    neo_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
+    neo_cmd.add_argument("--uri", default="bolt://localhost:7687", help="Neo4j bolt URI")
+    neo_cmd.add_argument("--user", default="neo4j", help="Neo4j username")
+    neo_cmd.add_argument("--password", default="password123", help="Neo4j password")
 
     args = parser.parse_args()
 
@@ -214,6 +224,15 @@ def main():
 
         out_file = generate_priority_report(findings, args.output, repo_name=args.repo_name)
         print(f"[OK] Priority Report generated! Saved to {out_file}")
+
+    elif args.command == "export-neo4j":
+        repo_dir = Path(args.repo_dir)
+        print(f"[*] Extracting CPG Code Graph from {repo_dir}...")
+        traces = extract_code_graph(repo_dir)
+        print(f"[*] Found {len(traces)} CPG trace(s). Exporting to Neo4j database...")
+        exporter = Neo4jExporter(uri=args.uri, user=args.user, password=args.password)
+        exporter.export_traces(traces, repo_name=args.repo_name)
+        exporter.close()
 
 
 if __name__ == "__main__":

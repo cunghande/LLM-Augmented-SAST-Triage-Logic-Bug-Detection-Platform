@@ -76,6 +76,11 @@ def evaluate_triage_performance(
     for f in triaged_findings:
         gt = ground_truth_map.get(f.finding_id) or ground_truth_map.get(f.rule_id)
         if not gt:
+            # Match filename against ground_truth_map (e.g., BenchmarkTest00001)
+            file_name = Path(f.file_path).stem
+            gt = ground_truth_map.get(file_name)
+
+        if not gt:
             unmatched += 1
             continue
 
