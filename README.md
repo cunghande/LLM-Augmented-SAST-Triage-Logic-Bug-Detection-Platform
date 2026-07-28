@@ -152,40 +152,39 @@ python -m unittest discover tests
 
 ## Hướng Dẫn Sử Dụng (CLI Reference)
 
-### Bước đầy đủ từ A → Z cho 1 repository
+### 🚀 Cách nhanh nhất: Chạy toàn bộ Pipeline cho Repo mới vừa Clone
 
 ```bash
-# 1. Quét Semgrep + Gitleaks
+# 1. Clone repo bất kỳ vào thư mục repos/
+git clone https://github.com/example/my-app repos/my-app
+
+# 2. Chạy 1 lệnh duy nhất → Tự động phát hiện repo mới nhất và chạy toàn bộ 6 bước
+python scripts/run_all.py
+```
+
+Script `run_all.py` sẽ tự động:
+1. Phát hiện repo mới nhất vừa clone trong `repos/`
+2. Quét Semgrep + Gitleaks
+3. Triage SAST findings bằng Qwen 3:8b (Agent 1)
+4. Phát hiện Logic Bugs qua CPG (Agent 2)
+5. Tính điểm Risk Score (Agent 3a)
+6. Sinh bản vá Code Diff + Priority Report (Agent 3b)
+
+Nếu muốn **chỉ định repo cụ thể** thay vì tự động:
+```bash
+python scripts/run_all.py --repo CN_WEB
+```
+
+---
+
+### Chạy từng bước riêng lẻ (Nếu cần)
+
+```bash
+# Quét SAST — Tự động chọn repo mới nhất
+python scripts/run_scans.py --latest
+
+# Hoặc chỉ định repo cụ thể
 python scripts/run_scans.py --repo CN_WEB
-
-# 2. Triage SAST findings bằng Qwen 3:8b
-python -m src.cli triage \
-  --scans-dir scans/CN_WEB \
-  --repo-dir repos/CN_WEB \
-  --repo-name CN_WEB \
-  --output reports/CN_WEB/triage_result.json
-
-# 3. Phát hiện Logic Bugs qua CPG
-python -m src.cli detect-logic-bugs \
-  --repo-dir repos/CN_WEB \
-  --repo-name CN_WEB \
-  --output reports/CN_WEB/logic_bugs.json
-
-# 4. Tính điểm Risk Score
-python -m src.cli score-risk \
-  --input reports/CN_WEB/triage_result.json \
-  --output reports/CN_WEB/risk_report.json
-
-# 5. Sinh bản vá Code Diff
-python -m src.cli generate-remediation \
-  --input reports/CN_WEB/triage_result.json \
-  --output reports/CN_WEB/remediation_report.json
-
-# 6. Sinh Priority Report Executive Summary
-python -m src.cli priority-report \
-  --input reports/CN_WEB/triage_result.json \
-  --repo-name CN_WEB \
-  --output reports/CN_WEB/priority_report.md
 ```
 
 ---
@@ -194,7 +193,10 @@ python -m src.cli priority-report \
 
 | Lệnh | Chức năng |
 |---|---|
-| `python scripts/run_scans.py` | Quét tất cả repo trong `repos/` bằng Semgrep + Gitleaks |
+| `python scripts/run_all.py` | **Chạy toàn bộ 6 bước pipeline** cho repo mới nhất vừa clone |
+| `python scripts/run_all.py --repo CN_WEB` | Chạy pipeline cho repo chỉ định |
+| `python scripts/run_scans.py --latest` | Quét SAST repo mới nhất vừa clone |
+| `python scripts/run_scans.py` | Quét tất cả repo trong `repos/` |
 | `python scripts/run_scans.py --skip-existing` | Bỏ qua repo đã có file scan sẵn |
 | `python scripts/run_scans.py --repo CN_WEB` | Chỉ quét 1 repo cụ thể |
 | `python -m src.cli triage ...` | Triage SAST findings bằng Qwen 3:8b |

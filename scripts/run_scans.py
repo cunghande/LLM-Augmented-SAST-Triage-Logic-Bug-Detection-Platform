@@ -8,6 +8,22 @@ REPOS_BASE_DIR = ROOT_DIR / "repos"
 SCANS_BASE_DIR = ROOT_DIR / "scans"
 
 
+def detect_latest_repo() -> Path:
+    """
+    Tự động phát hiện repository mới nhất trong repos/ dựa trên thời gian sửa đổi.
+    ⚠️ QUAN TRỌNG: Sau khi clone repo mới, chạy lệnh không cần chỉ định tên repo.
+    """
+    repo_dirs = [d for d in REPOS_BASE_DIR.iterdir() if d.is_dir() and not d.name.startswith(".")]
+    if not repo_dirs:
+        print("[!] Không tìm thấy thư mục repository nào trong repos/")
+        sys.exit(1)
+
+    # Sắp xếp theo thời gian sửa đổi giảm dần → repo mới nhất lên đầu
+    latest = max(repo_dirs, key=lambda d: d.stat().st_mtime)
+    print(f"[*] Auto-detected latest repo: {latest.name}")
+    return latest
+
+
 def run_gitleaks_for_repo(repo_dir: Path, scan_dir: Path):
     scan_dir.mkdir(parents=True, exist_ok=True)
     out_file = scan_dir / "gitleaks.json"
@@ -64,10 +80,15 @@ def scan_single_repo(repo_dir: Path, skip_existing: bool = False):
 def main():
     parser = argparse.ArgumentParser(description="Automated SAST Scan Runner for Repositories")
     parser.add_argument("--repo", help="Specific repository folder name under repos/ (e.g. Sequential-Recommender)")
+    parser.add_argument("--latest", action="store_true", help="Auto-detect and scan only the latest cloned repo (newest by modified time)")
     parser.add_argument("--skip-existing", action="store_true", help="Skip repositories that already have scan results")
     args = parser.parse_args()
 
-    if args.repo:
+    if args.latest:
+        # Tự động phát hiện repo mới nhất vừa clone
+        latest_repo = detect_latest_repo()
+        scan_single_repo(latest_repo, skip_existing=args.skip_existing)
+    elif args.repo:
         target_dir = REPOS_BASE_DIR / args.repo
         scan_single_repo(target_dir, skip_existing=args.skip_existing)
     else:
@@ -83,3 +104,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
