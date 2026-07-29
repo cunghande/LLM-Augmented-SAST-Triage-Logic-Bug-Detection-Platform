@@ -1,0 +1,504 @@
+[
+  {
+    "finding_id": "SG-47186B52FC49",
+    "scanner": "semgrep",
+    "rule_id": "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\.github\\workflows\\deploy-dashboard.yml",
+    "start_line": 20,
+    "end_line": 20,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks � as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`.",
+      "cwe": [
+        "CWE-1357: Reliance on Insufficiently Trustworthy Component",
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software and Data Integrity Failures"
+      ],
+      "impact": "HIGH",
+      "confidence": "HIGH",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L5-L35",
+      "surrounding_code": "   5 |        branches: [main]\n   6 |        paths:\n   7 |          - 'reports/**'\n   8 |    \n   9 |      workflow_dispatch: # allow manual trigger\n  10 |    \n  11 |    permissions:\n  12 |      id-token: write\n  13 |      contents: read\n  14 |    \n  15 |    jobs:\n  16 |      deploy:\n  17 |        runs-on: ubuntu-latest\n  18 |        environment: production\n  19 |        steps:\n  20 | >>       - uses: actions/checkout@v4\n  21 |    \n  22 |          - name: Configure AWS credentials (OIDC)\n  23 |            uses: aws-actions/configure-aws-credentials@v4\n  24 |            with:\n  25 |              role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}\n  26 |              aws-region: us-east-1\n  27 |    \n  28 |          - name: Sync reports to S3\n  29 |            run: aws s3 sync reports/ s3://${{ vars.S3_BUCKET_NAME }}/ --delete\n  30 |    \n  31 |          - name: Invalidate CloudFront cache\n  32 |            env:\n  33 |              PRIMARY_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}\n  34 |              SECONDARY_DISTRIBUTION_ID: ${{ vars.AWS_SECONDARY_CLOUDFRONT_DISTRIBUTION_ID }}\n  35 |            run: |",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "3a31d061318291b26fa1cb50b81217b57ca34fe77b23ec42cdc56490ba4822c6",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-5E2528D94B1C",
+    "scanner": "semgrep",
+    "rule_id": "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\.github\\workflows\\deploy-dashboard.yml",
+    "start_line": 23,
+    "end_line": 23,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks � as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`.",
+      "cwe": [
+        "CWE-1357: Reliance on Insufficiently Trustworthy Component",
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software and Data Integrity Failures"
+      ],
+      "impact": "HIGH",
+      "confidence": "HIGH",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L8-L38",
+      "surrounding_code": "   8 |    \n   9 |      workflow_dispatch: # allow manual trigger\n  10 |    \n  11 |    permissions:\n  12 |      id-token: write\n  13 |      contents: read\n  14 |    \n  15 |    jobs:\n  16 |      deploy:\n  17 |        runs-on: ubuntu-latest\n  18 |        environment: production\n  19 |        steps:\n  20 |          - uses: actions/checkout@v4\n  21 |    \n  22 |          - name: Configure AWS credentials (OIDC)\n  23 | >>         uses: aws-actions/configure-aws-credentials@v4\n  24 |            with:\n  25 |              role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}\n  26 |              aws-region: us-east-1\n  27 |    \n  28 |          - name: Sync reports to S3\n  29 |            run: aws s3 sync reports/ s3://${{ vars.S3_BUCKET_NAME }}/ --delete\n  30 |    \n  31 |          - name: Invalidate CloudFront cache\n  32 |            env:\n  33 |              PRIMARY_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}\n  34 |              SECONDARY_DISTRIBUTION_ID: ${{ vars.AWS_SECONDARY_CLOUDFRONT_DISTRIBUTION_ID }}\n  35 |            run: |\n  36 |              aws cloudfront create-invalidation \\\n  37 |                --distribution-id \"$PRIMARY_DISTRIBUTION_ID\" \\\n  38 |                --paths \"/*\"",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "3a31d061318291b26fa1cb50b81217b57ca34fe77b23ec42cdc56490ba4822c6",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-6B14DD575C4D",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-5-agentic-sink-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>claude-haiku-4-5-agentic-sink-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 0 repositories scored &middot; generated 2026-03-19 07:54 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#b91c1c\">F2</div><div><div class=\"stat-value\" style=\"color:#b91c1c\">0.0</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">0.0%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">0.0%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">0</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:300px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "0072b3319eb81680c06c31a97ab84e39bd252d8ab2b2ea91d916bf8dddf7d6a2",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-E9B46252D946",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-agentic-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>claude-haiku-4-agentic-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 24 repositories scored &middot; generated 2026-03-19 05:46 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#a16207\">F2</div><div><div class=\"stat-value\" style=\"color:#a16207\">43.3</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">39.4%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">72.8%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">24</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:752px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "2eae6b70b3c70670fc88ca3fa39435c7c24666329d987ca185527643eeb84e12",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-8D88E7CA56FF",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>claude-haiku-4-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 23 repositories scored &middot; generated 2026-03-19 05:46 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#c2410c\">F2</div><div><div class=\"stat-value\" style=\"color:#c2410c\">26.8</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">24.5%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">42.8%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">23</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:724px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "852751e8941d2bf55cce0a9de4d29266baa749bb8cce8a28461940f66fad7187",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-6BA2F3DCF25D",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\gemini-3.1-flash-lite-agentic-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>gemini-3.1-flash-lite-agentic-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 0 repositories scored &middot; generated 2026-03-19 18:43 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#b91c1c\">F2</div><div><div class=\"stat-value\" style=\"color:#b91c1c\">0.0</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">0.0%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">0.0%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">0</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:300px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "295a33443aa49640610712ac2f3bf783a4d6ea2bfcd63c0a78e9f1d7ce81bfb8",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-922E7B6BD19A",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-sink-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>kimi-k2.5-sink-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 24 repositories scored &middot; generated 2026-03-19 18:43 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#c2410c\">F2</div><div><div class=\"stat-value\" style=\"color:#c2410c\">29.3</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">25.1%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">86.7%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">24</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:752px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "5297e0e32b5d41c3b1148e89fd75be173dbf57644f7fb3f6189798558c181a00",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-C0D9F740CAF6",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-sink-v2.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>kimi-k2.5-sink-v2</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 24 repositories scored &middot; generated 2026-03-19 18:43 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#c2410c\">F2</div><div><div class=\"stat-value\" style=\"color:#c2410c\">30.4</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">26.4%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">77.1%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">24</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:752px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "15d6b9c6bb56604e59aefa828ad967a45e7050822f7b94c5304df3678af86223",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-588C4A5BBEF9",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-escape_hatches-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>kimi-k2.5-xss-escape_hatches-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 21 repositories scored &middot; generated 2026-03-20 13:15 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#b91c1c\">F2</div><div><div class=\"stat-value\" style=\"color:#b91c1c\">14.0</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">11.7%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">61.8%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">21</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:668px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "2f5187d10382c91c299fbc74d90c28b0d7982302f9b71d3105056916e9105b9a",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-9BA696C3AC4D",
+    "scanner": "semgrep",
+    "rule_id": "html.security.audit.missing-integrity.missing-integrity",
+    "repository": "REALVULN",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-kitchen_sink-v1.html",
+    "start_line": 289,
+    "end_line": 289,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you�re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.",
+      "cwe": [
+        "CWE-353: Missing Support for Integrity Check"
+      ],
+      "owasp": [
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
+      ],
+      "impact": "LOW",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L274-L304",
+      "surrounding_code": " 274 |    <body>\n 275 |    <!-- RV-ARCHIVE-BANNER -->\n 276 |    <div style=\"background:#3a2e12;color:#f0e6d2;border-bottom:1px solid #cfa45c;font:500 13px/1.5 system-ui,sans-serif;padding:8px 16px;text-align:center\">You are viewing an <strong>archived release</strong> — RealVuln <strong>v1.0</strong>, the version described in the paper. <a href=\"https://realvuln.com\" style=\"color:#cfa45c;font-weight:700;text-decoration:underline\">View the latest benchmark &rarr;</a></div>\n 277 |    \n 278 |    <a href=\"../dashboard.html\" class=\"back-link\">&larr; Back to Dashboard</a>\n 279 |    <div class=\"page-header\">\n 280 |    <h1>kimi-k2.5-xss-kitchen_sink-v1</h1>\n 281 |    <div class=\"subtitle\">Scanner detail &middot; 18 repositories scored &middot; generated 2026-03-20 13:15 UTC</div>\n 282 |    </div>\n 283 |    <div class=\"hero-stats\">\n 284 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(22,163,74,0.1);color:#b91c1c\">F2</div><div><div class=\"stat-value\" style=\"color:#b91c1c\">12.5</div><div class=\"stat-label\">F2 Score</div></div></div>\n 285 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(34,197,94,0.1);color:#22c55e\">&#8593;</div><div><div class=\"stat-value\" style=\"color:#22c55e\">10.4%</div><div class=\"stat-label\">Recall</div></div></div>\n 286 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(160,118,249,0.1);color:#A076F9\">&#9670;</div><div><div class=\"stat-value\" style=\"color:#A076F9\">59.7%</div><div class=\"stat-label\">Precision</div></div></div>\n 287 |    <div class=\"stat-card\"><div class=\"stat-icon\" style=\"background:rgba(196,240,62,0.1);color:#C4F03E\">&#9733;</div><div><div class=\"stat-value\" style=\"color:#C4F03E\">18</div><div class=\"stat-label\">Repos Scored</div></div></div>\n 288 |    </div>\n 289 | >> <script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"></script>\n 290 |    <div class=\"section-title\">Per-Repository Breakdown <span class=\"dim\">TP / FP / FN</span></div>\n 291 |    <div class=\"chart-card\">\n 292 |    <div id=\"repo-bars\" style=\"width:100%;height:584px\"></div>\n 293 |    </div>\n 294 |    <div class=\"section-title\">Per-Repository Scores <span class=\"dim\">click headers to sort</span></div>\n 295 |    <div class=\"metric-toggle\">\n 296 |    <button class=\"active\" data-metric=\"f2\">F2 Score</button>\n 297 |    <button data-metric=\"recall\">Recall</button>\n 298 |    <button data-metric=\"precision\">Precision</button>\n 299 |    </div>\n 300 |    <div class=\"heatmap-wrap\">\n 301 |    <table class=\"heatmap-table\" id=\"dashboard-table\">\n 302 |    <thead><tr>\n 303 |    <th data-col=\"repo\">Repository <span class=\"sort-arrow\"></span></th>\n 304 |    <th data-col=\"0\">F2 <span class=\"sort-arrow\"></span></th>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "1d064264744dead3a5fa8b0c1fd0a15c6cfbe7046720c5733f6121215656e435",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  }
+]

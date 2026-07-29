@@ -311,10 +311,12 @@
       "redacted": true
     },
     "verdict": "FP",
-    "confidence": 0.92,
-    "reasoning": "Detected mock test data or setup script snippet. Safe FP candidate.",
+    "confidence": 0.95,
+    "reasoning": "The string is part of a test assertion comparing obfuscated values, not a real secret. Test files often contain mock credentials that don't pose actual security risks.",
     "evidence": [
-      "Snippet located in test/seed/migration utility file."
+      "The string appears in a test assertion comparing obfuscated values",
+      "Adjacent code shows test values with 'REDACTED' placeholders",
+      "The value is generated using a fixed random seed for deterministic testing"
     ],
     "action_group": "AUTO_SUPPRESS_CANDIDATE",
     "logic_bug_trace": null,

@@ -1,1139 +1,28 @@
 [
   {
-    "finding_id": "SG-DAA63EB9BC72",
+    "finding_id": "SG-1F80888F81C9",
     "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00001.py",
-    "start_line": 26,
-    "end_line": 30,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00165.html",
+    "start_line": 12,
+    "end_line": 24,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00001_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00001', methods=['GET'])\n  24 |    \tdef BenchmarkTest00001_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00001.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00001', 'Filename',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00001_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00001', methods=['POST'])\n  35 |    \tdef BenchmarkTest00001_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00001\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = param\n  42 |    \n  43 |    \t\timport codecs\n  44 |    \t\timport helpers.utils\n  45 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "901db61fdf6b2cfffdd0b45e65744e9ddb3620de68abc92126186e1740d576ff",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-41FCADDB529F",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00002.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00002_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00002', methods=['GET'])\n  24 |    \tdef BenchmarkTest00002_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00002.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00002', 'Filename',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00002_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00002', methods=['POST'])\n  35 |    \tdef BenchmarkTest00002_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00002\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"This should never happen\"\n  42 |    \t\tif 'should' in bar:\n  43 |    \t\t\tbar = param\n  44 |    \n  45 |    \t\timport codecs",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "ec49fef76be866a5f4ba279fcb7d7456b6b695ab45be6a3c9080fcfa9447bbe3",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-332F49DC821D",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00003.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00003_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00003', methods=['GET'])\n  24 |    \tdef BenchmarkTest00003_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00003.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00003', 'Filename',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00003_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00003', methods=['POST'])\n  35 |    \tdef BenchmarkTest00003_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00003\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\timport helpers.ThingFactory\n  42 |    \t\t\n  43 |    \t\tthing = helpers.ThingFactory.createThing()\n  44 |    \t\tbar = thing.doSomething(param)\n  45 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "aac9923e9688bd575227cc776e1480715b5f823d6d4f3f986d6b36c7b7305402",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-7D6EC72B6C11",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00004.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00004_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00004', methods=['GET'])\n  24 |    \tdef BenchmarkTest00004_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00004.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00004', 'Filename',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00004_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00004', methods=['POST'])\n  35 |    \tdef BenchmarkTest00004_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00004\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tnum = 106\n  42 |    \t\t\n  43 |    \t\tbar = \"This_should_always_happen\" if 7 * 18 + num > 200 else param\n  44 |    \n  45 |    \t\timport codecs",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "81ba7bfa9bc5918546bb38f9fb50a80e3453af479fbaf601530cc4625cf60a7b",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-914946E1F852",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00005.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00005_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00005', methods=['GET'])\n  24 |    \tdef BenchmarkTest00005_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00005.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00005', 'FileName',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00005_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00005', methods=['POST'])\n  35 |    \tdef BenchmarkTest00005_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00005\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tmap44013 = {}\n  42 |    \t\tmap44013['keyA-44013'] = 'a-Value'\n  43 |    \t\tmap44013['keyB-44013'] = param\n  44 |    \t\tmap44013['keyC'] = 'another-Value'\n  45 |    \t\tbar = map44013['keyB-44013']",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "dcdec5fab2c91a35a97182656018df6977c2393be2ec9f3f1e8144a6b9c83e88",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-2C7439939F5F",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00006.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00006_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00006', methods=['GET'])\n  24 |    \tdef BenchmarkTest00006_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00006.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00006', 'FileName',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00006_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00006', methods=['POST'])\n  35 |    \tdef BenchmarkTest00006_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00006\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"\"\n  42 |    \t\tif param:\n  43 |    \t\t\tlst = []\n  44 |    \t\t\tlst.append('safe')\n  45 |    \t\t\tlst.append(param)",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "737703c9e353151c8d18637883398d920fa2180ed6de63503b09dd07cacde879",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-3AE4FDB7B570",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00007.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00007_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00007', methods=['GET'])\n  24 |    \tdef BenchmarkTest00007_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00007.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00007', 'FileName',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00007_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00007', methods=['POST'])\n  35 |    \tdef BenchmarkTest00007_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00007\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tstring22532 = 'help'\n  42 |    \t\tstring22532 += param\n  43 |    \t\tstring22532 += 'snapes on a plane'\n  44 |    \t\tbar = string22532[4:-17]\n  45 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "07e4919424806a2c82c79eae7625b17b9b4a6cc9ea3358ee3c3bcc12a7b05cc7",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-1DBDA1DFF9BD",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00008.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00008_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00008', methods=['GET'])\n  24 |    \tdef BenchmarkTest00008_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00008.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00008', 'Filename',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00008_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00008', methods=['POST'])\n  35 |    \tdef BenchmarkTest00008_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00008\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tTestParam = \"This should never happen\"\n  42 |    \t\tif 'should' not in TestParam:\n  43 |    \t\t\tbar = \"Ifnot case passed\"\n  44 |    \t\telse:\n  45 |    \t\t\tbar = param",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "7f989504f9bc0d55e2f0960d31bbabefe905da8918f6cfb18cdef555becd6c8f",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-3153937090CF",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00009.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00009_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00009', methods=['GET'])\n  24 |    \tdef BenchmarkTest00009_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00009.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00009', 'FileName',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00009_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00009', methods=['POST'])\n  35 |    \tdef BenchmarkTest00009_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00009\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = param\n  42 |    \n  43 |    \t\timport pathlib\n  44 |    \t\timport helpers.utils\n  45 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "6fe83612ea8ef24944f915ecbe192b065c97dd5bf17119df178245c8a44acd9d",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-BBD190273924",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00010.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00010_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00010', methods=['GET'])\n  24 |    \tdef BenchmarkTest00010_get():\n  25 |    \t\tresponse = make_response(render_template('web/pathtraver-00/BenchmarkTest00010.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00010', 'FileName',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00010_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/pathtraver-00/BenchmarkTest00010', methods=['POST'])\n  35 |    \tdef BenchmarkTest00010_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00010\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tnum = 106\n  42 |    \t\t\n  43 |    \t\tbar = \"This_should_always_happen\" if 7 * 18 + num > 200 else param\n  44 |    \n  45 |    \t\timport pathlib",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "17b725bda727f2bd49fadba69a66d622926d6f09175c3b124617dde6c7a6b913",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-142015BB4206",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00011.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00011_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/sqli-00/BenchmarkTest00011', methods=['GET'])\n  24 |    \tdef BenchmarkTest00011_get():\n  25 |    \t\tresponse = make_response(render_template('web/sqli-00/BenchmarkTest00011.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00011', 'bar',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00011_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/sqli-00/BenchmarkTest00011', methods=['POST'])\n  35 |    \tdef BenchmarkTest00011_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00011\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"This should never happen\"\n  42 |    \t\tif 'should' in bar:\n  43 |    \t\t\tbar = param\n  44 |    \n  45 |    \t\timport helpers.db_sqlite",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "4a20438a4e82c2e5584672c417f70857aa0dac1b8e383bf00af6014905fef00d",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-A39CB41270BA",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00012.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00012_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/sqli-00/BenchmarkTest00012', methods=['GET'])\n  24 |    \tdef BenchmarkTest00012_get():\n  25 |    \t\tresponse = make_response(render_template('web/sqli-00/BenchmarkTest00012.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00012', 'bar',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00012_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/sqli-00/BenchmarkTest00012', methods=['POST'])\n  35 |    \tdef BenchmarkTest00012_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00012\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tstring93844 = 'help'\n  42 |    \t\tstring93844 += param\n  43 |    \t\tstring93844 += 'snapes on a plane'\n  44 |    \t\tbar = string93844[4:-17]\n  45 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "1ed2ebabf907c1fe729f9c547d4a867dc56a2ae809d28fd903f7eee213e8e41b",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-04BFA378C24C",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00013.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00013_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00013', methods=['GET'])\n  24 |    \tdef BenchmarkTest00013_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00013.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00013', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00013_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00013', methods=['POST'])\n  35 |    \tdef BenchmarkTest00013_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00013\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"alsosafe\"\n  42 |    \t\tif param:\n  43 |    \t\t\tlst = []\n  44 |    \t\t\tlst.append('safe')\n  45 |    \t\t\tlst.append(param)",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "d8b9588c447fe53b0bc5422142b9fcef15eb6fcfc714af718860273517492af6",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-C826EDD58CF7",
-    "scanner": "semgrep",
-    "rule_id": "python.lang.security.use-defused-xml-parse.use-defused-xml-parse",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00013.py",
-    "start_line": 55,
-    "end_line": 55,
-    "snippet": "requires login",
-    "severity": "HIGH",
-    "metadata": {
-      "message": "The native Python `xml` library is vulnerable to XML External Entity (XXE) attacks.  These attacks can leak confidential data and \"XML bombs\" can cause denial of service. Do not use this library to parse untrusted input. Instead  the Python documentation recommends using `defusedxml`.",
-      "cwe": [
-        "CWE-611: Improper Restriction of XML External Entity Reference"
-      ],
-      "owasp": [
-        "A04:2017 - XML External Entities (XXE)",
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00013_post",
-      "line_window": "L40-L70",
-      "surrounding_code": "  40 |    \n  41 |    \t\tbar = \"alsosafe\"\n  42 |    \t\tif param:\n  43 |    \t\t\tlst = []\n  44 |    \t\t\tlst.append('safe')\n  45 |    \t\t\tlst.append(param)\n  46 |    \t\t\tlst.append('moresafe')\n  47 |    \t\t\tlst.pop(0)\n  48 |    \t\t\tbar = lst[1]\n  49 |    \n  50 |    \t\timport elementpath\n  51 |    \t\timport xml.etree.ElementTree as ET\n  52 |    \t\timport helpers.utils\n  53 |    \n  54 |    \t\ttry:\n  55 | >> \t\t\troot = ET.parse(f'{helpers.utils.RES_DIR}/employees.xml')\n  56 |    \t\t\tquery = f\"/Employees/Employee[@emplid=\\'{bar}\\']\"\n  57 |    \t\t\tnodes = elementpath.select(root, query)\n  58 |    \t\t\tnode_strings = []\n  59 |    \t\t\tfor node in nodes:\n  60 |    \t\t\t\tnode_strings.append(' '.join([e.text for e in node]))\n  61 |    \n  62 |    \t\t\tRESPONSE += (\n  63 |    \t\t\t\tf'Your XPATH query results are: <br>[ {', '.join(node_strings)} ]'\n  64 |    \t\t\t)\n  65 |    \t\texcept:\n  66 |    \t\t\tRESPONSE += (\n  67 |    \t\t\t\tf'Error parsing XPath Query: \\'{escape_for_html(query)}\\''\n  68 |    \t\t\t)\n  69 |    \n  70 |    \t\treturn RESPONSE",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "f5a7504eb5cc0d7f9247d8e1b4dc1c169b92584c7fd6c66bf6adaaf68bfcfb6c",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-5509BA3F2B95",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00014.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00014_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00014', methods=['GET'])\n  24 |    \tdef BenchmarkTest00014_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00014.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00014', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00014_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00014', methods=['POST'])\n  35 |    \tdef BenchmarkTest00014_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00014\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\timport base64\n  42 |    \t\ttmp = base64.b64encode(param.encode('utf-8'))\n  43 |    \t\tbar = base64.b64decode(tmp).decode('utf-8')\n  44 |    \n  45 |    \t\timport elementpath",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "aae54bb1d633aaa73854765307ff2ddab8da9d1e228c2163bee54d7760a4758e",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-4AD506C2B435",
-    "scanner": "semgrep",
-    "rule_id": "python.lang.security.use-defused-xml-parse.use-defused-xml-parse",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00014.py",
-    "start_line": 56,
-    "end_line": 56,
-    "snippet": "requires login",
-    "severity": "HIGH",
-    "metadata": {
-      "message": "The native Python `xml` library is vulnerable to XML External Entity (XXE) attacks.  These attacks can leak confidential data and \"XML bombs\" can cause denial of service. Do not use this library to parse untrusted input. Instead  the Python documentation recommends using `defusedxml`.",
-      "cwe": [
-        "CWE-611: Improper Restriction of XML External Entity Reference"
-      ],
-      "owasp": [
-        "A04:2017 - XML External Entities (XXE)",
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00014_post",
-      "line_window": "L41-L71",
-      "surrounding_code": "  41 |    \t\timport base64\n  42 |    \t\ttmp = base64.b64encode(param.encode('utf-8'))\n  43 |    \t\tbar = base64.b64decode(tmp).decode('utf-8')\n  44 |    \n  45 |    \t\timport elementpath\n  46 |    \t\timport xml.etree.ElementTree as ET\n  47 |    \t\timport helpers.utils\n  48 |    \n  49 |    \t\tif '\\'' in bar:\n  50 |    \t\t\tRESPONSE += (\n  51 |    \t\t\t\t\"Employee ID must not contain apostrophes\"\n  52 |    \t\t\t)\n  53 |    \t\t\treturn RESPONSE\n  54 |    \n  55 |    \t\ttry:\n  56 | >> \t\t\troot = ET.parse(f'{helpers.utils.RES_DIR}/employees.xml')\n  57 |    \t\t\tquery = f\"/Employees/Employee[@emplid=\\'{bar}\\']\"\n  58 |    \t\t\tnodes = elementpath.select(root, query)\n  59 |    \t\t\tnode_strings = []\n  60 |    \t\t\tfor node in nodes:\n  61 |    \t\t\t\tnode_strings.append(' '.join([e.text for e in node]))\n  62 |    \n  63 |    \t\t\tRESPONSE += (\n  64 |    \t\t\t\tf'Your XPATH query results are: <br>[ {', '.join(node_strings)} ]'\n  65 |    \t\t\t)\n  66 |    \t\texcept:\n  67 |    \t\t\tRESPONSE += (\n  68 |    \t\t\t\tf'Error parsing XPath Query: \\'{escape_for_html(query)}\\''\n  69 |    \t\t\t)\n  70 |    \n  71 |    \t\treturn RESPONSE",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "e6fd69d166ad46caa48d630fca063a954cea91e19ea51e7037a38aa211118df2",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-D6360FE75601",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00015.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00015_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00015', methods=['GET'])\n  24 |    \tdef BenchmarkTest00015_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00015.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00015', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00015_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00015', methods=['POST'])\n  35 |    \tdef BenchmarkTest00015_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00015\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"This should never happen\"\n  42 |    \t\tif 'should' in bar:\n  43 |    \t\t\tbar = param\n  44 |    \n  45 |    \t\timport elementpath",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "9e771c297f5a1daf5eacf3b8e91068fbe0556ee71e409ef18627566912a08f01",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-C034CDD74AD0",
-    "scanner": "semgrep",
-    "rule_id": "python.lang.security.use-defused-xml-parse.use-defused-xml-parse",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00015.py",
-    "start_line": 56,
-    "end_line": 56,
-    "snippet": "requires login",
-    "severity": "HIGH",
-    "metadata": {
-      "message": "The native Python `xml` library is vulnerable to XML External Entity (XXE) attacks.  These attacks can leak confidential data and \"XML bombs\" can cause denial of service. Do not use this library to parse untrusted input. Instead  the Python documentation recommends using `defusedxml`.",
-      "cwe": [
-        "CWE-611: Improper Restriction of XML External Entity Reference"
-      ],
-      "owasp": [
-        "A04:2017 - XML External Entities (XXE)",
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00015_post",
-      "line_window": "L41-L71",
-      "surrounding_code": "  41 |    \t\tbar = \"This should never happen\"\n  42 |    \t\tif 'should' in bar:\n  43 |    \t\t\tbar = param\n  44 |    \n  45 |    \t\timport elementpath\n  46 |    \t\timport xml.etree.ElementTree as ET\n  47 |    \t\timport helpers.utils\n  48 |    \n  49 |    \t\tif '\\'' in bar:\n  50 |    \t\t\tRESPONSE += (\n  51 |    \t\t\t\t\"Employee ID must not contain apostrophes\"\n  52 |    \t\t\t)\n  53 |    \t\t\treturn RESPONSE\n  54 |    \n  55 |    \t\ttry:\n  56 | >> \t\t\troot = ET.parse(f'{helpers.utils.RES_DIR}/employees.xml')\n  57 |    \t\t\tquery = f\"/Employees/Employee[@emplid=\\'{bar}\\']\"\n  58 |    \t\t\tnodes = elementpath.select(root, query)\n  59 |    \t\t\tnode_strings = []\n  60 |    \t\t\tfor node in nodes:\n  61 |    \t\t\t\tnode_strings.append(' '.join([e.text for e in node]))\n  62 |    \n  63 |    \t\t\tRESPONSE += (\n  64 |    \t\t\t\tf'Your XPATH query results are: <br>[ {', '.join(node_strings)} ]'\n  65 |    \t\t\t)\n  66 |    \t\texcept:\n  67 |    \t\t\tRESPONSE += (\n  68 |    \t\t\t\tf'Error parsing XPath Query: \\'{escape_for_html(query)}\\''\n  69 |    \t\t\t)\n  70 |    \n  71 |    \t\treturn RESPONSE",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "4cad5f934c270cdc47f6bcf0a082845fb9dca167799c69c67d5dd1988e670410",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-4A1B6B2EF38C",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00016.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00016_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00016', methods=['GET'])\n  24 |    \tdef BenchmarkTest00016_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00016.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00016', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00016_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00016', methods=['POST'])\n  35 |    \tdef BenchmarkTest00016_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00016\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tTestParam = \"This should never happen\"\n  42 |    \t\tif 'should' not in TestParam:\n  43 |    \t\t\tbar = \"Ifnot case passed\"\n  44 |    \t\telse:\n  45 |    \t\t\tbar = param",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "c327ca44734b6ecec4dc667bc095a9685c5c861279207efe99bbfcf469f274ee",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-EFFBA6B0EF9A",
-    "scanner": "semgrep",
-    "rule_id": "python.lang.security.use-defused-xml-parse.use-defused-xml-parse",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00016.py",
-    "start_line": 58,
-    "end_line": 58,
-    "snippet": "requires login",
-    "severity": "HIGH",
-    "metadata": {
-      "message": "The native Python `xml` library is vulnerable to XML External Entity (XXE) attacks.  These attacks can leak confidential data and \"XML bombs\" can cause denial of service. Do not use this library to parse untrusted input. Instead  the Python documentation recommends using `defusedxml`.",
-      "cwe": [
-        "CWE-611: Improper Restriction of XML External Entity Reference"
-      ],
-      "owasp": [
-        "A04:2017 - XML External Entities (XXE)",
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00016_post",
-      "line_window": "L43-L73",
-      "surrounding_code": "  43 |    \t\t\tbar = \"Ifnot case passed\"\n  44 |    \t\telse:\n  45 |    \t\t\tbar = param\n  46 |    \n  47 |    \t\timport elementpath\n  48 |    \t\timport xml.etree.ElementTree as ET\n  49 |    \t\timport helpers.utils\n  50 |    \n  51 |    \t\tif '\\'' in bar:\n  52 |    \t\t\tRESPONSE += (\n  53 |    \t\t\t\t\"Employee ID must not contain apostrophes\"\n  54 |    \t\t\t)\n  55 |    \t\t\treturn RESPONSE\n  56 |    \n  57 |    \t\ttry:\n  58 | >> \t\t\troot = ET.parse(f'{helpers.utils.RES_DIR}/employees.xml')\n  59 |    \t\t\tquery = f\"/Employees/Employee[@emplid=\\'{bar}\\']\"\n  60 |    \t\t\tnodes = elementpath.select(root, query)\n  61 |    \t\t\tnode_strings = []\n  62 |    \t\t\tfor node in nodes:\n  63 |    \t\t\t\tnode_strings.append(' '.join([e.text for e in node]))\n  64 |    \n  65 |    \t\t\tRESPONSE += (\n  66 |    \t\t\t\tf'Your XPATH query results are: <br>[ {', '.join(node_strings)} ]'\n  67 |    \t\t\t)\n  68 |    \t\texcept:\n  69 |    \t\t\tRESPONSE += (\n  70 |    \t\t\t\tf'Error parsing XPath Query: \\'{escape_for_html(query)}\\''\n  71 |    \t\t\t)\n  72 |    \n  73 |    \t\treturn RESPONSE",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "527e8a23c4cfcee09fd4abdde0fd5e8c064a0cf7508f99b8e299466fb5b2b4c3",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-92678F01934C",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00017.py",
-    "start_line": 26,
-    "end_line": 30,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00017_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xxe-00/BenchmarkTest00017', methods=['GET'])\n  24 |    \tdef BenchmarkTest00017_get():\n  25 |    \t\tresponse = make_response(render_template('web/xxe-00/BenchmarkTest00017.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00017', '%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22+standalone%3D%22yes%22%3F%3E%0A%09%3Ctest+xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%0A%09xsi%3AnoNamespaceSchemaLocation%3D%22test.xsd%22%3EHello+from+Venus%3C%2Ftest%3E',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00017_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xxe-00/BenchmarkTest00017', methods=['POST'])\n  35 |    \tdef BenchmarkTest00017_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00017\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"This should never happen\"\n  42 |    \t\tif 'should' in bar:\n  43 |    \t\t\tbar = param\n  44 |    \n  45 |    \t\timport xml.dom.minidom",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "898523821b2bdccd1c042bc96f80acd93c70bf54d3c0ab6bb2f040e582ef6040",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-504E2475D93F",
-    "scanner": "semgrep",
-    "rule_id": "python.django.security.injection.raw-html-format.raw-html-format",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00017.py",
-    "start_line": 63,
-    "end_line": 65,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`django.shortcuts.render`) which will safely render HTML instead.",
-      "cwe": [
-        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
-      ],
-      "owasp": [
-        "A07:2017 - Cross-Site Scripting (XSS)",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "HIGH",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00017_post",
-      "line_window": "L48-L72",
-      "surrounding_code": "  48 |    \t\ttry:\n  49 |    \t\t\tparser = xml.sax.make_parser()\n  50 |    \t\t\t# all features are disabled by default\n  51 |    \n  52 |    \t\t\tdoc = xml.dom.minidom.parseString(bar, parser)\n  53 |    \n  54 |    \t\t\tout = ''\n  55 |    \t\t\tprocessing = [doc.documentElement]\n  56 |    \t\t\twhile processing:\n  57 |    \t\t\t\te = processing.pop(0)\n  58 |    \t\t\t\tif e.nodeType == xml.dom.Node.TEXT_NODE:\n  59 |    \t\t\t\t\tout += e.data\n  60 |    \t\t\t\telse:\n  61 |    \t\t\t\t\tprocessing[:0] = e.childNodes\n  62 |    \n  63 | >> \t\t\tRESPONSE += (\n  64 | >> \t\t\t\tf'Your XML doc results are: <br>{escape_for_html(out)}'\n  65 | >> \t\t\t)\n  66 |    \t\texcept:\n  67 |    \t\t\tRESPONSE += (\n  68 |    \t\t\t\tf'There was an error reading your XML doc:<br>{escape_for_html(bar)}'\n  69 |    \t\t\t)\n  70 |    \n  71 |    \t\treturn RESPONSE\n  72 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "b7751152a087ed551f2ccbf2e1d1f4fb424da6c95439963d1dc650bfc5763098",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-66A44A4CD456",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.injection.raw-html-concat.raw-html-format",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00017.py",
-    "start_line": 63,
-    "end_line": 65,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`flask.render_template`) which will safely render HTML instead.",
-      "cwe": [
-        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
-      ],
-      "owasp": [
-        "A07:2017 - Cross-Site Scripting (XSS)",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
       "impact": "MEDIUM",
       "confidence": "MEDIUM",
       "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00017_post",
-      "line_window": "L48-L72",
-      "surrounding_code": "  48 |    \t\ttry:\n  49 |    \t\t\tparser = xml.sax.make_parser()\n  50 |    \t\t\t# all features are disabled by default\n  51 |    \n  52 |    \t\t\tdoc = xml.dom.minidom.parseString(bar, parser)\n  53 |    \n  54 |    \t\t\tout = ''\n  55 |    \t\t\tprocessing = [doc.documentElement]\n  56 |    \t\t\twhile processing:\n  57 |    \t\t\t\te = processing.pop(0)\n  58 |    \t\t\t\tif e.nodeType == xml.dom.Node.TEXT_NODE:\n  59 |    \t\t\t\t\tout += e.data\n  60 |    \t\t\t\telse:\n  61 |    \t\t\t\t\tprocessing[:0] = e.childNodes\n  62 |    \n  63 | >> \t\t\tRESPONSE += (\n  64 | >> \t\t\t\tf'Your XML doc results are: <br>{escape_for_html(out)}'\n  65 | >> \t\t\t)\n  66 |    \t\texcept:\n  67 |    \t\t\tRESPONSE += (\n  68 |    \t\t\t\tf'There was an error reading your XML doc:<br>{escape_for_html(bar)}'\n  69 |    \t\t\t)\n  70 |    \n  71 |    \t\treturn RESPONSE\n  72 |    ",
+      "enclosing_function": null,
+      "line_window": "L1-L26",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00165</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00165\" method=\"POST\" id=\"FormBenchmarkTest00165\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please enter your details:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><label>Email:</label></div>\n  16 | >> \t<div><input type=\"text\" id=\"email\" name=\"email\" ></div>\n  17 | >> \t<div><label>Password:</label></div>\n  18 | >> \t<div><input type=\"text\" id=\"password\" name=\"password\" value=\"\" ></div>\n  19 | >> \t<div>&nbsp;</div>\n  20 | >> \t<div><label>Parameter: BenchmarkTest00165 <br>Value:</label>\n  21 | >> \t<input type=\"text\" id=\"BenchmarkTest00165\" name=\"BenchmarkTest00165\" value=\"ECHOOO\" ></div>\n  22 | >> \t<br>\n  23 | >> \t<div><input type=\"submit\" value=\"Login\" ></div>\n  24 | >> </form>\n  25 |    </body>\n  26 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1150,92 +39,35 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "88468cc330771d0eecdf34d9a55b969509be384d95f947f958642aa39a7fa109",
+    "fingerprint": "adf80c27c72f588e60aea7c558692a80efea7315d3f63769224758b9f668ea92",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
   },
   {
-    "finding_id": "SG-F7CF6927BCC9",
+    "finding_id": "SG-3E9885457586",
     "scanner": "semgrep",
-    "rule_id": "python.django.security.injection.raw-html-format.raw-html-format",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00017.py",
-    "start_line": 67,
-    "end_line": 69,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00166.html",
+    "start_line": 12,
+    "end_line": 24,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`django.shortcuts.render`) which will safely render HTML instead.",
-      "cwe": [
-        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
-      ],
-      "owasp": [
-        "A07:2017 - Cross-Site Scripting (XSS)",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "HIGH",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "BenchmarkTest00017_post",
-      "line_window": "L52-L72",
-      "surrounding_code": "  52 |    \t\t\tdoc = xml.dom.minidom.parseString(bar, parser)\n  53 |    \n  54 |    \t\t\tout = ''\n  55 |    \t\t\tprocessing = [doc.documentElement]\n  56 |    \t\t\twhile processing:\n  57 |    \t\t\t\te = processing.pop(0)\n  58 |    \t\t\t\tif e.nodeType == xml.dom.Node.TEXT_NODE:\n  59 |    \t\t\t\t\tout += e.data\n  60 |    \t\t\t\telse:\n  61 |    \t\t\t\t\tprocessing[:0] = e.childNodes\n  62 |    \n  63 |    \t\t\tRESPONSE += (\n  64 |    \t\t\t\tf'Your XML doc results are: <br>{escape_for_html(out)}'\n  65 |    \t\t\t)\n  66 |    \t\texcept:\n  67 | >> \t\t\tRESPONSE += (\n  68 | >> \t\t\t\tf'There was an error reading your XML doc:<br>{escape_for_html(bar)}'\n  69 | >> \t\t\t)\n  70 |    \n  71 |    \t\treturn RESPONSE\n  72 |    ",
-      "imports": [],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "b7751152a087ed551f2ccbf2e1d1f4fb424da6c95439963d1dc650bfc5763098",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-303875A1A33C",
-    "scanner": "semgrep",
-    "rule_id": "python.flask.security.injection.raw-html-concat.raw-html-format",
-    "repository": "PYTHON",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00017.py",
-    "start_line": 67,
-    "end_line": 69,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`flask.render_template`) which will safely render HTML instead.",
-      "cwe": [
-        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
-      ],
-      "owasp": [
-        "A07:2017 - Cross-Site Scripting (XSS)",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
       "impact": "MEDIUM",
       "confidence": "MEDIUM",
       "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00017_post",
-      "line_window": "L52-L72",
-      "surrounding_code": "  52 |    \t\t\tdoc = xml.dom.minidom.parseString(bar, parser)\n  53 |    \n  54 |    \t\t\tout = ''\n  55 |    \t\t\tprocessing = [doc.documentElement]\n  56 |    \t\t\twhile processing:\n  57 |    \t\t\t\te = processing.pop(0)\n  58 |    \t\t\t\tif e.nodeType == xml.dom.Node.TEXT_NODE:\n  59 |    \t\t\t\t\tout += e.data\n  60 |    \t\t\t\telse:\n  61 |    \t\t\t\t\tprocessing[:0] = e.childNodes\n  62 |    \n  63 |    \t\t\tRESPONSE += (\n  64 |    \t\t\t\tf'Your XML doc results are: <br>{escape_for_html(out)}'\n  65 |    \t\t\t)\n  66 |    \t\texcept:\n  67 | >> \t\t\tRESPONSE += (\n  68 | >> \t\t\t\tf'There was an error reading your XML doc:<br>{escape_for_html(bar)}'\n  69 | >> \t\t\t)\n  70 |    \n  71 |    \t\treturn RESPONSE\n  72 |    ",
+      "enclosing_function": null,
+      "line_window": "L1-L26",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00166</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00166\" method=\"POST\" id=\"FormBenchmarkTest00166\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please enter your details:</label></div>\n  14 | >> \t<div><label>Is your information secure?:</label>\n  15 | >> \t<input type=\"text\" id=\"secure\" name=\"secure\" ></div>\n  16 | >> \t<div><label>Provide your product ID:</label>\n  17 | >> \t<input type=\"text\" id=\"productID\" name=\"productID\" ></div>\n  18 | >> \t<div><label>Do you even foo?</label>\n  19 | >> \t<input type=\"text\" id=\"foo\" name=\"foo\" value=\"foo\" ></div>\n  20 | >> \t<div><label>Parameter: BenchmarkTest00166 <br>Value:</label>\n  21 | >> \t<input type=\"text\" id=\"BenchmarkTest00166\" name=\"BenchmarkTest00166\" value=\"ECHOOO\" ></div>\n  22 | >> \t<div>\n  23 | >> \t<input type=\"submit\" value=\"Post it\" ></div>\n  24 | >> </form>\n  25 |    </body>\n  26 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1252,40 +84,35 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "88468cc330771d0eecdf34d9a55b969509be384d95f947f958642aa39a7fa109",
+    "fingerprint": "4de81aa8666c64ce2770f7cd4b8d475d837998d1448d0432cf6e87fa28a5327a",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
   },
   {
-    "finding_id": "SG-62EC04FE6398",
+    "finding_id": "SG-416CD6D78008",
     "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00018.py",
-    "start_line": 26,
-    "end_line": 30,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00167.html",
+    "start_line": 12,
+    "end_line": 20,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00018_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00018', methods=['GET'])\n  24 |    \tdef BenchmarkTest00018_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00018.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00018', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00018_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00018', methods=['POST'])\n  35 |    \tdef BenchmarkTest00018_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00018\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = param\n  42 |    \n  43 |    \t\timport lxml.etree\n  44 |    \t\timport helpers.utils\n  45 |    ",
+      "enclosing_function": null,
+      "line_window": "L1-L23",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00167</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00167\" method=\"POST\" id=\"FormBenchmarkTest00167\" autocomplete=\"off\">\n  13 | >>  <div><label>Select your habits and edit the parameter [name,value]:</label></div><br>\n  14 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00167\" value=\"ECHOOO\" checked >Reading. [BenchmarkTest00167, ECHOOO]</div>\n  15 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00167\" value=\"Movies\" >Movies. [BenchmarkTest00167, Movies]</div>\n  16 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00167\" value=\"Writing\" >Writing. [BenchmarkTest00167, Writing]</div>\n  17 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00167\" value=\"Singing\" >Singing. [BenchmarkTest00167, Singing]</div>\n  18 | >> \t<div><label>Parameter foo, value:</label><input type=\"text\" id=\"foo\" name=\"foo\" value=\"bar\" ></div><br>\n  19 | >> \t<div><input type=\"submit\" value=\"Submit\" ></div>\n  20 | >>  </form>\n  21 |     \n  22 |    </body>\n  23 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1302,40 +129,35 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "2c5fe8c238653204c751948728a910c923cbf394a0b35ad8138178304a4e4ec6",
+    "fingerprint": "fc675c397f2d7be2393290a0c1be451dc3fa0034b869ae086ce23571f6c563cc",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
   },
   {
-    "finding_id": "SG-EDBBDA29DBB3",
+    "finding_id": "SG-686966AE48A5",
     "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00019.py",
-    "start_line": 26,
-    "end_line": 30,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00168.html",
+    "start_line": 12,
+    "end_line": 22,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00019_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00019', methods=['GET'])\n  24 |    \tdef BenchmarkTest00019_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00019.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00019', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00019_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00019', methods=['POST'])\n  35 |    \tdef BenchmarkTest00019_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00019\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tmap31715 = {}\n  42 |    \t\tmap31715['keyA-31715'] = 'a-Value'\n  43 |    \t\tmap31715['keyB-31715'] = param\n  44 |    \t\tmap31715['keyC'] = 'another-Value'\n  45 |    \t\tbar = map31715['keyB-31715']",
+      "enclosing_function": null,
+      "line_window": "L1-L25",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00168</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00168\" method=\"POST\" id=\"FormBenchmarkTest00168\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please explain your answer:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><textarea rows=\"4\" cols=\"50\" id=\"BenchmarkTest00168Area\" name=\"BenchmarkTest00168Area\"></textarea></div>\n  16 | >> \t<div><label>Any additional note for the reviewer:</label></div>\n  17 | >> \t<div><input type=\"text\" id=\"answer\" name=\"answer\" ></div>\n  18 | >> \t<br>\n  19 | >> \t<div><label>An AJAX request will be sent with a parameter value 'BenchmarkTest00168' and name:</label>\n  20 | >> \t<input type=\"text\" id=\"BenchmarkTest00168\" name=\"BenchmarkTest00168\" value=\"ECHOOO\" class=\"safe\" ></div>\n  21 | >> \t<div><input type=\"button\" id=\"login-btn\" value=\"Login\" method=\"submitParameterNamesForm\" testcase=\"BenchmarkTest00168\" ></div>\n  22 | >> </form>\n  23 |    <div id=\"ajax-form-msg1\"><pre><code class=\"prettyprint\" id=\"code\"></code></pre></div>\n  24 |    </body>\n  25 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1352,40 +174,35 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "37ebf0537cd78ecc4d963d3b0b34b6d1286338c55990da292e86f7045e835d83",
+    "fingerprint": "ce90b6688440270c3e86a44ea49b941a93eabe5c1493948ac56ed51ddb38eac0",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
   },
   {
-    "finding_id": "SG-050BAABF7A03",
+    "finding_id": "SG-40A162853F9E",
     "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00020.py",
-    "start_line": 26,
-    "end_line": 30,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00267.html",
+    "start_line": 12,
+    "end_line": 20,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00020_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00020', methods=['GET'])\n  24 |    \tdef BenchmarkTest00020_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00020.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00020', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00020_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00020', methods=['POST'])\n  35 |    \tdef BenchmarkTest00020_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00020\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tmap93677 = {}\n  42 |    \t\tmap93677['keyA-93677'] = 'a-Value'\n  43 |    \t\tmap93677['keyB-93677'] = param\n  44 |    \t\tmap93677['keyC'] = 'another-Value'\n  45 |    \t\tbar = \"safe!\"",
+      "enclosing_function": null,
+      "line_window": "L1-L23",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00267</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00267\" method=\"POST\" id=\"FormBenchmarkTest00267\" autocomplete=\"off\">\n  13 | >>  <div><label>Select your habits and edit the parameter [name,value]:</label></div><br>\n  14 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00267\" value=\"ECHOOO\" checked >Reading. [BenchmarkTest00267, ECHOOO]</div>\n  15 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00267\" value=\"Movies\" >Movies. [BenchmarkTest00267, Movies]</div>\n  16 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00267\" value=\"Writing\" >Writing. [BenchmarkTest00267, Writing]</div>\n  17 | >> \t<div><input type=\"checkbox\" name=\"BenchmarkTest00267\" value=\"Singing\" >Singing. [BenchmarkTest00267, Singing]</div>\n  18 | >> \t<div><label>Parameter foo, value:</label><input type=\"text\" id=\"foo\" name=\"foo\" value=\"bar\" ></div><br>\n  19 | >> \t<div><input type=\"submit\" value=\"Submit\" ></div>\n  20 | >>  </form>\n  21 |     \n  22 |    </body>\n  23 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1402,40 +219,35 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "cdea48d8a9daddb03e7c2d9ca0f69039051c8d1293d0708b3550941931fc9865",
+    "fingerprint": "e7b4b09c1dba81a1872bb624b1ed3c2078c5eae61848a8e15c83ef32c9d0b7ed",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
   },
   {
-    "finding_id": "SG-20B8313A3F8C",
+    "finding_id": "SG-8D7A81A352B1",
     "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00021.py",
-    "start_line": 26,
-    "end_line": 30,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00268.html",
+    "start_line": 12,
+    "end_line": 22,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00021_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00021', methods=['GET'])\n  24 |    \tdef BenchmarkTest00021_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00021.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00021', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00021_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00021', methods=['POST'])\n  35 |    \tdef BenchmarkTest00021_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00021\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tbar = \"This should never happen\"\n  42 |    \t\tif 'should' in bar:\n  43 |    \t\t\tbar = param\n  44 |    \n  45 |    \t\timport lxml.etree",
+      "enclosing_function": null,
+      "line_window": "L1-L25",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00268</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00268\" method=\"POST\" id=\"FormBenchmarkTest00268\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please explain your answer:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><textarea rows=\"4\" cols=\"50\" id=\"BenchmarkTest00268Area\" name=\"BenchmarkTest00268Area\"></textarea></div>\n  16 | >> \t<div><label>Any additional note for the reviewer:</label></div>\n  17 | >> \t<div><input type=\"text\" id=\"answer\" name=\"answer\" ></div>\n  18 | >> \t<br>\n  19 | >> \t<div><label>An AJAX request will be sent with a parameter value 'BenchmarkTest00268' and name:</label>\n  20 | >> \t<input type=\"text\" id=\"BenchmarkTest00268\" name=\"BenchmarkTest00268\" value=\"ECHOOO\" class=\"safe\" ></div>\n  21 | >> \t<div><input type=\"button\" id=\"login-btn\" value=\"Login\" method=\"submitParameterNamesForm\" testcase=\"BenchmarkTest00268\" ></div>\n  22 | >> </form>\n  23 |    <div id=\"ajax-form-msg1\"><pre><code class=\"prettyprint\" id=\"code\"></code></pre></div>\n  24 |    </body>\n  25 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1452,40 +264,35 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "364364aba37b323744ef2154c5f23f344c3af1f0bb47255ea1c8cb16d002d768",
+    "fingerprint": "ee2ad9871a785ade5d2021ae21166312277e6708237809d593abd40313feec5e",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
   },
   {
-    "finding_id": "SG-955C977FDE6B",
+    "finding_id": "SG-0AA181EAD900",
     "scanner": "semgrep",
-    "rule_id": "python.flask.security.audit.secure-set-cookie.secure-set-cookie",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
     "repository": "PYTHON",
     "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\testcode\\BenchmarkTest00022.py",
-    "start_line": 26,
-    "end_line": 30,
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00350.html",
+    "start_line": 12,
+    "end_line": 24,
     "snippet": "requires login",
     "severity": "MEDIUM",
     "metadata": {
-      "message": "Found a Flask cookie with insecurely configured properties.  By default the secure, httponly and samesite ar configured insecurely. cookies should be handled securely by setting `secure=True`, `httponly=True`, and `samesite='Lax'` in response.set_cookie(...). If these parameters are not properly set, your cookies are not properly protected and are at risk of being stolen by an attacker. Include the `secure=True`, `httponly=True`, `samesite='Lax'` arguments or set these to be true in the Flask configuration.",
-      "cwe": [
-        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
-      ],
-      "owasp": [
-        "A05:2021 - Security Misconfiguration",
-        "A02:2025 - Security Misconfiguration"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
       "category": "security"
     },
     "context": {
-      "enclosing_function": "BenchmarkTest00022_get",
-      "line_window": "L11-L45",
-      "surrounding_code": "  11 |    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n  12 |    PURPOSE. See the GNU General Public License for more details.\n  13 |    \n  14 |      Author: Theo Cartsonis\n  15 |      Created: 2025\n  16 |    '''\n  17 |    \n  18 |    from flask import redirect, url_for, request, make_response, render_template\n  19 |    from helpers.utils import escape_for_html\n  20 |    \n  21 |    def init(app):\n  22 |    \n  23 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00022', methods=['GET'])\n  24 |    \tdef BenchmarkTest00022_get():\n  25 |    \t\tresponse = make_response(render_template('web/xpathi-00/BenchmarkTest00022.html'))\n  26 | >> \t\tresponse.set_cookie('BenchmarkTest00022', '2222',\n  27 | >> \t\t\tmax_age=60*3,\n  28 | >> \t\t\tsecure=True,\n  29 | >> \t\t\tpath=request.path,\n  30 | >> \t\t\tdomain='localhost')\n  31 |    \t\treturn response\n  32 |    \t\treturn BenchmarkTest00022_post()\n  33 |    \n  34 |    \t@app.route('/benchmark/xpathi-00/BenchmarkTest00022', methods=['POST'])\n  35 |    \tdef BenchmarkTest00022_post():\n  36 |    \t\tRESPONSE = \"\"\n  37 |    \n  38 |    \t\timport urllib.parse\n  39 |    \t\tparam = urllib.parse.unquote_plus(request.cookies.get(\"BenchmarkTest00022\", \"noCookieValueSupplied\"))\n  40 |    \n  41 |    \t\tstring98790 = 'help'\n  42 |    \t\tstring98790 += param\n  43 |    \t\tstring98790 += 'snapes on a plane'\n  44 |    \t\tbar = string98790[4:-17]\n  45 |    ",
+      "enclosing_function": null,
+      "line_window": "L1-L26",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00350</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00350\" method=\"POST\" id=\"FormBenchmarkTest00350\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please enter your details:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><label>Email:</label></div>\n  16 | >> \t<div><input type=\"text\" id=\"email\" name=\"email\" ></div>\n  17 | >> \t<div><label>Password:</label></div>\n  18 | >> \t<div><input type=\"text\" id=\"password\" name=\"password\" value=\"\" ></div>\n  19 | >> \t<div>&nbsp;</div>\n  20 | >> \t<div><label>Parameter: BenchmarkTest00350 <br>Value:</label>\n  21 | >> \t<input type=\"text\" id=\"BenchmarkTest00350\" name=\"BenchmarkTest00350\" value=\"ECHOOO\" ></div>\n  22 | >> \t<br>\n  23 | >> \t<div><input type=\"submit\" value=\"Login\" ></div>\n  24 | >> </form>\n  25 |    </body>\n  26 |    </html>",
       "imports": [],
       "caller_callee_info": null,
       "redacted": true
@@ -1502,7 +309,142 @@
     "remediation_patch": null,
     "risk_score": null,
     "remediation": null,
-    "fingerprint": "6a520b600f43d9ac6718216fbf1e99149d12489064c9c7fdd9d8b2c9e184d79b",
+    "fingerprint": "93f484f0711495d44fcfb8cb3a2f5eff79b0ffd697b9506ae613597ffde77e9c",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-4E4D0B519BB5",
+    "scanner": "semgrep",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "repository": "PYTHON",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00431.html",
+    "start_line": 12,
+    "end_line": 22,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L1-L25",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00431</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00431\" method=\"POST\" id=\"FormBenchmarkTest00431\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please explain your answer:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><textarea rows=\"4\" cols=\"50\" id=\"BenchmarkTest00431Area\" name=\"BenchmarkTest00431Area\"></textarea></div>\n  16 | >> \t<div><label>Any additional note for the reviewer:</label></div>\n  17 | >> \t<div><input type=\"text\" id=\"answer\" name=\"answer\" ></div>\n  18 | >> \t<br>\n  19 | >> \t<div><label>An AJAX request will be sent with a parameter value 'BenchmarkTest00431' and name:</label>\n  20 | >> \t<input type=\"text\" id=\"BenchmarkTest00431\" name=\"BenchmarkTest00431\" value=\"ECHOOO\" class=\"safe\" ></div>\n  21 | >> \t<div><input type=\"button\" id=\"login-btn\" value=\"Login\" method=\"submitParameterNamesForm\" testcase=\"BenchmarkTest00431\" ></div>\n  22 | >> </form>\n  23 |    <div id=\"ajax-form-msg1\"><pre><code class=\"prettyprint\" id=\"code\"></code></pre></div>\n  24 |    </body>\n  25 |    </html>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "163d1a9391c2bc06f63b7e680bc1c99baed5526cc7b5d195e3b119beced925b7",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-FFC7146119DF",
+    "scanner": "semgrep",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "repository": "PYTHON",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00432.html",
+    "start_line": 12,
+    "end_line": 22,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L1-L25",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00432</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00432\" method=\"POST\" id=\"FormBenchmarkTest00432\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please explain your answer:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><textarea rows=\"4\" cols=\"50\" id=\"BenchmarkTest00432Area\" name=\"BenchmarkTest00432Area\"></textarea></div>\n  16 | >> \t<div><label>Any additional note for the reviewer:</label></div>\n  17 | >> \t<div><input type=\"text\" id=\"answer\" name=\"answer\" ></div>\n  18 | >> \t<br>\n  19 | >> \t<div><label>An AJAX request will be sent with a parameter value 'BenchmarkTest00432' and name:</label>\n  20 | >> \t<input type=\"text\" id=\"BenchmarkTest00432\" name=\"BenchmarkTest00432\" value=\"ECHOOO\" class=\"safe\" ></div>\n  21 | >> \t<div><input type=\"button\" id=\"login-btn\" value=\"Login\" method=\"submitParameterNamesForm\" testcase=\"BenchmarkTest00432\" ></div>\n  22 | >> </form>\n  23 |    <div id=\"ajax-form-msg1\"><pre><code class=\"prettyprint\" id=\"code\"></code></pre></div>\n  24 |    </body>\n  25 |    </html>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "4ee94bba3ef2b4ec423637dcfee5be302ef89af5c71e6d09a5556d6ddde8fcc4",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-484E6C8D7F41",
+    "scanner": "semgrep",
+    "rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "repository": "PYTHON",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00511.html",
+    "start_line": 12,
+    "end_line": 22,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks.",
+      "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+      "owasp": [],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L1-L25",
+      "surrounding_code": "   1 |    <!DOCTYPE html>\n   2 |    <html lang=\"en-US\">\n   3 |    <head>\n   4 |      <meta charset=\"utf-8\">\n   5 |      <script src=\"/benchmark/js/jquery.min.js\"></script>\n   6 |      <script type=\"text/javascript\" src=\"/benchmark/js/js.cookie.js\"></script>\n   7 |      <script src=\"/benchmark/js/testsuiteutils.js\"></script>\n   8 |      <link rel=\"icon\" type=\"image/png\" href=\"/benchmark/favicon.ico\">\n   9 |      <title>BenchmarkTest00511</title>\n  10 |    </head>\n  11 |    <body>\n  12 | >> <form action=\"/benchmark/cmdi-00/BenchmarkTest00511\" method=\"POST\" id=\"FormBenchmarkTest00511\" autocomplete=\"off\">\n  13 | >> \t<div><label>Please explain your answer:</label></div>\n  14 | >> \t<br>\n  15 | >> \t<div><textarea rows=\"4\" cols=\"50\" id=\"BenchmarkTest00511Area\" name=\"BenchmarkTest00511Area\"></textarea></div>\n  16 | >> \t<div><label>Any additional note for the reviewer:</label></div>\n  17 | >> \t<div><input type=\"text\" id=\"answer\" name=\"answer\" ></div>\n  18 | >> \t<br>\n  19 | >> \t<div><label>An AJAX request will be sent with a header named BenchmarkTest00511 and value:</label> <input type=\"text\" id=\"BenchmarkTest00511\" name=\"BenchmarkTest00511\" value=\"ECHOOO\" class=\"safe\" ></div>\n  20 | >> \n  21 | >> \t<div><input type=\"button\" id=\"login-btn\" value=\"Login\" method=\"submitHeaderForm\" testcase=\"BenchmarkTest00511\" ></div>\n  22 | >> </form>\n  23 |    <div id=\"ajax-form-msg1\"><pre><code class=\"prettyprint\" id=\"code\"></code></pre></div>\n  24 |    </body>\n  25 |    </html>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "b0f88032e563bdcdcd20b5be42dfccd33677751bca60d3fb24983de97bed7508",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"

@@ -67,7 +67,7 @@ BENCHMARKS = {
     "realvuln": {
         "name": "Real-Vuln-Benchmark",
         "repo_dir": ROOT_DIR / "repos" / "Real-Vuln-Benchmark",
-        "scan_dir": ROOT_DIR / "scans" / "RealVuln",
+        "scan_dir": ROOT_DIR / "scans" / "Real-Vuln-Benchmark",
         "gt_file": ROOT_DIR / "benchmark" / "RealVuln_ground_truth.json",
         "report_dir": ROOT_DIR / "reports" / "RealVuln",
         "scan_type": "semgrep",
@@ -387,8 +387,12 @@ def run_single_benchmark(
             "error": "No scan findings produced",
         }
 
-    # Apply sample limit (prioritize actual testcode/source files over config files)
-    testcode_findings = [f for f in findings if "testcode" in f.file_path.replace("\\", "/").lower() or "src/" in f.file_path.replace("\\", "/").lower() or "data/" in f.file_path.replace("\\", "/").lower()]
+    # Apply sample limit (prioritize actual testcode files containing ground truth over helpers/configs)
+    if benchmark_key in ("java", "python"):
+        testcode_findings = [f for f in findings if "benchmarktest" in f.file_path.replace("\\", "/").lower()]
+    else:
+        testcode_findings = [f for f in findings if "testcode" in f.file_path.replace("\\", "/").lower() or "src/" in f.file_path.replace("\\", "/").lower() or "data/" in f.file_path.replace("\\", "/").lower()]
+
     if testcode_findings:
         findings = testcode_findings
 

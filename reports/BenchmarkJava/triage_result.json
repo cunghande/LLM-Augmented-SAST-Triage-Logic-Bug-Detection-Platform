@@ -1,361 +1,5 @@
 [
   {
-    "finding_id": "SG-5FA9F845A14A",
-    "scanner": "semgrep",
-    "rule_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
-    "repository": "JAVA",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\helpers\\DatabaseHelper.java",
-    "start_line": 174,
-    "end_line": 174,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
-      "cwe": [
-        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
-      ],
-      "owasp": [
-        "A01:2017 - Injection",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
-      "impact": "HIGH",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": null,
-      "line_window": "L159-L189",
-      "surrounding_code": " 159 |                try {\n 160 |                    InitialContext ctx = new InitialContext();\n 161 |                    DataSource datasource = (DataSource) ctx.lookup(\"java:comp/env/jdbc/BenchmarkDB\");\n 162 |                    conn = datasource.getConnection();\n 163 |                    conn.setAutoCommit(false);\n 164 |                } catch (SQLException | NamingException e) {\n 165 |                    System.out.println(\"Problem with getSqlConnection.\");\n 166 |                    e.printStackTrace();\n 167 |                }\n 168 |            }\n 169 |            return conn;\n 170 |        }\n 171 |    \n 172 |        private static void executeSQLCommand(String sql) throws Exception {\n 173 |            Statement stmt = getSqlStatement();\n 174 | >>         stmt.executeUpdate(sql);\n 175 |        }\n 176 |    \n 177 |        public static void outputUpdateComplete(String sql, HttpServletResponse response)\n 178 |                throws java.sql.SQLException, IOException {\n 179 |    \n 180 |            PrintWriter out = response.getWriter();\n 181 |    \n 182 |            out.write(\"<!DOCTYPE html>\\n<html>\\n<body>\\n<p>\");\n 183 |            out.write(\n 184 |                    \"Update complete for query: \"\n 185 |                            + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql)\n 186 |                            + \"<br>\\n\");\n 187 |            out.write(\"</p>\\n</body>\\n</html>\");\n 188 |        }\n 189 |    ",
-      "imports": [
-        "import java.io.IOException;",
-        "import java.io.PrintWriter;",
-        "import java.sql.Connection;",
-        "import java.sql.ResultSet;",
-        "import java.sql.ResultSetMetaData;",
-        "import java.sql.SQLException;",
-        "import java.sql.Statement;",
-        "import java.util.List;",
-        "import javax.naming.InitialContext;",
-        "import javax.naming.NamingException;"
-      ],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "ec691a3bac03329ccbf9c63acbb5067d0a6ccbd8c8bd8ed33103ad97dc9f66c3",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-01A09239DDC6",
-    "scanner": "semgrep",
-    "rule_id": "java.lang.security.audit.ldap-injection.ldap-injection",
-    "repository": "JAVA",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\helpers\\LDAPManager.java",
-    "start_line": 98,
-    "end_line": 134,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected non-constant data passed into an LDAP query. If this data can be controlled by an external user, this is an LDAP injection. Ensure data passed to an LDAP query is not controllable; or properly sanitize the data.",
-      "cwe": [
-        "CWE-90: Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')"
-      ],
-      "owasp": [
-        "A01:2017 - Injection",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
-      "impact": "HIGH",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": null,
-      "line_window": "L83-L146",
-      "surrounding_code": "  83 |            } catch (NamingException e) {\n  84 |                if (!e.getMessage().contains(\"ENTRY_ALREADY_EXISTS\")) {\n  85 |                    System.out.println(\"Record already exist or an error occurred: \" + e.getMessage());\n  86 |                }\n  87 |            }\n  88 |    \n  89 |            return true;\n  90 |        }\n  91 |    \n  92 |        /**\n  93 |         * Search LDAPPerson by name\n  94 |         *\n  95 |         * @param person to search\n  96 |         * @return true if record found\n  97 |         */\n  98 | >>     @SuppressWarnings(\"unused\")\n  99 | >>     private boolean search(LDAPPerson person) {\n 100 | >>         try {\n 101 | >> \n 102 | >>             DirContext ctx = getDirContext();\n 103 | >>             String base = \"ou=users,ou=system\";\n 104 | >> \n 105 | >>             SearchControls sc = new SearchControls();\n 106 | >>             sc.setSearchScope(SearchControls.SUBTREE_SCOPE);\n 107 | >> \n 108 | >>             String filter =\n 109 | >>                     \"(&(objectclass=person)(uid=\"\n 110 | >>                             + ESAPI_Encoder.encodeForLDAP(person.getName())\n 111 | >>                             + \"))\";\n 112 | >> \n 113 | >>             NamingEnumeration<SearchResult> results = ctx.search(base, filter, sc);\n 114 | >> \n 115 | >>             boolean foundUser = results.hasMore();\n 116 | >> \n 117 | >>             while (results.hasMore()) {\n 118 | >>                 SearchResult sr = (SearchResult) results.next();\n 119 | >>                 Attributes attrs = sr.getAttributes();\n 120 | >> \n 121 | >>                 Attribute attr = attrs.get(\"uid\");\n 122 | >>                 if (attr != null) {\n 123 | >>                     // System.out.println(\"record found \" + attr.get());\n 124 | >>                 }\n 125 | >>             }\n 126 | >>             ctx.close();\n 127 | >> \n 128 | >>             return foundUser;\n 129 | >>         } catch (Exception e) {\n 130 | >>             System.out.println(\"LDAP error search: \");\n 131 | >>             e.printStackTrace();\n 132 | >>             return false;\n 133 | >>         }\n 134 | >>     }\n 135 |    \n 136 |        public DirContext getDirContext() throws NamingException {\n 137 |            if (ctx == null) {\n 138 |                return new InitialDirContext(createEnv());\n 139 |            }\n 140 |            return ctx;\n 141 |        }\n 142 |    \n 143 |        public void closeDirContext() throws NamingException {\n 144 |            if (ctx != null) ctx.close();\n 145 |        }\n 146 |    }",
-      "imports": [
-        "import java.util.Hashtable;",
-        "import javax.naming.Context;",
-        "import javax.naming.NamingEnumeration;",
-        "import javax.naming.NamingException;",
-        "import javax.naming.directory.Attribute;",
-        "import javax.naming.directory.Attributes;",
-        "import javax.naming.directory.BasicAttribute;",
-        "import javax.naming.directory.BasicAttributes;",
-        "import javax.naming.directory.DirContext;",
-        "import javax.naming.directory.InitialDirContext;"
-      ],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "c29ea9b809821f2ecbe2c27c8661a8f54dfc46e87cbf5492ab5c7cf8e84dede5",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-A3E75899CEF9",
-    "scanner": "semgrep",
-    "rule_id": "java.lang.security.audit.unsafe-reflection.unsafe-reflection",
-    "repository": "JAVA",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\helpers\\ThingFactory.java",
-    "start_line": 40,
-    "end_line": 40,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "If an attacker can supply values that the application then uses to determine which class to instantiate or which method to invoke, the potential exists for the attacker to create control flow paths through the application that were not intended by the application developers. This attack vector may allow the attacker to bypass authentication or access control checks or otherwise cause the application to behave in an unexpected manner.",
-      "cwe": [
-        "CWE-470: Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')"
-      ],
-      "owasp": [
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ],
-      "impact": "LOW",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": "ThingFactory",
-      "line_window": "L25-L52",
-      "surrounding_code": "  25 |    \n  26 |        public static ThingInterface createThing() {\n  27 |    \n  28 |            Properties props = new Properties();\n  29 |    \n  30 |            // create a thing using reflection\n  31 |            try (InputStream thingproperties =\n  32 |                    ThingFactory.class.getClassLoader().getResourceAsStream(\"thing.properties\")) {\n  33 |                if (thingproperties == null) {\n  34 |                    System.out.println(\"Can't find thing.properties\");\n  35 |                    return new Thing2();\n  36 |                }\n  37 |                props.load(thingproperties);\n  38 |                String which = \"org.owasp.benchmark.helpers.\" + props.getProperty(\"thing\");\n  39 |    \n  40 | >>             Class<?> thing = Class.forName(which);\n  41 |                Constructor<?> thingConstructor = thing.getConstructor();\n  42 |                Object thingInstance = thingConstructor.newInstance();\n  43 |    \n  44 |                return (ThingInterface) thingInstance;\n  45 |    \n  46 |            } catch (Exception e) {\n  47 |                System.out.println(\"Error constructing Thing.\");\n  48 |                e.printStackTrace();\n  49 |                return new Thing1();\n  50 |            }\n  51 |        }\n  52 |    }",
-      "imports": [
-        "import java.io.InputStream;",
-        "import java.lang.reflect.Constructor;",
-        "import java.util.Properties;"
-      ],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "3812a7334ea2645d5f92e6691233fd207f74c4d34f6452b464d30dbcba5253fc",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-65B5EA28E6D3",
-    "scanner": "semgrep",
-    "rule_id": "java.lang.security.audit.overly-permissive-file-permission.overly-permissive-file-permission",
-    "repository": "JAVA",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\helpers\\Utils.java",
-    "start_line": 149,
-    "end_line": 157,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected file permissions that are overly permissive (read, write, and execute). It is generally a bad practices to set overly permissive file permission such as read+write+exec for all users. If the file affected is a configuration, a binary, a script or sensitive data, it can lead to privilege escalation or information leakage. Instead, follow the principle of least privilege and give users only the  permissions they need.",
-      "cwe": [
-        "CWE-276: Incorrect Default Permissions"
-      ],
-      "owasp": [
-        "A01:2021 - Broken Access Control",
-        "A01:2025 - Broken Access Control"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": null,
-      "line_window": "L134-L172",
-      "surrounding_code": " 134 |                } catch (FileNotFoundException e) {\n 135 |                    e.printStackTrace();\n 136 |                }\n 137 |            }\n 138 |    \n 139 |            // The target script is exploded out of the WAR file. When this occurs, the file\n 140 |            // loses its execute permissions. So this hack adds the required execute permissions back.\n 141 |            if (!System.getProperty(\"os.name\").contains(\"Windows\")) {\n 142 |                File script = getFileFromClasspath(\"insecureCmd.sh\", Utils.class.getClassLoader());\n 143 |                Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();\n 144 |                perms.add(PosixFilePermission.OWNER_READ);\n 145 |                perms.add(PosixFilePermission.OWNER_WRITE);\n 146 |                perms.add(PosixFilePermission.OWNER_EXECUTE);\n 147 |                perms.add(PosixFilePermission.GROUP_READ);\n 148 |                perms.add(PosixFilePermission.GROUP_EXECUTE);\n 149 | >>             perms.add(PosixFilePermission.OTHERS_READ);\n 150 | >>             perms.add(PosixFilePermission.OTHERS_EXECUTE);\n 151 | >> \n 152 | >>             try {\n 153 | >>                 Files.setPosixFilePermissions(script.toPath(), perms);\n 154 | >>             } catch (IOException e) {\n 155 | >>                 System.out.println(\n 156 | >>                         \"Problem while changing executable permissions: \" + e.getMessage());\n 157 | >>             }\n 158 |            }\n 159 |        }\n 160 |    \n 161 |        public static String getCookie(HttpServletRequest request, String paramName) {\n 162 |            Cookie[] values = request.getCookies();\n 163 |            String param = \"none\";\n 164 |            if (paramName != null) {\n 165 |                for (int i = 0; i < values.length; i++) {\n 166 |                    if (values[i].getName().equals(paramName)) {\n 167 |                        param = values[i].getValue();\n 168 |                        break; // break out of for loop when param found\n 169 |                    }\n 170 |                }\n 171 |            }\n 172 |            return param;",
-      "imports": [
-        "import java.io.BufferedReader;",
-        "import java.io.ByteArrayOutputStream;",
-        "import java.io.File;",
-        "import java.io.FileNotFoundException;",
-        "import java.io.FileOutputStream;",
-        "import java.io.FileReader;",
-        "import java.io.IOException;",
-        "import java.io.InputStreamReader;",
-        "import java.io.PrintStream;",
-        "import java.io.PrintWriter;"
-      ],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "1715f150aa783a26014f223d0c10df149ec85fbe0cb17639587c98c20c46b132",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-174920B39219",
-    "scanner": "semgrep",
-    "rule_id": "java.lang.security.audit.overly-permissive-file-permission.overly-permissive-file-permission",
-    "repository": "JAVA",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\helpers\\Utils.java",
-    "start_line": 150,
-    "end_line": 157,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detected file permissions that are overly permissive (read, write, and execute). It is generally a bad practices to set overly permissive file permission such as read+write+exec for all users. If the file affected is a configuration, a binary, a script or sensitive data, it can lead to privilege escalation or information leakage. Instead, follow the principle of least privilege and give users only the  permissions they need.",
-      "cwe": [
-        "CWE-276: Incorrect Default Permissions"
-      ],
-      "owasp": [
-        "A01:2021 - Broken Access Control",
-        "A01:2025 - Broken Access Control"
-      ],
-      "impact": "MEDIUM",
-      "confidence": "LOW",
-      "likelihood": "LOW",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": null,
-      "line_window": "L135-L172",
-      "surrounding_code": " 135 |                    e.printStackTrace();\n 136 |                }\n 137 |            }\n 138 |    \n 139 |            // The target script is exploded out of the WAR file. When this occurs, the file\n 140 |            // loses its execute permissions. So this hack adds the required execute permissions back.\n 141 |            if (!System.getProperty(\"os.name\").contains(\"Windows\")) {\n 142 |                File script = getFileFromClasspath(\"insecureCmd.sh\", Utils.class.getClassLoader());\n 143 |                Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();\n 144 |                perms.add(PosixFilePermission.OWNER_READ);\n 145 |                perms.add(PosixFilePermission.OWNER_WRITE);\n 146 |                perms.add(PosixFilePermission.OWNER_EXECUTE);\n 147 |                perms.add(PosixFilePermission.GROUP_READ);\n 148 |                perms.add(PosixFilePermission.GROUP_EXECUTE);\n 149 |                perms.add(PosixFilePermission.OTHERS_READ);\n 150 | >>             perms.add(PosixFilePermission.OTHERS_EXECUTE);\n 151 | >> \n 152 | >>             try {\n 153 | >>                 Files.setPosixFilePermissions(script.toPath(), perms);\n 154 | >>             } catch (IOException e) {\n 155 | >>                 System.out.println(\n 156 | >>                         \"Problem while changing executable permissions: \" + e.getMessage());\n 157 | >>             }\n 158 |            }\n 159 |        }\n 160 |    \n 161 |        public static String getCookie(HttpServletRequest request, String paramName) {\n 162 |            Cookie[] values = request.getCookies();\n 163 |            String param = \"none\";\n 164 |            if (paramName != null) {\n 165 |                for (int i = 0; i < values.length; i++) {\n 166 |                    if (values[i].getName().equals(paramName)) {\n 167 |                        param = values[i].getValue();\n 168 |                        break; // break out of for loop when param found\n 169 |                    }\n 170 |                }\n 171 |            }\n 172 |            return param;",
-      "imports": [
-        "import java.io.BufferedReader;",
-        "import java.io.ByteArrayOutputStream;",
-        "import java.io.File;",
-        "import java.io.FileNotFoundException;",
-        "import java.io.FileOutputStream;",
-        "import java.io.FileReader;",
-        "import java.io.IOException;",
-        "import java.io.InputStreamReader;",
-        "import java.io.PrintStream;",
-        "import java.io.PrintWriter;"
-      ],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "1715f150aa783a26014f223d0c10df149ec85fbe0cb17639587c98c20c46b132",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
-    "finding_id": "SG-FD7CDAF5DE21",
-    "scanner": "semgrep",
-    "rule_id": "problem-based-packs.insecure-transport.java-stdlib.disallow-old-tls-versions1.disallow-old-tls-versions1",
-    "repository": "JAVA",
-    "commit_sha": "HEAD",
-    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\helpers\\Utils.java",
-    "start_line": 423,
-    "end_line": 425,
-    "snippet": "requires login",
-    "severity": "MEDIUM",
-    "metadata": {
-      "message": "Detects direct creations of SSLConnectionSocketFactories that don't disallow SSL v2, SSL v3, and TLS v1. SSLSocketFactory can be used to validate the identity of the HTTPS server against a list of trusted certificates. These protocols are deprecated due to POODLE, man in the middle attacks, and other vulnerabilities.",
-      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
-      "owasp": "A03:2017 - Sensitive Data Exposure",
-      "impact": "MEDIUM",
-      "confidence": "MEDIUM",
-      "likelihood": "HIGH",
-      "category": "security"
-    },
-    "context": {
-      "enclosing_function": null,
-      "line_window": "L408-L440",
-      "surrounding_code": " 408 |                    cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, publicKey);\n 409 |                } catch (NoSuchAlgorithmException\n 410 |                        | NoSuchProviderException\n 411 |                        | NoSuchPaddingException\n 412 |                        | InvalidKeyException e) {\n 413 |                    e.printStackTrace();\n 414 |                }\n 415 |            }\n 416 |            return cipher;\n 417 |        }\n 418 |    \n 419 |        public static SSLConnectionSocketFactory getSSLFactory() throws Exception {\n 420 |            SSLContext sslcontext =\n 421 |                    SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();\n 422 |            // Allow TLSv1 protocol only\n 423 | >>         SSLConnectionSocketFactory sslsf =\n 424 | >>                 new SSLConnectionSocketFactory(\n 425 | >>                         sslcontext, new String[] {\"TLSv1\"}, null, NoopHostnameVerifier.INSTANCE);\n 426 |            return sslsf;\n 427 |        }\n 428 |    \n 429 |        /**\n 430 |         * This method returns information about which library the supplied class came from. This is\n 431 |         * useful when determining what class a Factory instantiated, for example. Mainly used for XXE\n 432 |         * verification/debugging.\n 433 |         *\n 434 |         * @param The name of the class being passed in.\n 435 |         * @param The class to print information about.\n 436 |         * @return A string containing the Component Name, the name of the class, possibly the\n 437 |         *     implementation vendor, spec version, implementation version, and the library it came from\n 438 |         *     (or Java Runtime it came from).\n 439 |         */\n 440 |        public static String getClassImplementationInfo(String componentName, Class componentClass) {",
-      "imports": [
-        "import java.io.BufferedReader;",
-        "import java.io.ByteArrayOutputStream;",
-        "import java.io.File;",
-        "import java.io.FileNotFoundException;",
-        "import java.io.FileOutputStream;",
-        "import java.io.FileReader;",
-        "import java.io.IOException;",
-        "import java.io.InputStreamReader;",
-        "import java.io.PrintStream;",
-        "import java.io.PrintWriter;"
-      ],
-      "caller_callee_info": null,
-      "redacted": true
-    },
-    "verdict": "NEEDS_REVIEW",
-    "confidence": 0.6,
-    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
-    "evidence": [
-      "Context review recommended."
-    ],
-    "action_group": "MANUAL_REVIEW",
-    "logic_bug_trace": null,
-    "risk_score_details": null,
-    "remediation_patch": null,
-    "risk_score": null,
-    "remediation": null,
-    "fingerprint": "a03ea2d058b11222135df122232ec3e275e79615b399a3b9fec3adf5eef3c575",
-    "status": "TRIAGED",
-    "model_version": "qwen3:8b",
-    "prompt_version": "v1.0"
-  },
-  {
     "finding_id": "SG-E327F5D762E7",
     "scanner": "semgrep",
     "rule_id": "java.lang.security.httpservlet-path-traversal.httpservlet-path-traversal",
@@ -1743,6 +1387,1517 @@
     "risk_score": null,
     "remediation": null,
     "fingerprint": "d1518edbf58b7a43887068e45f98f8797634db0a8d727a5d951d9e7a04c04b43",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-AB45290EEC78",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.tainted-ldapi-from-http-request.tainted-ldapi-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00021.java",
+    "start_line": 58,
+    "end_line": 58,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into an LDAP query. This could lead to LDAP injection if the input is not properly sanitized, which could result in attackers modifying objects in the LDAP tree structure. Ensure data passed to an LDAP query is not controllable or properly sanitize the data.",
+      "cwe": [
+        "CWE-90: Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00021",
+      "line_window": "L43-L73",
+      "surrounding_code": "  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00021\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();\n  48 |            try {\n  49 |                response.setContentType(\"text/html;charset=UTF-8\");\n  50 |                javax.naming.directory.DirContext ctx = ads.getDirContext();\n  51 |                String base = \"ou=users,ou=system\";\n  52 |                javax.naming.directory.SearchControls sc = new javax.naming.directory.SearchControls();\n  53 |                sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);\n  54 |                String filter = \"(&(objectclass=person))(|(uid=\" + param + \")(street={0}))\";\n  55 |                Object[] filters = new Object[] {\"The streetz 4 Ms bar\"};\n  56 |                boolean found = false;\n  57 |                javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results =\n  58 | >>                     ctx.search(base, filter, filters, sc);\n  59 |                while (results.hasMore()) {\n  60 |                    javax.naming.directory.SearchResult sr =\n  61 |                            (javax.naming.directory.SearchResult) results.next();\n  62 |                    javax.naming.directory.Attributes attrs = sr.getAttributes();\n  63 |    \n  64 |                    javax.naming.directory.Attribute attr = attrs.get(\"uid\");\n  65 |                    javax.naming.directory.Attribute attr2 = attrs.get(\"street\");\n  66 |                    if (attr != null) {\n  67 |                        response.getWriter()\n  68 |                                .println(\n  69 |                                        \"LDAP query results:<br>\"\n  70 |                                                + \"Record found with name \"\n  71 |                                                + org.owasp\n  72 |                                                        .esapi\n  73 |                                                        .ESAPI",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.5,
+    "reasoning": "Failed to parse structured JSON from model output: {\n  \"verdict\": \"TP\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The HTTP request parameter 'param' is dir...",
+    "evidence": [
+      "Unparseable model output format"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "edaeebbad898ee6b3cd9a749d6d8bac04831ebc3657b3e2efdded972c1d7e6c8",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-6808C4E22041",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.crypto.weak-random.weak-random",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00023.java",
+    "start_line": 47,
+    "end_line": 47,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected use of the functions `Math.random()` or `java.util.Random()`. These are both not cryptographically strong random number generators (RNGs). If you are using these RNGs to create passwords or secret tokens, use `java.security.SecureRandom` instead.",
+      "cwe": [
+        "CWE-330: Use of Insufficiently Random Values"
+      ],
+      "owasp": [
+        "A02:2021 - Cryptographic Failures",
+        "A04:2025 - Cryptographic Failures"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00023",
+      "line_window": "L32-L62",
+      "surrounding_code": "  32 |        @Override\n  33 |        public void doGet(HttpServletRequest request, HttpServletResponse response)\n  34 |                throws ServletException, IOException {\n  35 |            doPost(request, response);\n  36 |        }\n  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00023\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 | >>         float rand = new java.util.Random().nextFloat();\n  48 |            String rememberMeKey = Float.toString(rand).substring(2); // Trim off the 0. at the front.\n  49 |    \n  50 |            String user = \"Floyd\";\n  51 |            String fullClassName = this.getClass().getName();\n  52 |            String testCaseNumber =\n  53 |                    fullClassName.substring(\n  54 |                            fullClassName.lastIndexOf('.') + 1 + \"BenchmarkTest\".length());\n  55 |            user += testCaseNumber;\n  56 |    \n  57 |            String cookieName = \"rememberMe\" + testCaseNumber;\n  58 |    \n  59 |            boolean foundUser = false;\n  60 |            javax.servlet.http.Cookie[] cookies = request.getCookies();\n  61 |            if (cookies != null) {\n  62 |                for (int i = 0; !foundUser && i < cookies.length; i++) {",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "75a08f7ecd0b02d097b18b9d50cd6f19394c83dc063a1659cc205f3c7454e4f1",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-0566CFF35C70",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00024.java",
+    "start_line": 52,
+    "end_line": 57,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00024",
+      "line_window": "L37-L67",
+      "surrounding_code": "  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00024\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            String sql = \"SELECT * from USERS where USERNAME=? and PASSWORD='\" + param + \"'\";\n  48 |    \n  49 |            try {\n  50 |                java.sql.Connection connection =\n  51 |                        org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();\n  52 | >>             java.sql.PreparedStatement statement =\n  53 | >>                     connection.prepareStatement(\n  54 | >>                             sql,\n  55 | >>                             java.sql.ResultSet.TYPE_FORWARD_ONLY,\n  56 | >>                             java.sql.ResultSet.CONCUR_READ_ONLY,\n  57 | >>                             java.sql.ResultSet.CLOSE_CURSORS_AT_COMMIT);\n  58 |                statement.setString(1, \"foo\");\n  59 |                statement.execute();\n  60 |                org.owasp.benchmark.helpers.DatabaseHelper.printResults(statement, sql, response);\n  61 |            } catch (java.sql.SQLException e) {\n  62 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  63 |                    response.getWriter().println(\"Error processing request.\");\n  64 |                } else throw new ServletException(e);\n  65 |            }\n  66 |        }\n  67 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "12646063854feea4c183a9583ab2f397ab85f7ce4b6b80b42d8c02ec0e6c4c09",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-77E21F98522C",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00025.java",
+    "start_line": 51,
+    "end_line": 53,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00025",
+      "line_window": "L36-L66",
+      "surrounding_code": "  36 |        }\n  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00025\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            String sql = \"SELECT userid from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  48 |            try {\n  49 |                // Long results =\n  50 |                // org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForLong(sql);\n  51 | >>             Long results =\n  52 | >>                     org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForObject(\n  53 | >>                             sql, Long.class);\n  54 |                response.getWriter().println(\"Your results are: \" + String.valueOf(results));\n  55 |            } catch (org.springframework.dao.EmptyResultDataAccessException e) {\n  56 |                response.getWriter()\n  57 |                        .println(\n  58 |                                \"No results returned for query: \"\n  59 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql));\n  60 |            } catch (org.springframework.dao.DataAccessException e) {\n  61 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  62 |                    response.getWriter().println(\"Error processing request.\");\n  63 |                } else throw new ServletException(e);\n  64 |            }\n  65 |        }\n  66 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "076381cbec24955f5389a1cd8f6818817ba0050b392af43789c11c7ee25db227",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-967BC857A7F5",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.xss.no-direct-response-writer.no-direct-response-writer",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00025.java",
+    "start_line": 54,
+    "end_line": 54,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a request with potential user-input going into a OutputStream or Writer object. This bypasses any view or template environments, including HTML escaping, which may expose this application to cross-site scripting (XSS) vulnerabilities. Consider using a view technology such as JavaServer Faces (JSFs) which automatically escapes HTML views.",
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "owasp": [
+        "A07:2017 - Cross-Site Scripting (XSS)",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00025",
+      "line_window": "L39-L66",
+      "surrounding_code": "  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00025\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            String sql = \"SELECT userid from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  48 |            try {\n  49 |                // Long results =\n  50 |                // org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForLong(sql);\n  51 |                Long results =\n  52 |                        org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForObject(\n  53 |                                sql, Long.class);\n  54 | >>             response.getWriter().println(\"Your results are: \" + String.valueOf(results));\n  55 |            } catch (org.springframework.dao.EmptyResultDataAccessException e) {\n  56 |                response.getWriter()\n  57 |                        .println(\n  58 |                                \"No results returned for query: \"\n  59 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql));\n  60 |            } catch (org.springframework.dao.DataAccessException e) {\n  61 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  62 |                    response.getWriter().println(\"Error processing request.\");\n  63 |                } else throw new ServletException(e);\n  64 |            }\n  65 |        }\n  66 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "3c92e24be681116bdc5b9689e5214fce1227bab81c0b4de31eeb583caba12cf1",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-9B9404BB44B4",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00026.java",
+    "start_line": 49,
+    "end_line": 50,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00026",
+      "line_window": "L34-L65",
+      "surrounding_code": "  34 |                throws ServletException, IOException {\n  35 |            doPost(request, response);\n  36 |        }\n  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00026\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            String sql = \"SELECT  * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  48 |            try {\n  49 | >>             org.springframework.jdbc.support.rowset.SqlRowSet results =\n  50 | >>                     org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForRowSet(sql);\n  51 |                response.getWriter().println(\"Your results are: \");\n  52 |    \n  53 |                while (results.next()) {\n  54 |                    response.getWriter()\n  55 |                            .println(\n  56 |                                    org.owasp\n  57 |                                                    .esapi\n  58 |                                                    .ESAPI\n  59 |                                                    .encoder()\n  60 |                                                    .encodeForHTML(results.getString(\"USERNAME\"))\n  61 |                                            + \" \");\n  62 |                }\n  63 |            } catch (org.springframework.dao.EmptyResultDataAccessException e) {\n  64 |                response.getWriter()\n  65 |                        .println(",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "ec1a10995e5e7b2e92ee52855740011d1a9e40eefd0b49f668bf14e6af27b72b",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-42011E0DBF81",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00027.java",
+    "start_line": 50,
+    "end_line": 52,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00027",
+      "line_window": "L35-L60",
+      "surrounding_code": "  35 |            doPost(request, response);\n  36 |        }\n  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00027\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            String sql = \"INSERT INTO users (username, password) VALUES ('foo','\" + param + \"')\";\n  48 |    \n  49 |            try {\n  50 | >>             java.sql.Statement statement =\n  51 | >>                     org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();\n  52 | >>             int count = statement.executeUpdate(sql);\n  53 |                org.owasp.benchmark.helpers.DatabaseHelper.outputUpdateComplete(sql, response);\n  54 |            } catch (java.sql.SQLException e) {\n  55 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  56 |                    response.getWriter().println(\"Error processing request.\");\n  57 |                } else throw new ServletException(e);\n  58 |            }\n  59 |        }\n  60 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.95,
+    "reasoning": "The code directly concatenates user input from HTTP request parameters into an SQL query string, creating a classic SQL injection vulnerability. The lack of parameterized queries or input sanitization allows attackers to inject malicious SQL code through the 'param' variable.",
+    "evidence": [
+      "String sql = \"INSERT INTO users (username, password) VALUES ('foo','\" + param + \")\";",
+      "java.sql.Statement statement = org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();",
+      "int count = statement.executeUpdate(sql);"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "4352dff1b967c79ec544a50b37492f22ba79066836f27fa756d12e42ce38a089",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-DBE687369E1D",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00027.java",
+    "start_line": 52,
+    "end_line": 52,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00027",
+      "line_window": "L37-L60",
+      "surrounding_code": "  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            String param = request.getParameter(\"BenchmarkTest00027\");\n  45 |            if (param == null) param = \"\";\n  46 |    \n  47 |            String sql = \"INSERT INTO users (username, password) VALUES ('foo','\" + param + \"')\";\n  48 |    \n  49 |            try {\n  50 |                java.sql.Statement statement =\n  51 |                        org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();\n  52 | >>             int count = statement.executeUpdate(sql);\n  53 |                org.owasp.benchmark.helpers.DatabaseHelper.outputUpdateComplete(sql, response);\n  54 |            } catch (java.sql.SQLException e) {\n  55 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  56 |                    response.getWriter().println(\"Error processing request.\");\n  57 |                } else throw new ServletException(e);\n  58 |            }\n  59 |        }\n  60 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.95,
+    "reasoning": "The code directly concatenates user input into an SQL query string, creating a SQL injection vulnerability. The use of java.sql.Statement without parameterization allows attackers to manipulate SQL commands through the 'param' variable.",
+    "evidence": [
+      "String sql = \"INSERT INTO users (username, password) VALUES ('foo','\" + param + \"')\";",
+      "int count = statement.executeUpdate(sql);"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "a8f8763a9aa2287f4f03b35f78f77fa5b9dd6ab83311e90f1d5f7f62b44c2817",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-00175E1B4259",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.httpservlet-path-traversal.httpservlet-path-traversal",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00028.java",
+    "start_line": 57,
+    "end_line": 57,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "Detected a potential path traversal. A malicious actor could control the location of this file, to include going backwards in the directory with '../'. To address this, ensure that user-controlled variables in file paths are sanitized. You may also consider using a utility method such as org.apache.commons.io.FilenameUtils.getName(...) to only retrieve the file name from the path.",
+      "cwe": [
+        "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      ],
+      "owasp": [
+        "A05:2017 - Broken Access Control",
+        "A01:2021 - Broken Access Control",
+        "A01:2025 - Broken Access Control"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00028",
+      "line_window": "L42-L72",
+      "surrounding_code": "  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00028\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            String fileName = null;\n  52 |            java.io.FileOutputStream fos = null;\n  53 |    \n  54 |            try {\n  55 |                fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + param;\n  56 |    \n  57 | >>             fos = new java.io.FileOutputStream(fileName, false);\n  58 |                response.getWriter()\n  59 |                        .println(\n  60 |                                \"Now ready to write to file: \"\n  61 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(fileName));\n  62 |    \n  63 |            } catch (Exception e) {\n  64 |                System.out.println(\"Couldn't open FileOutputStream on file: '\" + fileName + \"'\");\n  65 |                //\t\t\tSystem.out.println(\"File exception caught and swallowed: \" + e.getMessage());\n  66 |            } finally {\n  67 |                if (fos != null) {\n  68 |                    try {\n  69 |                        fos.close();\n  70 |                        fos = null;\n  71 |                    } catch (Exception e) {\n  72 |                        // we tried...",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "b3e4d03b978bc36a6cd0e2d29836d36f57e1580828d6282b5aec6ed2064d3e4c",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-897E996CB662",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.httpservlet-path-traversal.httpservlet-path-traversal",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00028.java",
+    "start_line": 70,
+    "end_line": 70,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "Detected a potential path traversal. A malicious actor could control the location of this file, to include going backwards in the directory with '../'. To address this, ensure that user-controlled variables in file paths are sanitized. You may also consider using a utility method such as org.apache.commons.io.FilenameUtils.getName(...) to only retrieve the file name from the path.",
+      "cwe": [
+        "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      ],
+      "owasp": [
+        "A05:2017 - Broken Access Control",
+        "A01:2021 - Broken Access Control",
+        "A01:2025 - Broken Access Control"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L55-L77",
+      "surrounding_code": "  55 |                fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + param;\n  56 |    \n  57 |                fos = new java.io.FileOutputStream(fileName, false);\n  58 |                response.getWriter()\n  59 |                        .println(\n  60 |                                \"Now ready to write to file: \"\n  61 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(fileName));\n  62 |    \n  63 |            } catch (Exception e) {\n  64 |                System.out.println(\"Couldn't open FileOutputStream on file: '\" + fileName + \"'\");\n  65 |                //\t\t\tSystem.out.println(\"File exception caught and swallowed: \" + e.getMessage());\n  66 |            } finally {\n  67 |                if (fos != null) {\n  68 |                    try {\n  69 |                        fos.close();\n  70 | >>                     fos = null;\n  71 |                    } catch (Exception e) {\n  72 |                        // we tried...\n  73 |                    }\n  74 |                }\n  75 |            }\n  76 |        }\n  77 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.95,
+    "reasoning": "The code constructs a file path by concatenating user-controlled 'param' input with a directory, creating a path traversal vulnerability. The lack of input validation allows attackers to manipulate file paths to access restricted directories. This matches CWE-22 and OWASP A01/A05 criteria.",
+    "evidence": [
+      "fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + param;",
+      "fos = new java.io.FileOutputStream(fileName, false);"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "b3e4d03b978bc36a6cd0e2d29836d36f57e1580828d6282b5aec6ed2064d3e4c",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-05787A36040E",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.xss.no-direct-response-writer.no-direct-response-writer",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00030.java",
+    "start_line": 53,
+    "end_line": 53,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a request with potential user-input going into a OutputStream or Writer object. This bypasses any view or template environments, including HTML escaping, which may expose this application to cross-site scripting (XSS) vulnerabilities. Consider using a view technology such as JavaServer Faces (JSFs) which automatically escapes HTML views.",
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "owasp": [
+        "A07:2017 - Cross-Site Scripting (XSS)",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00030",
+      "line_window": "L38-L55",
+      "surrounding_code": "  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00030\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            response.setHeader(\"X-XSS-Protection\", \"0\");\n  52 |            Object[] obj = {\"a\", \"b\"};\n  53 | >>         response.getWriter().printf(param, obj);\n  54 |        }\n  55 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "da0c1e910a1f91fe76ff50cd82b5b308b5b837a11ea91d266a63fe1051f0e57d",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-1882E75C36B7",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.tainted-session-from-http-request.tainted-session-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00031.java",
+    "start_line": 52,
+    "end_line": 52,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a session command, like `setAttribute`. User input into such a command could lead to an attacker inputting malicious code into your session parameters, blurring the line between what's trusted and untrusted, and therefore leading to a trust boundary violation. This could lead to programmers trusting unvalidated data. Instead, thoroughly sanitize user input before passing it into such function calls.",
+      "cwe": [
+        "CWE-501: Trust Boundary Violation"
+      ],
+      "owasp": [
+        "A04:2021 - Insecure Design",
+        "A06:2025 - Insecure Design"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00031",
+      "line_window": "L37-L60",
+      "surrounding_code": "  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00031\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            // javax.servlet.http.HttpSession.putValue(java.lang.String,java.lang.Object^)\n  52 | >>         request.getSession().putValue(\"userid\", param);\n  53 |    \n  54 |            response.getWriter()\n  55 |                    .println(\n  56 |                            \"Item: 'userid' with value: '\"\n  57 |                                    + org.owasp.benchmark.helpers.Utils.encodeForHTML(param)\n  58 |                                    + \"' saved in session.\");\n  59 |        }\n  60 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "7ed68db6c993303af167f600ae1114d1eb2303f9f8ea070e125de2a7ade1c547",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-B212F01BF01D",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.xss.no-direct-response-writer.no-direct-response-writer",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00031.java",
+    "start_line": 54,
+    "end_line": 58,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a request with potential user-input going into a OutputStream or Writer object. This bypasses any view or template environments, including HTML escaping, which may expose this application to cross-site scripting (XSS) vulnerabilities. Consider using a view technology such as JavaServer Faces (JSFs) which automatically escapes HTML views.",
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "owasp": [
+        "A07:2017 - Cross-Site Scripting (XSS)",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00031",
+      "line_window": "L39-L60",
+      "surrounding_code": "  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00031\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            // javax.servlet.http.HttpSession.putValue(java.lang.String,java.lang.Object^)\n  52 |            request.getSession().putValue(\"userid\", param);\n  53 |    \n  54 | >>         response.getWriter()\n  55 | >>                 .println(\n  56 | >>                         \"Item: 'userid' with value: '\"\n  57 | >>                                 + org.owasp.benchmark.helpers.Utils.encodeForHTML(param)\n  58 | >>                                 + \"' saved in session.\");\n  59 |        }\n  60 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "a4b51556352e35ebd96a1ba8e3d10d8b00364d41379fe522fbf5c2cdde16d46c",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-FF2A734ACE6A",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00032.java",
+    "start_line": 54,
+    "end_line": 54,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00032",
+      "line_window": "L39-L68",
+      "surrounding_code": "  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00032\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            try {\n  52 |                String sql = \"SELECT * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  53 |    \n  54 | >>             org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.execute(sql);\n  55 |                response.getWriter()\n  56 |                        .println(\n  57 |                                \"No results can be displayed for query: \"\n  58 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql)\n  59 |                                        + \"<br>\"\n  60 |                                        + \" because the Spring execute method doesn't return results.\");\n  61 |    \n  62 |            } catch (org.springframework.dao.DataAccessException e) {\n  63 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  64 |                    response.getWriter().println(\"Error processing request.\");\n  65 |                } else throw new ServletException(e);\n  66 |            }\n  67 |        }\n  68 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.5,
+    "reasoning": "Failed to parse structured JSON from model output: {\n  \"verdict\": \"TP\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The code directly concatenates user input...",
+    "evidence": [
+      "Unparseable model output format"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "fdb335134878e584e0b99253e115a85585612fd959d1557bff2f50a0ac63fcda",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-B1D2193BABE5",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00033.java",
+    "start_line": 53,
+    "end_line": 54,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00033",
+      "line_window": "L38-L69",
+      "surrounding_code": "  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00033\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            String sql = \"SELECT  * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  52 |            try {\n  53 | >>             org.springframework.jdbc.support.rowset.SqlRowSet results =\n  54 | >>                     org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForRowSet(sql);\n  55 |                response.getWriter().println(\"Your results are: \");\n  56 |    \n  57 |                while (results.next()) {\n  58 |                    response.getWriter()\n  59 |                            .println(\n  60 |                                    org.owasp\n  61 |                                                    .esapi\n  62 |                                                    .ESAPI\n  63 |                                                    .encoder()\n  64 |                                                    .encodeForHTML(results.getString(\"USERNAME\"))\n  65 |                                            + \" \");\n  66 |                }\n  67 |            } catch (org.springframework.dao.EmptyResultDataAccessException e) {\n  68 |                response.getWriter()\n  69 |                        .println(",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.5,
+    "reasoning": "Failed to parse structured JSON from model output: {\n  \"verdict\": \"TP\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The code directly concatenates user input...",
+    "evidence": [
+      "Unparseable model output format"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "33d94b5c83f82e3395d48d6dbfdd58cf8d54c11f7c438de3b2f74630fc80daaf",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-50DAB95DE5D5",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00034.java",
+    "start_line": 56,
+    "end_line": 56,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00034",
+      "line_window": "L41-L64",
+      "surrounding_code": "  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00034\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            String sql = \"SELECT * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  52 |    \n  53 |            try {\n  54 |                java.sql.Statement statement =\n  55 |                        org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();\n  56 | >>             statement.execute(sql, java.sql.Statement.RETURN_GENERATED_KEYS);\n  57 |                org.owasp.benchmark.helpers.DatabaseHelper.printResults(statement, sql, response);\n  58 |            } catch (java.sql.SQLException e) {\n  59 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  60 |                    response.getWriter().println(\"Error processing request.\");\n  61 |                } else throw new ServletException(e);\n  62 |            }\n  63 |        }\n  64 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.95,
+    "reasoning": "The code constructs a SQL query by concatenating user input directly into the SQL string, creating a classic SQL injection vulnerability. The 'param' variable comes from request parameters, which could be controlled by an attacker to manipulate the SQL query.",
+    "evidence": [
+      "String sql = \"SELECT * from USERS where USERNAME='foo' and PASSWORD='\" + param + '\"';"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "ff5d31b86adcd281ab5cceaacc8b9ad415e769261b2fef77f52531d293456c64",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-EB69C8426D31",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00034.java",
+    "start_line": 56,
+    "end_line": 56,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00034",
+      "line_window": "L41-L64",
+      "surrounding_code": "  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            java.util.Map<String, String[]> map = request.getParameterMap();\n  45 |            String param = \"\";\n  46 |            if (!map.isEmpty()) {\n  47 |                String[] values = map.get(\"BenchmarkTest00034\");\n  48 |                if (values != null) param = values[0];\n  49 |            }\n  50 |    \n  51 |            String sql = \"SELECT * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  52 |    \n  53 |            try {\n  54 |                java.sql.Statement statement =\n  55 |                        org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();\n  56 | >>             statement.execute(sql, java.sql.Statement.RETURN_GENERATED_KEYS);\n  57 |                org.owasp.benchmark.helpers.DatabaseHelper.printResults(statement, sql, response);\n  58 |            } catch (java.sql.SQLException e) {\n  59 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  60 |                    response.getWriter().println(\"Error processing request.\");\n  61 |                } else throw new ServletException(e);\n  62 |            }\n  63 |        }\n  64 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.95,
+    "reasoning": "The code directly concatenates user input from request parameters into an SQL query string without using parameterized queries or input sanitization, creating a classic SQL injection vulnerability. The scanner correctly identifies this as a high-confidence CWE-89 issue.",
+    "evidence": [
+      "String sql = \"SELECT * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";",
+      "statement.execute(sql, java.sql.Statement.RETURN_GENERATED_KEYS);"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "045ed04abf54988ba5a466b521fc3ad2520b15db543e8f59728d3e5154db9f3e",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-FA478781CCA0",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.crypto.desede-is-deprecated.desede-is-deprecated",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00035.java",
+    "start_line": 69,
+    "end_line": 69,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Triple DES (3DES or DESede) is considered deprecated. AES is the recommended cipher. Upgrade to use AES.",
+      "cwe": [
+        "CWE-326: Inadequate Encryption Strength"
+      ],
+      "owasp": [
+        "A03:2017 - Sensitive Data Exposure",
+        "A02:2021 - Cryptographic Failures",
+        "A04:2025 - Cryptographic Failures"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L54-L84",
+      "surrounding_code": "  54 |                            param = name;\n  55 |                            flag = false;\n  56 |                        }\n  57 |                    }\n  58 |                }\n  59 |            }\n  60 |    \n  61 |            try {\n  62 |                java.util.Properties benchmarkprops = new java.util.Properties();\n  63 |                benchmarkprops.load(\n  64 |                        this.getClass().getClassLoader().getResourceAsStream(\"benchmark.properties\"));\n  65 |                String algorithm = benchmarkprops.getProperty(\"cryptoAlg1\", \"DESede/ECB/PKCS5Padding\");\n  66 |                javax.crypto.Cipher c = javax.crypto.Cipher.getInstance(algorithm);\n  67 |    \n  68 |                // Prepare the cipher to encrypt\n  69 | >>             javax.crypto.SecretKey key = javax.crypto.KeyGenerator.getInstance(\"DES\").generateKey();\n  70 |                c.init(javax.crypto.Cipher.ENCRYPT_MODE, key);\n  71 |    \n  72 |                // encrypt and store the results\n  73 |                byte[] input = {(byte) '?'};\n  74 |                Object inputParam = param;\n  75 |                if (inputParam instanceof String) input = ((String) inputParam).getBytes();\n  76 |                if (inputParam instanceof java.io.InputStream) {\n  77 |                    byte[] strInput = new byte[1000];\n  78 |                    int i = ((java.io.InputStream) inputParam).read(strInput);\n  79 |                    if (i == -1) {\n  80 |                        response.getWriter()\n  81 |                                .println(\n  82 |                                        \"This input source requires a POST, not a GET. Incompatible UI for the InputStream source.\");\n  83 |                        return;\n  84 |                    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "d4586b03e1152a5ef786295c2b1cd810277da8e0e900fef89eb44c913c9f9389",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-7E0DBEF6006C",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00035.java",
+    "start_line": 69,
+    "end_line": 69,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "DES is considered deprecated. AES is the recommended cipher. Upgrade to use AES. See https://www.nist.gov/news-events/news/2005/06/nist-withdraws-outdated-data-encryption-standard for more information.",
+      "cwe": [
+        "CWE-326: Inadequate Encryption Strength"
+      ],
+      "owasp": [
+        "A03:2017 - Sensitive Data Exposure",
+        "A02:2021 - Cryptographic Failures",
+        "A04:2025 - Cryptographic Failures"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L54-L84",
+      "surrounding_code": "  54 |                            param = name;\n  55 |                            flag = false;\n  56 |                        }\n  57 |                    }\n  58 |                }\n  59 |            }\n  60 |    \n  61 |            try {\n  62 |                java.util.Properties benchmarkprops = new java.util.Properties();\n  63 |                benchmarkprops.load(\n  64 |                        this.getClass().getClassLoader().getResourceAsStream(\"benchmark.properties\"));\n  65 |                String algorithm = benchmarkprops.getProperty(\"cryptoAlg1\", \"DESede/ECB/PKCS5Padding\");\n  66 |                javax.crypto.Cipher c = javax.crypto.Cipher.getInstance(algorithm);\n  67 |    \n  68 |                // Prepare the cipher to encrypt\n  69 | >>             javax.crypto.SecretKey key = javax.crypto.KeyGenerator.getInstance(\"DES\").generateKey();\n  70 |                c.init(javax.crypto.Cipher.ENCRYPT_MODE, key);\n  71 |    \n  72 |                // encrypt and store the results\n  73 |                byte[] input = {(byte) '?'};\n  74 |                Object inputParam = param;\n  75 |                if (inputParam instanceof String) input = ((String) inputParam).getBytes();\n  76 |                if (inputParam instanceof java.io.InputStream) {\n  77 |                    byte[] strInput = new byte[1000];\n  78 |                    int i = ((java.io.InputStream) inputParam).read(strInput);\n  79 |                    if (i == -1) {\n  80 |                        response.getWriter()\n  81 |                                .println(\n  82 |                                        \"This input source requires a POST, not a GET. Incompatible UI for the InputStream source.\");\n  83 |                        return;\n  84 |                    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "2f69c509812556222f7c9af8a1f1cd1328c93a45a4d22f2e28bdc2133c2afb42",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-B558DDEB0966",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.xss.no-direct-response-writer.no-direct-response-writer",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00036.java",
+    "start_line": 65,
+    "end_line": 65,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a request with potential user-input going into a OutputStream or Writer object. This bypasses any view or template environments, including HTML escaping, which may expose this application to cross-site scripting (XSS) vulnerabilities. Consider using a view technology such as JavaServer Faces (JSFs) which automatically escapes HTML views.",
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "owasp": [
+        "A07:2017 - Cross-Site Scripting (XSS)",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00036",
+      "line_window": "L50-L68",
+      "surrounding_code": "  50 |                if (values != null) {\n  51 |                    for (int i = 0; i < values.length && flag; i++) {\n  52 |                        String value = values[i];\n  53 |                        if (value.equals(\"BenchmarkTest00036\")) {\n  54 |                            param = name;\n  55 |                            flag = false;\n  56 |                        }\n  57 |                    }\n  58 |                }\n  59 |            }\n  60 |    \n  61 |            response.setHeader(\"X-XSS-Protection\", \"0\");\n  62 |            int length = 1;\n  63 |            if (param != null) {\n  64 |                length = param.length();\n  65 | >>             response.getWriter().write(param.toCharArray(), 0, length);\n  66 |            }\n  67 |        }\n  68 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "TP",
+    "confidence": 0.85,
+    "reasoning": "The code directly writes untrusted user input to HTTP response without HTML escaping, creating a classic XSS vulnerability. The 'param' variable is likely user-controlled input that isn't sanitized before being written to the response stream.",
+    "evidence": [
+      "response.getWriter().write(param.toCharArray(), 0, length);"
+    ],
+    "action_group": "HIGH_CONFIDENCE_TP",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "8d3c123d099d3595d58d56e563bc6731bf43c81aa8472a01c70825fc80e842e5",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-316F9D79ABF9",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00037.java",
+    "start_line": 66,
+    "end_line": 71,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00037",
+      "line_window": "L51-L81",
+      "surrounding_code": "  51 |                    for (int i = 0; i < values.length && flag; i++) {\n  52 |                        String value = values[i];\n  53 |                        if (value.equals(\"BenchmarkTest00037\")) {\n  54 |                            param = name;\n  55 |                            flag = false;\n  56 |                        }\n  57 |                    }\n  58 |                }\n  59 |            }\n  60 |    \n  61 |            String sql = \"SELECT * from USERS where USERNAME=? and PASSWORD='\" + param + \"'\";\n  62 |    \n  63 |            try {\n  64 |                java.sql.Connection connection =\n  65 |                        org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();\n  66 | >>             java.sql.PreparedStatement statement =\n  67 | >>                     connection.prepareStatement(\n  68 | >>                             sql,\n  69 | >>                             java.sql.ResultSet.TYPE_FORWARD_ONLY,\n  70 | >>                             java.sql.ResultSet.CONCUR_READ_ONLY,\n  71 | >>                             java.sql.ResultSet.CLOSE_CURSORS_AT_COMMIT);\n  72 |                statement.setString(1, \"foo\");\n  73 |                statement.execute();\n  74 |                org.owasp.benchmark.helpers.DatabaseHelper.printResults(statement, sql, response);\n  75 |            } catch (java.sql.SQLException e) {\n  76 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  77 |                    response.getWriter().println(\"Error processing request.\");\n  78 |                } else throw new ServletException(e);\n  79 |            }\n  80 |        }\n  81 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.5,
+    "reasoning": "Failed to parse structured JSON from model output: {\n  \"verdict\": \"TP\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The SQL query directly concatenates user-...",
+    "evidence": [
+      "Unparseable model output format"
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "2bc45ccb4cc8ae1fd51adcc8052d264e777a9d64d397d17953d4ce24e9468dc2",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-0CC011A30AD7",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00038.java",
+    "start_line": 63,
+    "end_line": 79,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00038",
+      "line_window": "L48-L94",
+      "surrounding_code": "  48 |                String name = (String) names.nextElement();\n  49 |                String[] values = request.getParameterValues(name);\n  50 |                if (values != null) {\n  51 |                    for (int i = 0; i < values.length && flag; i++) {\n  52 |                        String value = values[i];\n  53 |                        if (value.equals(\"BenchmarkTest00038\")) {\n  54 |                            param = name;\n  55 |                            flag = false;\n  56 |                        }\n  57 |                    }\n  58 |                }\n  59 |            }\n  60 |    \n  61 |            String sql = \"SELECT * from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  62 |            try {\n  63 | >>             java.util.List<String> results =\n  64 | >>                     org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.query(\n  65 | >>                             sql,\n  66 | >>                             new org.springframework.jdbc.core.RowMapper<String>() {\n  67 | >>                                 @Override\n  68 | >>                                 public String mapRow(java.sql.ResultSet rs, int rowNum)\n  69 | >>                                         throws java.sql.SQLException {\n  70 | >>                                     try {\n  71 | >>                                         return rs.getString(\"USERNAME\");\n  72 | >>                                     } catch (java.sql.SQLException e) {\n  73 | >>                                         if (org.owasp.benchmark.helpers.DatabaseHelper\n  74 | >>                                                 .hideSQLErrors) {\n  75 | >>                                             return \"Error processing query.\";\n  76 | >>                                         } else throw e;\n  77 | >>                                     }\n  78 | >>                                 }\n  79 | >>                             });\n  80 |                response.getWriter().println(\"Your results are: \");\n  81 |    \n  82 |                for (String s : results) {\n  83 |                    response.getWriter()\n  84 |                            .println(org.owasp.esapi.ESAPI.encoder().encodeForHTML(s) + \"<br>\");\n  85 |                }\n  86 |            } catch (org.springframework.dao.EmptyResultDataAccessException e) {\n  87 |                response.getWriter()\n  88 |                        .println(\n  89 |                                \"No results returned for query: \"\n  90 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql));\n  91 |            } catch (org.springframework.dao.DataAccessException e) {\n  92 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  93 |                    response.getWriter().println(\"Error processing request.\");\n  94 |                } else throw new ServletException(e);",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "8259cb801ece7ccf126341c546e963d162300a38b54c5c347d6fd0abe0c313a7",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-864AE170D56D",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.tainted-sql-from-http-request.tainted-sql-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00039.java",
+    "start_line": 64,
+    "end_line": 65,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into a SQL sink or statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use parameterized SQL queries or properly sanitize user input instead.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "HIGH",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00039",
+      "line_window": "L49-L80",
+      "surrounding_code": "  49 |                String[] values = request.getParameterValues(name);\n  50 |                if (values != null) {\n  51 |                    for (int i = 0; i < values.length && flag; i++) {\n  52 |                        String value = values[i];\n  53 |                        if (value.equals(\"BenchmarkTest00039\")) {\n  54 |                            param = name;\n  55 |                            flag = false;\n  56 |                        }\n  57 |                    }\n  58 |                }\n  59 |            }\n  60 |    \n  61 |            String sql =\n  62 |                    \"SELECT TOP 1 userid from USERS where USERNAME='foo' and PASSWORD='\" + param + \"'\";\n  63 |            try {\n  64 | >>             java.util.Map<String, Object> results =\n  65 | >>                     org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.queryForMap(sql);\n  66 |                response.getWriter().println(\"Your results are: \");\n  67 |    \n  68 |                response.getWriter()\n  69 |                        .println(org.owasp.esapi.ESAPI.encoder().encodeForHTML(results.toString()));\n  70 |            } catch (org.springframework.dao.EmptyResultDataAccessException e) {\n  71 |                response.getWriter()\n  72 |                        .println(\n  73 |                                \"No results returned for query: \"\n  74 |                                        + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql));\n  75 |            } catch (org.springframework.dao.DataAccessException e) {\n  76 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  77 |                    response.getWriter().println(\"Error processing request.\");\n  78 |                } else throw new ServletException(e);\n  79 |            }\n  80 |        }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "5cc49aa797a205a59aa8504926d263a4b9dbceddaccd8ce678e7efeabdcdcb9b",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-74D29F52179B",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.httpservlet-path-traversal.httpservlet-path-traversal",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00040.java",
+    "start_line": 49,
+    "end_line": 49,
+    "snippet": "requires login",
+    "severity": "HIGH",
+    "metadata": {
+      "message": "Detected a potential path traversal. A malicious actor could control the location of this file, to include going backwards in the directory with '../'. To address this, ensure that user-controlled variables in file paths are sanitized. You may also consider using a utility method such as org.apache.commons.io.FilenameUtils.getName(...) to only retrieve the file name from the path.",
+      "cwe": [
+        "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      ],
+      "owasp": [
+        "A05:2017 - Broken Access Control",
+        "A01:2021 - Broken Access Control",
+        "A01:2025 - Broken Access Control"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "HIGH",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00040",
+      "line_window": "L34-L64",
+      "surrounding_code": "  34 |                throws ServletException, IOException {\n  35 |            doPost(request, response);\n  36 |        }\n  37 |    \n  38 |        @Override\n  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            org.owasp.benchmark.helpers.SeparateClassRequest scr =\n  45 |                    new org.owasp.benchmark.helpers.SeparateClassRequest(request);\n  46 |            String param = scr.getTheParameter(\"BenchmarkTest00040\");\n  47 |            if (param == null) param = \"\";\n  48 |    \n  49 | >>         java.io.File fileTarget = new java.io.File(param);\n  50 |            response.getWriter()\n  51 |                    .println(\n  52 |                            \"Access to file: '\"\n  53 |                                    + org.owasp\n  54 |                                            .esapi\n  55 |                                            .ESAPI\n  56 |                                            .encoder()\n  57 |                                            .encodeForHTML(fileTarget.toString())\n  58 |                                    + \"' created.\");\n  59 |            if (fileTarget.exists()) {\n  60 |                response.getWriter().println(\" And file already exists.\");\n  61 |            } else {\n  62 |                response.getWriter().println(\" But file doesn't exist yet.\");\n  63 |            }\n  64 |        }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "ebaf3e1135d2281a3f62bf20da6596bc29f94463cf58b2b9cfff3276fdc0b081",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-81A49687AD0A",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00043.java",
+    "start_line": 54,
+    "end_line": 54,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "HIGH",
+      "confidence": "LOW",
+      "likelihood": "LOW",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00043",
+      "line_window": "L39-L62",
+      "surrounding_code": "  39 |        public void doPost(HttpServletRequest request, HttpServletResponse response)\n  40 |                throws ServletException, IOException {\n  41 |            // some code\n  42 |            response.setContentType(\"text/html;charset=UTF-8\");\n  43 |    \n  44 |            org.owasp.benchmark.helpers.SeparateClassRequest scr =\n  45 |                    new org.owasp.benchmark.helpers.SeparateClassRequest(request);\n  46 |            String param = scr.getTheParameter(\"BenchmarkTest00043\");\n  47 |            if (param == null) param = \"\";\n  48 |    \n  49 |            String sql = \"INSERT INTO users (username, password) VALUES ('foo','\" + param + \"')\";\n  50 |    \n  51 |            try {\n  52 |                java.sql.Statement statement =\n  53 |                        org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();\n  54 | >>             int count = statement.executeUpdate(sql, new int[] {1, 2});\n  55 |                org.owasp.benchmark.helpers.DatabaseHelper.outputUpdateComplete(sql, response);\n  56 |            } catch (java.sql.SQLException e) {\n  57 |                if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {\n  58 |                    response.getWriter().println(\"Error processing request.\");\n  59 |                } else throw new ServletException(e);\n  60 |            }\n  61 |        }\n  62 |    }",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "53a9569e70fc8039283ad4aae9b5117328881c92ae5eb0a66dda0aaba98136b7",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "SG-EC6471DC2947",
+    "scanner": "semgrep",
+    "rule_id": "java.lang.security.audit.tainted-ldapi-from-http-request.tainted-ldapi-from-http-request",
+    "repository": "JAVA",
+    "commit_sha": "HEAD",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkJava\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00044.java",
+    "start_line": 59,
+    "end_line": 59,
+    "snippet": "requires login",
+    "severity": "MEDIUM",
+    "metadata": {
+      "message": "Detected input from a HTTPServletRequest going into an LDAP query. This could lead to LDAP injection if the input is not properly sanitized, which could result in attackers modifying objects in the LDAP tree structure. Ensure data passed to an LDAP query is not controllable or properly sanitize the data.",
+      "cwe": [
+        "CWE-90: Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ],
+      "impact": "MEDIUM",
+      "confidence": "MEDIUM",
+      "likelihood": "MEDIUM",
+      "category": "security"
+    },
+    "context": {
+      "enclosing_function": "BenchmarkTest00044",
+      "line_window": "L44-L74",
+      "surrounding_code": "  44 |            String[] values = request.getParameterValues(\"BenchmarkTest00044\");\n  45 |            String param;\n  46 |            if (values != null && values.length > 0) param = values[0];\n  47 |            else param = \"\";\n  48 |    \n  49 |            org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();\n  50 |            try {\n  51 |                response.setContentType(\"text/html;charset=UTF-8\");\n  52 |                javax.naming.directory.DirContext ctx = ads.getDirContext();\n  53 |                String base = \"ou=users,ou=system\";\n  54 |                javax.naming.directory.SearchControls sc = new javax.naming.directory.SearchControls();\n  55 |                sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);\n  56 |                String filter = \"(&(objectclass=person)(uid=\" + param + \"))\";\n  57 |                boolean found = false;\n  58 |                javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results =\n  59 | >>                     ctx.search(base, filter, sc);\n  60 |                while (results.hasMore()) {\n  61 |                    javax.naming.directory.SearchResult sr =\n  62 |                            (javax.naming.directory.SearchResult) results.next();\n  63 |                    javax.naming.directory.Attributes attrs = sr.getAttributes();\n  64 |    \n  65 |                    javax.naming.directory.Attribute attr = attrs.get(\"uid\");\n  66 |                    javax.naming.directory.Attribute attr2 = attrs.get(\"street\");\n  67 |                    if (attr != null) {\n  68 |                        response.getWriter()\n  69 |                                .println(\n  70 |                                        \"LDAP query results:<br>\"\n  71 |                                                + \"Record found with name \"\n  72 |                                                + org.owasp\n  73 |                                                        .esapi\n  74 |                                                        .ESAPI",
+      "imports": [
+        "import java.io.IOException;",
+        "import javax.servlet.ServletException;",
+        "import javax.servlet.annotation.WebServlet;",
+        "import javax.servlet.http.HttpServlet;",
+        "import javax.servlet.http.HttpServletRequest;",
+        "import javax.servlet.http.HttpServletResponse;"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "548a5a0d1a23d895c4f24c54be66f5514acde97632aa6fb8223167f34f2a2584",
     "status": "TRIAGED",
     "model_version": "qwen3:8b",
     "prompt_version": "v1.0"
