@@ -1,0 +1,330 @@
+[
+  {
+    "finding_id": "GL-E3A8CAB11A2C",
+    "scanner": "gitleaks",
+    "rule_id": "private-key",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/benchmark/scanner/bin/wraith/default.yaml",
+    "start_line": 190,
+    "end_line": 198,
+    "snippet": "-----BEGIN PRIVATE KEY-----).*?-----END PRIVATE KEY-----'\r\n        description: 'Contains generic private key'\r\n        signatureid: '27923b024277454299e2d489dfd21ed9'\r\n        enable: 1\r\n        entropy: 3.5\r\n        confidence-level: 3\r\n    -\r\n        part: PartContent\r\n        match: '(?msi)(-----BEGIN PGP PRIVATE KEY BLOCK-----",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.",
+      "entropy": 4.837735,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/benchmark/scanner/bin/wraith/default.yaml:private-key:190"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L175-L213",
+      "surrounding_code": " 175 |            signatureid: 'c946381a50824312a68557fcd6178675'\n 176 |            enable: 1\n 177 |            entropy: 0\n 178 |            confidence-level: 3\n 179 |    PatternSignatures:\n 180 |        -\n 181 |            part: PartContent\n 182 |            match: '(?i)(\\bAKIA[0-9A-Z]{16}\\b)'\n 183 |            description: 'Contains AWS Access Key ID'\n 184 |            signatureid: '4ee169b0cc1a461e873a4f9bece50fb8'\n 185 |            enable: 1\n 186 |            entropy: 3.5\n 187 |            confidence-level: 3\n 188 |        -\n 189 |            part: PartContent\n 190 | >>         match: '(?msi)(-----BEGIN PRIVATE KEY-----).*?-----END PRIVATE KEY-----'\n 191 | >>         description: 'Contains generic private key'\n 192 | >>         signatureid: '27923b024277454299e2d489dfd21ed9'\n 193 | >>         enable: 1\n 194 | >>         entropy: 3.5\n 195 | >>         confidence-level: 3\n 196 | >>     -\n 197 | >>         part: PartContent\n 198 | >>         match: '(?msi)(-----BEGIN PGP PRIVATE KEY BLOCK-----).*?-----END PGP PRIVATE KEY BLOCK-----'\n 199 |            description: 'Contains PGP private key'\n 200 |            signatureid: '94fcf7f937bb4b618b19c321d263030e'\n 201 |            enable: 1\n 202 |            entropy: 3.5\n 203 |            confidence-level: 3\n 204 |        -\n 205 |            part: PartContent\n 206 |            match: '(?msi)(-----BEGIN RSA PRIVATE KEY-----).*?-----END RSA PRIVATE KEY-----'\n 207 |            description: 'Contains RSA private key'\n 208 |            signatureid: '736207e395234354aff784dc0c78f5a7'\n 209 |            enable: 1\n 210 |            entropy: 3.5\n 211 |            confidence-level: 3\n 212 |        -\n 213 |            part: PartContent",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "3429104298b8123616dcf6d9dd06318771b4ae255a20179e93dd7e2e525bafa3",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "GL-30C891544B0F",
+    "scanner": "gitleaks",
+    "rule_id": "generic-api-key",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/README.md",
+    "start_line": 181,
+    "end_line": 181,
+    "snippet": "GITHUB_ENTERPRISE_ORG_SECRET=hfbpozfhvuwgtfosmo2imqskc73w04jf3313309829\r",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "entropy": 4.478876,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/README.md:generic-api-key:181"
+    },
+    "context": {
+      "enclosing_function": null,
+      "line_window": "L166-L196",
+      "surrounding_code": " 166 |    ```\n 167 |    \n 168 |    Convert the above line with only essential columns into a table format:\n 169 |    \n 170 |    | ... | RepoName | FilePath                            | LineStart | LineEnd | GroundTruth | ValueStart | ValueEnd | ... | Category  |\n 171 |    |-----|----------|-------------------------------------|-----------|---------|-------------|------------|----------|-----|-----------|\n 172 |    | ... | 02dfa7ec | data/02dfa7ec/test/61ed9af5.example | 83        | 83      | T           | 31         | 73       | ... | Cat1:Cat2 |\n 173 |    \n 174 |    \n 175 |    This line means that the credential line exists in the 83th line of the `data/02dfa7ec/test/61ed9af5.example` file that downloaded and obfuscated output after running the `download_data.py` script.\n 176 |    You can find the `61ed9af5.example` file in the output generated by the download_data.py script execution by referring to the above path. \n 177 |    \n 178 |    When you check the 83th line of the file, you can see that the following line exists.\n 179 |    \n 180 |    ```\n 181 | >> GITHUB_ENTERPRISE_ORG_SECRET=hfbpozfhvuwgtfosmo2imqskc73w04jf3313309829\n 182 |    ```\n 183 |    \n 184 |    In here, you can see the credential based on the values of ValueStart and ValueEnd in the metadata.\n 185 |    \n 186 |    ```\n 187 |    hfbpozfhvuwgtfosmo2imqskc73w04jf3313309829\n 188 |    ```\n 189 |    \n 190 |    > That the corresponding value is an obfuscated value, not an actual credential value. For that part, please refer to the following [Obfuscation](#obfuscation) section.\n 191 |    \n 192 |    With them, you can use ``review_data.py`` script to review the markup in console with colorization.\n 193 |    \n 194 |    <pre>\n 195 |    34024,61ed9af5,GitHub,02dfa7ec,data/02dfa7ec/test/61ed9af5.example,83,83,T,31,73,,,Secret:Token\n 196 |    83:<font color=\"#00AA00\"># GITHUB_ENTERPRISE_ORG_SECRET_TOKEN=</font><span style=\"background-color:#FFFF55\"><font color=\"#00AA00\">hfbpozfhvuwgtfosmo2imqskc73w04jf3313309829</font></span>",
+      "imports": [],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "NEEDS_REVIEW",
+    "confidence": 0.6,
+    "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+    "evidence": [
+      "Context review recommended."
+    ],
+    "action_group": "MANUAL_REVIEW",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "42ee8b4d94ab8a120d63c8bdb125244d85a041778ee5d51987975aaedac73c76",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "GL-C6CEA80DEF66",
+    "scanner": "gitleaks",
+    "rule_id": "private-key",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+    "start_line": 179,
+    "end_line": 184,
+    "snippet": "-----BEGIN RSA PRIVATE KEY----- any dummy info\",\r\n            \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\r\n            \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/SeconLineUpdat+J4\",\r\n            \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/ThirdLineUpdat+J4\",\r\n            \"unhanged====\",\r\n            \"-----END RSA PRIVATE KEY-----",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.",
+      "entropy": 5.1243367,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:private-key:179"
+    },
+    "context": {
+      "enclosing_function": "test_obfuscate_pem",
+      "line_window": "L164-L199",
+      "surrounding_code": " 164 |    \n 165 |        def test_obfuscate_crc32_base62(self):\n 166 |            random.seed(20260102)\n 167 |            # the value from CredSweeper samples\n 168 |            value = \"[REDACTED_GITHUB_TOKEN]Q \"\n 169 |            obfuscated = obfuscate_crc32_base62(value)\n 170 |            self.assertNotEqual(value, obfuscated)\n 171 |            self.assertEqual(len(value), len(obfuscated))\n 172 |            # tested value\n 173 |            self.assertEqual(\"[REDACTED_GITHUB_TOKEN]lW\", obfuscated)\n 174 |    \n 175 |        def test_obfuscate_pem(self):\n 176 |            random.seed(20251211)\n 177 |            original_lines = [\n 178 |                \"BOM\",\n 179 | >>             \"/* some comment */ -----BEGIN RSA PRIVATE KEY----- any dummy info\",\n 180 | >>             \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\n 181 | >>             \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/SeconLineUpdat+J4\",\n 182 | >>             \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/ThirdLineUpdat+J4\",\n 183 | >>             \"unhanged====\",\n 184 | >>             \"-----END RSA PRIVATE KEY-----\",\n 185 |                \"EOF\",\n 186 |            ]\n 187 |            obfuscated_lines = [\n 188 |                \"BOM\",\n 189 |                \"/* some comment */ -----BEGIN RSA PRIVATE KEY----- any dummy info\",\n 190 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\n 191 |                'hVBzwYLllXwvsCqC1vIWiVSUrVpchQV32XB7LPfyjpSLlG/SRIMrpCDoiMWFl+A5',\n 192 |                'ktePWZqcrQEoRLDs1dSJXpLKJSQmroj63oC4xTJPSITaEd/IoPwOBdRoaTEtW+x3',\n 193 |                \"unhanged====\",\n 194 |                \"-----END RSA PRIVATE KEY-----\",\n 195 |                \"EOF\"]\n 196 |            row = MetaRow({\"Id\": 1,\n 197 |                           \"FileID\": \"01234567\",\n 198 |                           \"Domain\": \"str\",\n 199 |                           \"RepoName\": \"98765432\",",
+      "imports": [
+        "import binascii",
+        "import random",
+        "import unittest"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "FP",
+    "confidence": 0.92,
+    "reasoning": "Detected mock test data or setup script snippet. Safe FP candidate.",
+    "evidence": [
+      "Snippet located in test/seed/migration utility file."
+    ],
+    "action_group": "AUTO_SUPPRESS_CANDIDATE",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "fcff275231ec3cf382db094010a2748a175fe873a672b4a97ecddbb78808258c",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "GL-078684DC5D89",
+    "scanner": "gitleaks",
+    "rule_id": "private-key",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+    "start_line": 189,
+    "end_line": 194,
+    "snippet": "-----BEGIN RSA PRIVATE KEY----- any dummy info\",\r\n            \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\r\n            'hVBzwYLllXwvsCqC1vIWiVSUrVpchQV32XB7LPfyjpSLlG/SRIMrpCDoiMWFl+A5',\r\n            'ktePWZqcrQEoRLDs1dSJXpLKJSQmroj63oC4xTJPSITaEd/IoPwOBdRoaTEtW+x3',\r\n            \"unhanged====\",\r\n            \"-----END RSA PRIVATE KEY-----",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.",
+      "entropy": 5.387117,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:private-key:189"
+    },
+    "context": {
+      "enclosing_function": "test_obfuscate_pem",
+      "line_window": "L174-L209",
+      "surrounding_code": " 174 |    \n 175 |        def test_obfuscate_pem(self):\n 176 |            random.seed(20251211)\n 177 |            original_lines = [\n 178 |                \"BOM\",\n 179 |                \"/* some comment */ -----BEGIN RSA PRIVATE KEY----- any dummy info\",\n 180 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\n 181 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/SeconLineUpdat+J4\",\n 182 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/ThirdLineUpdat+J4\",\n 183 |                \"unhanged====\",\n 184 |                \"-----END RSA PRIVATE KEY-----\",\n 185 |                \"EOF\",\n 186 |            ]\n 187 |            obfuscated_lines = [\n 188 |                \"BOM\",\n 189 | >>             \"/* some comment */ -----BEGIN RSA PRIVATE KEY----- any dummy info\",\n 190 | >>             \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\n 191 | >>             'hVBzwYLllXwvsCqC1vIWiVSUrVpchQV32XB7LPfyjpSLlG/SRIMrpCDoiMWFl+A5',\n 192 | >>             'ktePWZqcrQEoRLDs1dSJXpLKJSQmroj63oC4xTJPSITaEd/IoPwOBdRoaTEtW+x3',\n 193 | >>             \"unhanged====\",\n 194 | >>             \"-----END RSA PRIVATE KEY-----\",\n 195 |                \"EOF\"]\n 196 |            row = MetaRow({\"Id\": 1,\n 197 |                           \"FileID\": \"01234567\",\n 198 |                           \"Domain\": \"str\",\n 199 |                           \"RepoName\": \"98765432\",\n 200 |                           \"FilePath\": \"str\",\n 201 |                           \"LineStart\": 2,\n 202 |                           \"LineEnd\": len(original_lines) + 1,\n 203 |                           \"GroundTruth\": LABEL_TRUE,\n 204 |                           \"ValueStart\": 19,\n 205 |                           \"ValueEnd\": 29,\n 206 |                           \"CryptographyKey\": \"\",\n 207 |                           \"PredefinedPattern\": \"\",\n 208 |                           \"Category\": PRIVATE_KEY_CATEGORY})\n 209 |            process_pem_key(row, original_lines, 0)",
+      "imports": [
+        "import binascii",
+        "import random",
+        "import unittest"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "FP",
+    "confidence": 0.92,
+    "reasoning": "Detected mock test data or setup script snippet. Safe FP candidate.",
+    "evidence": [
+      "Snippet located in test/seed/migration utility file."
+    ],
+    "action_group": "AUTO_SUPPRESS_CANDIDATE",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "423e35043c5dce08f9dab0d4c0f5155a3691d7751f784278e079c5973682b2de",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "GL-BFCC8DA90BAF",
+    "scanner": "gitleaks",
+    "rule_id": "github-pat",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+    "start_line": 173,
+    "end_line": 173,
+    "snippet": "ghp_119583239986614208174882783824961NqI",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure.",
+      "entropy": 3.7337835,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:github-pat:173"
+    },
+    "context": {
+      "enclosing_function": "test_obfuscate_crc32_base62",
+      "line_window": "L158-L188",
+      "surrounding_code": " 158 |            value = \"glsa_ThisI5NtTheTok3nYou8reLo0k1ngF0r_0a2a3df7\"\n 159 |            obfuscated = obfuscate_glsa(value)\n 160 |            self.assertNotEqual(value, obfuscated)\n 161 |            self.assertEqual(len(value), len(obfuscated))\n 162 |            # tested value\n 163 |            self.assertEqual(\"glsa_DaldL9OnCudSrj7jWui7wxVj9b4ltV2p_c97ad013\", obfuscated)\n 164 |    \n 165 |        def test_obfuscate_crc32_base62(self):\n 166 |            random.seed(20260102)\n 167 |            # the value from CredSweeper samples\n 168 |            value = \"[REDACTED_GITHUB_TOKEN]Q \"\n 169 |            obfuscated = obfuscate_crc32_base62(value)\n 170 |            self.assertNotEqual(value, obfuscated)\n 171 |            self.assertEqual(len(value), len(obfuscated))\n 172 |            # tested value\n 173 | >>         self.assertEqual(\"[REDACTED_GITHUB_TOKEN]lW\", obfuscated)\n 174 |    \n 175 |        def test_obfuscate_pem(self):\n 176 |            random.seed(20251211)\n 177 |            original_lines = [\n 178 |                \"BOM\",\n 179 |                \"/* some comment */ -----BEGIN RSA PRIVATE KEY----- any dummy info\",\n 180 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/FirstLineFixed+J4\",\n 181 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/SeconLineUpdat+J4\",\n 182 |                \"MIIEpQIBAAKCAQEA5mPfjyiQnuiLJPn63vr4sznghBRxzX/ThirdLineUpdat+J4\",\n 183 |                \"unhanged====\",\n 184 |                \"-----END RSA PRIVATE KEY-----\",\n 185 |                \"EOF\",\n 186 |            ]\n 187 |            obfuscated_lines = [\n 188 |                \"BOM\",",
+      "imports": [
+        "import binascii",
+        "import random",
+        "import unittest"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "FP",
+    "confidence": 0.92,
+    "reasoning": "Detected mock test data or setup script snippet. Safe FP candidate.",
+    "evidence": [
+      "Snippet located in test/seed/migration utility file."
+    ],
+    "action_group": "AUTO_SUPPRESS_CANDIDATE",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "98507cf82b40eb0dd353f2f758dd3d6047e708943c66b49ce0b1f949587ad1d7",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "GL-34C28E21EEE8",
+    "scanner": "gitleaks",
+    "rule_id": "grafana-service-account-token",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+    "start_line": 158,
+    "end_line": 158,
+    "snippet": "glsa_ThisI5NtTheTok3nYou8reLo0k1ngF0r_0a2a3df7\"",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Discovered a Grafana service account token, posing a risk of compromised monitoring services and data integrity.",
+      "entropy": 4.718789,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:grafana-service-account-token:158"
+    },
+    "context": {
+      "enclosing_function": "test_obfuscate_glsa",
+      "line_window": "L143-L173",
+      "surrounding_code": " 143 |            value = \"eyJhbGciOjEwfQ%3D%3D\"\n 144 |            obfuscated = obfuscate_jwt(value)\n 145 |            self.assertNotEqual(value, obfuscated)\n 146 |            self.assertEqual(len(value), len(obfuscated))\n 147 |            value = \"eyJhbGciOiI+LHgifQ==\"\n 148 |            obfuscated = obfuscate_jwt(value)\n 149 |            self.assertNotEqual(value, obfuscated)\n 150 |            self.assertEqual(len(value), len(obfuscated))\n 151 |            with self.assertRaises(binascii.Error):\n 152 |                # '+' is web escaped to %2B - cannot be obfuscated with the same value length\n 153 |                obfuscate_jwt(\"eyJhbGciOiI%2BLHgifQ%3D%3D\")\n 154 |    \n 155 |        def test_obfuscate_glsa(self):\n 156 |            random.seed(20251110)\n 157 |            # the value from CredSweeper samples\n 158 | >>         value = \"glsa_ThisI5NtTheTok3nYou8reLo0k1ngF0r_0a2a3df7\"\n 159 |            obfuscated = obfuscate_glsa(value)\n 160 |            self.assertNotEqual(value, obfuscated)\n 161 |            self.assertEqual(len(value), len(obfuscated))\n 162 |            # tested value\n 163 |            self.assertEqual(\"glsa_DaldL9OnCudSrj7jWui7wxVj9b4ltV2p_c97ad013\", obfuscated)\n 164 |    \n 165 |        def test_obfuscate_crc32_base62(self):\n 166 |            random.seed(20260102)\n 167 |            # the value from CredSweeper samples\n 168 |            value = \"[REDACTED_GITHUB_TOKEN]Q \"\n 169 |            obfuscated = obfuscate_crc32_base62(value)\n 170 |            self.assertNotEqual(value, obfuscated)\n 171 |            self.assertEqual(len(value), len(obfuscated))\n 172 |            # tested value\n 173 |            self.assertEqual(\"[REDACTED_GITHUB_TOKEN]lW\", obfuscated)",
+      "imports": [
+        "import binascii",
+        "import random",
+        "import unittest"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "FP",
+    "confidence": 0.92,
+    "reasoning": "Detected mock test data or setup script snippet. Safe FP candidate.",
+    "evidence": [
+      "Snippet located in test/seed/migration utility file."
+    ],
+    "action_group": "AUTO_SUPPRESS_CANDIDATE",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "847895d0865f2fdb3dd4f5c4649821caa882d09eef9ff00a4e4830d963683abe",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  },
+  {
+    "finding_id": "GL-DF5E2383BA9C",
+    "scanner": "gitleaks",
+    "rule_id": "grafana-service-account-token",
+    "repository": "CREDDATA",
+    "commit_sha": "",
+    "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+    "start_line": 163,
+    "end_line": 163,
+    "snippet": "glsa_DaldL9OnCudSrj7jWui7wxVj9b4ltV2p_c97ad013\"",
+    "severity": "HIGH",
+    "metadata": {
+      "description": "Discovered a Grafana service account token, posing a risk of compromised monitoring services and data integrity.",
+      "entropy": 4.7729244,
+      "author": "",
+      "date": "",
+      "tags": [],
+      "gitleaks_fingerprint": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:grafana-service-account-token:163"
+    },
+    "context": {
+      "enclosing_function": "test_obfuscate_glsa",
+      "line_window": "L148-L178",
+      "surrounding_code": " 148 |            obfuscated = obfuscate_jwt(value)\n 149 |            self.assertNotEqual(value, obfuscated)\n 150 |            self.assertEqual(len(value), len(obfuscated))\n 151 |            with self.assertRaises(binascii.Error):\n 152 |                # '+' is web escaped to %2B - cannot be obfuscated with the same value length\n 153 |                obfuscate_jwt(\"eyJhbGciOiI%2BLHgifQ%3D%3D\")\n 154 |    \n 155 |        def test_obfuscate_glsa(self):\n 156 |            random.seed(20251110)\n 157 |            # the value from CredSweeper samples\n 158 |            value = \"glsa_ThisI5NtTheTok3nYou8reLo0k1ngF0r_0a2a3df7\"\n 159 |            obfuscated = obfuscate_glsa(value)\n 160 |            self.assertNotEqual(value, obfuscated)\n 161 |            self.assertEqual(len(value), len(obfuscated))\n 162 |            # tested value\n 163 | >>         self.assertEqual(\"glsa_DaldL9OnCudSrj7jWui7wxVj9b4ltV2p_c97ad013\", obfuscated)\n 164 |    \n 165 |        def test_obfuscate_crc32_base62(self):\n 166 |            random.seed(20260102)\n 167 |            # the value from CredSweeper samples\n 168 |            value = \"[REDACTED_GITHUB_TOKEN]Q \"\n 169 |            obfuscated = obfuscate_crc32_base62(value)\n 170 |            self.assertNotEqual(value, obfuscated)\n 171 |            self.assertEqual(len(value), len(obfuscated))\n 172 |            # tested value\n 173 |            self.assertEqual(\"[REDACTED_GITHUB_TOKEN]lW\", obfuscated)\n 174 |    \n 175 |        def test_obfuscate_pem(self):\n 176 |            random.seed(20251211)\n 177 |            original_lines = [\n 178 |                \"BOM\",",
+      "imports": [
+        "import binascii",
+        "import random",
+        "import unittest"
+      ],
+      "caller_callee_info": null,
+      "redacted": true
+    },
+    "verdict": "FP",
+    "confidence": 0.92,
+    "reasoning": "Detected mock test data or setup script snippet. Safe FP candidate.",
+    "evidence": [
+      "Snippet located in test/seed/migration utility file."
+    ],
+    "action_group": "AUTO_SUPPRESS_CANDIDATE",
+    "logic_bug_trace": null,
+    "risk_score_details": null,
+    "remediation_patch": null,
+    "risk_score": null,
+    "remediation": null,
+    "fingerprint": "89a403bbaa55e3399e7e8ac33e76f56bdf8d18e1b9b91ef0f762ac1f11d92f73",
+    "status": "TRIAGED",
+    "model_version": "qwen3:8b",
+    "prompt_version": "v1.0"
+  }
+]

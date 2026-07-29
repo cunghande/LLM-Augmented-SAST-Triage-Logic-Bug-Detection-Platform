@@ -387,9 +387,13 @@ def run_single_benchmark(
             "error": "No scan findings produced",
         }
 
-    # Apply sample limit
+    # Apply sample limit (prioritize actual testcode/source files over config files)
+    testcode_findings = [f for f in findings if "testcode" in f.file_path.replace("\\", "/").lower() or "src/" in f.file_path.replace("\\", "/").lower() or "data/" in f.file_path.replace("\\", "/").lower()]
+    if testcode_findings:
+        findings = testcode_findings
+
     if sample and sample < len(findings):
-        print(f"    [*] Sampling {sample} of {len(findings)} findings...")
+        print(f"    [*] Sampling {sample} of {len(findings)} relevant findings...")
         findings = findings[:sample]
 
     # Step 3: Triage with LLM
