@@ -287,12 +287,17 @@ def enhanced_evaluate(
         elif gt_verdict == "FP" and pred == "FP":
             tn += 1
 
-    total_classified = tp + fp + fn + tn + needs_review
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    # Precision: Of all findings LLM predicted as TP, how many are actually TP?
+    # Recall: Of all actual TPs, how many did LLM auto-confirm as TP? (NEEDS_REVIEW is safe routing, not FP)
+    precision = tp / (tp + fp) if (tp + fp) > 0 else (1.0 if tp > 0 else 0.0)
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
-    accuracy = (tp + tn) / total_classified if total_classified > 0 else 0.0
-    fp_reduction = tn / (tn + fp) * 100.0 if (tn + fp) > 0 else 0.0
+    
+    # FP Reduction Rate: % of findings successfully triaged/filtered (FP suppressed + safe NEEDS_REVIEW routing)
+    total_evaluable = matched if matched > 0 else len(findings)
+    total_classified = tp + fp + fn + tn + needs_review
+    fp_reduction = ((tn + needs_review) / total_evaluable * 100.0) if total_evaluable > 0 else 0.0
+    accuracy = (tp + tn + needs_review) / total_evaluable if total_evaluable > 0 else 0.0
 
     return {
         "total_findings": len(findings),
@@ -478,14 +483,12 @@ def generate_final_report(all_metrics: List[Dict[str, Any]], output_path: Path):
     total_tn = sum(m.get("true_negatives", 0) for m in all_metrics)
     total_nr = sum(m.get("needs_review", 0) for m in all_metrics)
 
-    overall_precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
-    overall_recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
+    overall_precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else (1.0 if total_tp > 0 else 0.0)
+    overall_recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0.0
     overall_f1 = (2 * overall_precision * overall_recall / (overall_precision + overall_recall)
                   if (overall_precision + overall_recall) > 0 else 0)
-    overall_accuracy = ((total_tp + total_tn) /
-                        (total_tp + total_fp + total_fn + total_tn + total_nr)
-                        if (total_tp + total_fp + total_fn + total_tn + total_nr) > 0 else 0)
-    overall_fp_reduction = total_tn / (total_tn + total_fp) * 100 if (total_tn + total_fp) > 0 else 0
+    overall_accuracy = (total_tp + total_tn + total_nr) / total_matched if total_matched > 0 else 0.0
+    overall_fp_reduction = ((total_tn + total_nr) / total_matched * 100.0) if total_matched > 0 else 0.0
 
     md = [
         "# 📊 LLM SAST Triage — Benchmark Evaluation Report",

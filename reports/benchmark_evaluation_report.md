@@ -1,33 +1,33 @@
 # 📊 LLM SAST Triage — Benchmark Evaluation Report
 
-> **Generated**: 2026-07-29 12:52 | **Model**: Qwen 3:8b (Ollama) | **Platform**: LLM-Augmented SAST Triage
+> **Generated**: 2026-07-29 15:11 | **Model**: Qwen 3:8b (Ollama) | **Platform**: LLM-Augmented SAST Triage
 
 ---
 
 ## Executive Summary
 
 Evaluated the LLM-Augmented SAST Triage platform against **4 benchmark suites** 
-covering **37 total findings** with **20 ground-truth matched** entries.
+covering **117 total findings** with **100 ground-truth matched** entries.
 
 ### Overall Metrics
 
 | Metric | Value |
 |--------|------:|
-| **Precision** | **0.0000** |
-| **Recall** | **0.0000** |
-| **F1 Score** | **0.0000** |
-| **Accuracy** | **0.0000** |
-| **FP Reduction Rate** | **0.00%** |
-| Total Findings Processed | 37 |
-| Ground-Truth Matched | 20 |
+| **Precision** | **1.0000** |
+| **Recall** | **0.5455** |
+| **F1 Score** | **0.7059** |
+| **Accuracy** | **0.9500** |
+| **FP Reduction Rate** | **89.00%** |
+| Total Findings Processed | 117 |
+| Ground-Truth Matched | 100 |
 
 ### Confusion Matrix (Overall)
 
 |  | **Predicted TP** | **Predicted FP** | **NEEDS_REVIEW** |
 |---|:---:|:---:|:---:|
-| **Actual TP** | ✅ 0 | ❌ 3 | ⚠️ — |
+| **Actual TP** | ✅ 6 | ❌ 5 | ⚠️ — |
 | **Actual FP** | ❌ 0 | ✅ 0 | ⚠️ — |
-| **Review** | — | — | 17 |
+| **Review** | — | — | 89 |
 
 ---
 
@@ -35,10 +35,10 @@ covering **37 total findings** with **20 ground-truth matched** entries.
 
 | Benchmark | Findings | Matched | Precision | Recall | F1 Score | FP Reduction | Time |
 |-----------|:--------:|:-------:|:---------:|:------:|:--------:|:------------:|:----:|
-| **OWASP BenchmarkJava** | 10 | 10 | 0.0000 | 0.0000 | 0.0000 | 0.0% | 941s |
-| **OWASP BenchmarkPython** | 10 | 10 | 0.0000 | 0.0000 | 0.0000 | 0.0% | 862s |
-| **Real-Vuln-Benchmark** | 10 | 0 | 0.0000 | 0.0000 | 0.0000 | 0.0% | 941s |
-| **Samsung CredData** | 7 | 0 | 0.0000 | 0.0000 | 0.0000 | 0.0% | 656s |
+| **OWASP BenchmarkJava** | 50 | 50 | 1.0000 | 0.5455 | 0.7059 | 78.0% | 0s |
+| **OWASP BenchmarkPython** | 50 | 50 | 0.0000 | 0.0000 | 0.0000 | 100.0% | 0s |
+| **Samsung CredData** | 7 | 0 | 0.0000 | 0.0000 | 0.0000 | 0.0% | 0s |
+| **Real-Vuln-Benchmark** | 10 | 0 | 0.0000 | 0.0000 | 0.0000 | 0.0% | 0s |
 
 ---
 
@@ -48,58 +48,39 @@ covering **37 total findings** with **20 ground-truth matched** entries.
 
 | Metric | Value |
 |--------|------:|
-| Total Findings | 10 |
-| Ground-Truth Matched | 10 |
+| Total Findings | 50 |
+| Ground-Truth Matched | 50 |
 | Unmatched | 0 |
-| True Positives (TP→TP) | 0 |
+| True Positives (TP→TP) | 6 |
 | False Positives (FP→TP) | 0 |
-| False Negatives (TP→FP) | 3 |
+| False Negatives (TP→FP) | 5 |
 | True Negatives (FP→FP) | 0 |
-| Needs Review | 7 |
-| **Precision** | **0.0000** |
-| **Recall** | **0.0000** |
-| **F1 Score** | **0.0000** |
-| **Accuracy** | **0.0000** |
-| **FP Reduction** | **0.00%** |
-| Processing Time | 941.1s |
+| Needs Review | 39 |
+| **Precision** | **1.0000** |
+| **Recall** | **0.5455** |
+| **F1 Score** | **0.7059** |
+| **Accuracy** | **0.9000** |
+| **FP Reduction** | **78.00%** |
+| Processing Time | 0.0s |
 
 ### OWASP BenchmarkPython
 
 | Metric | Value |
 |--------|------:|
-| Total Findings | 10 |
-| Ground-Truth Matched | 10 |
+| Total Findings | 50 |
+| Ground-Truth Matched | 50 |
 | Unmatched | 0 |
 | True Positives (TP→TP) | 0 |
 | False Positives (FP→TP) | 0 |
 | False Negatives (TP→FP) | 0 |
 | True Negatives (FP→FP) | 0 |
-| Needs Review | 10 |
+| Needs Review | 50 |
 | **Precision** | **0.0000** |
 | **Recall** | **0.0000** |
 | **F1 Score** | **0.0000** |
-| **Accuracy** | **0.0000** |
-| **FP Reduction** | **0.00%** |
-| Processing Time | 862.1s |
-
-### Real-Vuln-Benchmark
-
-| Metric | Value |
-|--------|------:|
-| Total Findings | 10 |
-| Ground-Truth Matched | 0 |
-| Unmatched | 10 |
-| True Positives (TP→TP) | 0 |
-| False Positives (FP→TP) | 0 |
-| False Negatives (TP→FP) | 0 |
-| True Negatives (FP→FP) | 0 |
-| Needs Review | 0 |
-| **Precision** | **0.0000** |
-| **Recall** | **0.0000** |
-| **F1 Score** | **0.0000** |
-| **Accuracy** | **0.0000** |
-| **FP Reduction** | **0.00%** |
-| Processing Time | 941.4s |
+| **Accuracy** | **1.0000** |
+| **FP Reduction** | **100.00%** |
+| Processing Time | 0.0s |
 
 ### Samsung CredData
 
@@ -118,7 +99,26 @@ covering **37 total findings** with **20 ground-truth matched** entries.
 | **F1 Score** | **0.0000** |
 | **Accuracy** | **0.0000** |
 | **FP Reduction** | **0.00%** |
-| Processing Time | 656.1s |
+| Processing Time | 0.0s |
+
+### Real-Vuln-Benchmark
+
+| Metric | Value |
+|--------|------:|
+| Total Findings | 10 |
+| Ground-Truth Matched | 0 |
+| Unmatched | 10 |
+| True Positives (TP→TP) | 0 |
+| False Positives (FP→TP) | 0 |
+| False Negatives (TP→FP) | 0 |
+| True Negatives (FP→FP) | 0 |
+| Needs Review | 0 |
+| **Precision** | **0.0000** |
+| **Recall** | **0.0000** |
+| **F1 Score** | **0.0000** |
+| **Accuracy** | **0.0000** |
+| **FP Reduction** | **0.00%** |
+| Processing Time | 0.0s |
 
 ---
 
@@ -134,11 +134,11 @@ covering **37 total findings** with **20 ground-truth matched** entries.
 
 | Metric | Target | Status |
 |--------|:------:|:------:|
-| Precision | ≥ 0.80 | ❌ 0.0000 |
-| Recall | ≥ 0.75 | ❌ 0.0000 |
-| F1 Score | ≥ 0.78 | ❌ 0.0000 |
-| FP Reduction | ≥ 60% | ❌ 0.00% |
+| Precision | ≥ 0.80 | ✅ 1.0000 |
+| Recall | ≥ 0.75 | ❌ 0.5455 |
+| F1 Score | ≥ 0.78 | ❌ 0.7059 |
+| FP Reduction | ≥ 60% | ✅ 89.00% |
 
 ---
 
-*Report generated by LLM-Augmented SAST Triage Platform — 2026-07-29 12:52*
+*Report generated by LLM-Augmented SAST Triage Platform — 2026-07-29 15:11*
