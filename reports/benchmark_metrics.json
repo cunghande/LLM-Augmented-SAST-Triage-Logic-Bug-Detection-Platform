@@ -57,9 +57,9 @@
     "elapsed_seconds": 0.0
   },
   {
-    "total_findings": 10,
+    "total_findings": 34,
     "matched": 0,
-    "unmatched": 10,
+    "unmatched": 34,
     "total_classified": 0,
     "true_positives": 0,
     "false_positives": 0,
