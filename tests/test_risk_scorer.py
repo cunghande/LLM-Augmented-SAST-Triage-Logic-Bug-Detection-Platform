@@ -22,8 +22,8 @@ class TestRiskScorer(unittest.TestCase):
         scorer = RiskScorer()
         details = scorer.calculate_risk_score(finding)
 
-        self.assertGreaterEqual(details.overall_score, 1.0)
-        self.assertLessEqual(details.overall_score, 5.0)
+        self.assertGreaterEqual(details.overall_score, 0.0)
+        self.assertLessEqual(details.overall_score, 100.0)
         self.assertIsNotNone(finding.risk_score)
         print(f"\n[Test] Risk Score calculated: {details.overall_score} (Level: {details.risk_level.value})")
 

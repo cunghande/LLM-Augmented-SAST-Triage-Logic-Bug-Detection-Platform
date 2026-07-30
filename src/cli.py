@@ -15,6 +15,7 @@ from src.logic_bugs.ast_graph import extract_code_graph
 from src.logic_bugs.neo4j_exporter import Neo4jExporter
 from src.risk.scorer import RiskScorer
 from src.remediation.generator import RemediationGenerator
+from src.pipeline.parallel_pipeline import ParallelAnalysisPipeline
 
 
 def load_scans_from_dir(scans_dir: Path, repo_name: str = "CN_WEB") -> List[UnifiedFinding]:
@@ -42,8 +43,15 @@ def load_scans_from_dir(scans_dir: Path, repo_name: str = "CN_WEB") -> List[Unif
 
 
 def main():
-    parser = argparse.ArgumentParser(description="LLM-Augmented SAST Triage & Logic Bug Platform CLI")
+    parser = argparse.ArgumentParser(description="Modular LLM-augmented SAST and Logic-Bug Analysis Pipeline CLI (Research Prototype)")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # Subcommand: run-pipeline (Parallel Two-Branch Architecture)
+    pipeline_cmd = subparsers.add_parser("run-pipeline", help="Run parallel dual-branch analysis pipeline (Branch A + Branch B)")
+    pipeline_cmd.add_argument("--repo-dir", required=True, help="Target repository directory path")
+    pipeline_cmd.add_argument("--scans-dir", required=True, help="Scans directory path")
+    pipeline_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
+    pipeline_cmd.add_argument("--output-dir", default="reports/CN_WEB", help="Output report directory")
 
     # Subcommand: parse
     parse_cmd = subparsers.add_parser("parse", help="Parse scanner output into unified finding schema")
@@ -53,43 +61,36 @@ def main():
     parse_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
 
     # Subcommand: triage
-    triage_cmd = subparsers.add_parser("triage", help="Run automated LLM triage on scan findings")
+    triage_cmd = subparsers.add_parser("triage", help="Run Branch A automated LLM triage on SAST findings")
     triage_cmd.add_argument("--scans-dir", required=True, help="Directory containing raw scan files")
     triage_cmd.add_argument("--repo-dir", required=True, help="Path to target repository code")
     triage_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
     triage_cmd.add_argument("--output", default="reports/CN_WEB/triage_result.json", help="Output JSON report path")
-    triage_cmd.add_argument("--api-base", help="Local LLM API Base (e.g. http://localhost:11434/v1)")
-    triage_cmd.add_argument("--model", help="LLM Model name (e.g. qwen3:8b)")
 
-    # Subcommand: evaluate
-    eval_cmd = subparsers.add_parser("evaluate", help="Evaluate triage performance against ground truth benchmark")
-    eval_cmd.add_argument("--triage-result", required=True, help="Triaged findings JSON file")
-    eval_cmd.add_argument("--benchmark", required=True, help="Ground truth benchmark JSON file")
-
-    # Subcommand: detect-logic-bugs (Sprint 2)
-    lb_cmd = subparsers.add_parser("detect-logic-bugs", help="Detect business logic vulnerabilities using AST/CPG + LLM")
+    # Subcommand: detect-logic-bugs
+    lb_cmd = subparsers.add_parser("detect-logic-bugs", help="Run Branch B logic-bug candidate detection")
     lb_cmd.add_argument("--repo-dir", required=True, help="Path to target repository code")
     lb_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
     lb_cmd.add_argument("--output", default="reports/CN_WEB/logic_bugs.json", help="Output logic bugs JSON path")
 
-    # Subcommand: score-risk (Sprint 2)
-    risk_cmd = subparsers.add_parser("score-risk", help="Calculate Risk Scores for findings")
-    risk_cmd.add_argument("--input", required=True, help="Input triaged findings JSON file")
+    # Subcommand: score-risk
+    risk_cmd = subparsers.add_parser("score-risk", help="Calculate rubric risk scores (0-100)")
+    risk_cmd.add_argument("--input", required=True, help="Input findings JSON file")
     risk_cmd.add_argument("--output", default="reports/CN_WEB/risk_report.json", help="Output risk scored JSON path")
 
-    # Subcommand: generate-remediation (Sprint 2)
-    patch_cmd = subparsers.add_parser("generate-remediation", help="Generate code diff patches for TP findings")
+    # Subcommand: generate-remediation
+    patch_cmd = subparsers.add_parser("generate-remediation", help="Generate PATCH_CANDIDATE proposals")
     patch_cmd.add_argument("--input", required=True, help="Input triaged findings JSON file")
     patch_cmd.add_argument("--output", default="reports/CN_WEB/remediation_report.json", help="Output remediation JSON path")
 
-    # Subcommand: priority-report (Sprint 2 - S2-07)
-    priority_cmd = subparsers.add_parser("priority-report", help="Generate priority ranked security report with Executive Summary (S2-07)")
+    # Subcommand: priority-report
+    priority_cmd = subparsers.add_parser("priority-report", help="Generate priority ranked security report")
     priority_cmd.add_argument("--input", required=True, help="Input risk-scored findings JSON file")
     priority_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
     priority_cmd.add_argument("--output", default="reports/CN_WEB/priority_report.md", help="Output priority Markdown report path")
 
-    # Subcommand: export-neo4j (Neo4j Integration)
-    neo_cmd = subparsers.add_parser("export-neo4j", help="Export AST/CPG Code Graph into Neo4j Graph Database")
+    # Subcommand: export-neo4j
+    neo_cmd = subparsers.add_parser("export-neo4j", help="Export Lightweight Security Context Graph to Neo4j Database")
     neo_cmd.add_argument("--repo-dir", default="repos/CN_WEB", help="Repository directory path")
     neo_cmd.add_argument("--repo-name", default="CN_WEB", help="Repository name")
     neo_cmd.add_argument("--uri", default="bolt://localhost:7687", help="Neo4j bolt URI")
@@ -98,7 +99,16 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "parse":
+    if args.command == "run-pipeline":
+        pipeline = ParallelAnalysisPipeline()
+        merged = pipeline.execute_pipeline(Path(args.repo_dir), Path(args.scans_dir), repo_name=args.repo_name)
+        out_dir = Path(args.output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        generate_json_report(merged, out_dir / "triage_result.json")
+        generate_priority_report(merged, out_dir / "priority_report.md", repo_name=args.repo_name)
+        print(f"[OK] Pipeline execution finished! Results saved to {out_dir}")
+
+    elif args.command == "parse":
         input_path = Path(args.input)
         if args.scanner == "gitleaks":
             findings = parse_gitleaks_json(input_path, args.repo_name)
@@ -113,96 +123,50 @@ def main():
         if args.output:
             out_file = generate_json_report(findings, args.output)
             print(f"[OK] Saved unified findings to {out_file}")
-        else:
-            print(json.dumps([f.model_dump() for f in findings], indent=2))
 
     elif args.command == "triage":
         scans_dir = Path(args.scans_dir)
         repo_dir = Path(args.repo_dir)
-
-        print(f"[*] Discovering findings under {scans_dir}...")
         findings = load_scans_from_dir(scans_dir, args.repo_name)
-        print(f"[+] Total raw findings discovered: {len(findings)}")
-
         if not findings:
             print("[!] No findings found to triage.")
             sys.exit(0)
 
-        client = LLMClient(api_base=args.api_base, model=args.model)
-        print(f"[*] Initialized LLM Client -> Endpoint: {client.api_base} | Model: {client.model}")
-
+        client = LLMClient()
         engine = TriageEngine(llm_client=client)
-        print("[*] Running LLM triage pipeline...")
         triaged = engine.triage_batch(findings, repo_dir)
-
-        # Calculate risk scores automatically
         scorer = RiskScorer()
         triaged = scorer.score_batch(triaged)
-
-        # Generate remediation patches for TPs automatically
         remediation_gen = RemediationGenerator()
         triaged = remediation_gen.generate_remediation_batch(triaged)
 
         json_out = generate_json_report(triaged, args.output)
         md_out = generate_markdown_report(triaged, Path(args.output).with_suffix(".md"))
-
-        print(f"[OK] Triage complete!")
-        print(f"     - JSON Report: {json_out}")
-        print(f"     - Markdown Report: {md_out}")
-
-    elif args.command == "evaluate":
-        triage_path = Path(args.triage_result)
-        benchmark_path = Path(args.benchmark)
-
-        with open(triage_path, "r", encoding="utf-8") as f:
-            triage_data = json.load(f)
-        triaged_findings = [UnifiedFinding(**item) for item in triage_data]
-
-        with open(benchmark_path, "r", encoding="utf-8") as f:
-            bm_data = json.load(f)
-
-        ground_truth_map = {}
-        for item in bm_data:
-            ground_truth_map[item["finding_id"]] = item["ground_truth_verdict"]
-            if "rule_id" in item:
-                ground_truth_map[item["rule_id"]] = item["ground_truth_verdict"]
-
-        metrics = evaluate_triage_performance(triaged_findings, ground_truth_map)
-        print("\n" + "="*50)
-        print("         TRIAGE EVALUATION METRICS SUMMARY       ")
-        print("="*50)
-        for key, val in metrics.items():
-            print(f"  {key:25s}: {val}")
-        print("="*50 + "\n")
+        print(f"[OK] Triage complete! Output: {json_out}")
 
     elif args.command == "detect-logic-bugs":
         repo_dir = Path(args.repo_dir)
-        print(f"[*] Extracting AST/CPG Code Graph for {args.repo_name}...")
         client = LLMClient()
         detector = LogicBugDetector(llm_client=client)
         logic_findings = detector.detect_bugs_in_repo(repo_dir, args.repo_name)
-        
         out_file = generate_json_report(logic_findings, args.output)
-        print(f"[OK] Logic bug detection complete! Found {len(logic_findings)} logic flaws.")
-        print(f"     - Output JSON: {out_file}")
+        print(f"[OK] Found {len(logic_findings)} logic flaw candidates. Output: {out_file}")
 
     elif args.command == "score-risk":
         in_path = Path(args.input)
         with open(in_path, "r", encoding="utf-8") as f:
             findings_data = json.load(f)
         findings = [UnifiedFinding(**item) for item in findings_data]
-        
         scorer = RiskScorer()
         scored = scorer.score_batch(findings)
         out_file = generate_json_report(scored, args.output)
-        print(f"[OK] Risk scoring complete for {len(scored)} findings! Saved to {out_file}")
+        print(f"[OK] Risk scoring complete! Saved to {out_file}")
 
     elif args.command == "generate-remediation":
         in_path = Path(args.input)
         with open(in_path, "r", encoding="utf-8") as f:
             findings_data = json.load(f)
         findings = [UnifiedFinding(**item) for item in findings_data]
-        
         gen = RemediationGenerator()
         remediated = gen.generate_remediation_batch(findings)
         out_file = generate_json_report(remediated, args.output)
@@ -213,23 +177,16 @@ def main():
         with open(in_path, "r", encoding="utf-8") as f:
             findings_data = json.load(f)
         findings = [UnifiedFinding(**item) for item in findings_data]
-
-        # Ensure risk scores are present (recalculate if missing)
         scorer = RiskScorer()
         findings = scorer.score_batch(findings)
-
-        # Ensure remediation patches are present
         gen = RemediationGenerator()
         findings = gen.generate_remediation_batch(findings)
-
         out_file = generate_priority_report(findings, args.output, repo_name=args.repo_name)
         print(f"[OK] Priority Report generated! Saved to {out_file}")
 
     elif args.command == "export-neo4j":
         repo_dir = Path(args.repo_dir)
-        print(f"[*] Extracting CPG Code Graph from {repo_dir}...")
         traces = extract_code_graph(repo_dir)
-        print(f"[*] Found {len(traces)} CPG trace(s). Exporting to Neo4j database...")
         exporter = Neo4jExporter(uri=args.uri, user=args.user, password=args.password)
         exporter.export_traces(traces, repo_name=args.repo_name)
         exporter.close()

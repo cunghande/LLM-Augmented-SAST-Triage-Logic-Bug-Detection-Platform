@@ -1,8 +1,15 @@
+"""
+Semgrep JSON/SARIF Parser Module
+================================
+Parses Semgrep findings into UnifiedFinding objects, assigning the branch
+to SAST_TRIAGE_BRANCH and extracting rule_family metadata.
+"""
+
 import json
 import hashlib
-from typing import List, Union, Dict, Any
+from typing import List, Union
 from pathlib import Path
-from src.core.schema import UnifiedFinding, ScannerType, Severity, FindingStatus
+from src.core.schema import UnifiedFinding, ScannerType, BranchType, Severity, FindingStatus
 
 
 SEMGREP_SEVERITY_MAP = {
@@ -14,6 +21,14 @@ SEMGREP_SEVERITY_MAP = {
     "MEDIUM": Severity.MEDIUM,
     "LOW": Severity.LOW,
 }
+
+
+def extract_rule_family(rule_id: str) -> str:
+    """Extract rule family tag from Semgrep check_id."""
+    parts = rule_id.lower().split(".")
+    if len(parts) >= 2:
+        return parts[1]
+    return "generic-semgrep"
 
 
 def parse_semgrep_json(content_or_path: Union[str, Path], repository_name: str = "CN_WEB") -> List[UnifiedFinding]:
@@ -56,6 +71,7 @@ def parse_semgrep_json(content_or_path: Union[str, Path], repository_name: str =
         finding = UnifiedFinding(
             finding_id=f"SG-{finding_id}",
             scanner=ScannerType.SEMGREP,
+            branch_type=BranchType.SAST_TRIAGE_BRANCH,
             rule_id=rule_id,
             repository=repository_name,
             commit_sha="HEAD",
@@ -72,6 +88,7 @@ def parse_semgrep_json(content_or_path: Union[str, Path], repository_name: str =
                 "confidence": meta.get("confidence", ""),
                 "likelihood": meta.get("likelihood", ""),
                 "category": meta.get("category", ""),
+                "rule_family": extract_rule_family(rule_id),
             },
             status=FindingStatus.NEW
         )
@@ -129,12 +146,7 @@ def parse_semgrep_sarif(content_or_path: Union[str, Path], repository_name: str 
 
             message = item.get("message", {}).get("text", "")
             level = item.get("level", "warning").upper()
-            if level == "ERROR":
-                severity = Severity.HIGH
-            elif level == "WARNING":
-                severity = Severity.MEDIUM
-            else:
-                severity = Severity.LOW
+            severity = Severity.HIGH if level == "ERROR" else (Severity.MEDIUM if level == "WARNING" else Severity.LOW)
 
             raw_id = f"SEMGREP-SARIF-{repository_name}-{rule_id}-{file_path}-{start_line}-{idx}"
             finding_id = hashlib.md5(raw_id.encode("utf-8")).hexdigest()[:12].upper()
@@ -142,6 +154,7 @@ def parse_semgrep_sarif(content_or_path: Union[str, Path], repository_name: str 
             finding = UnifiedFinding(
                 finding_id=f"SG-{finding_id}",
                 scanner=ScannerType.SEMGREP,
+                branch_type=BranchType.SAST_TRIAGE_BRANCH,
                 rule_id=rule_id,
                 repository=repository_name,
                 commit_sha="HEAD",
@@ -154,6 +167,7 @@ def parse_semgrep_sarif(content_or_path: Union[str, Path], repository_name: str 
                     "message": message,
                     "help": rule_meta.get("help", {}).get("text", ""),
                     "shortDescription": rule_meta.get("shortDescription", {}).get("text", ""),
+                    "rule_family": extract_rule_family(rule_id),
                 },
                 status=FindingStatus.NEW
             )

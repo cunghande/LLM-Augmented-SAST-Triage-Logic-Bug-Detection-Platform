@@ -1,9 +1,9 @@
 """
 Core Data Schema — UnifiedFinding & Supporting Models
 ======================================================
-Định nghĩa tất cả Pydantic Models dùng chung trong toàn bộ nền tảng.
-Mọi dữ liệu từ parsers, triage, risk scoring, và remediation đều
-quy về schema này trước khi ghi ra JSON report.
+Defines all Pydantic Models for the modular LLM-augmented SAST & logic-bug analysis pipeline.
+All findings from parsers, triage, logic-bug detectors, risk scoring, and remediation
+converge onto this schema.
 """
 
 import hashlib
@@ -15,15 +15,21 @@ from pydantic import BaseModel, Field
 # ─── Enums ────────────────────────────────────────────────────────────────────
 
 class ScannerType(str, Enum):
-    """Nguồn gốc phát hiện finding."""
+    """Origin scanner type."""
     GITLEAKS = "gitleaks"
     SEMGREP = "semgrep"
-    LOGIC_BUG = "logic-bug"   # Phát hiện bởi Logic-Bug Agent (Sprint 2)
+    LOGIC_BUG = "logic-bug"
     MANUAL = "manual"
 
 
+class BranchType(str, Enum):
+    """Pipeline analysis branch."""
+    SAST_TRIAGE_BRANCH = "sast_triage_branch"
+    LOGIC_BUG_BRANCH = "logic_bug_branch"
+
+
 class Severity(str, Enum):
-    """Mức độ nghiêm trọng kỹ thuật của lỗ hổng."""
+    """Technical severity level."""
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -32,14 +38,15 @@ class Severity(str, Enum):
 
 
 class TriageVerdict(str, Enum):
-    """Kết quả phân loại của LLM Qwen 3:8b."""
-    TRUE_POSITIVE = "TP"          # Lỗi bảo mật thật, cần vá
-    FALSE_POSITIVE = "FP"         # Cảnh báo sai, có thể bỏ qua
-    NEEDS_REVIEW = "NEEDS_REVIEW" # Cần AppSec review thủ công thêm
+    """Triage verdict output."""
+    TRUE_POSITIVE = "TP"                  # Vulnerability confirmed
+    FALSE_POSITIVE = "FP"                 # False positive noise
+    NEEDS_REVIEW = "NEEDS_REVIEW"         # Requires manual AppSec review
+    NEEDS_MORE_CONTEXT = "NEEDS_MORE_CONTEXT"  # Insufficient context to determine
 
 
 class FindingStatus(str, Enum):
-    """Trạng thái vòng đời của finding trong quy trình xử lý."""
+    """Lifecycle status of a finding."""
     NEW = "NEW"
     TRIAGED = "TRIAGED"
     CONFIRMED = "CONFIRMED"
@@ -50,88 +57,163 @@ class FindingStatus(str, Enum):
 
 
 class ActionGroup(str, Enum):
-    """
-    Chính sách phân luồng xử lý dựa trên confidence của LLM.
-    Xem thêm: src/triage/engine.py → TriageEngine.triage_finding()
-    """
-    AUTO_SUPPRESS_CANDIDATE = "AUTO_SUPPRESS_CANDIDATE"  # FP tin cậy cao → tự suppress
-    MANUAL_REVIEW = "MANUAL_REVIEW"                       # Confidence trung bình → AppSec review
-    HIGH_CONFIDENCE_TP = "HIGH_CONFIDENCE_TP"             # TP tin cậy cao → ưu tiên vá ngay
+    """Processing policy action group."""
+    AUTO_SUPPRESS_CANDIDATE = "AUTO_SUPPRESS_CANDIDATE"
+    MANUAL_REVIEW = "MANUAL_REVIEW"
+    HIGH_CONFIDENCE_TP = "HIGH_CONFIDENCE_TP"
+
+
+class SecretTaxonomy(str, Enum):
+    """Gitleaks secret validity classification taxonomy."""
+    VALID_SECRET = "VALID_SECRET"
+    REVOKED_SECRET = "REVOKED_SECRET"
+    TEST_CREDENTIAL = "TEST_CREDENTIAL"
+    PLACEHOLDER = "PLACEHOLDER"
+    HISTORICAL_SECRET = "HISTORICAL_SECRET"
+    FALSE_MATCH = "FALSE_MATCH"
+    UNKNOWN_VALIDITY = "UNKNOWN_VALIDITY"
+
+
+class GuardCategory(str, Enum):
+    """Categories of security guards in code."""
+    AUTHENTICATION = "AUTHENTICATION"
+    ROLE = "ROLE"
+    OWNERSHIP = "OWNERSHIP"
+    TENANT = "TENANT"
+    STATE_TRANSITION = "STATE_TRANSITION"
+    VALIDATION = "VALIDATION"
+    TRANSACTION = "TRANSACTION"
+    UNKNOWN = "UNKNOWN"
+
+
+class ContextQuality(str, Enum):
+    """Quality tier of context extraction."""
+    HIGH = "HIGH"          # AST node + full function / slice + caller/callee context
+    MEDIUM = "MEDIUM"      # AST function / statement node
+    FALLBACK = "FALLBACK"  # Line window fallback (when AST parsing fails)
+
+
+class PatchStatus(str, Enum):
+    """Status of LLM-generated remediation patch candidate."""
+    PATCH_CANDIDATE = "PATCH_CANDIDATE"
+    GUIDANCE_ONLY = "GUIDANCE_ONLY"
+    INSUFFICIENT_CONTEXT = "INSUFFICIENT_CONTEXT"
+    FAILED_VALIDATION = "FAILED_VALIDATION"
 
 
 # ─── Sub-models ───────────────────────────────────────────────────────────────
 
+class EvidenceReference(BaseModel):
+    """
+    Structured evidence reference anchoring every verdict to explicit code elements.
+    Verdicts without verifiable evidence references must fallback to NEEDS_MORE_CONTEXT/NEEDS_REVIEW.
+    """
+    file_path: str
+    line_number: int
+    symbol: Optional[str] = None
+    source: Optional[str] = None
+    sink: Optional[str] = None
+    guard: Optional[str] = None
+    code_path: List[str] = Field(default_factory=list)
+
+
+class DecisionMetadata(BaseModel):
+    """
+    Decision metadata for tracking LLM evaluation state and reproducibility.
+    Note: decision_score is uncalibrated raw score; not treated as true probability.
+    """
+    decision_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    model_version: str = "qwen3:8b"
+    prompt_version: str = "v2.0"
+    context_hash: str = ""
+    policy_version: str = "v1.0"
+
+
 class FindingContext(BaseModel):
-    """Ngữ cảnh code được trích xuất bởi Context Extractor (src/context/extractor.py)."""
-    enclosing_function: Optional[str] = None   # Tên hàm/route bao quanh finding
-    line_window: Optional[str] = None          # Khoảng dòng được lấy (VD: "L66-L96")
-    surrounding_code: Optional[str] = None    # Đoạn code ±15 dòng xung quanh (đã redact secret)
-    imports: List[str] = Field(default_factory=list)  # Danh sách import đầu file
-    caller_callee_info: Optional[str] = None  # Thông tin caller/callee (nếu có)
-    redacted: bool = False                    # True nếu đã redact dữ liệu nhạy cảm
+    """Context extracted by MultiTierContextExtractor."""
+    context_quality: ContextQuality = ContextQuality.FALLBACK
+    enclosing_function: Optional[str] = None
+    enclosing_class: Optional[str] = None
+    ast_node_type: Optional[str] = None
+    annotations: List[str] = Field(default_factory=list)
+    parameters: List[str] = Field(default_factory=list)
+    line_window: Optional[str] = None
+    surrounding_code: Optional[str] = None
+    imports: List[str] = Field(default_factory=list)
+    caller_callee_info: Optional[str] = None
+    sliced_code: Optional[str] = None
+    related_config: Optional[str] = None
+    redacted: bool = True
 
 
-class TriageResult(BaseModel):
-    """Kết quả triage từ LLM (được nhúng trực tiếp vào UnifiedFinding)."""
-    verdict: TriageVerdict
-    confidence: float = Field(..., ge=0.0, le=1.0)
-    reasoning: str
-    evidence: List[str] = Field(default_factory=list)
-    action_group: ActionGroup = ActionGroup.MANUAL_REVIEW
-    model_version: Optional[str] = None
-    prompt_version: Optional[str] = None
-
-
-class LogicBugTrace(BaseModel):
+class LightweightSecurityContextGraph(BaseModel):
     """
-    Vết truy vết CPG/AST được sinh bởi ast_graph.py (Sprint 2 - S2-01).
-    Ghi lại đường đi: Entrypoint → Guards → Sensitive Sink.
+    Lightweight Security Context Graph representing Entrypoint -> Guard -> Sink traces.
+    
+    LIMITATIONS NOTICE:
+    This graph is an AST-derived lightweight security context graph. It is NOT a full
+    Control Flow Graph (CFG) or complete Code Property Graph (CPG), as it lacks full 
+    interprocedural data flow analysis, alias resolution, and complete symbol table tracking.
+    Missing guards indicate a LOGIC_BUG_CANDIDATE for review, not automated proof of vulnerability.
     """
-    bug_type: str                              # IDOR | MASS_ASSIGNMENT | BUSINESS_RULE_BYPASS | ...
-    entrypoint: str                            # HTTP route/endpoint phát hiện lỗi
-    guards: List[str] = Field(default_factory=list)  # Danh sách Auth middleware hiện có
-    sensitive_sink: str                        # Thao tác DB/File nhạy cảm
-    has_authz_guard: bool = False             # ⚠️ False = thiếu guard → nguy cơ cao
-    trace_path: List[str] = Field(default_factory=list)  # Đường đi đầy đủ
+    bug_type: str
+    entrypoint: str
+    guards: List[str] = Field(default_factory=list)
+    guard_categories: List[GuardCategory] = Field(default_factory=list)
+    sensitive_sink: str
+    has_auth_guard: bool = False
+    trace_path: List[str] = Field(default_factory=list)
+    limitations_disclaimer: str = (
+        "Lightweight security context graph based on AST heuristics. "
+        "Lacks full interprocedural dataflow. Absence of guard generates LOGIC_BUG_CANDIDATE."
+    )
 
 
 class RiskScoreDetails(BaseModel):
     """
-    Chi tiết điểm rủi ro theo 5 thành phần (Sprint 2 - S2-05).
-    Công thức: Risk = 0.25×Sev + 0.25×Reach + 0.20×Exp + 0.20×Sens + 0.10×Exploit
+    Risk score details calculated on a normalized 0-100 rubric scale.
+    Formula: Risk = ((0.25*Sev + 0.25*Reach + 0.20*Exp + 0.20*Sens + 0.10*Exploit) - 1.0) / 4.0 * 100
     """
-    overall_score: float = Field(..., ge=1.0, le=5.0)  # Điểm tổng hợp
-    severity_score: float = 3.0          # Tác động kỹ thuật (1-5)
-    reachability_score: float = 3.0      # Khả năng đến được sink (1-5)
-    exposure_score: float = 3.0          # Mức độ phơi bày internet (1-5)
-    data_sensitivity_score: float = 3.0  # Độ nhạy của dữ liệu bị ảnh hưởng (1-5)
-    exploitability_score: float = 3.0    # Độ dễ khai thác (1-5)
-    risk_level: Severity = Severity.MEDIUM  # CRITICAL ≥ 4.2 | HIGH ≥ 3.4 | MEDIUM ≥ 2.5
+    overall_score: float = Field(..., ge=0.0, le=100.0)  # Normalized 0-100
+    severity_score: float = Field(3.0, ge=1.0, le=5.0)          # Impact (1-5)
+    reachability_score: float = Field(3.0, ge=1.0, le=5.0)      # Reachability (1-5)
+    exposure_score: float = Field(3.0, ge=1.0, le=5.0)          # Exposure (1-5)
+    data_sensitivity_score: float = Field(3.0, ge=1.0, le=5.0)  # Data Sensitivity (1-5)
+    exploitability_score: float = Field(3.0, ge=1.0, le=5.0)    # Exploitability (1-5)
+    risk_level: Severity = Severity.MEDIUM
 
 
 class RemediationPatch(BaseModel):
-    """Đề xuất vá lỗi được sinh bởi RemediationGenerator (Sprint 2 - S2-06)."""
-    fix_summary: str                        # Mô tả ngắn cách vá
-    code_diff: str                          # Code diff đề xuất (unified patch format)
-    recommended_test: Optional[str] = None  # Gợi ý test case để kiểm tra sau khi vá
+    """
+    Remediation proposal generated by Remediation Engine.
+    Patches are strictly PATCH_CANDIDATE items linked to commit_sha and must pass validation.
+    Never auto-applied or auto-merged.
+    """
+    status: PatchStatus = PatchStatus.PATCH_CANDIDATE
+    commit_sha: str = "HEAD"
+    fix_summary: str
+    code_diff: str
+    recommended_test: Optional[str] = None
+    validation_checks: Dict[str, bool] = Field(
+        default_factory=lambda: {
+            "syntax_valid": False,
+            "apply_valid": False,
+            "unit_test_passed": False,
+            "security_regression_passed": False
+        }
+    )
 
 
 # ─── Main Model ───────────────────────────────────────────────────────────────
 
 class UnifiedFinding(BaseModel):
     """
-    Model trung tâm của nền tảng — chuẩn hóa finding từ mọi scanner.
-
-    Vòng đời:
-      1. Parser   → finding_id, rule_id, file_path, snippet, severity
-      2. Extractor→ context (surrounding_code, enclosing_function)
-      3. LLM      → verdict, confidence, reasoning, evidence, action_group
-      4. Scorer   → risk_score, risk_score_details
-      5. Generator→ remediation, remediation_patch
+    Central finding model of the platform.
+    Represents findings from SAST Triage Branch (Semgrep/Gitleaks) and Logic-Bug Branch.
     """
-    # ── Thông tin cơ bản từ Scanner ──────────────────────────────────────────
     finding_id: str
     scanner: ScannerType
+    branch_type: BranchType = BranchType.SAST_TRIAGE_BRANCH
     rule_id: str
     repository: str
     commit_sha: Optional[str] = "HEAD"
@@ -140,33 +222,35 @@ class UnifiedFinding(BaseModel):
     end_line: int
     snippet: str
     severity: Severity = Severity.MEDIUM
-    metadata: Dict[str, Any] = Field(default_factory=dict)  # Message, CWE, OWASP từ scanner
-    context: Optional[FindingContext] = None                # Được điền bởi extractor.py
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    # ── Secret Taxonomy & Context ─────────────────────────────────────────────
+    secret_taxonomy: SecretTaxonomy = SecretTaxonomy.UNKNOWN_VALIDITY
+    context: Optional[FindingContext] = None
 
-    # ── Kết quả Triage từ LLM ────────────────────────────────────────────────
-    verdict: Optional[TriageVerdict] = None      # TP | FP | NEEDS_REVIEW
-    confidence: Optional[float] = None           # 0.0 - 1.0
-    reasoning: Optional[str] = None              # Lý giải của Qwen 3:8b
+    # ── Verdict & Evidence ───────────────────────────────────────────────────
+    verdict: Optional[TriageVerdict] = None
+    confidence: Optional[float] = None
+    reasoning: Optional[str] = None
     evidence: List[str] = Field(default_factory=list)
-    action_group: Optional[ActionGroup] = None   # Phân luồng xử lý
+    evidence_ref: Optional[EvidenceReference] = None
+    decision_metadata: Optional[DecisionMetadata] = None
+    action_group: Optional[ActionGroup] = None
 
-    # ── Sprint 2 Additions ────────────────────────────────────────────────────
-    logic_bug_trace: Optional[LogicBugTrace] = None       # CPG trace (S2-01)
-    risk_score_details: Optional[RiskScoreDetails] = None  # Chi tiết điểm rủi ro (S2-05)
-    remediation_patch: Optional[RemediationPatch] = None   # Code diff đề xuất (S2-06)
+    # ── Graph, Risk & Remediation ─────────────────────────────────────────────
+    security_context_graph: Optional[LightweightSecurityContextGraph] = None
+    risk_score_details: Optional[RiskScoreDetails] = None
+    remediation_patch: Optional[RemediationPatch] = None
+    risk_score: Optional[float] = None
+    remediation: Optional[Dict[str, Any]] = None
 
-    # ── Risk & Remediation (dạng flat để JSON report dễ đọc) ──────────────────
-    risk_score: Optional[float] = None           # Điểm rủi ro tổng hợp
-    remediation: Optional[Dict[str, Any]] = None # Thông tin vá lỗi dạng dict
-
-    # ── Lifecycle ─────────────────────────────────────────────────────────────
-    fingerprint: Optional[str] = None            # Hash duy nhất để chống trùng lặp
+    # ── Lifecycle & Audit ─────────────────────────────────────────────────────
+    fingerprint: Optional[str] = None
     status: FindingStatus = FindingStatus.NEW
-    model_version: Optional[str] = None          # Phiên bản model LLM đã dùng
-    prompt_version: Optional[str] = None         # Phiên bản prompt đã dùng
+    processing_error: Optional[str] = None
 
     def compute_fingerprint(self) -> str:
-        """Tính fingerprint SHA-256 ổn định dựa trên rule_id + file_path + snippet."""
+        """Compute stable SHA-256 fingerprint based on rule_id + file_path + normalized snippet."""
         clean_snippet = " ".join(self.snippet.strip().split())
         raw = f"{self.rule_id}:{self.file_path}:{clean_snippet}"
         self.fingerprint = hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -174,8 +258,10 @@ class UnifiedFinding(BaseModel):
 
 
 class GroundTruthBenchmarkItem(BaseModel):
-    """Item trong bộ benchmark ground truth dùng để đo đánh giá độ chính xác."""
+    """Benchmark item for versioned benchmark evaluation."""
     finding_id: str
     ground_truth_verdict: TriageVerdict
+    rule_family: str = "generic"
+    repository: str = "benchmark_repo"
     reviewer_notes: Optional[str] = None
     confidence_level: Optional[str] = "HIGH"
