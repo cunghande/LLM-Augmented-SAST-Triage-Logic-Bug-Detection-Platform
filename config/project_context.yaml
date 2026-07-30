@@ -1,0 +1,41 @@
+# Project Security Context & Guard Requirement Policy Configuration
+version: "1.0"
+system_exposure: "INTERNET_FACING"
+
+assets:
+  - name: "User Credentials"
+    sensitivity: "CRITICAL"
+    protection_level: "HIGH"
+  - name: "User Personal Data"
+    sensitivity: "HIGH"
+    protection_level: "HIGH"
+  - name: "Order & Payment History"
+    sensitivity: "CRITICAL"
+    protection_level: "CRITICAL"
+
+roles:
+  - "ANONYMOUS_USER"
+  - "AUTHENTICATED_USER"
+  - "RESOURCE_OWNER"
+  - "TENANT_ADMIN"
+  - "SYSTEM_ADMIN"
+
+authorization_policies:
+  - policy_id: "POL-001"
+    name: "Resource Ownership Verification Policy"
+    description: "Every sensitive user resource endpoint must verify that requester ID matches resource owner ID."
+    required_guard_category: "OWNERSHIP"
+    applicable_routes:
+      - "/api/user/*"
+      - "/api/orders/*"
+
+  - policy_id: "POL-002"
+    name: "Admin Role Enforcement Policy"
+    description: "Administrative actions require explicit ADMIN role check guard."
+    required_guard_category: "ROLE"
+    applicable_routes:
+      - "/api/admin/*"
+
+security_invariants:
+  - "No sensitive database modification operation allowed without preceding authentication & authorization guard."
+  - "Fallback JWT secrets in production environment are strictly prohibited."

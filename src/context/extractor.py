@@ -3,11 +3,13 @@ Multi-Tier Context Extractor Module
 ===================================
 Extracts rich context using AST mapping, function/class scoping, imports,
 local guards, and slicing heuristics. Performs file-type-aware secret redaction.
+Supports diff-scan mode by expanding context outside changed lines.
 Falls back to line window extraction only when AST parsing fails, tagging context_quality=FALLBACK.
 """
 
 import ast
 import re
+import subprocess
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple, Any
 from src.core.schema import UnifiedFinding, FindingContext, ContextQuality
@@ -116,9 +118,13 @@ class PythonASTContextExtractor:
 def extract_finding_context(
     finding: UnifiedFinding,
     repo_dir: Path,
-    window_lines: int = 15
+    window_lines: int = 15,
+    mode: str = "full"
 ) -> FindingContext:
-    """Extract multi-tier context using AST analysis where possible."""
+    """
+    Extract multi-tier context using AST analysis.
+    In diff-scan mode (mode="diff"), retrieves relevant repository AST context outside changed lines.
+    """
     relative_path = finding.file_path.lstrip("/\\")
     full_path = repo_dir / relative_path
 
@@ -146,6 +152,9 @@ def extract_finding_context(
             if line.strip().startswith(("import ", "from ", "const ", "require(", "using "))
         ]
 
+        # Expand window for diff-scan mode to guarantee context outside changed lines
+        effective_window = window_lines * 2 if mode == "diff" else window_lines
+
         if ext == ".py":
             func, cls, node_type, annots, params, guards = PythonASTContextExtractor.extract_ast_context(
                 content, finding.start_line
@@ -153,8 +162,8 @@ def extract_finding_context(
 
             if func or cls or node_type:
                 target_idx = max(0, finding.start_line - 1)
-                start_idx = max(0, target_idx - 10)
-                end_idx = min(len(file_lines), finding.end_line + 10)
+                start_idx = max(0, target_idx - effective_window)
+                end_idx = min(len(file_lines), finding.end_line + effective_window)
 
                 snippet_lines = []
                 for idx in range(start_idx, end_idx):
@@ -181,8 +190,8 @@ def extract_finding_context(
 
         # JS/TS or Fallback context extraction
         target_idx = max(0, finding.start_line - 1)
-        start_idx = max(0, target_idx - window_lines)
-        end_idx = min(len(file_lines), finding.end_line + window_lines)
+        start_idx = max(0, target_idx - effective_window)
+        end_idx = min(len(file_lines), finding.end_line + effective_window)
 
         snippet_lines = []
         for idx in range(start_idx, end_idx):

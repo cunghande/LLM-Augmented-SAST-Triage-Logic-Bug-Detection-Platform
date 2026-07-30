@@ -1,9 +1,8 @@
 """
 Core Data Schema — UnifiedFinding & Supporting Models
 ======================================================
-Defines all Pydantic Models for the modular LLM-augmented SAST & logic-bug analysis pipeline.
-All findings from parsers, triage, logic-bug detectors, risk scoring, and remediation
-converge onto this schema.
+Defines all Pydantic Models for the modular LLM-augmented SAST & logic-bug analysis pipeline
+including ScanManifest, CoverageReport, ProjectContext, 4-stage workflow states, and finding correlation.
 """
 
 import hashlib
@@ -56,6 +55,30 @@ class FindingStatus(str, Enum):
     ACCEPTED_RISK = "ACCEPTED_RISK"
 
 
+class ScanState(str, Enum):
+    """Relationship-aware correlation state across scans."""
+    NEW = "NEW"
+    EXISTING = "EXISTING"
+    CHANGED = "CHANGED"
+    FIXED = "FIXED"
+    REOPENED = "REOPENED"
+
+
+class ScanStage(str, Enum):
+    """4-stage workflow stage."""
+    SCAN = "scan"
+    VALIDATE = "validate"
+    PATCH = "patch"
+    COMPARE = "compare"
+
+
+class CIMode(str, Enum):
+    """CI/CD Policy Gate Mode."""
+    REPORT_ONLY = "REPORT_ONLY"
+    SHADOW_GATING = "SHADOW_GATING"
+    BLOCKING_GATE = "BLOCKING_GATE"
+
+
 class ActionGroup(str, Enum):
     """Processing policy action group."""
     AUTO_SUPPRESS_CANDIDATE = "AUTO_SUPPRESS_CANDIDATE"
@@ -101,13 +124,45 @@ class PatchStatus(str, Enum):
     FAILED_VALIDATION = "FAILED_VALIDATION"
 
 
-# ─── Sub-models ───────────────────────────────────────────────────────────────
+# ─── Codex Security Supporting Models ───────────────────────────────────────
+
+class ScanManifest(BaseModel):
+    """Immutable scan manifest recording environment, commits, and versions."""
+    manifest_id: str
+    repository: str
+    commit_sha: str = "0000000000000000000000000000000000000000"
+    scanner_versions: Dict[str, str] = Field(default_factory=lambda: {"semgrep": "1.0.0", "gitleaks": "8.0.0"})
+    model_version: str = "qwen3:8b"
+    prompt_version: str = "v2.0"
+    policy_version: str = "v1.0"
+    timestamp_utc: str = ""
+
+
+class CoverageReport(BaseModel):
+    """Coverage report capturing scan completeness and failures."""
+    total_files: int = 0
+    analyzed_files: int = 0
+    unsupported_files: List[str] = Field(default_factory=list)
+    ast_failures: List[str] = Field(default_factory=list)
+    unresolved_symbols: List[str] = Field(default_factory=list)
+    llm_failures: List[str] = Field(default_factory=list)
+    skipped_analysis_regions: List[str] = Field(default_factory=list)
+    is_complete_scan: bool = True
+    suggested_exit_code: int = 0  # 0 = clean complete, 2 = incomplete scan
+
+
+class ProjectContext(BaseModel):
+    """Versioned project_context.yaml representation."""
+    version: str = "1.0"
+    system_exposure: str = "INTERNAL"  # INTERNAL | PARTNER | INTERNET_FACING
+    assets: List[Dict[str, Any]] = Field(default_factory=list)
+    roles: List[str] = Field(default_factory=list)
+    authorization_policies: List[Dict[str, Any]] = Field(default_factory=list)
+    security_invariants: List[str] = Field(default_factory=list)
+
 
 class EvidenceReference(BaseModel):
-    """
-    Structured evidence reference anchoring every verdict to explicit code elements.
-    Verdicts without verifiable evidence references must fallback to NEEDS_MORE_CONTEXT/NEEDS_REVIEW.
-    """
+    """Structured evidence reference anchoring every verdict to explicit code elements."""
     file_path: str
     line_number: int
     symbol: Optional[str] = None
@@ -118,10 +173,7 @@ class EvidenceReference(BaseModel):
 
 
 class DecisionMetadata(BaseModel):
-    """
-    Decision metadata for tracking LLM evaluation state and reproducibility.
-    Note: decision_score is uncalibrated raw score; not treated as true probability.
-    """
+    """Decision metadata for tracking LLM evaluation state and reproducibility."""
     decision_score: float = Field(default=0.0, ge=0.0, le=1.0)
     model_version: str = "qwen3:8b"
     prompt_version: str = "v2.0"
@@ -147,15 +199,7 @@ class FindingContext(BaseModel):
 
 
 class LightweightSecurityContextGraph(BaseModel):
-    """
-    Lightweight Security Context Graph representing Entrypoint -> Guard -> Sink traces.
-    
-    LIMITATIONS NOTICE:
-    This graph is an AST-derived lightweight security context graph. It is NOT a full
-    Control Flow Graph (CFG) or complete Code Property Graph (CPG), as it lacks full 
-    interprocedural data flow analysis, alias resolution, and complete symbol table tracking.
-    Missing guards indicate a LOGIC_BUG_CANDIDATE for review, not automated proof of vulnerability.
-    """
+    """Lightweight Security Context Graph representing Entrypoint -> Guard -> Sink traces."""
     bug_type: str
     entrypoint: str
     guards: List[str] = Field(default_factory=list)
@@ -170,25 +214,18 @@ class LightweightSecurityContextGraph(BaseModel):
 
 
 class RiskScoreDetails(BaseModel):
-    """
-    Risk score details calculated on a normalized 0-100 rubric scale.
-    Formula: Risk = ((0.25*Sev + 0.25*Reach + 0.20*Exp + 0.20*Sens + 0.10*Exploit) - 1.0) / 4.0 * 100
-    """
-    overall_score: float = Field(..., ge=0.0, le=100.0)  # Normalized 0-100
-    severity_score: float = Field(3.0, ge=1.0, le=5.0)          # Impact (1-5)
-    reachability_score: float = Field(3.0, ge=1.0, le=5.0)      # Reachability (1-5)
-    exposure_score: float = Field(3.0, ge=1.0, le=5.0)          # Exposure (1-5)
-    data_sensitivity_score: float = Field(3.0, ge=1.0, le=5.0)  # Data Sensitivity (1-5)
-    exploitability_score: float = Field(3.0, ge=1.0, le=5.0)    # Exploitability (1-5)
+    """Risk score details calculated on a normalized 0-100 rubric scale."""
+    overall_score: float = Field(..., ge=0.0, le=100.0)
+    severity_score: float = Field(3.0, ge=1.0, le=5.0)
+    reachability_score: float = Field(3.0, ge=1.0, le=5.0)
+    exposure_score: float = Field(3.0, ge=1.0, le=5.0)
+    data_sensitivity_score: float = Field(3.0, ge=1.0, le=5.0)
+    exploitability_score: float = Field(3.0, ge=1.0, le=5.0)
     risk_level: Severity = Severity.MEDIUM
 
 
 class RemediationPatch(BaseModel):
-    """
-    Remediation proposal generated by Remediation Engine.
-    Patches are strictly PATCH_CANDIDATE items linked to commit_sha and must pass validation.
-    Never auto-applied or auto-merged.
-    """
+    """Remediation proposal generated by Remediation Engine for selected validated findings."""
     status: PatchStatus = PatchStatus.PATCH_CANDIDATE
     commit_sha: str = "HEAD"
     fix_summary: str
@@ -207,10 +244,7 @@ class RemediationPatch(BaseModel):
 # ─── Main Model ───────────────────────────────────────────────────────────────
 
 class UnifiedFinding(BaseModel):
-    """
-    Central finding model of the platform.
-    Represents findings from SAST Triage Branch (Semgrep/Gitleaks) and Logic-Bug Branch.
-    """
+    """Central finding model of the platform."""
     finding_id: str
     scanner: ScannerType
     branch_type: BranchType = BranchType.SAST_TRIAGE_BRANCH
@@ -224,6 +258,11 @@ class UnifiedFinding(BaseModel):
     severity: Severity = Severity.MEDIUM
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
+    # ── Correlation & Manifest ────────────────────────────────────────────────
+    correlation_state: ScanState = ScanState.NEW
+    scan_manifest: Optional[ScanManifest] = None
+    guard_policy_evidence: Optional[Dict[str, Any]] = None
+
     # ── Secret Taxonomy & Context ─────────────────────────────────────────────
     secret_taxonomy: SecretTaxonomy = SecretTaxonomy.UNKNOWN_VALIDITY
     context: Optional[FindingContext] = None
@@ -255,13 +294,3 @@ class UnifiedFinding(BaseModel):
         raw = f"{self.rule_id}:{self.file_path}:{clean_snippet}"
         self.fingerprint = hashlib.sha256(raw.encode("utf-8")).hexdigest()
         return self.fingerprint
-
-
-class GroundTruthBenchmarkItem(BaseModel):
-    """Benchmark item for versioned benchmark evaluation."""
-    finding_id: str
-    ground_truth_verdict: TriageVerdict
-    rule_family: str = "generic"
-    repository: str = "benchmark_repo"
-    reviewer_notes: Optional[str] = None
-    confidence_level: Optional[str] = "HIGH"
