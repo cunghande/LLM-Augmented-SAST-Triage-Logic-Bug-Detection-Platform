@@ -1,0 +1,15 @@
+{
+  "evaluation_run_id": "eval-20260730-135052-2e3f1d",
+  "benchmark_name": "Multi-Benchmark Suite",
+  "matrix": {
+    "TP": 6,
+    "FP": 0,
+    "TN": 0,
+    "FN": 5,
+    "TP_abstained": 62,
+    "FP_abstained": 27,
+    "TP_failure": 0,
+    "FP_failure": 0
+  },
+  "description": "Ground-truth vs Model predictions matrix. Unmatched samples are excluded."
+}

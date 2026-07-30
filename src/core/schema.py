@@ -42,6 +42,7 @@ class TriageVerdict(str, Enum):
     FALSE_POSITIVE = "FP"                 # False positive noise
     NEEDS_REVIEW = "NEEDS_REVIEW"         # Requires manual AppSec review
     NEEDS_MORE_CONTEXT = "NEEDS_MORE_CONTEXT"  # Insufficient context to determine
+    PIPELINE_FAILURE = "PIPELINE_FAILURE" # Execution error / pipeline failure
 
 
 class FindingStatus(str, Enum):

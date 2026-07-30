@@ -1,0 +1,137 @@
+[
+  {
+    "finding_id": "SG-1F80888F81C9",
+    "ground_truth_label": "TP",
+    "cwe": "78",
+    "category": "cmdi",
+    "scanner_rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00165.html",
+    "start_line": 12,
+    "normalized_file_stem": "BenchmarkTest00165",
+    "ast_context": {
+      "enclosing_function": null,
+      "line_window": "L1-L26",
+      "surrounding_code_length": 1261
+    },
+    "context_quality": "FALLBACK",
+    "raw_model_output": {
+      "verdict": "NEEDS_REVIEW",
+      "confidence": 0.6,
+      "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+      "evidence": [
+        "Context review recommended."
+      ]
+    },
+    "threshold": "High confidence TP >= 0.80, Auto suppress FP >= 0.85",
+    "final_verdict": "NEEDS_REVIEW",
+    "abstention_reason": "Confidence < threshold or LLM fallback heuristic triggered (MOCK_LLM mode)"
+  },
+  {
+    "finding_id": "SG-3E9885457586",
+    "ground_truth_label": "TP",
+    "cwe": "78",
+    "category": "cmdi",
+    "scanner_rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00166.html",
+    "start_line": 12,
+    "normalized_file_stem": "BenchmarkTest00166",
+    "ast_context": {
+      "enclosing_function": null,
+      "line_window": "L1-L26",
+      "surrounding_code_length": 1342
+    },
+    "context_quality": "FALLBACK",
+    "raw_model_output": {
+      "verdict": "NEEDS_REVIEW",
+      "confidence": 0.6,
+      "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+      "evidence": [
+        "Context review recommended."
+      ]
+    },
+    "threshold": "High confidence TP >= 0.80, Auto suppress FP >= 0.85",
+    "final_verdict": "NEEDS_REVIEW",
+    "abstention_reason": "Confidence < threshold or LLM fallback heuristic triggered (MOCK_LLM mode)"
+  },
+  {
+    "finding_id": "SG-416CD6D78008",
+    "ground_truth_label": "TP",
+    "cwe": "78",
+    "category": "cmdi",
+    "scanner_rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00167.html",
+    "start_line": 12,
+    "normalized_file_stem": "BenchmarkTest00167",
+    "ast_context": {
+      "enclosing_function": null,
+      "line_window": "L1-L23",
+      "surrounding_code_length": 1458
+    },
+    "context_quality": "FALLBACK",
+    "raw_model_output": {
+      "verdict": "NEEDS_REVIEW",
+      "confidence": 0.6,
+      "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+      "evidence": [
+        "Context review recommended."
+      ]
+    },
+    "threshold": "High confidence TP >= 0.80, Auto suppress FP >= 0.85",
+    "final_verdict": "NEEDS_REVIEW",
+    "abstention_reason": "Confidence < threshold or LLM fallback heuristic triggered (MOCK_LLM mode)"
+  },
+  {
+    "finding_id": "SG-686966AE48A5",
+    "ground_truth_label": "TP",
+    "cwe": "78",
+    "category": "cmdi",
+    "scanner_rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00168.html",
+    "start_line": 12,
+    "normalized_file_stem": "BenchmarkTest00168",
+    "ast_context": {
+      "enclosing_function": null,
+      "line_window": "L1-L25",
+      "surrounding_code_length": 1488
+    },
+    "context_quality": "FALLBACK",
+    "raw_model_output": {
+      "verdict": "NEEDS_REVIEW",
+      "confidence": 0.6,
+      "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+      "evidence": [
+        "Context review recommended."
+      ]
+    },
+    "threshold": "High confidence TP >= 0.80, Auto suppress FP >= 0.85",
+    "final_verdict": "NEEDS_REVIEW",
+    "abstention_reason": "Confidence < threshold or LLM fallback heuristic triggered (MOCK_LLM mode)"
+  },
+  {
+    "finding_id": "SG-40A162853F9E",
+    "ground_truth_label": "TP",
+    "cwe": "78",
+    "category": "cmdi",
+    "scanner_rule_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+    "file_path": "D:\\Code\\AI security\\repos\\BenchmarkPython\\templates\\web\\cmdi-00\\BenchmarkTest00267.html",
+    "start_line": 12,
+    "normalized_file_stem": "BenchmarkTest00267",
+    "ast_context": {
+      "enclosing_function": null,
+      "line_window": "L1-L23",
+      "surrounding_code_length": 1458
+    },
+    "context_quality": "FALLBACK",
+    "raw_model_output": {
+      "verdict": "NEEDS_REVIEW",
+      "confidence": 0.6,
+      "reasoning": "Ambiguous code pattern requiring security reviewer input.",
+      "evidence": [
+        "Context review recommended."
+      ]
+    },
+    "threshold": "High confidence TP >= 0.80, Auto suppress FP >= 0.85",
+    "final_verdict": "NEEDS_REVIEW",
+    "abstention_reason": "Confidence < threshold or LLM fallback heuristic triggered (MOCK_LLM mode)"
+  }
+]

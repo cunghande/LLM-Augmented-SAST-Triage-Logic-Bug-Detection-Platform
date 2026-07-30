@@ -1,0 +1,373 @@
+{
+  "unmatched_findings": [
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-E3A8CAB11A2C",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/benchmark/scanner/bin/wraith/default.yaml",
+      "line_number": 190,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/benchmark/scanner/bin/wraith/default.yaml:190'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-30C891544B0F",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/README.md",
+      "line_number": 181,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/README.md:181'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-C6CEA80DEF66",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+      "line_number": 179,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:179'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-078684DC5D89",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+      "line_number": 189,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:189'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-BFCC8DA90BAF",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+      "line_number": 173,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:173'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-34C28E21EEE8",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+      "line_number": 158,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:158'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "GL-DF5E2383BA9C",
+      "repo_id": "CredData",
+      "file_path": "D:/Code/AI security/repos/CredData/test_obfuscate_creds.py",
+      "line_number": 163,
+      "ground_truth_label": null,
+      "reason": "No CredData ground truth matched file 'D:/Code/AI security/repos/CredData/test_obfuscate_creds.py:163'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-47186B52FC49",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\.github\\workflows\\deploy-dashboard.yml",
+      "line_number": 20,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\.github\\workflows\\deploy-dashboard.yml:20'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-5E2528D94B1C",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\.github\\workflows\\deploy-dashboard.yml",
+      "line_number": 23,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\.github\\workflows\\deploy-dashboard.yml:23'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-6B14DD575C4D",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-5-agentic-sink-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-5-agentic-sink-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-E9B46252D946",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-agentic-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-agentic-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-8D88E7CA56FF",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\claude-haiku-4-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-6BA2F3DCF25D",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\gemini-3.1-flash-lite-agentic-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\gemini-3.1-flash-lite-agentic-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-922E7B6BD19A",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-sink-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-sink-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-C0D9F740CAF6",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-sink-v2.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-sink-v2.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-588C4A5BBEF9",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-escape_hatches-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-escape_hatches-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-9BA696C3AC4D",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-kitchen_sink-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-kitchen_sink-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-10CE92FBDF1F",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-with_html_strings-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\kimi-k2.5-xss-with_html_strings-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-B996474421F1",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\sample-scanner.html",
+      "line_number": 295,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\1.0.0\\scanners\\sample-scanner.html:295'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-A7744EEBC954",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\claude-haiku-4-5-agentic-sink-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\claude-haiku-4-5-agentic-sink-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-47920D76F36B",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\claude-haiku-4-agentic-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\claude-haiku-4-agentic-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-81CF2B834FE7",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\claude-haiku-4-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\claude-haiku-4-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-7164C7066955",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\gemini-3.1-flash-lite-agentic-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\gemini-3.1-flash-lite-agentic-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-C63B3AD767BC",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-sink-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-sink-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-55E9050322BA",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-sink-v2.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-sink-v2.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-1B095D4C10C5",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-xss-escape_hatches-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-xss-escape_hatches-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-9506AC3F27EC",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-xss-kitchen_sink-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-xss-kitchen_sink-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-C5C1D5673199",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-xss-with_html_strings-v1.html",
+      "line_number": 289,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kimi-k2.5-xss-with_html_strings-v1.html:289'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-BAC3AF635FF2",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kolega-v0.0.1-native.html",
+      "line_number": 290,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kolega-v0.0.1-native.html:290'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-CEF146FFB805",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kolega-v0.0.1-unfiltered.html",
+      "line_number": 290,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\kolega-v0.0.1-unfiltered.html:290'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-D21570420DD5",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\minimax-m3-agentic-v1.html",
+      "line_number": 293,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\minimax-m3-agentic-v1.html:293'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-2BDC64570343",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\sample-scanner.html",
+      "line_number": 295,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\reports\\v\\2.0.0\\scanners\\sample-scanner.html:295'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-D3BC82EBF8B0",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-damn-vulnerable-graphql-application\\kolega-claude-adaptation-deepseek-only\\results.json",
+      "line_number": 882,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-damn-vulnerable-graphql-application\\kolega-claude-adaptation-deepseek-only\\results.json:882'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-D53A59A29947",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-damn-vulnerable-graphql-application\\kolega-v0.0.2-raw\\results.json",
+      "line_number": 2135,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-damn-vulnerable-graphql-application\\kolega-v0.0.2-raw\\results.json:2135'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-A8D7B4F97B9E",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation-deepseek-only\\results.json",
+      "line_number": 587,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation-deepseek-only\\results.json:587'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-0087CFD05B1B",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation-deepseek-only\\results.json",
+      "line_number": 902,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation-deepseek-only\\results.json:902'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-67037D033DD2",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation\\results.json",
+      "line_number": 545,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation\\results.json:545'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-70447C096FAF",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation\\results.json",
+      "line_number": 713,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\kolega-claude-adaptation\\results.json:713'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-FED03E43DE41",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\semgrep\\results.json",
+      "line_number": 1,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\semgrep\\results.json:1'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-05104828B855",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\semgrep\\results.json",
+      "line_number": 1,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\semgrep\\results.json:1'"
+    },
+    {
+      "ground_truth_id": null,
+      "finding_id": "SG-743054D9D60C",
+      "repo_id": "REALVULN",
+      "file_path": "D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\semgrep\\results.json",
+      "line_number": 1,
+      "ground_truth_label": null,
+      "reason": "No RealVuln ground truth item matched path 'D:\\Code\\AI security\\repos\\Real-Vuln-Benchmark\\scan-results\\realvuln-python-app\\semgrep\\results.json:1'"
+    }
+  ]
+}
