@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from typing import List, Dict, Any, Union, Optional
 from pydantic import BaseModel, Field
 
-from src.core.schema import UnifiedFinding, TriageVerdict
+from src.core.schema import UnifiedFinding, TriageVerdict, EvaluationOutcome, FailureCategory
 from src.benchmark.adapters import MatchedSample, MatchType, AdapterMatchReport
 
 
@@ -28,24 +28,64 @@ class LatencyBreakdown(BaseModel):
     per_finding_latency_ms: float = 0.0
     latency_p50_ms: float = 0.0
     latency_p95_ms: float = 0.0
+    latency_min_ms: float = 0.0
+    latency_max_ms: float = 0.0
+    latency_mean_ms: float = 0.0
+    sample_latencies_ms: List[float] = Field(default_factory=list)
+    request_count: int = 0
+    success_count: int = 0
+    transport_success_count: int = 0
+    response_parse_success_count: int = 0
+    evaluation_success_count: int = 0
+    pipeline_failure_count: int = 0
+    failure_count: int = 0
     retry_count: int = 0
     timeout_count: int = 0
     execution_mode: str = "REAL"  # "REAL" or "MOCK"
 
 
+
+class StructuredMetric(BaseModel):
+    """Structured representation of a numeric metric allowing JSON null + reason or defined float."""
+    value: Optional[float] = None
+    status: str = "DEFINED"  # "DEFINED" or "UNDEFINED"
+    reason: Optional[str] = None
+    numerator: int = 0
+    denominator: int = 0
+
+    def markdown_render(self, as_percentage: bool = False) -> str:
+        if self.status == "UNDEFINED" or self.value is None:
+            reason_str = f" ({self.reason})" if self.reason else ""
+            return f"N/A{reason_str}"
+        if as_percentage:
+            return f"{self.value * 100.0:.2f}%"
+        return f"{self.value:.4f}"
+
+
+def make_defined_metric(numerator: int, denominator: int) -> StructuredMetric:
+    if denominator == 0:
+        return StructuredMetric(value=None, status="UNDEFINED", reason="denominator = 0", numerator=numerator, denominator=denominator)
+    val = round(numerator / denominator, 4)
+    return StructuredMetric(value=val, status="DEFINED", reason=None, numerator=numerator, denominator=denominator)
+
+
+def make_undefined_metric(reason: str, numerator: int = 0, denominator: int = 0) -> StructuredMetric:
+    return StructuredMetric(value=None, status="UNDEFINED", reason=reason, numerator=numerator, denominator=denominator)
+
+
 class EvaluationMetrics(BaseModel):
     metric_version: str = "2.0"
-    evaluation_status: str = "OK"  # "OK" or "ADAPTER_FAILURE"
+    evaluation_status: str = "OK"  # "OK", "ADAPTER_FAILURE", "REPORT_INTEGRITY_FAILURE"
 
     # Dataset integrity metrics
     total_findings: int = 0
     matched_findings: int = 0
     unmatched_findings: int = 0
-    ground_truth_matching_rate: Union[float, str] = "N/A"
+    ground_truth_matching_rate: StructuredMetric = Field(default_factory=StructuredMetric)
     ground_truth_tp: int = 0
     ground_truth_fp: int = 0
 
-    # Decision metrics
+    # Decision & Outcome Counts
     tp: int = 0
     fp: int = 0
     tn: int = 0
@@ -56,31 +96,36 @@ class EvaluationMetrics(BaseModel):
     fp_failure: int = 0
 
     decided_samples: int = 0
-    decision_coverage: Union[float, str] = "N/A"
     abstention_count: int = 0
-    abstention_rate: Union[float, str] = "N/A"
-    pipeline_failure_rate: Union[float, str] = "N/A"
+    failed_samples: int = 0
 
-    precision: Union[float, str] = "N/A"
-    recall_among_decided: Union[float, str] = "N/A"
-    f1: Union[float, str] = "N/A"
-    selective_accuracy: Union[float, str] = "N/A"
+    # Ratio Metrics
+    decision_coverage: StructuredMetric = Field(default_factory=StructuredMetric)
+    abstention_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+    pipeline_failure_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+
+    precision: StructuredMetric = Field(default_factory=StructuredMetric)
+    selective_recall: StructuredMetric = Field(default_factory=StructuredMetric)
+    recall_among_decided: StructuredMetric = Field(default_factory=StructuredMetric) # Alias
+    end_to_end_tp_resolution_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+    f1: StructuredMetric = Field(default_factory=StructuredMetric)
+    selective_accuracy: StructuredMetric = Field(default_factory=StructuredMetric)
 
     # Security policy metrics
-    policy_false_negative_rate: Union[float, str] = "N/A"
-    conservative_miss_rate: Union[float, str] = "N/A"
+    policy_false_negative_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+    conservative_miss_rate: StructuredMetric = Field(default_factory=StructuredMetric)
 
     # FP suppression metrics
-    safe_fp_suppression_rate: Union[float, str] = "N/A"
+    correct_fp_suppression_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+    safe_fp_suppression_rate: StructuredMetric = Field(default_factory=StructuredMetric) # Alias
 
     # Workload metrics
-    safe_auto_processed: int = 0
-    safe_workload_reduction: Union[float, str] = "N/A"
-    manual_review_load: int = 0
-    manual_review_rate: Union[float, str] = "N/A"
-    auto_suppression_workload_reduction: Union[float, str] = "N/A"
+    correctly_decided_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+    policy_automation_rate: StructuredMetric = Field(default_factory=StructuredMetric)
+    manual_review_rate: StructuredMetric = Field(default_factory=StructuredMetric)
 
-    na_reasons: Dict[str, str] = Field(default_factory=dict)
+    invariants_passed: bool = True
+    invariant_errors: List[str] = Field(default_factory=list)
 
 
 class EvaluationRun(BaseModel):
@@ -104,12 +149,15 @@ class EvaluationRun(BaseModel):
     metrics: EvaluationMetrics
     latency: LatencyBreakdown
     match_report: Optional[Dict[str, Any]] = None
+    preflight_run_id: Optional[str] = None
+    pilot_run_id: Optional[str] = None
+    quality_gate_status: str = "NOT_EVALUATED" # EVALUATION_COMPLETED, MODEL_QUALITY_GATE_MET, MODEL_QUALITY_GATE_NOT_MET
 
 
-def normalize_verdict(verdict: Union[TriageVerdict, str, None]) -> str:
-    """Normalize verdict into standard enum values (TP, FP, NEEDS_REVIEW, NEEDS_MORE_CONTEXT, PIPELINE_FAILURE)."""
+def normalize_verdict_str(verdict: Union[TriageVerdict, str, None]) -> Optional[str]:
+    """Normalize verdict into pure security verdict strings (TP, FP, NEEDS_REVIEW, NEEDS_MORE_CONTEXT)."""
     if verdict is None:
-        return "NEEDS_REVIEW"
+        return None
     v_str = verdict.value if isinstance(verdict, TriageVerdict) else str(verdict).upper().strip()
 
     if v_str in ("TP", "TRIAGED_TP", "TRUE_POSITIVE"):
@@ -118,10 +166,9 @@ def normalize_verdict(verdict: Union[TriageVerdict, str, None]) -> str:
         return "FP"
     elif v_str == "NEEDS_MORE_CONTEXT":
         return "NEEDS_MORE_CONTEXT"
-    elif v_str in ("PIPELINE_FAILURE", "ERROR", "FAILURE"):
-        return "PIPELINE_FAILURE"
-    else:
+    elif v_str in ("NEEDS_REVIEW", "MANUAL_REVIEW"):
         return "NEEDS_REVIEW"
+    return None
 
 
 class BenchmarkEvaluator:
@@ -141,26 +188,20 @@ class BenchmarkEvaluator:
         metrics.matched_findings = match_report.matched_count
         metrics.unmatched_findings = match_report.unmatched_count
 
-        if match_report.total_findings > 0:
-            metrics.ground_truth_matching_rate = round(match_report.matched_count / total_findings_count, 4) if total_findings_count > 0 else 0.0
+        if total_findings_count > 0:
+            metrics.ground_truth_matching_rate = make_defined_metric(match_report.matched_count, total_findings_count)
 
         if match_report.matched_count == 0 or match_report.adapter_status == "ADAPTER_FAILURE":
             metrics.evaluation_status = "ADAPTER_FAILURE"
-            metrics.na_reasons = {
-                "precision": "matched_findings = 0",
-                "recall_among_decided": "matched_findings = 0",
-                "f1": "matched_findings = 0",
-                "selective_accuracy": "matched_findings = 0",
-                "policy_false_negative_rate": "matched_findings = 0",
-                "conservative_miss_rate": "matched_findings = 0",
-                "safe_fp_suppression_rate": "matched_findings = 0",
-                "decision_coverage": "matched_findings = 0",
-                "abstention_rate": "matched_findings = 0",
-                "pipeline_failure_rate": "matched_findings = 0",
-                "safe_workload_reduction": "matched_findings = 0",
-                "manual_review_rate": "matched_findings = 0",
-                "auto_suppression_workload_reduction": "matched_findings = 0",
-            }
+            reason = "matched_findings = 0"
+            metrics.decision_coverage = make_undefined_metric(reason)
+            metrics.abstention_rate = make_undefined_metric(reason)
+            metrics.precision = make_undefined_metric(reason)
+            metrics.selective_recall = make_undefined_metric(reason)
+            metrics.f1 = make_undefined_metric(reason)
+            metrics.selective_accuracy = make_undefined_metric(reason)
+            metrics.policy_false_negative_rate = make_undefined_metric(reason)
+            metrics.correct_fp_suppression_rate = make_undefined_metric(reason)
             return metrics
 
         # Process matched samples
@@ -176,26 +217,37 @@ class BenchmarkEvaluator:
             else:
                 gt_fp_count += 1
 
-            pred = normalize_verdict(sample.finding.verdict)
+            finding = sample.finding
+            outcome = getattr(finding, "outcome", None)
+            verdict_norm = normalize_verdict_str(finding.verdict)
 
-            if gt_label == "TP":
-                if pred == "TP":
-                    tp += 1
-                elif pred == "FP":
-                    fn += 1
-                elif pred in ("NEEDS_REVIEW", "NEEDS_MORE_CONTEXT"):
-                    tp_abstained += 1
-                elif pred == "PIPELINE_FAILURE":
+            # Check outcome override
+            if outcome == EvaluationOutcome.FAILED or getattr(finding, "failure_category", None) not in (None, FailureCategory.NONE):
+                if gt_label == "TP":
                     tp_failure += 1
-            else:  # GT FP
-                if pred == "TP":
-                    fp += 1
-                elif pred == "FP":
-                    tn += 1
-                elif pred in ("NEEDS_REVIEW", "NEEDS_MORE_CONTEXT"):
-                    fp_abstained += 1
-                elif pred == "PIPELINE_FAILURE":
+                else:
                     fp_failure += 1
+            elif verdict_norm in ("NEEDS_REVIEW", "NEEDS_MORE_CONTEXT") or outcome == EvaluationOutcome.ABSTAINED:
+                if gt_label == "TP":
+                    tp_abstained += 1
+                else:
+                    fp_abstained += 1
+            elif verdict_norm == "TP":
+                if gt_label == "TP":
+                    tp += 1
+                else:
+                    fp += 1  # False positive prediction (model said TP for GT FP)
+            elif verdict_norm == "FP":
+                if gt_label == "TP":
+                    fn += 1  # False negative prediction (model said FP for GT TP)
+                else:
+                    tn += 1  # True negative prediction (model said FP for GT FP -> suppressed)
+            else:
+                # Default fallback abstained
+                if gt_label == "TP":
+                    tp_abstained += 1
+                else:
+                    fp_abstained += 1
 
         metrics.ground_truth_tp = gt_tp_count
         metrics.ground_truth_fp = gt_fp_count
@@ -210,63 +262,96 @@ class BenchmarkEvaluator:
 
         matched_n = match_report.matched_count
         decided_samples = tp + fp + tn + fn
-        metrics.decided_samples = decided_samples
+        abstention_count = tp_abstained + fp_abstained
+        failed_samples = tp_failure + fp_failure
 
-        metrics.decision_coverage = round(decided_samples / matched_n, 4) if matched_n > 0 else "N/A"
-        metrics.abstention_count = tp_abstained + fp_abstained
-        metrics.abstention_rate = round(metrics.abstention_count / matched_n, 4) if matched_n > 0 else "N/A"
-        metrics.pipeline_failure_rate = round((tp_failure + fp_failure) / matched_n, 4) if matched_n > 0 else "N/A"
+        metrics.decided_samples = decided_samples
+        metrics.abstention_count = abstention_count
+        metrics.failed_samples = failed_samples
+
+        metrics.decision_coverage = make_defined_metric(decided_samples, matched_n)
+        metrics.abstention_rate = make_defined_metric(abstention_count, matched_n)
+        metrics.pipeline_failure_rate = make_defined_metric(failed_samples, matched_n)
 
         # Precision, Recall among decided, F1, Selective Accuracy
         if (tp + fp) > 0:
-            prec_val = tp / (tp + fp)
-            metrics.precision = round(prec_val, 4)
+            metrics.precision = make_defined_metric(tp, tp + fp)
         else:
-            metrics.precision = "N/A"
-            metrics.na_reasons["precision"] = "no decided positive predictions (TP + FP = 0)"
+            metrics.precision = make_undefined_metric("no positive predictions (TP + FP = 0)", tp, tp + fp)
 
         if (tp + fn) > 0:
-            rec_val = tp / (tp + fn)
-            metrics.recall_among_decided = round(rec_val, 4)
+            metrics.selective_recall = make_defined_metric(tp, tp + fn)
+            metrics.recall_among_decided = metrics.selective_recall
         else:
-            metrics.recall_among_decided = "N/A"
-            metrics.na_reasons["recall_among_decided"] = "no decided true positive cases (TP + FN = 0)"
+            metrics.selective_recall = make_undefined_metric("no decided true positive cases (TP + FN = 0)", tp, tp + fn)
+            metrics.recall_among_decided = metrics.selective_recall
 
-        if isinstance(metrics.precision, float) and isinstance(metrics.recall_among_decided, float) and (metrics.precision + metrics.recall_among_decided) > 0:
-            f1_val = 2 * (metrics.precision * metrics.recall_among_decided) / (metrics.precision + metrics.recall_among_decided)
-            metrics.f1 = round(f1_val, 4)
+        if gt_tp_count > 0:
+            metrics.end_to_end_tp_resolution_rate = make_defined_metric(tp, gt_tp_count)
         else:
-            metrics.f1 = "N/A"
-            metrics.na_reasons["f1"] = "precision or recall is undefined or sum is 0"
+            metrics.end_to_end_tp_resolution_rate = make_undefined_metric("ground_truth_tp = 0", tp, gt_tp_count)
+
+        if (
+            metrics.precision.status == "DEFINED"
+            and metrics.selective_recall.status == "DEFINED"
+            and (metrics.precision.value + metrics.selective_recall.value) > 0
+        ):
+            f1_val = round(2 * (metrics.precision.value * metrics.selective_recall.value) / (metrics.precision.value + metrics.selective_recall.value), 4)
+            metrics.f1 = StructuredMetric(value=f1_val, status="DEFINED", reason=None, numerator=2*tp, denominator=(2*tp + fp + fn))
+        else:
+            metrics.f1 = make_undefined_metric("precision or recall is undefined or sum is 0")
 
         if decided_samples > 0:
-            metrics.selective_accuracy = round((tp + tn) / decided_samples, 4)
+            metrics.selective_accuracy = make_defined_metric(tp + tn, decided_samples)
         else:
-            metrics.selective_accuracy = "N/A"
-            metrics.na_reasons["selective_accuracy"] = "no decided predictions (decided_samples = 0)"
+            metrics.selective_accuracy = make_undefined_metric("no decided predictions (decided_samples = 0)")
 
         # Security policy metrics
         if gt_tp_count > 0:
-            metrics.policy_false_negative_rate = round(fn / gt_tp_count, 4)
-            metrics.conservative_miss_rate = round((fn + tp_failure) / gt_tp_count, 4)
+            metrics.policy_false_negative_rate = make_defined_metric(fn, gt_tp_count)
+            metrics.conservative_miss_rate = make_defined_metric(fn + tp_failure, gt_tp_count)
         else:
-            metrics.policy_false_negative_rate = "N/A"
-            metrics.conservative_miss_rate = "N/A"
-            metrics.na_reasons["policy_false_negative_rate"] = "ground_truth_tp = 0"
-            metrics.na_reasons["conservative_miss_rate"] = "ground_truth_tp = 0"
+            metrics.policy_false_negative_rate = make_undefined_metric("ground_truth_tp = 0")
+            metrics.conservative_miss_rate = make_undefined_metric("ground_truth_tp = 0")
 
         # FP suppression metrics
         if gt_fp_count > 0:
-            metrics.safe_fp_suppression_rate = round(tn / gt_fp_count, 4)
+            metrics.correct_fp_suppression_rate = make_defined_metric(tn, gt_fp_count)
+            metrics.safe_fp_suppression_rate = metrics.correct_fp_suppression_rate
         else:
-            metrics.safe_fp_suppression_rate = "N/A"
-            metrics.na_reasons["safe_fp_suppression_rate"] = "benchmark contains no matched ground-truth FP samples"
+            metrics.correct_fp_suppression_rate = make_undefined_metric("no ground-truth FP", tn, gt_fp_count)
+            metrics.safe_fp_suppression_rate = metrics.correct_fp_suppression_rate
 
         # Workload metrics
-        metrics.safe_auto_processed = tp + tn
-        metrics.safe_workload_reduction = round((tp + tn) / matched_n, 4) if matched_n > 0 else "N/A"
-        metrics.manual_review_load = metrics.abstention_count
-        metrics.manual_review_rate = round(metrics.manual_review_load / matched_n, 4) if matched_n > 0 else "N/A"
-        metrics.auto_suppression_workload_reduction = round(tn / matched_n, 4) if matched_n > 0 else "N/A"
+        metrics.correctly_decided_rate = make_defined_metric(tp + tn, matched_n)
+        metrics.policy_automation_rate = make_defined_metric(tp + tn, matched_n)
+        metrics.manual_review_rate = make_defined_metric(abstention_count, matched_n)
+
+        # ── Check Mathematical Report Invariants ─────────────────────────────
+        invariant_errors = []
+
+        # Invariant 1: matched + unmatched == total
+        if metrics.matched_findings + metrics.unmatched_findings != metrics.total_findings:
+            invariant_errors.append(f"Invariant 1 failed: matched({metrics.matched_findings}) + unmatched({metrics.unmatched_findings}) != total({metrics.total_findings})")
+
+        # Invariant 2: decided + abstained + failed == matched
+        if decided_samples + abstention_count + failed_samples != matched_n:
+            invariant_errors.append(f"Invariant 2 failed: decided({decided_samples}) + abstained({abstention_count}) + failed({failed_samples}) != matched({matched_n})")
+
+        # Invariant 3: TP + FN + TP_abstained + TP_failure == ground_truth_tp
+        if tp + fn + tp_abstained + tp_failure != gt_tp_count:
+            invariant_errors.append(f"Invariant 3 failed: TP({tp}) + FN({fn}) + TP_abstained({tp_abstained}) + TP_failure({tp_failure}) != GT_TP({gt_tp_count})")
+
+        # Invariant 4: TN + FP + FP_abstained + FP_failure == ground_truth_fp
+        if tn + fp + fp_abstained + fp_failure != gt_fp_count:
+            invariant_errors.append(f"Invariant 4 failed: TN({tn}) + FP({fp}) + FP_abstained({fp_abstained}) + FP_failure({fp_failure}) != GT_FP({gt_fp_count})")
+
+        if invariant_errors:
+            metrics.invariants_passed = False
+            metrics.invariant_errors = invariant_errors
+            metrics.evaluation_status = "REPORT_INTEGRITY_FAILURE"
+        else:
+            metrics.invariants_passed = True
+            metrics.evaluation_status = "OK"
 
         return metrics

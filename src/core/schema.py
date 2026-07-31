@@ -8,7 +8,7 @@ including ScanManifest, CoverageReport, ProjectContext, 4-stage workflow states,
 import hashlib
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 # ─── Enums ────────────────────────────────────────────────────────────────────
@@ -37,12 +37,32 @@ class Severity(str, Enum):
 
 
 class TriageVerdict(str, Enum):
-    """Triage verdict output."""
+    """Triage verdict output (pure security decision)."""
     TRUE_POSITIVE = "TP"                  # Vulnerability confirmed
     FALSE_POSITIVE = "FP"                 # False positive noise
     NEEDS_REVIEW = "NEEDS_REVIEW"         # Requires manual AppSec review
     NEEDS_MORE_CONTEXT = "NEEDS_MORE_CONTEXT"  # Insufficient context to determine
-    PIPELINE_FAILURE = "PIPELINE_FAILURE" # Execution error / pipeline failure
+
+
+class EvaluationOutcome(str, Enum):
+    """Execution and evaluation outcome classification."""
+    DECIDED = "DECIDED"     # Model made high-confidence TP or FP decision
+    ABSTAINED = "ABSTAINED" # Model abstained (NEEDS_REVIEW / NEEDS_MORE_CONTEXT)
+    FAILED = "FAILED"       # System execution or context extraction failed
+
+
+class FailureCategory(str, Enum):
+    """Structured failure categories for system failures."""
+    NONE = "NONE"
+    LLM_UNAVAILABLE = "LLM_UNAVAILABLE"
+    LLM_TIMEOUT = "LLM_TIMEOUT"
+    MALFORMED_OUTPUT = "MALFORMED_OUTPUT"
+    CONTEXT_RESOLUTION_FAILURE = "CONTEXT_RESOLUTION_FAILURE"
+    AST_FAILURE = "AST_FAILURE"
+    POLICY_FAILURE = "POLICY_FAILURE"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    LEGACY_PIPELINE_FAILURE = "LEGACY_PIPELINE_FAILURE"
+
 
 
 class FindingStatus(str, Enum):
@@ -115,6 +135,8 @@ class ContextQuality(str, Enum):
     HIGH = "HIGH"          # AST node + full function / slice + caller/callee context
     MEDIUM = "MEDIUM"      # AST function / statement node
     FALLBACK = "FALLBACK"  # Line window fallback (when AST parsing fails)
+    UNRESOLVED = "UNRESOLVED" # Unresolved template-only or missing context
+
 
 
 class PatchStatus(str, Enum):
@@ -270,12 +292,15 @@ class UnifiedFinding(BaseModel):
 
     # ── Verdict & Evidence ───────────────────────────────────────────────────
     verdict: Optional[TriageVerdict] = None
+    outcome: Optional[EvaluationOutcome] = None
+    failure_category: Optional[FailureCategory] = None
     confidence: Optional[float] = None
     reasoning: Optional[str] = None
     evidence: List[str] = Field(default_factory=list)
     evidence_ref: Optional[EvidenceReference] = None
     decision_metadata: Optional[DecisionMetadata] = None
     action_group: Optional[ActionGroup] = None
+
 
     # ── Graph, Risk & Remediation ─────────────────────────────────────────────
     security_context_graph: Optional[LightweightSecurityContextGraph] = None
@@ -289,7 +314,19 @@ class UnifiedFinding(BaseModel):
     status: FindingStatus = FindingStatus.NEW
     processing_error: Optional[str] = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def migrate_legacy_verdict(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            v = data.get("verdict")
+            if v == "PIPELINE_FAILURE":
+                data["verdict"] = None
+                data["outcome"] = EvaluationOutcome.FAILED.value
+                data["failure_category"] = FailureCategory.LEGACY_PIPELINE_FAILURE.value
+        return data
+
     def compute_fingerprint(self) -> str:
+
         """Compute stable SHA-256 fingerprint based on rule_id + file_path + normalized snippet."""
         clean_snippet = " ".join(self.snippet.strip().split())
         raw = f"{self.rule_id}:{self.file_path}:{clean_snippet}"

@@ -12,7 +12,7 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple, Any
-from src.core.schema import UnifiedFinding, FindingContext, ContextQuality
+from src.core.schema import UnifiedFinding, FindingContext, ContextQuality, EvaluationOutcome, FailureCategory
 
 
 SECRET_PATTERNS = [
@@ -115,6 +115,35 @@ class PythonASTContextExtractor:
             return None, None, None, [], [], []
 
 
+class OWASPPythonBenchmarkIndex:
+    """Index mapping OWASP Python benchmark findings to actual Python handlers."""
+    def __init__(self, repo_dir: Path):
+        self.repo_dir = repo_dir
+        self.index: Dict[str, Path] = {}
+        self._build_index()
+
+    def _build_index(self):
+        testcode_dir = self.repo_dir / "testcode"
+        if testcode_dir.exists() and testcode_dir.is_dir():
+            for py_file in testcode_dir.glob("BenchmarkTest*.py"):
+                stem = py_file.stem
+                self.index[stem] = py_file
+
+    def resolve_handler(self, file_path: str, finding_id: str = "") -> Optional[Path]:
+        # Try extracting BenchmarkTestXXXXX from file_path or finding_id
+        match = re.search(r"(BenchmarkTest\d{5})", file_path)
+        if not match and finding_id:
+            match = re.search(r"(BenchmarkTest\d{5})", finding_id)
+
+        if match:
+            test_id = match.group(1)
+            py_file = self.index.get(test_id)
+            if py_file and py_file.exists():
+                return py_file
+
+        return None
+
+
 def extract_finding_context(
     finding: UnifiedFinding,
     repo_dir: Path,
@@ -123,10 +152,29 @@ def extract_finding_context(
 ) -> FindingContext:
     """
     Extract multi-tier context using AST analysis.
-    In diff-scan mode (mode="diff"), retrieves relevant repository AST context outside changed lines.
+    Resolves OWASP Python templates to actual testcode Python handlers containing source/sink.
     """
     relative_path = finding.file_path.lstrip("/\\")
     full_path = repo_dir / relative_path
+
+    # OWASP Python template resolution
+    is_template = ".html" in relative_path.lower() or "templates" in relative_path.lower()
+    if is_template or not full_path.exists():
+        index = OWASPPythonBenchmarkIndex(repo_dir)
+        handler_path = index.resolve_handler(finding.file_path, finding.finding_id)
+        if handler_path:
+            full_path = handler_path
+        elif is_template:
+            # Template-only context is NOT eligible for official model-quality run
+            finding.outcome = EvaluationOutcome.FAILED
+            finding.failure_category = FailureCategory.CONTEXT_RESOLUTION_FAILURE
+            context = FindingContext(
+                context_quality=ContextQuality.UNRESOLVED,
+                surrounding_code="[TEMPLATE_ONLY_CONTEXT_UNRESOLVED]",
+                redacted=True
+            )
+            finding.context = context
+            return context
 
     if not full_path.exists():
         matches = list(repo_dir.glob(f"**/{Path(relative_path).name}"))
@@ -134,6 +182,8 @@ def extract_finding_context(
             full_path = matches[0]
 
     if not full_path.exists() or not full_path.is_file():
+        finding.outcome = EvaluationOutcome.FAILED
+        finding.failure_category = FailureCategory.CONTEXT_RESOLUTION_FAILURE
         context = FindingContext(
             context_quality=ContextQuality.FALLBACK,
             surrounding_code=redact_secrets_file_aware(finding.snippet, finding.file_path),
@@ -152,41 +202,49 @@ def extract_finding_context(
             if line.strip().startswith(("import ", "from ", "const ", "require(", "using "))
         ]
 
-        # Expand window for diff-scan mode to guarantee context outside changed lines
         effective_window = window_lines * 2 if mode == "diff" else window_lines
 
         if ext == ".py":
+            target_line = finding.start_line
+            # Search for specific handler function def or sink line in Python file
+            for idx, line in enumerate(file_lines):
+                if "_post" in line.lower() or "def benchmarktest" in line.lower() or any(k in line.lower() for k in ["subprocess", "eval", "exec", "open", "request.form", "request.args"]):
+                    target_line = idx + 1
+                    break
+
             func, cls, node_type, annots, params, guards = PythonASTContextExtractor.extract_ast_context(
-                content, finding.start_line
+                content, target_line
             )
 
-            if func or cls or node_type:
-                target_idx = max(0, finding.start_line - 1)
-                start_idx = max(0, target_idx - effective_window)
-                end_idx = min(len(file_lines), finding.end_line + effective_window)
+            target_idx = max(0, target_line - 1)
+            # Expand window to capture entire handler snippet (lines 1 to 60)
+            start_idx = max(0, target_idx - 25)
+            end_idx = min(len(file_lines), target_idx + 35)
 
-                snippet_lines = []
-                for idx in range(start_idx, end_idx):
-                    prefix = ">> " if (target_idx <= idx <= finding.end_line - 1) else "   "
-                    snippet_lines.append(f"{idx + 1:4d} | {prefix}{file_lines[idx]}")
+            snippet_lines = []
+            for idx in range(start_idx, end_idx):
+                prefix = ">> " if idx == target_idx else "   "
+                snippet_lines.append(f"{idx + 1:4d} | {prefix}{file_lines[idx]}")
 
-                surrounding = redact_secrets_file_aware("\n".join(snippet_lines), str(full_path))
+            surrounding = redact_secrets_file_aware("\n".join(snippet_lines), str(full_path))
 
-                context = FindingContext(
-                    context_quality=ContextQuality.HIGH,
-                    enclosing_function=func,
-                    enclosing_class=cls,
-                    ast_node_type=node_type,
-                    annotations=annots,
-                    parameters=params,
-                    line_window=f"L{start_idx + 1}-L{end_idx}",
-                    surrounding_code=surrounding,
-                    imports=imports[:10],
-                    caller_callee_info=f"Guards: {', '.join(guards[:5])}" if guards else None,
-                    redacted=True
-                )
-                finding.context = context
-                return context
+
+            context = FindingContext(
+                context_quality=ContextQuality.HIGH if (func or cls) else ContextQuality.MEDIUM,
+                enclosing_function=func,
+                enclosing_class=cls,
+                ast_node_type=node_type,
+                annotations=annots,
+                parameters=params,
+                line_window=f"L{start_idx + 1}-L{end_idx}",
+                surrounding_code=surrounding,
+                imports=imports[:10],
+                caller_callee_info=f"Guards: {', '.join(guards[:5])}" if guards else None,
+                redacted=True
+            )
+            finding.context = context
+            return context
+
 
         # JS/TS or Fallback context extraction
         target_idx = max(0, finding.start_line - 1)
