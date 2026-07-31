@@ -1,5 +1,0 @@
-title = "LLM-Augmented SAST Gitleaks Example Config"
-
-[extend]
-useDefault = true
-
