@@ -155,7 +155,8 @@ Quyết định triage cấp hệ thống sau khi áp dụng quy tắc policy.
 | Giá trị | Mô tả |
 |---------|-------|
 | `PARSE` | Parse đầu ra scanner |
-| `CONTEXT` | Trích xuất và sanitize ngữ cảnh mã nguồn |
+| `CONTEXT` | Trích xuất ngữ cảnh mã nguồn |
+| `SANITIZE` | Làm sạch ngữ cảnh mã nguồn |
 | `TRIAGE` | Phân loại bằng LLM |
 | `POLICY` | Áp dụng policy |
 | `REPORT` | Tạo báo cáo |
@@ -250,25 +251,12 @@ khỏi component boundary.
 
 ### TriageInput
 
-Gói đầu vào duy nhất cho `TriageProvider`. Chứa dữ kiện scanner an
-toàn đã chọn lọc và ngữ cảnh đã sanitize. `TriageProvider` KHÔNG
-nhận `NormalizedFinding` trực tiếp hoặc raw source.
+Gói đầu vào duy nhất cho `TriageProvider`. Dùng composition chứa `finding: NormalizedFinding` và `context: SanitizedContext`. `TriageProvider` KHÔNG nhận raw source.
 
 | Trường | Kiểu | Bắt buộc | Mô tả |
 |--------|------|----------|-------|
-| `finding_instance_id` | `str` | Có | ID phát hiện |
-| `scanner` | `ScannerType` | Có | Scanner nguồn |
-| `finding_type` | `FindingType` | Có | `SAST` hoặc `SECRET` |
-| `rule_id` | `str` | Có | Định danh rule |
-| `rule_name` | `str \| None` | Không | Tên rule dễ đọc |
-| `severity` | `Severity` | Có | Mức nghiêm trọng |
-| `message` | `str` | Có | Mô tả rule |
-| `snippet` | `str` | Có | Mã khớp an toàn (đã redact cho Gitleaks) |
-| `file_path` | `str` | Có | Đường dẫn tương đối |
-| `finding_start_line` | `int` | Có | Dòng bắt đầu |
-| `finding_end_line` | `int \| None` | Không | Dòng kết thúc |
-| `safe_metadata` | `dict[str, Any]` | Có | Metadata scanner đã lọc an toàn |
-| `context` | `SanitizedContext` | Có | Ngữ cảnh đã sanitize |
+| `finding` | `NormalizedFinding` | Có | Dữ kiện phát hiện an toàn từ parser |
+| `context` | `SanitizedContext` | Có | Ngữ cảnh đã sanitize từ SafeContextService |
 | `prompt_version` | `str` | Có | Phiên bản mẫu prompt |
 | `output_schema_version` | `str` | Có | Phiên bản schema đầu ra mong đợi |
 | `prompt_type` | `str` | Có | Loại prompt: `semgrep_triage` hoặc `gitleaks_triage` |
@@ -276,12 +264,8 @@ nhận `NormalizedFinding` trực tiếp hoặc raw source.
 **Ràng buộc:**
 
 - Frozen (bất biến).
-- `snippet` cho SECRET chứa `<REDACTED_SECRET>`.
-- `file_path` luôn tương đối.
-- `safe_metadata` cho Semgrep: `cwe`, `owasp`, `technology`,
-  `references`.
-- `safe_metadata` cho Gitleaks: `secret_category`,
-  `rule_description`. KHÔNG chứa: author email, commit message,
+- `context.finding_id` phải trùng khớp với `finding.finding_instance_id`.
+- `prompt_version`, `output_schema_version`, và `prompt_type` không được rỗng.
   raw match, raw secret.
 - Không chứa bí mật thô, đường dẫn tuyệt đối, hay raw source.
 
