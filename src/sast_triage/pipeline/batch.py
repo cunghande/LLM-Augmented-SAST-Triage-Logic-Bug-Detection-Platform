@@ -249,9 +249,15 @@ def triage_batch(
             scanners_succeeded.append(ScannerType.GITLEAKS)
         findings_to_process.extend(gitleaks_result.findings)
 
-    # 3. Sequential Per-Finding Triage Loop
+    # 3. Build finding_id Error Index & Sequential Per-Finding Triage Loop
+    errors_by_finding_id: dict[str, list[ProcessingError]] = {}
+    for err in scanner_errors:
+        if err.finding_id is not None:
+            errors_by_finding_id.setdefault(err.finding_id, []).append(err)
+
     triage_results: list[TriageResult] = []
     for finding in findings_to_process:
+        initial_errors = tuple(errors_by_finding_id.get(finding.finding_instance_id, ()))
         # Calls per-finding pipeline; does NOT catch exceptions (propagates configuration/contract errors)
         result = triage_finding(
             finding,
@@ -267,6 +273,7 @@ def triage_batch(
             max_context_characters=max_context_characters,
             max_import_lines=max_import_lines,
             forbidden_values=forbidden_values,
+            initial_processing_errors=initial_errors,
         )
         triage_results.append(result)
 

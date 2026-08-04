@@ -120,6 +120,7 @@ def triage_finding(
     max_context_characters: int = 12_000,
     max_import_lines: int = 20,
     forbidden_values: tuple[str, ...] = (),
+    initial_processing_errors: tuple[ProcessingError, ...] = (),
 ) -> TriageResult:
     """Triage a single NormalizedFinding through context extraction, LLM triage, and policy.
 
@@ -137,12 +138,13 @@ def triage_finding(
         max_context_characters: Maximum context snippet characters.
         max_import_lines: Maximum import lines.
         forbidden_values: Optional secret strings that must be redacted.
+        initial_processing_errors: Optional tuple of parser diagnostics linked to this finding.
 
     Returns:
         A frozen, validated TriageResult Pydantic model.
 
     Raises:
-        SastTriageError: On invalid configuration parameters or unrecoverable contract errors.
+        SastTriageError: On invalid configuration parameters or initial processing error mismatch.
     """
     start_perf = time.perf_counter()
     processed_at = datetime.now(UTC)
@@ -205,7 +207,21 @@ def triage_finding(
                 retryable=False,
             )
 
-    processing_errors: list[ProcessingError] = []
+    for err in initial_processing_errors:
+        if err.finding_id is None or err.finding_id != finding.finding_instance_id:
+            raise SastTriageError(
+                safe_message="Initial processing error finding_id mismatch.",
+                error_code="PIPELINE_PROCESSING_ERROR_MISMATCH",
+                retryable=False,
+            )
+        if err.scanner is not None and err.scanner != finding.scanner:
+            raise SastTriageError(
+                safe_message="Initial processing error scanner mismatch.",
+                error_code="PIPELINE_SCANNER_RESULT_MISMATCH",
+                retryable=False,
+            )
+
+    processing_errors: list[ProcessingError] = list(initial_processing_errors)
     sanitized: SanitizedContext | None = None
 
     # 2. Context Extraction Steps

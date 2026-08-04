@@ -11,6 +11,7 @@ from sast_triage.models import (
     FindingType,
     NormalizedFinding,
     PolicyAction,
+    ProcessingError,
     ProcessingStage,
     ScannerType,
     Severity,
@@ -650,3 +651,154 @@ def test_unrecoverable_context_error_propagates(tmp_path: Path, monkeypatch: pyt
         triage_finding(finding, repo, provider)
 
     assert exc.value.error_code == "CONTEXT_INVALID_SIZE_LIMIT"
+
+
+# --- Task 4.4.1: Initial Processing Errors & SANITIZE Diagnostic linkage Tests ---
+
+
+def test_pipeline_gitleaks_sanitize_error_prevents_fp_candidate(tmp_path: Path) -> None:
+    """Requirement Protected: Gitleaks finding with parser SANITIZE error is routed to MANUAL_REVIEW.
+
+    Expected Result: PolicyAction.MANUAL_REVIEW, escalated == True, TriageResult.processing_errors contains parser error.
+    Test Category: Task 4.4.1 Diagnostic Linkage
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "tests" / "fixtures").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "mock_secret.py").write_text("API_KEY = 'secret'\n", encoding="utf-8")
+
+    finding = make_finding(scanner=ScannerType.GITLEAKS, file_path="tests/fixtures/mock_secret.py", start_line=1)
+    provider = FakeTriageProvider()
+
+    sanitize_err = ProcessingError(
+        finding_id=finding.finding_instance_id,
+        scanner=ScannerType.GITLEAKS,
+        stage=ProcessingStage.SANITIZE,
+        error_code="SANITIZE_SECRET_REDACTION_NO_MATCH",
+        safe_message="Failed to redact secret literal.",
+    )
+
+    res = triage_finding(
+        finding,
+        repo,
+        provider,
+        prompt_type="fake.fp.high",
+        initial_processing_errors=(sanitize_err,),
+    )
+
+    assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
+    assert res.policy_decision.escalated is True
+    assert len(res.processing_errors) == 1
+    assert res.processing_errors[0].error_code == "SANITIZE_SECRET_REDACTION_NO_MATCH"
+
+
+def test_pipeline_missing_secret_error_prevents_fp_candidate(tmp_path: Path) -> None:
+    """Requirement Protected: SANITIZE_SECRET_VALUE_MISSING error routes Gitleaks finding to MANUAL_REVIEW.
+
+    Expected Result: PolicyAction.MANUAL_REVIEW.
+    Test Category: Task 4.4.1 Diagnostic Linkage
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "tests" / "fixtures").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "mock_secret.py").write_text("API_KEY = 'secret'\n", encoding="utf-8")
+
+    finding = make_finding(scanner=ScannerType.GITLEAKS, file_path="tests/fixtures/mock_secret.py", start_line=1)
+    provider = FakeTriageProvider()
+
+    missing_secret_err = ProcessingError(
+        finding_id=finding.finding_instance_id,
+        scanner=ScannerType.GITLEAKS,
+        stage=ProcessingStage.SANITIZE,
+        error_code="SANITIZE_SECRET_VALUE_MISSING",
+        safe_message="Secret value missing from record.",
+    )
+
+    res = triage_finding(
+        finding,
+        repo,
+        provider,
+        prompt_type="fake.fp.high",
+        initial_processing_errors=(missing_secret_err,),
+    )
+
+    assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
+
+
+def test_pipeline_initial_error_finding_id_mismatch_rejected(tmp_path: Path) -> None:
+    """Requirement Protected: Passing initial processing error with mismatched finding_id raises PIPELINE_PROCESSING_ERROR_MISMATCH.
+
+    Expected Result: SastTriageError raised.
+    Test Category: Initial Processing Error Validation
+    """
+    repo = tmp_path / "repo"
+    finding = make_finding()
+    provider = FakeTriageProvider()
+
+    mismatched_err = ProcessingError(
+        finding_id="other-finding-id-9999",
+        scanner=ScannerType.SEMGREP,
+        stage=ProcessingStage.SANITIZE,
+        error_code="SANITIZE_ERROR",
+        safe_message="Mismatch",
+    )
+
+    with pytest.raises(SastTriageError) as exc:
+        triage_finding(finding, repo, provider, initial_processing_errors=(mismatched_err,))
+
+    assert exc.value.error_code == "PIPELINE_PROCESSING_ERROR_MISMATCH"
+
+
+def test_pipeline_initial_error_scanner_mismatch_rejected(tmp_path: Path) -> None:
+    """Requirement Protected: Passing initial processing error with mismatched scanner raises PIPELINE_SCANNER_RESULT_MISMATCH.
+
+    Expected Result: SastTriageError raised.
+    Test Category: Initial Processing Error Validation
+    """
+    repo = tmp_path / "repo"
+    finding = make_finding(scanner=ScannerType.SEMGREP)
+    provider = FakeTriageProvider()
+
+    mismatched_err = ProcessingError(
+        finding_id=finding.finding_instance_id,
+        scanner=ScannerType.GITLEAKS,  # Mismatched scanner!
+        stage=ProcessingStage.SANITIZE,
+        error_code="SANITIZE_ERROR",
+        safe_message="Mismatch",
+    )
+
+    with pytest.raises(SastTriageError) as exc:
+        triage_finding(finding, repo, provider, initial_processing_errors=(mismatched_err,))
+
+    assert exc.value.error_code == "PIPELINE_SCANNER_RESULT_MISMATCH"
+
+
+def test_pipeline_provider_timeout_preserves_both_sanitize_and_triage_errors(tmp_path: Path) -> None:
+    """Requirement Protected: Provider timeout with initial SANITIZE error retains both errors and yields TRIAGE_ERROR.
+
+    Expected Result: triage_decision is None, policy_decision.action == TRIAGE_ERROR, len(processing_errors) == 2.
+    Test Category: Task 4.4.1 Provider Failure Precedence
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "app").mkdir()
+    (repo / "app" / "main.py").write_text("x = 1\n", encoding="utf-8")
+
+    finding = make_finding(file_path="app/main.py", start_line=1)
+    provider = FakeTriageProvider(mode=FakeTriageProviderMode.RAISE_TIMEOUT)
+
+    sanitize_err = ProcessingError(
+        finding_id=finding.finding_instance_id,
+        scanner=ScannerType.SEMGREP,
+        stage=ProcessingStage.SANITIZE,
+        error_code="CONTEXT_SANITIZATION_FAILED",
+        safe_message="Sanitize failed.",
+    )
+
+    res = triage_finding(finding, repo, provider, initial_processing_errors=(sanitize_err,))
+
+    assert res.triage_decision is None
+    assert res.policy_decision.action == PolicyAction.TRIAGE_ERROR
+    assert len(res.processing_errors) == 2
+    assert any(err.stage == ProcessingStage.SANITIZE for err in res.processing_errors)
+    assert any(err.stage == ProcessingStage.TRIAGE for err in res.processing_errors)

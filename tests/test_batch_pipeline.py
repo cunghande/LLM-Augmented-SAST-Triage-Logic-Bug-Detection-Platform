@@ -654,3 +654,105 @@ def test_batch_per_finding_error_propagates(tmp_path: Path, monkeypatch: pytest.
         triage_batch(repo, provider, semgrep_result=semgrep_res, repository_identifier="my-repo")
 
     assert exc.value.error_code == "PIPELINE_INTERNAL_FAILURE"
+
+
+# --- Task 4.4.1 Batch Diagnostic Linkage Tests ---
+
+
+def test_batch_gitleaks_sanitize_error_prevents_fp_candidate(tmp_path: Path) -> None:
+    """Requirement Protected: Gitleaks parser SANITIZE error linked via finding_id prevents FP_CANDIDATE in batch.
+
+    Expected Result: PolicyAction.MANUAL_REVIEW, findings_with_errors == 1, findings_triaged_ok == 0.
+    Test Category: Task 4.4.1 Batch Diagnostic Linkage
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "tests" / "fixtures").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "secrets.py").write_text("KEY = 'val'\n", encoding="utf-8")
+
+    f1 = make_gitleaks_finding(finding_id="g-01", file_path="tests/fixtures/secrets.py")
+    sanitize_err = ProcessingError(
+        finding_id="g-01",
+        scanner=ScannerType.GITLEAKS,
+        stage=ProcessingStage.SANITIZE,
+        error_code="GITLEAKS_PRE_REDACT_FAILED",
+        safe_message="Failed to redact secret.",
+    )
+    gitleaks_res = ScannerParseResult(findings=(f1,), errors=(sanitize_err,))
+    provider = FakeTriageProvider()
+
+    batch_res = triage_batch(
+        repo,
+        provider,
+        gitleaks_result=gitleaks_res,
+        repository_identifier="my-repo",
+        prompt_type="fake.fp.high",  # Provider would normally yield LIKELY_FP -> FP_CANDIDATE
+    )
+
+    assert len(batch_res.results) == 1
+    res = batch_res.results[0]
+    assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
+    assert res.policy_decision.escalated is True
+    assert len(res.processing_errors) == 1
+    assert res.processing_errors[0].error_code == "GITLEAKS_PRE_REDACT_FAILED"
+    assert batch_res.run_metadata.findings_with_errors == 1
+    assert batch_res.run_metadata.findings_triaged_ok == 0
+    assert ScannerType.GITLEAKS in batch_res.run_metadata.scanners_succeeded
+
+
+def test_batch_clean_gitleaks_fixture_remains_fp_candidate(tmp_path: Path) -> None:
+    """Requirement Protected: Clean Gitleaks fixture finding without SANITIZE error remains FP_CANDIDATE.
+
+    Expected Result: PolicyAction.FP_CANDIDATE, findings_triaged_ok == 1.
+    Test Category: Task 4.4.1 Batch Diagnostic Linkage
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "tests" / "fixtures").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "secrets.py").write_text("KEY = 'val'\n", encoding="utf-8")
+
+    f1 = make_gitleaks_finding(finding_id="g-01", file_path="tests/fixtures/secrets.py")
+    gitleaks_res = ScannerParseResult(findings=(f1,), errors=())
+    provider = FakeTriageProvider()
+
+    batch_res = triage_batch(
+        repo,
+        provider,
+        gitleaks_result=gitleaks_res,
+        repository_identifier="my-repo",
+        prompt_type="fake.fp.high",
+    )
+
+    assert len(batch_res.results) == 1
+    assert batch_res.results[0].policy_decision.action == PolicyAction.FP_CANDIDATE
+    assert batch_res.run_metadata.findings_triaged_ok == 1
+    assert batch_res.run_metadata.findings_with_errors == 0
+
+
+def test_batch_orphan_finding_id_error_retained_in_scanner_errors(tmp_path: Path) -> None:
+    """Requirement Protected: Error with orphan finding_id is kept in scanner_errors and NOT attached to any TriageResult.
+
+    Expected Result: len(scanner_errors) == 1, len(results[0].processing_errors) == 0.
+    Test Category: Orphan Error Handling
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "app").mkdir()
+    (repo / "app" / "s1.py").write_text("x = 1\n", encoding="utf-8")
+
+    f1 = make_semgrep_finding(finding_id="f-01", file_path="app/s1.py")
+    orphan_err = ProcessingError(
+        finding_id="nonexistent-finding-999",
+        scanner=ScannerType.SEMGREP,
+        stage=ProcessingStage.PARSE,
+        error_code="PARSE_RECORD_INVALID_FIELD",
+        safe_message="Orphan record error",
+    )
+    semgrep_res = ScannerParseResult(findings=(f1,), errors=(orphan_err,))
+    provider = FakeTriageProvider()
+
+    batch_res = triage_batch(repo, provider, semgrep_result=semgrep_res, repository_identifier="my-repo")
+
+    assert len(batch_res.scanner_errors) == 1
+    assert batch_res.scanner_errors[0].finding_id == "nonexistent-finding-999"
+    assert len(batch_res.results[0].processing_errors) == 0
