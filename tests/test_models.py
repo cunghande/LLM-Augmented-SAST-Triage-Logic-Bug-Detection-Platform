@@ -391,13 +391,12 @@ def test_policy_decision_requires_escalation_reason() -> None:
 
 def test_triage_result_success_case(
     semgrep_finding: NormalizedFinding,
-    valid_context: SanitizedContext,
     valid_triage_decision: TriageDecision,
     valid_policy_decision: PolicyDecision,
 ) -> None:
     res = TriageResult(
         finding=semgrep_finding,
-        sanitized_context=valid_context,
+        context_summary="PYTHON_FUNCTION context, lines 10-25, function process_payment.",
         triage_decision=valid_triage_decision,
         policy_decision=valid_policy_decision,
         processing_errors=[],
@@ -405,11 +404,89 @@ def test_triage_result_success_case(
     )
     assert res.triage_decision is not None
     assert res.policy_decision.action == PolicyAction.LIKELY_TP
+    assert res.context_summary == "PYTHON_FUNCTION context, lines 10-25, function process_payment."
+
+
+def test_triage_result_no_sanitized_context_field(
+    semgrep_finding: NormalizedFinding,
+    valid_triage_decision: TriageDecision,
+    valid_policy_decision: PolicyDecision,
+    valid_context: SanitizedContext,
+) -> None:
+    # 1. Verify sanitized_context is not an attribute
+    res = TriageResult(
+        finding=semgrep_finding,
+        context_summary="LINE_WINDOW context, lines 1-10.",
+        triage_decision=valid_triage_decision,
+        policy_decision=valid_policy_decision,
+        processed_at=datetime.now(UTC),
+    )
+    assert not hasattr(res, "sanitized_context")
+
+    # 2. Verify passing extra sanitized_context parameter is rejected by extra="forbid"
+    with pytest.raises(ValidationError):
+        TriageResult(
+            finding=semgrep_finding,
+            sanitized_context=valid_context,  # type: ignore[call-arg]
+            context_summary="LINE_WINDOW context, lines 1-10.",
+            triage_decision=valid_triage_decision,
+            policy_decision=valid_policy_decision,
+            processed_at=datetime.now(UTC),
+        )
+
+
+def test_triage_result_serialization_no_source_snippet(
+    semgrep_finding: NormalizedFinding,
+    valid_triage_decision: TriageDecision,
+    valid_policy_decision: PolicyDecision,
+) -> None:
+    res = TriageResult(
+        finding=semgrep_finding,
+        context_summary="REDACTED_LINE_WINDOW context, lines 5-15.",
+        triage_decision=valid_triage_decision,
+        policy_decision=valid_policy_decision,
+        processed_at=datetime.now(UTC),
+    )
+    dump_json = res.model_dump_json()
+
+    assert "sanitized_context" not in dump_json
+    assert "sanitized_snippet" not in dump_json
+    assert "limited_imports" not in dump_json
+    assert "limited_decorators" not in dump_json
+
+
+def test_triage_result_context_summary_nullable_or_whitespace_check(
+    semgrep_finding: NormalizedFinding,
+    valid_triage_decision: TriageDecision,
+    valid_policy_decision: PolicyDecision,
+) -> None:
+    # context_summary can be None
+    res_none = TriageResult(
+        finding=semgrep_finding,
+        context_summary=None,
+        triage_decision=valid_triage_decision,
+        policy_decision=valid_policy_decision,
+        processed_at=datetime.now(UTC),
+    )
+    assert res_none.context_summary is None
+
+    # whitespace-only context_summary is rejected
+    with pytest.raises(ValidationError, match="must not be empty or whitespace only"):
+        TriageResult(
+            finding=semgrep_finding,
+            context_summary="   ",
+            triage_decision=valid_triage_decision,
+            policy_decision=valid_policy_decision,
+            processed_at=datetime.now(UTC),
+        )
+
+
+def test_missing_context_reason_contains_source_file_read_error() -> None:
+    assert MissingContextReason.SOURCE_FILE_READ_ERROR.value == "SOURCE_FILE_READ_ERROR"
 
 
 def test_triage_result_provider_failure_case(
     semgrep_finding: NormalizedFinding,
-    valid_context: SanitizedContext,
 ) -> None:
     error_record = ProcessingError(
         finding_id=semgrep_finding.finding_instance_id,
@@ -427,7 +504,7 @@ def test_triage_result_provider_failure_case(
     )
     res = TriageResult(
         finding=semgrep_finding,
-        sanitized_context=valid_context,
+        context_summary=None,
         triage_decision=None,
         policy_decision=error_policy,
         processing_errors=[error_record],
@@ -439,13 +516,12 @@ def test_triage_result_provider_failure_case(
 
 def test_triage_result_rejects_null_decision_without_triage_error_action(
     semgrep_finding: NormalizedFinding,
-    valid_context: SanitizedContext,
     valid_policy_decision: PolicyDecision,
 ) -> None:
     with pytest.raises(ValidationError, match="policy_decision.action must be TRIAGE_ERROR"):
         TriageResult(
             finding=semgrep_finding,
-            sanitized_context=valid_context,
+            context_summary=None,
             triage_decision=None,  # Null decision
             policy_decision=valid_policy_decision,  # Action is LIKELY_TP (invalid!)
             processing_errors=[],
@@ -519,7 +595,6 @@ def test_run_metadata_rejects_absolute_repo_path() -> None:
 
 def test_triage_result_provider_failure_requires_triage_stage_error(
     semgrep_finding: NormalizedFinding,
-    valid_context: SanitizedContext,
 ) -> None:
     error_policy = PolicyDecision(
         action=PolicyAction.TRIAGE_ERROR,
@@ -538,7 +613,7 @@ def test_triage_result_provider_failure_requires_triage_stage_error(
     with pytest.raises(ValidationError, match="stage=TRIAGE"):
         TriageResult(
             finding=semgrep_finding,
-            sanitized_context=valid_context,
+            context_summary=None,
             triage_decision=None,
             policy_decision=error_policy,
             processing_errors=[non_triage_error],
@@ -548,7 +623,6 @@ def test_triage_result_provider_failure_requires_triage_stage_error(
 
 def test_triage_result_triage_error_action_requires_non_empty_errors(
     semgrep_finding: NormalizedFinding,
-    valid_context: SanitizedContext,
     valid_triage_decision: TriageDecision,
 ) -> None:
     error_policy = PolicyDecision(
@@ -560,7 +634,7 @@ def test_triage_result_triage_error_action_requires_non_empty_errors(
     with pytest.raises(ValidationError, match="processing_errors must not be empty"):
         TriageResult(
             finding=semgrep_finding,
-            sanitized_context=valid_context,
+            context_summary=None,
             triage_decision=valid_triage_decision,  # Decision present but action is TRIAGE_ERROR
             policy_decision=error_policy,
             processing_errors=[],  # Empty errors!

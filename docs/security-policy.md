@@ -277,6 +277,10 @@ validate.
 
 Reporter quét đầu ra tìm mẫu bí mật phổ biến trước khi ghi.
 
+### R7. TriageResult không chứa SanitizedContext
+
+`TriageResult` chỉ lưu `context_summary` (chuỗi tóm tắt ngắn), không lưu `SanitizedContext` hay full source snippet để đảm bảo reporter không vô tình ghi toàn bộ mã nguồn ra file báo cáo JSON/Markdown.
+
 ## 7. Ngữ nghĩa lỗi
 
 ### F1. Cách ly theo từng phát hiện

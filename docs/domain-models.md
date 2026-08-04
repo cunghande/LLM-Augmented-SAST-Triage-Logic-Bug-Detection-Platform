@@ -114,6 +114,7 @@ Lý do ngữ cảnh không có sẵn hoặc bị giới hạn.
 | `SOURCE_PATH_OUTSIDE_REPOSITORY` | Đường dẫn nguồn nằm ngoài gốc repository |
 | `SOURCE_FILE_TOO_LARGE` | File nguồn vượt giới hạn kích thước |
 | `SOURCE_FILE_UNSUPPORTED_ENCODING` | File nguồn không phải UTF-8 hoặc encoding không hỗ trợ |
+| `SOURCE_FILE_READ_ERROR` | Lỗi đọc file nguồn khi file tồn tại nhưng không thể đọc do permission/IO failure |
 | `PYTHON_AST_PARSE_FAILED` | Parse AST Python thất bại |
 | `ENCLOSING_SCOPE_EXCEEDED_LIMIT` | Phạm vi hàm/class bao quanh vượt giới hạn kích thước |
 | `INVALID_FINDING_LINE_RANGE` | Dải dòng từ scanner không hợp lệ hoặc ngoài phạm vi file |
@@ -371,7 +372,7 @@ mà không thay đổi chúng.
 | Trường | Kiểu | Bắt buộc | Mô tả |
 |--------|------|----------|-------|
 | `finding` | `NormalizedFinding` | Có | Phát hiện gốc |
-| `sanitized_context` | `SanitizedContext` | Có | Ngữ cảnh đã sanitize (luôn có, có thể `context_available=False`) |
+| `context_summary` | `str \| None` | Không | Tóm tắt ngắn gọn chiến lược ngữ cảnh (ví dụ: "PYTHON_FUNCTION context, lines 10-25"). Null nếu không có ngữ cảnh |
 | `triage_decision` | `TriageDecision \| None` | Không | Kết quả LLM. Null nếu provider lỗi |
 | `policy_decision` | `PolicyDecision` | Có | Quyết định hệ thống |
 | `processing_errors` | `list[ProcessingError]` | Có | Lỗi trong quá trình xử lý |
@@ -382,10 +383,9 @@ mà không thay đổi chúng.
 
 - Frozen (bất biến).
 - Không thay đổi `NormalizedFinding` để thêm ngữ cảnh hoặc verdict.
-- `sanitized_context` luôn có mặt. Khi trích xuất thất bại, nó có
-  `context_available=False` và `missing_context_reasons` giải thích
-  lý do.
-- Không chứa raw source text.
+- `context_summary` là chuỗi tóm tắt ngắn, không chứa full source snippet, imports, decorators, hay bí mật.
+- Không lưu `SanitizedContext` trong `TriageResult` để tránh vô tình serialize toàn bộ mã nguồn ra report.
+- Không chứa raw source text hay traceback.
 
 ### ProcessingError
 

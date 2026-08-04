@@ -69,6 +69,7 @@ class MissingContextReason(str, Enum):
     SOURCE_PATH_OUTSIDE_REPOSITORY = "SOURCE_PATH_OUTSIDE_REPOSITORY"
     SOURCE_FILE_TOO_LARGE = "SOURCE_FILE_TOO_LARGE"
     SOURCE_FILE_UNSUPPORTED_ENCODING = "SOURCE_FILE_UNSUPPORTED_ENCODING"
+    SOURCE_FILE_READ_ERROR = "SOURCE_FILE_READ_ERROR"
     PYTHON_AST_PARSE_FAILED = "PYTHON_AST_PARSE_FAILED"
     ENCLOSING_SCOPE_EXCEEDED_LIMIT = "ENCLOSING_SCOPE_EXCEEDED_LIMIT"
     INVALID_FINDING_LINE_RANGE = "INVALID_FINDING_LINE_RANGE"
@@ -364,7 +365,7 @@ class TriageResult(BaseDomainModel):
     """Aggregated final result for a single finding."""
 
     finding: NormalizedFinding
-    sanitized_context: SanitizedContext
+    context_summary: str | None = None
     triage_decision: TriageDecision | None = None
     policy_decision: PolicyDecision
     processing_errors: list[ProcessingError] = Field(default_factory=list)
@@ -374,11 +375,9 @@ class TriageResult(BaseDomainModel):
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
         """Enforce domain invariants for TriageResult."""
-        if self.sanitized_context.finding_id != self.finding.finding_instance_id:
-            raise ValueError(
-                f"sanitized_context.finding_id ('{self.sanitized_context.finding_id}') must match "
-                f"finding.finding_instance_id ('{self.finding.finding_instance_id}')"
-            )
+        if self.context_summary is not None and not self.context_summary.strip():
+            raise ValueError("context_summary must not be empty or whitespace only when provided")
+
         if self.triage_decision is None:
             if self.policy_decision.action != PolicyAction.TRIAGE_ERROR:
                 raise ValueError("policy_decision.action must be TRIAGE_ERROR when triage_decision is None")
