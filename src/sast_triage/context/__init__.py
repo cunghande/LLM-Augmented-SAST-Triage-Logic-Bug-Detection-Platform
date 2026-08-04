@@ -8,6 +8,7 @@ from sast_triage.context.python_scope import (
     select_python_scope,
 )
 from sast_triage.context.reader import SourceReadResult, read_repository_source
+from sast_triage.context.sanitizer import sanitize_context
 from sast_triage.context.selection import (
     CONTEXT_TRUNCATED_TO_LIMIT,
     FINDING_EXCEEDS_CONTEXT_LIMIT,
@@ -29,6 +30,7 @@ __all__ = [
     "RawContextSelection",
     "SourceReadResult",
     "read_repository_source",
+    "sanitize_context",
     "select_python_scope",
     "select_raw_context",
 ]

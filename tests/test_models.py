@@ -248,6 +248,23 @@ def test_sanitized_context_unavailable_valid() -> None:
         missing_context_reasons=[MissingContextReason.SOURCE_FILE_NOT_FOUND],
     )
     assert ctx.context_available is False
+    assert ctx.missing_context_reasons == [MissingContextReason.SOURCE_FILE_NOT_FOUND]
+
+
+def test_sanitized_context_sanitization_failed_reason() -> None:
+    ctx = SanitizedContext(
+        finding_id="f-004",
+        sanitized_snippet=None,
+        context_strategy=ContextStrategy.UNAVAILABLE,
+        finding_start_line=10,
+        path_category=PathCategory.UNKNOWN,
+        source_kind=SourceKind.WORKTREE,
+        context_available=False,
+        missing_context_reasons=[MissingContextReason.CONTEXT_SANITIZATION_FAILED],
+    )
+    assert ctx.context_available is False
+    assert ctx.missing_context_reasons == [MissingContextReason.CONTEXT_SANITIZATION_FAILED]
+    assert ctx.missing_context_reasons[0].value == "CONTEXT_SANITIZATION_FAILED"
     assert ctx.sanitized_snippet is None
 
 

@@ -118,6 +118,7 @@ Lý do ngữ cảnh không có sẵn hoặc bị giới hạn.
 | `ENCLOSING_SCOPE_EXCEEDED_LIMIT` | Phạm vi hàm/class bao quanh vượt giới hạn kích thước |
 | `INVALID_FINDING_LINE_RANGE` | Dải dòng từ scanner không hợp lệ hoặc ngoài phạm vi file |
 | `ARTIFACT_REPOSITORY_MISMATCH` | Artifact và repository không khớp |
+| `CONTEXT_SANITIZATION_FAILED` | Thất bại khi làm sạch ngữ cảnh (ví dụ: leak-check thất bại hoặc line mapping bị lỗi) |
 
 ### ModelVerdict
 

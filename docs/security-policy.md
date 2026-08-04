@@ -82,24 +82,28 @@ fixture Gitleaks và xác minh rằng canary không xuất hiện trong:
 
 ### G9. Cơ chế redact lại
 
-Cơ chế chính xác để redact lại ngữ cảnh nguồn là quyết định triển
-khai cho Iteration 3. Hai phương pháp ứng viên:
+Cơ chế chính xác để redact lại ngữ cảnh nguồn:
+- Với phát hiện `GITLEAKS`, `ContextSanitizer` mask dòng phát hiện dạng `# <REDACTED_GITLEAKS_FINDING_LINE>` (giữ nguyên line count và indentation) và đổi chiến lược thành `REDACTED_LINE_WINDOW`.
+- Với phát hiện `SEMGREP`, `ContextSanitizer` áp dụng các pattern credential chuẩn trên mã nguồn.
+- Kiểm tra phòng vệ chiều sâu `forbidden_values` từ caller.
 
-**Phương pháp A: Dựa trên mẫu.**
-`ContextSanitizer` (trong `SafeContextService`) áp dụng phát hiện
-mẫu credential dựa trên regex. Với phát hiện `SECRET`, áp dụng phát
-hiện mạnh hơn trên dòng phát hiện và xung quanh. Phương pháp này
-không cần truyền giá trị bí mật thô ra ngoài parser.
+### G10. Phạm vi bảo đảm và không bảo đảm của ContextSanitizer
 
-**Phương pháp B: Closure redaction.**
-`GitleaksParser` xây dựng callable trong phạm vi cục bộ bắt giữ giá
-trị bí mật thô. Callable này được truyền cho `SafeContextService` để
-redact có mục tiêu và bị hủy sau khi dùng. Giá trị thô đóng gói
-trong closure, không lộ ra như trường dữ liệu.
+**ContextSanitizer bảo đảm:**
+- Mask các dòng phát hiện của Gitleaks khi map line range thành công.
+- Redact các pattern credential được hỗ trợ (literal credential assignments, Authorization Bearer, PEM private key blocks, password trong Connection URL).
+- Kiểm tra danh sách `forbidden_values` do caller cung cấp (nếu phát hiện rò rỉ ➔ vô hiệu hóa context an toàn với `CONTEXT_SANITIZATION_FAILED`).
+- Chỉ `SanitizedContext` (model Pydantic frozen công khai) được phép đi sang layer LLM Provider.
 
-Cả hai phải thỏa mãn G1–G8.
+**ContextSanitizer KHÔNG bảo đảm:**
+- Thấu thị phát hiện mọi bí mật không tuân theo pattern regex.
+- Lọc thông tin nhận dạng cá nhân (PII).
+- Che internal hostname hoặc username trong mã nguồn hay URL connection.
+- Phát hiện hoặc bóc tách payload prompt injection trong mã nguồn (mã nguồn là untrusted data).
+- Đảm bảo mã nguồn hoàn toàn hết tính nhạy cảm tuyệt đối.
+- Đảm bảo tính an toàn ngữ nghĩa của phản hồi LLM.
 
-### G10. Không gửi thông tin nhạy cảm Gitleaks cho LLM
+### G11. Không gửi thông tin nhạy cảm Gitleaks cho LLM
 
 `TriageInput` cho phát hiện Gitleaks KHÔNG ĐƯỢC chứa:
 
