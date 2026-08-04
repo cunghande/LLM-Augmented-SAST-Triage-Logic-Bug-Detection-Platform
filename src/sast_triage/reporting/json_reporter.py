@@ -33,6 +33,7 @@ _KNOWN_SAFE_PLACEHOLDERS: frozenset[str] = frozenset(
 # scanner-facing safe snippet per parser contract.
 _FORBIDDEN_KEYS: frozenset[str] = frozenset(
     {
+        "snippet",
         "sanitized_context",
         "sanitized_snippet",
         "raw_source",
@@ -82,6 +83,56 @@ def _check_forbidden_keys(node: Any, *, path: str = "") -> None:
         for index, item in enumerate(node):
             _check_forbidden_keys(item, path=f"{path}[{index}]")
     # Scalars (str, int, float, bool, None) are not keys — skip.
+
+
+_SAFE_FINDING_FIELDS: frozenset[str] = frozenset(
+    {
+        "finding_instance_id",
+        "scanner",
+        "finding_type",
+        "rule_id",
+        "rule_name",
+        "file_path",
+        "start_line",
+        "end_line",
+        "severity",
+        "message",
+        "metadata",
+    }
+)
+
+
+def _project_batch_result(batch_result: BatchResult) -> dict[str, Any]:
+    """Project a BatchResult onto the public, source-free JSON report schema."""
+    results: list[dict[str, Any]] = []
+    for result in batch_result.results:
+        results.append(
+            {
+                "finding": result.finding.model_dump(
+                    mode="json", include=_SAFE_FINDING_FIELDS
+                ),
+                "context_summary": result.context_summary,
+                "triage_decision": (
+                    result.triage_decision.model_dump(mode="json")
+                    if result.triage_decision is not None
+                    else None
+                ),
+                "policy_decision": result.policy_decision.model_dump(mode="json"),
+                "processing_errors": [
+                    error.model_dump(mode="json") for error in result.processing_errors
+                ],
+                "processed_at": result.processed_at.isoformat(),
+                "processing_duration_ms": result.processing_duration_ms,
+            }
+        )
+
+    return {
+        "run_metadata": batch_result.run_metadata.model_dump(mode="json"),
+        "results": results,
+        "scanner_errors": [
+            error.model_dump(mode="json") for error in batch_result.scanner_errors
+        ],
+    }
 
 
 def _validate_input(
@@ -207,7 +258,7 @@ def write_json_report(
         # Pydantic v2: mode="json" serializes enums as string values and
         # datetimes as ISO-8601 strings.  We request a plain dict so that
         # json.dumps controls formatting.
-        serialized_dict: dict[str, Any] = batch_result.model_dump(mode="json")
+        serialized_dict: dict[str, Any] = _project_batch_result(batch_result)
     except Exception as exc:
         raise SastTriageError(
             "Serialization of BatchResult failed unexpectedly.",

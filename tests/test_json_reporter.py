@@ -1041,3 +1041,108 @@ def test_utf8_encoding(tmp_path: Path) -> None:
     # Should not raise
     decoded = raw_bytes.decode("utf-8")
     assert len(decoded) > 0
+
+
+def test_safe_projection_excludes_snippet_and_preserves_safe_fields(tmp_path: Path) -> None:
+    """The default report uses an explicit finding allowlist."""
+    canary = "SEMGREP_SNIPPET_CANARY_DO_NOT_REPORT"
+    finding = NormalizedFinding(
+        finding_instance_id="semgrep-projection-1",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.lang.security.audit.eval-detected",
+        rule_name="dangerous-eval",
+        file_path="app/service.py",
+        start_line=10,
+        end_line=12,
+        severity=Severity.HIGH,
+        message="Unsafe evaluation.",
+        snippet=canary,
+        metadata={"cwe": ["CWE-95"], "category": "security"},
+    )
+    batch = _make_batch_result(
+        results=[_make_triage_result(finding, context_summary="Safe summary")]
+    )
+    out = tmp_path / "report.json"
+
+    write_json_report(batch, out)
+    parsed = json.loads(out.read_text(encoding="utf-8"))
+    projected_finding = parsed["results"][0]["finding"]
+
+    assert set(projected_finding) == {
+        "finding_instance_id", "scanner", "finding_type", "rule_id",
+        "rule_name", "file_path", "start_line", "end_line", "severity",
+        "message", "metadata",
+    }
+    assert "snippet" not in projected_finding
+    assert canary not in out.read_text(encoding="utf-8")
+    assert projected_finding["metadata"] == {"cwe": ["CWE-95"], "category": "security"}
+    assert parsed["results"][0]["context_summary"] == "Safe summary"
+
+
+def test_safe_projection_handles_gitleaks_and_retains_batch_contract(tmp_path: Path) -> None:
+    """Gitleaks snippets are excluded while decisions, errors, metadata and order remain."""
+    gitleaks_finding = NormalizedFinding(
+        finding_instance_id="gitleaks-projection-1",
+        scanner=ScannerType.GITLEAKS,
+        finding_type=FindingType.SECRET,
+        rule_id="generic-api-key",
+        rule_name="Generic API Key",
+        file_path="tests/fixtures/secrets.py",
+        start_line=3,
+        end_line=3,
+        severity=Severity.UNKNOWN,
+        message="Potential secret.",
+        snippet="<REDACTED_SECRET>",
+        metadata={"secret_category": "api_key"},
+    )
+    first = _make_triage_result(_make_semgrep_finding("first"), context_summary="first context")
+    second = _make_triage_error_result(gitleaks_finding)
+    scanner_error = ProcessingError(
+        scanner=ScannerType.GITLEAKS,
+        stage=ProcessingStage.PARSE,
+        error_code="PARSE_WARNING",
+        safe_message="A safe parser diagnostic.",
+    )
+    batch = _make_batch_result(
+        results=[first, second],
+        scanner_errors=[scanner_error],
+        total_findings_parsed=2,
+        findings_triaged_ok=1,
+        findings_with_errors=1,
+        scanners_attempted=[ScannerType.SEMGREP, ScannerType.GITLEAKS],
+        scanners_succeeded=[ScannerType.SEMGREP, ScannerType.GITLEAKS],
+    )
+    before = batch.model_dump(mode="json")
+    out = tmp_path / "report.json"
+
+    write_json_report(batch, out)
+    content = out.read_text(encoding="utf-8")
+    parsed = json.loads(content)
+
+    assert [item["finding"]["finding_instance_id"] for item in parsed["results"]] == [
+        "first", "gitleaks-projection-1"
+    ]
+    assert parsed["results"][1]["triage_decision"] is None
+    assert parsed["results"][1]["policy_decision"]["action"] == "TRIAGE_ERROR"
+    assert parsed["results"][1]["processing_errors"][0]["error_code"] == "TRIAGE_PROVIDER_TIMEOUT"
+    assert parsed["scanner_errors"][0]["safe_message"] == "A safe parser diagnostic."
+    assert parsed["run_metadata"]["repository_identifier"] == "org/test-repo"
+    assert "<REDACTED_SECRET>" not in content
+    assert batch.model_dump(mode="json") == before
+    assert content.endswith("\n")
+    assert "\n  \"results\"" in content
+
+    forbidden_keys = {
+        "snippet", "sanitized_context", "sanitized_snippet", "raw_source",
+        "source_snippet", "selected_text", "raw_match", "Secret", "function_body",
+    }
+
+    def walk(value: Any) -> list[str]:
+        if isinstance(value, dict):
+            return list(value) + [key for child in value.values() for key in walk(child)]
+        if isinstance(value, list):
+            return [key for child in value for key in walk(child)]
+        return []
+
+    assert forbidden_keys.isdisjoint(walk(parsed))
