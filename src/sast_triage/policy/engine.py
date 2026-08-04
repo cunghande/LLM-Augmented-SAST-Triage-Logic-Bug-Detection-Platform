@@ -12,6 +12,7 @@ Security & Conservative Principles:
 
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
+    ArtifactRepositoryMatch,
     MissingContextReason,
     ModelConfidence,
     ModelVerdict,
@@ -35,6 +36,7 @@ def apply_policy(
     context: SanitizedContext,
     triage_decision: TriageDecision | None,
     processing_errors: tuple[ProcessingError, ...] = (),
+    artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
 ) -> PolicyDecision:
     """Apply conservative policy rules to generate a system PolicyDecision.
 
@@ -82,6 +84,21 @@ def apply_policy(
             policy_version=POLICY_VERSION,
             escalated=False,
             escalation_reason=None,
+        )
+
+    if artifact_repository_match == ArtifactRepositoryMatch.MISMATCH:
+        raise SastTriageError(
+            safe_message="Scanner artifact does not belong to the target repository.",
+            error_code="PIPELINE_ARTIFACT_REPOSITORY_MISMATCH",
+            retryable=False,
+        )
+    if artifact_repository_match in (ArtifactRepositoryMatch.UNVERIFIED, ArtifactRepositoryMatch.PARTIAL):
+        return PolicyDecision(
+            action=PolicyAction.MANUAL_REVIEW,
+            reasons=["Scanner artifact repository binding is not fully verified."],
+            policy_version=POLICY_VERSION,
+            escalated=True,
+            escalation_reason="Artifact binding is unverified or partial.",
         )
 
     # Helper flags for errors

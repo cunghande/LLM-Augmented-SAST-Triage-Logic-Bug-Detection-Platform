@@ -34,7 +34,6 @@ from sast_triage.models import (
 )
 from sast_triage.pipeline.finding import triage_finding
 from sast_triage.policy.engine import POLICY_VERSION
-from sast_triage.triage.fake_provider import FakeTriageProvider
 
 # Record-level parse error codes that DO NOT cause scanner parse failure
 RECORD_LEVEL_PARSE_ERROR_CODES: set[str] = {
@@ -91,14 +90,14 @@ def _has_artifact_level_parse_error(errors: tuple[ProcessingError, ...]) -> bool
 
 def triage_batch(
     repository_root: Path,
-    provider: FakeTriageProvider,
+    provider: object,
     *,
     semgrep_result: ScannerParseResult | None = None,
     gitleaks_result: ScannerParseResult | None = None,
     repository_identifier: str,
     commit_sha: str | None = None,
     working_tree_state: str | None = None,
-    artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.UNVERIFIED,
+    artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
     prompt_version: str = "triage-prompt-v1",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
@@ -112,6 +111,7 @@ def triage_batch(
     scanner_versions: dict[str, str | None] | None = None,
     scanner_config_ids: dict[str, str | None] | None = None,
     input_artifact_hashes: dict[str, str | None] | None = None,
+    cli_mode: str = "triage",
 ) -> BatchResult:
     """Triage a batch of static findings across Semgrep and Gitleaks scanner results.
 
@@ -137,6 +137,7 @@ def triage_batch(
         scanner_versions: Optional mapping of scanner name to version.
         scanner_config_ids: Optional mapping of scanner name to config ID.
         input_artifact_hashes: Optional mapping of scanner name to artifact SHA256 hash.
+        cli_mode: CLI execution mode recorded in run metadata.
 
     Returns:
         A frozen BatchResult model containing RunMetadata, TriageResults, and ProcessingErrors.
@@ -274,6 +275,7 @@ def triage_batch(
             max_import_lines=max_import_lines,
             forbidden_values=forbidden_values,
             initial_processing_errors=initial_errors,
+            artifact_repository_match=artifact_repository_match,
         )
         triage_results.append(result)
 
@@ -317,11 +319,11 @@ def triage_batch(
         scanner_config_ids=sc_config_ids,
         input_artifact_hashes=artifact_hashes,
         prompt_version=prompt_version,
-        model_version="fake-triage-v1",
+        model_version=getattr(provider, "model_version", None),
         policy_version=POLICY_VERSION,
-        triage_provider="fake",
+        triage_provider=getattr(provider, "provider_name", provider.__class__.__name__),
         tool_version=TOOL_VERSION,
-        cli_mode="triage",
+        cli_mode=cli_mode,
         started_at=started_at,
         completed_at=completed_at,
         total_findings_parsed=total_findings_parsed,

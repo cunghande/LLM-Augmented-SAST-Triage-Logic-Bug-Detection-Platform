@@ -23,6 +23,7 @@ from sast_triage.context.sanitizer import (
 from sast_triage.context.selection import select_raw_context
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
+    ArtifactRepositoryMatch,
     ContextStrategy,
     MissingContextReason,
     NormalizedFinding,
@@ -38,7 +39,6 @@ from sast_triage.models import (
     TriageResult,
 )
 from sast_triage.policy.engine import POLICY_VERSION, apply_policy
-from sast_triage.triage.fake_provider import FakeTriageProvider
 
 # --- Explicit Allowlist for Recoverable Context Layer Errors ---
 
@@ -108,7 +108,7 @@ def _build_context_summary(context: SanitizedContext) -> str:
 def triage_finding(
     finding: NormalizedFinding,
     repository_root: Path,
-    provider: FakeTriageProvider,
+    provider: object,
     *,
     prompt_version: str = "triage-prompt-v1",
     output_schema_version: str = "triage-decision-v1",
@@ -121,6 +121,7 @@ def triage_finding(
     max_import_lines: int = 20,
     forbidden_values: tuple[str, ...] = (),
     initial_processing_errors: tuple[ProcessingError, ...] = (),
+    artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
 ) -> TriageResult:
     """Triage a single NormalizedFinding through context extraction, LLM triage, and policy.
 
@@ -326,6 +327,7 @@ def triage_finding(
             sanitized,
             triage_dec,
             processing_errors=tuple(processing_errors),
+            artifact_repository_match=artifact_repository_match,
         )
     except SastTriageError as exc:
         processing_errors.append(

@@ -55,6 +55,16 @@ class FakeTriageProvider:
         self._mode = mode
 
     @property
+    def provider_name(self) -> str:
+        """Return the stable provider identifier."""
+        return "fake"
+
+    @property
+    def model_version(self) -> str:
+        """Return the deterministic fake model identifier."""
+        return "fake-triage-v1"
+
+    @property
     def mode(self) -> FakeTriageProviderMode:
         """Return provider execution mode."""
         return self._mode
