@@ -1,0 +1,70 @@
+{
+  "version": "1.170.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.audit.eval-use.eval-use",
+      "path": "app/services/calculator.py",
+      "start": {
+        "line": 24,
+        "col": 5,
+        "offset": 620
+      },
+      "end": {
+        "line": 24,
+        "col": 20,
+        "offset": 635
+      },
+      "extra": {
+        "message": "Detected call to eval(). Dynamic code execution is unsafe.",
+        "severity": "ERROR",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "owasp": [
+            "A03:2021 - Injection"
+          ],
+          "technology": [
+            "python"
+          ],
+          "category": "security",
+          "confidence": "HIGH"
+        },
+        "lines": "result = eval(user_input)"
+      }
+    },
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "path": "app/utils/serializer.py",
+      "start": {
+        "line": 10,
+        "col": 12,
+        "offset": 310
+      },
+      "end": {
+        "line": 10,
+        "col": 35,
+        "offset": 333
+      },
+      "extra": {
+        "message": "Avoid using pickle for deserialization of untrusted data.",
+        "severity": "WARNING",
+        "metadata": {
+          "cwe": [
+            "CWE-502: Deserialization of Untrusted Data"
+          ],
+          "owasp": [
+            "A08:2021 - Software and Data Integrity Failures"
+          ],
+          "technology": [
+            "python"
+          ],
+          "category": "security",
+          "confidence": "MEDIUM"
+        },
+        "lines": "data = pickle.loads(raw_bytes)"
+      }
+    }
+  ],
+  "errors": []
+}

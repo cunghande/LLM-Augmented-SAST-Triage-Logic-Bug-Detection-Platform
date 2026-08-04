@@ -20,6 +20,7 @@ from sast_triage.models import (
     ProcessingStage,
     RunMetadata,
     SanitizedContext,
+    ScannerParseResult,
     ScannerType,
     Severity,
     SourceKind,
@@ -499,7 +500,96 @@ def test_run_metadata_rejects_absolute_repo_path() -> None:
         )
 
 
-# --- Test: Security Canary ---
+def test_triage_result_provider_failure_requires_triage_stage_error(
+    semgrep_finding: NormalizedFinding,
+    valid_context: SanitizedContext,
+) -> None:
+    error_policy = PolicyDecision(
+        action=PolicyAction.TRIAGE_ERROR,
+        reasons=["Provider failure"],
+        policy_version="1.0.0",
+        escalated=False,
+    )
+    # Failure case: missing stage=TRIAGE error
+    non_triage_error = ProcessingError(
+        finding_id=semgrep_finding.finding_instance_id,
+        scanner=ScannerType.SEMGREP,
+        stage=ProcessingStage.PARSE,  # Not TRIAGE!
+        error_code="PARSE_ERR",
+        safe_message="Parse error.",
+    )
+    with pytest.raises(ValidationError, match="stage=TRIAGE"):
+        TriageResult(
+            finding=semgrep_finding,
+            sanitized_context=valid_context,
+            triage_decision=None,
+            policy_decision=error_policy,
+            processing_errors=[non_triage_error],
+            processed_at=datetime.now(UTC),
+        )
+
+
+def test_triage_result_triage_error_action_requires_non_empty_errors(
+    semgrep_finding: NormalizedFinding,
+    valid_context: SanitizedContext,
+    valid_triage_decision: TriageDecision,
+) -> None:
+    error_policy = PolicyDecision(
+        action=PolicyAction.TRIAGE_ERROR,
+        reasons=["Policy error"],
+        policy_version="1.0.0",
+        escalated=False,
+    )
+    with pytest.raises(ValidationError, match="processing_errors must not be empty"):
+        TriageResult(
+            finding=semgrep_finding,
+            sanitized_context=valid_context,
+            triage_decision=valid_triage_decision,  # Decision present but action is TRIAGE_ERROR
+            policy_decision=error_policy,
+            processing_errors=[],  # Empty errors!
+            processed_at=datetime.now(UTC),
+        )
+
+
+def test_run_metadata_allows_namespace_identifier() -> None:
+    now = datetime.now(UTC)
+    meta = RunMetadata(
+        run_id="run-ns",
+        repository_name="payment-service",
+        repository_identifier="team/payment-service",  # Namespace identifier is valid!
+        artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
+        scanners_attempted=[ScannerType.SEMGREP],
+        scanners_succeeded=[ScannerType.SEMGREP],
+        policy_version="1.0.0",
+        triage_provider="fake",
+        tool_version="0.1.0",
+        cli_mode="triage",
+        started_at=now,
+        completed_at=now,
+    )
+    assert meta.repository_identifier == "team/payment-service"
+
+
+def test_run_metadata_rejects_control_characters() -> None:
+    now = datetime.now(UTC)
+    with pytest.raises(ValidationError, match="control characters"):
+        RunMetadata(
+            run_id="run-ctrl",
+            repository_name="my-repo\n",
+            repository_identifier="repo-id",
+            artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
+            scanners_attempted=[ScannerType.SEMGREP],
+            scanners_succeeded=[ScannerType.SEMGREP],
+            policy_version="1.0.0",
+            triage_provider="fake",
+            tool_version="0.1.0",
+            cli_mode="triage",
+            started_at=now,
+            completed_at=now,
+        )
+
+
+# --- Test: Security Canary & Extra Field Rejection ---
 
 
 def test_security_canary_not_leaked_in_serialized_models(
@@ -528,3 +618,60 @@ def test_security_canary_not_leaked_in_serialized_models(
         prompt_type="gitleaks_triage",
     )
     assert CANARY_SUPER_SECRET_DO_NOT_LEAK not in t_input.model_dump_json()
+
+
+def test_public_models_reject_extra_secret_fields(semgrep_finding: NormalizedFinding) -> None:
+    # Verify extra fields like Secret, raw_match, raw_source are rejected by extra="forbid"
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        NormalizedFinding(
+            finding_instance_id="f-extra",
+            scanner=ScannerType.SEMGREP,
+            finding_type=FindingType.SAST,
+            rule_id="rule",
+            file_path="app.py",
+            start_line=1,
+            severity=Severity.HIGH,
+            message="msg",
+            snippet="code",
+            Secret="CANARY_SUPER_SECRET",  # type: ignore[call-arg]
+        )
+
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        NormalizedFinding(
+            finding_instance_id="f-extra2",
+            scanner=ScannerType.SEMGREP,
+            finding_type=FindingType.SAST,
+            rule_id="rule",
+            file_path="app.py",
+            start_line=1,
+            severity=Severity.HIGH,
+            message="msg",
+            snippet="code",
+            raw_match="raw_secret_here",  # type: ignore[call-arg]
+        )
+
+
+# --- Tests: ScannerParseResult ---
+
+
+def test_scanner_parse_result_empty_valid() -> None:
+    result = ScannerParseResult()
+    assert result.findings == ()
+    assert result.errors == ()
+
+
+def test_scanner_parse_result_with_findings(semgrep_finding: NormalizedFinding) -> None:
+    result = ScannerParseResult(findings=(semgrep_finding,))
+    assert len(result.findings) == 1
+    assert result.findings[0].scanner == ScannerType.SEMGREP
+    assert result.errors == ()
+
+
+def test_scanner_parse_result_frozen_collections(semgrep_finding: NormalizedFinding) -> None:
+    result = ScannerParseResult(findings=(semgrep_finding,))
+    # Tuple is immutable — cannot append
+    with pytest.raises(AttributeError):
+        result.findings.append(semgrep_finding)  # type: ignore[attr-defined]
+    # Frozen model — cannot reassign field
+    with pytest.raises(ValidationError):
+        result.findings = ()  # type: ignore[misc]

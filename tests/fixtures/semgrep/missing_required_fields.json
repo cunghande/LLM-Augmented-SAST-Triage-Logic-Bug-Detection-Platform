@@ -1,0 +1,30 @@
+{
+  "version": "1.170.0",
+  "results": [
+    {
+      "path": "app/services/calculator.py",
+      "start": {
+        "line": 15,
+        "col": 1
+      },
+      "extra": {
+        "message": "Missing check_id field here",
+        "severity": "ERROR",
+        "lines": "eval(x)"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.exec-use",
+      "start": {
+        "line": 30,
+        "col": 1
+      },
+      "extra": {
+        "message": "Missing path field here",
+        "severity": "ERROR",
+        "lines": "exec(code)"
+      }
+    }
+  ],
+  "errors": []
+}

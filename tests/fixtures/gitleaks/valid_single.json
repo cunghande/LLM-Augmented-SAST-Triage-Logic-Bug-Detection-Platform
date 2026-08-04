@@ -1,0 +1,21 @@
+[
+  {
+    "Description": "AWS Access Key",
+    "StartLine": 12,
+    "EndLine": 12,
+    "StartColumn": 18,
+    "EndColumn": 48,
+    "Match": "AWS_ACCESS_KEY_ID=CANARY_SUPER_SECRET_DO_NOT_LEAK",
+    "Secret": "CANARY_SUPER_SECRET_DO_NOT_LEAK",
+    "File": "config/aws_settings.py",
+    "SymlinkFile": "",
+    "Commit": "a1b2c3d4e5f67890123456789abcdef012345678",
+    "Entropy": 4.52,
+    "Author": "developer@example.com",
+    "Email": "developer@example.com",
+    "Date": "2026-08-01T10:00:00Z",
+    "Message": "Add default cloud config",
+    "Fingerprint": "a1b2c3d4:config/aws_settings.py:aws-access-key:12",
+    "RuleID": "aws-access-key"
+  }
+]

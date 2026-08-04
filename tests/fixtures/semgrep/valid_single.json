@@ -1,0 +1,41 @@
+{
+  "version": "1.170.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.audit.eval-use.eval-use",
+      "path": "app/services/calculator.py",
+      "start": {
+        "line": 24,
+        "col": 5,
+        "offset": 620
+      },
+      "end": {
+        "line": 24,
+        "col": 20,
+        "offset": 635
+      },
+      "extra": {
+        "message": "Detected call to eval(). Dynamic code execution is unsafe.",
+        "severity": "ERROR",
+        "metadata": {
+          "cwe": [
+            "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+          ],
+          "owasp": [
+            "A03:2021 - Injection"
+          ],
+          "technology": [
+            "python"
+          ],
+          "category": "security",
+          "confidence": "HIGH",
+          "references": [
+            "https://owasp.org/www-community/attacks/Direct_Dynamic_Code_Evaluation_Eval_Injection"
+          ]
+        },
+        "lines": "result = eval(user_input)"
+      }
+    }
+  ],
+  "errors": []
+}

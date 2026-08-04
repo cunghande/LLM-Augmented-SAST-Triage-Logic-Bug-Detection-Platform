@@ -1,0 +1,5 @@
+[
+  {
+    "RuleID": "aws-access-key",
+    "File": "config/settings.py"
+  // Malformed JSON syntax error - missing closing object brace

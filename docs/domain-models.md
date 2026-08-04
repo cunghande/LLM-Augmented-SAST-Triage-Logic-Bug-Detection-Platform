@@ -414,6 +414,23 @@ Kết quả cấp cao nhất của một lần chạy pipeline.
 | `results` | `list[TriageResult]` | Có | Kết quả từng phát hiện |
 | `scanner_errors` | `list[ProcessingError]` | Có | Lỗi cấp scanner/parser |
 
+### ScannerParseResult
+
+Kết quả phân tích một artifact scanner đơn lẻ. Được trả về từ parser
+(ví dụ: `parse_semgrep_json`, `parse_gitleaks_json`).
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|--------|------|----------|-------|
+| `findings` | `tuple[NormalizedFinding, ...]` | Có | Các phát hiện đã chuẩn hóa (rỗng nếu không có) |
+| `errors` | `tuple[ProcessingError, ...]` | Có | Lỗi cấp artifact hoặc per-record (rỗng nếu không có) |
+
+**Ràng buộc:**
+
+- Frozen (bất biến).
+- Dùng `tuple` thay `list` để collection không bị mutate sau khi
+  parser trả kết quả.
+- Không chứa raw artifact content hoặc đường dẫn artifact tuyệt đối.
+
 ### RunMetadata
 
 Metadata cấp lần chạy. Không chứa đường dẫn tuyệt đối.

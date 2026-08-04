@@ -149,7 +149,13 @@ class BaseDomainModel(BaseModel):
 
 
 class NormalizedFinding(BaseDomainModel):
-    """Normalized security finding produced by a scanner parser."""
+    """Normalized security finding produced by a scanner parser.
+
+    The `metadata` dictionary contains allowlisted, sanitized, serialization-safe
+    scanner metadata (e.g. CWE, OWASP, technology, secret_category, rule_description).
+    Raw scanner records, raw secrets, unredacted snippets, and author/commit details
+    are strictly prohibited in this model.
+    """
 
     finding_instance_id: str
     scanner: ScannerType
@@ -372,8 +378,19 @@ class TriageResult(BaseDomainModel):
                 f"sanitized_context.finding_id ('{self.sanitized_context.finding_id}') must match "
                 f"finding.finding_instance_id ('{self.finding.finding_instance_id}')"
             )
-        if self.triage_decision is None and self.policy_decision.action != PolicyAction.TRIAGE_ERROR:
-            raise ValueError("policy_decision.action must be TRIAGE_ERROR when triage_decision is None")
+        if self.triage_decision is None:
+            if self.policy_decision.action != PolicyAction.TRIAGE_ERROR:
+                raise ValueError("policy_decision.action must be TRIAGE_ERROR when triage_decision is None")
+            if not any(err.stage == ProcessingStage.TRIAGE for err in self.processing_errors):
+                raise ValueError(
+                    "processing_errors must contain at least one ProcessingError with stage=TRIAGE when triage_decision is None"
+                )
+
+        if self.policy_decision.action == PolicyAction.TRIAGE_ERROR and not self.processing_errors:
+            raise ValueError(
+                "processing_errors must not be empty when policy_decision.action is TRIAGE_ERROR"
+            )
+
         if self.processing_duration_ms is not None and self.processing_duration_ms < 0:
             raise ValueError("processing_duration_ms cannot be negative")
         return self
@@ -410,10 +427,23 @@ class RunMetadata(BaseDomainModel):
         """Enforce domain invariants for RunMetadata."""
         if not self.run_id or not self.run_id.strip():
             raise ValueError("run_id must not be empty")
+
+        if not self.repository_name or not self.repository_name.strip():
+            raise ValueError("repository_name must not be empty")
         if _is_absolute_path(self.repository_name):
             raise ValueError("repository_name must not contain absolute path")
+
+        if not self.repository_identifier or not self.repository_identifier.strip():
+            raise ValueError("repository_identifier must not be empty")
         if _is_absolute_path(self.repository_identifier):
             raise ValueError("repository_identifier must not contain absolute path")
+
+        for ctrl_char in ("\n", "\r", "\t", "\0"):
+            if ctrl_char in self.repository_name:
+                raise ValueError("repository_name must not contain newlines or control characters")
+            if ctrl_char in self.repository_identifier:
+                raise ValueError("repository_identifier must not contain newlines or control characters")
+
         if self.completed_at < self.started_at:
             raise ValueError("completed_at cannot be earlier than started_at")
         if (
@@ -433,3 +463,15 @@ class BatchResult(BaseDomainModel):
     run_metadata: RunMetadata
     results: list[TriageResult]
     scanner_errors: list[ProcessingError] = Field(default_factory=list)
+
+
+class ScannerParseResult(BaseDomainModel):
+    """Immutable result of parsing a single scanner artifact.
+
+    Uses tuples (not lists) so that the returned collections cannot be
+    mutated after the parser hands them off.  Does not contain the raw
+    artifact content or absolute artifact paths.
+    """
+
+    findings: tuple[NormalizedFinding, ...] = ()
+    errors: tuple[ProcessingError, ...] = ()

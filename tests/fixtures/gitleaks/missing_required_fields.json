@@ -1,0 +1,18 @@
+[
+  {
+    "Description": "Record missing RuleID",
+    "StartLine": 5,
+    "EndLine": 5,
+    "Match": "SECRET=CANARY_SUPER_SECRET_DO_NOT_LEAK",
+    "Secret": "CANARY_SUPER_SECRET_DO_NOT_LEAK",
+    "File": "config/app.py"
+  },
+  {
+    "RuleID": "generic-api-key",
+    "Description": "Record missing File",
+    "StartLine": 10,
+    "EndLine": 10,
+    "Match": "KEY=CANARY_SUPER_SECRET_DO_NOT_LEAK",
+    "Secret": "CANARY_SUPER_SECRET_DO_NOT_LEAK"
+  }
+]
