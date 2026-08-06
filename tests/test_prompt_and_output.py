@@ -72,7 +72,26 @@ def test_prompt_builder_uses_sanitized_context_and_excludes_finding_snippet() ->
     prompt = build_triage_prompt(_input())
     assert "SAFE_CONTEXT" in prompt.user_message
     assert "RAW_SNIPPET_MUST_NOT_BE_IN_PROMPT" not in prompt.user_message
-    assert "untrusted" in prompt.system_message.lower()
+    assert "không tin cậy" in prompt.system_message
+    assert "summary" in prompt.system_message
+    assert "evidence" in prompt.system_message
+    assert "missing_information" in prompt.system_message
+    assert "model_verdict" in prompt.system_message
+    assert "verdict/confidence" in prompt.system_message
+    assert "<think>" in prompt.system_message
+
+
+def test_prompt_builder_requires_detailed_reviewer_reason_and_model_identity() -> None:
+    prompt = build_triage_prompt(_input(), model_version="qwen3:8b")
+    assert "qwen3:8b" in prompt.system_message
+    assert "cơ chế/rủi ro" in prompt.system_message
+    assert "bằng chứng cụ thể" in prompt.system_message
+    assert "Không được đoán" in prompt.system_message
+    assert "đúng vulnerability mechanism" in prompt.system_message
+    assert "source-to-sink" in prompt.system_message
+    assert "append" in prompt.system_message
+    assert "XPath query" in prompt.system_message
+    assert "<ANALYSIS_TARGET>" in prompt.user_message
 
 
 def test_prompt_builder_is_deterministic() -> None:

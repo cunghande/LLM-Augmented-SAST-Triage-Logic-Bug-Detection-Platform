@@ -16,3 +16,17 @@ the benchmark dataset.
 Reviewers should use cross-review and adjudication for disputed records. A
 policy action is not a ground-truth label: `MANUAL_REVIEW` and `TRIAGE_ERROR`
 must not be silently counted as FP or FN.
+
+## OWASP Benchmark Python scoring
+
+Use `load_owasp_expected_results()` and `score_owasp_findings()` for OWASP
+`expectedresults-*.csv` files. A finding is scored only when both its
+`BenchmarkTestNNNNN` identity and mapped vulnerability category match the
+expected row. A finding for another category in the same file is out of scope,
+not a detection of that benchmark case.
+
+The built-in Semgrep mapping is versioned as
+`semgrep-python-category-map-v1`. Report this mapping version, the benchmark
+version, scanner configuration, out-of-scope count, and reproducible command.
+Scanner detection metrics and LLM triage metrics remain separate; report
+`NEEDS_REVIEW` as abstention coverage instead of converting it to TP or FP.

@@ -32,6 +32,7 @@ class RealTriageProvider:
         base_url: str,
         model: str,
         timeout_seconds: float = 30.0,
+        reasoning_effort: str | None = None,
         transport: Transport | None = None,
     ) -> None:
         if not api_key or not api_key.strip():
@@ -40,10 +41,13 @@ class RealTriageProvider:
             raise SastTriageError("Real provider base URL is invalid.", "TRIAGE_CONFIGURATION_ERROR")
         if not model or not model.strip() or timeout_seconds <= 0:
             raise SastTriageError("Real provider model or timeout is invalid.", "TRIAGE_CONFIGURATION_ERROR")
+        if reasoning_effort not in {None, "none", "low", "medium", "high", "max"}:
+            raise SastTriageError("Real provider reasoning effort is invalid.", "TRIAGE_CONFIGURATION_ERROR")
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")
         self._model = model
         self._timeout_seconds = timeout_seconds
+        self._reasoning_effort = reasoning_effort
         self._transport = transport or _http_transport
 
     @classmethod
@@ -58,6 +62,7 @@ class RealTriageProvider:
             base_url=os.getenv("SAST_TRIAGE_LLM_BASE_URL", ""),
             model=os.getenv("SAST_TRIAGE_LLM_MODEL", ""),
             timeout_seconds=timeout,
+            reasoning_effort=os.getenv("SAST_TRIAGE_LLM_REASONING_EFFORT") or None,
             transport=transport,
         )
 
@@ -75,7 +80,7 @@ class RealTriageProvider:
         """Send a safe prompt and validate the structured provider response."""
         if not isinstance(triage_input, TriageInput):
             raise SastTriageError("triage() requires a TriageInput instance.", "TRIAGE_INVALID_INPUT")
-        prompt = build_triage_prompt(triage_input)
+        prompt = build_triage_prompt(triage_input, model_version=self._model)
         payload: dict[str, object] = {
             "model": self._model,
             "messages": [
@@ -85,6 +90,8 @@ class RealTriageProvider:
             "temperature": 0,
             "response_format": {"type": "json_object"},
         }
+        if self._reasoning_effort is not None:
+            payload["reasoning_effort"] = self._reasoning_effort
         headers = {"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"}
         try:
             response_bytes = self._transport(

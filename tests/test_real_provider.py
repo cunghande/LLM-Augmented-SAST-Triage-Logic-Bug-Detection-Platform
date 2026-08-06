@@ -53,12 +53,14 @@ def test_real_provider_uses_injected_transport_and_validates_output() -> None:
         return _response()
 
     provider = RealTriageProvider(
-        api_key="secret-key", base_url="https://llm.example", model="model", transport=transport,
+        api_key="secret-key", base_url="https://llm.example", model="model",
+        reasoning_effort="none", transport=transport,
     )
     decision = provider.triage(_input())
     assert decision.model_verdict.value == "LIKELY_TP"
     assert "RAW_PROVIDER_SNIPPET" not in json.dumps(calls[0][1])
     assert calls[0][2]["Authorization"] == "Bearer secret-key"
+    assert calls[0][1]["reasoning_effort"] == "none"
 
 
 def test_real_provider_configuration_and_response_fail_safe() -> None:
@@ -72,3 +74,7 @@ def test_real_provider_configuration_and_response_fail_safe() -> None:
     with pytest.raises(SastTriageError) as response_error:
         provider.triage(_input())
     assert response_error.value.error_code == "TRIAGE_PROVIDER_RESPONSE_INVALID"
+
+    with pytest.raises(SastTriageError) as reasoning_error:
+        RealTriageProvider(api_key="key", base_url="https://x", model="m", reasoning_effort="invalid")
+    assert reasoning_error.value.error_code == "TRIAGE_CONFIGURATION_ERROR"

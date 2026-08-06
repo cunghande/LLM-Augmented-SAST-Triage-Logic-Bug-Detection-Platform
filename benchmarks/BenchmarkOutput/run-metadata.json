@@ -1,5 +1,5 @@
 {
-  "run_id": "1c29b56a-eff7-41be-a3e3-468618b3da9a",
+  "run_id": "bfa9e81b-415b-47c0-9a04-ae9d85aafd87",
   "repository_name": "BenchmarkPython",
   "repository_identifier": "BenchmarkPython",
   "commit_sha": null,
@@ -16,17 +16,17 @@
   "scanner_versions": {},
   "scanner_config_ids": {},
   "input_artifact_hashes": {
-    "semgrep": "95eb449502069bca630fee41c4b934bc6b20cface179ecdf5603e1feabbd50f6",
+    "semgrep": "e4f6d13fa8b221a3e26eaf9a5c3ab71330f9cc2f84964b9ca43779780a2d43df",
     "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
   },
-  "prompt_version": "triage-prompt-v1",
+  "prompt_version": "triage-prompt-v2",
   "model_version": "fake-triage-v1",
   "policy_version": "conservative-policy-v1",
   "triage_provider": "fake",
   "tool_version": "0.1.0",
   "cli_mode": "triage",
-  "started_at": "2026-08-04T09:04:09.999414Z",
-  "completed_at": "2026-08-04T09:04:10.446248Z",
+  "started_at": "2026-08-05T08:21:54.162388Z",
+  "completed_at": "2026-08-05T08:21:54.614485Z",
   "total_findings_parsed": 184,
   "findings_triaged_ok": 184,
   "findings_with_errors": 0

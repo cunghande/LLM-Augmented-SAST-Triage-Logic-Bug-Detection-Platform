@@ -41,7 +41,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser, *, artifacts: bool) -
     parser.add_argument("--repository", "--repo-path", dest="repository", required=True, help="Python repository path")
     parser.add_argument("--output-dir", required=True, help="Run output directory")
     parser.add_argument("--provider", choices=("fake", "real"), default="fake")
-    parser.add_argument("--prompt-version", default="triage-prompt-v1")
+    parser.add_argument("--prompt-version", default="triage-prompt-v3")
     parser.add_argument("--output-schema-version", default="triage-decision-v1")
     parser.add_argument("--prompt-type", default="fake.default")
     parser.add_argument("--repository-identifier", default=None)

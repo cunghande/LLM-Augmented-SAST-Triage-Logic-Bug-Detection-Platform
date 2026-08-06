@@ -10,6 +10,8 @@ Security & Conservative Principles:
 - Never outputs raw source text, secrets, or exception payloads in reasons.
 """
 
+import json
+
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ArtifactRepositoryMatch,
@@ -29,6 +31,23 @@ from sast_triage.models import (
 )
 
 POLICY_VERSION: str = "conservative-policy-v1"
+
+
+def _evidence_is_incomplete(context: SanitizedContext) -> bool:
+    """Read only the safe completeness flag from a projected evidence package."""
+    snippet = context.sanitized_snippet
+    if not snippet or not snippet.lstrip().startswith("{"):
+        return MissingContextReason.PYTHON_AST_PARSE_FAILED in context.missing_context_reasons
+    try:
+        payload = json.loads(snippet)
+    except json.JSONDecodeError:
+        return True
+    if not isinstance(payload, dict):
+        return True
+    completeness = payload.get("context_completeness")
+    if not isinstance(completeness, dict):
+        return True
+    return completeness.get("status") != "complete"
 
 
 def apply_policy(
@@ -131,6 +150,25 @@ def apply_policy(
             policy_version=POLICY_VERSION,
             escalated=escalated,
             escalation_reason=escalation_reason,
+        )
+
+    # Evidence expansion is advisory to the model but authoritative for policy
+    # sufficiency: incomplete paths can never become automatic TP/FP decisions.
+    if finding.scanner == ScannerType.SEMGREP and _evidence_is_incomplete(context):
+        escalated = triage_decision.model_verdict in (
+            ModelVerdict.LIKELY_TP,
+            ModelVerdict.LIKELY_FP,
+        )
+        return PolicyDecision(
+            action=PolicyAction.MANUAL_REVIEW,
+            reasons=["Context evidence is incomplete after bounded expansion."],
+            policy_version=POLICY_VERSION,
+            escalated=escalated,
+            escalation_reason=(
+                "Model verdict was produced without complete source-to-sink evidence."
+                if escalated
+                else None
+            ),
         )
 
     # 5. Rule 4 — Model Verdict is NEEDS_REVIEW

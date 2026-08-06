@@ -16,6 +16,7 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
+from sast_triage.context.evidence_service import build_evidence_context
 from sast_triage.context.selection import RawContextSelection
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
@@ -437,7 +438,7 @@ def sanitize_context(
 
     sorted_redaction_types = sorted(applied_types)
 
-    return SanitizedContext(
+    sanitized_context = SanitizedContext(
         finding_id=finding.finding_instance_id,
         sanitized_snippet=current_text,
         context_strategy=strategy,
@@ -457,3 +458,21 @@ def sanitize_context(
         redaction_types=sorted_redaction_types,
         truncated=raw_context.truncated,
     )
+
+    if finding.scanner != ScannerType.SEMGREP or raw_context.analysis_source is None:
+        return sanitized_context
+
+    try:
+        return build_evidence_context(
+            finding,
+            raw_context.analysis_source,
+            sanitized_context,
+        ).context
+    except SyntaxError:
+        # Syntax details can include raw source; expose only a typed, safe reason.
+        return sanitized_context.model_copy(
+            update={
+                "missing_context_reasons": [MissingContextReason.PYTHON_AST_PARSE_FAILED],
+                "truncated": True,
+            }
+        )

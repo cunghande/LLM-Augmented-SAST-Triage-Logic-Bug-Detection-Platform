@@ -47,6 +47,7 @@ class RawContextSelection:
         truncated: True if context was line-truncated to fit character limits.
         context_available: True if context text is available.
         diagnostic_reasons: Tuple of diagnostic reason codes.
+        analysis_source: Full source retained only for internal evidence analysis.
     """
 
     finding_id: str
@@ -64,6 +65,7 @@ class RawContextSelection:
     truncated: bool = False
     context_available: bool = True
     diagnostic_reasons: tuple[str, ...] = ()
+    analysis_source: SourceReadResult | None = field(default=None, repr=False)
 
 
 def _paths_match(path1: str, path2: str) -> bool:
@@ -215,6 +217,7 @@ def select_raw_context(
             truncated=False,
             context_available=False,
             diagnostic_reasons=tuple(diagnostics),
+            analysis_source=source,
         )
 
     # Case B: Context fits within character limit
@@ -235,6 +238,7 @@ def select_raw_context(
             truncated=False,
             context_available=True,
             diagnostic_reasons=tuple(diagnostics),
+            analysis_source=source,
         )
 
     # Case C: Context exceeds limit -> Truncate lines surrounding finding
@@ -276,4 +280,5 @@ def select_raw_context(
         truncated=True,
         context_available=True,
         diagnostic_reasons=tuple(diagnostics),
+        analysis_source=source,
     )
