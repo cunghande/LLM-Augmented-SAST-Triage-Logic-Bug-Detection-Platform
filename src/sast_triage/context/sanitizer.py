@@ -1,4 +1,4 @@
-"""Context Sanitizer for SAST Triage Platform.
+"""Bộ làm sạch context cho SAST Triage Platform.
 
 Sanitizes raw context text (AST scope or line window) to ensure safety
 prior to handing over to the LLM provider.
@@ -29,7 +29,7 @@ from sast_triage.models import (
     SourceKind,
 )
 
-# --- Safe Placeholders & Constants ---
+# --- Placeholder an toàn và hằng số ---
 
 REDACTED_GITLEAKS_FINDING_LINE: str = "<REDACTED_GITLEAKS_FINDING_LINE>"
 REDACTED_SECRET: str = "<REDACTED_SECRET>"
@@ -42,7 +42,7 @@ KNOWN_PLACEHOLDERS: set[str] = {
     f"# {REDACTED_GITLEAKS_FINDING_LINE}",
 }
 
-# --- Redaction Type Identifiers ---
+# --- Định danh loại redact ---
 
 GITLEAKS_FINDING_LINE: str = "GITLEAKS_FINDING_LINE"
 CREDENTIAL_ASSIGNMENT: str = "CREDENTIAL_ASSIGNMENT"
@@ -50,7 +50,7 @@ AUTHORIZATION_BEARER: str = "AUTHORIZATION_BEARER"
 PRIVATE_KEY_BLOCK: str = "PRIVATE_KEY_BLOCK"
 CONNECTION_URL: str = "CONNECTION_URL"
 
-# --- Generic Redaction Patterns ---
+# --- Mẫu redact tổng quát ---
 
 # PEM Private Key Block
 _PEM_REGEX = re.compile(
@@ -77,7 +77,7 @@ _CRED_UNQUOTED_REGEX = re.compile(
 
 
 def _classify_path_category(relative_path: str) -> PathCategory:
-    """Classify file path into PathCategory based on normalized path segments."""
+    """Phân loại file path thành PathCategory theo các segment đã normalize."""
     path_obj = Path(relative_path)
     parts = [p.lower() for p in path_obj.parts]
     filename = path_obj.name.lower()
@@ -104,7 +104,7 @@ def _classify_path_category(relative_path: str) -> PathCategory:
 def _map_missing_context_reasons(
     raw_context: RawContextSelection,
 ) -> list[MissingContextReason]:
-    """Map raw diagnostic reasons to domain MissingContextReason enum values."""
+    """Ánh xạ lý do chẩn đoán thô sang enum MissingContextReason của domain."""
     reasons: list[MissingContextReason] = []
     for diag in raw_context.diagnostic_reasons:
         if diag in ("PYTHON_AST_PARSE_FAILED", MissingContextReason.PYTHON_AST_PARSE_FAILED.value):
@@ -139,7 +139,7 @@ def _map_missing_context_reasons(
 def _sanitize_text_content(
     text: str,
 ) -> tuple[str, int, set[str]]:
-    """Apply generic credential redactions to text content.
+    """Áp dụng redact credential tổng quát lên nội dung văn bản.
 
     Returns:
         (sanitized_text, redactions_count, set_of_redaction_types_applied)
@@ -216,7 +216,7 @@ def _sanitize_text_content(
 def _sanitize_string_sequence(
     items: Sequence[str],
 ) -> tuple[list[str], int, set[str]]:
-    """Apply generic credential redaction to a sequence of strings (e.g. imports/decorators)."""
+    """Áp dụng redact credential tổng quát lên dãy chuỗi (ví dụ import/decorator)."""
     sanitized_list: list[str] = []
     total_redactions = 0
     applied_types: set[str] = set()
@@ -236,7 +236,7 @@ def sanitize_context(
     *,
     forbidden_values: tuple[str, ...] = (),
 ) -> SanitizedContext:
-    """Sanitize raw context selection to produce a safe ``SanitizedContext`` for LLM consumption.
+    """Sanitize raw context đã chọn để tạo ``SanitizedContext`` an toàn cho LLM sử dụng.
 
     Args:
         finding: Target NormalizedFinding.

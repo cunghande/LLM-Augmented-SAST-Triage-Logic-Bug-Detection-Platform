@@ -1,4 +1,4 @@
-"""Safe Gitleaks JSON artifact parser.
+"""Parser Gitleaks JSON artifact an toàn.
 
 Parses a Gitleaks JSON report file into a ``ScannerParseResult``
 containing ``NormalizedFinding`` instances and per-record
@@ -40,7 +40,7 @@ def _generate_finding_id(
     start_line: int,
     end_line: int | None,
 ) -> str:
-    """Generate a deterministic finding instance ID for Gitleaks finding.
+    """Sinh finding instance ID xác định cho finding Gitleaks.
 
     Uses contract: sha256(f"GITLEAKS:{rule_id}:{file_path}:{start_line}:{end_line}")[:16]
     Does NOT contain secrets, match strings, or entropy.
@@ -55,7 +55,7 @@ def _make_artifact_error(
     safe_message: str,
     retryable: bool = False,
 ) -> ProcessingError:
-    """Create an artifact-level ProcessingError for the Gitleaks scanner."""
+    """Tạo ProcessingError cấp artifact cho scanner Gitleaks."""
     return ProcessingError(
         finding_id=None,
         scanner=ScannerType.GITLEAKS,
@@ -67,7 +67,7 @@ def _make_artifact_error(
 
 
 def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
-    """Parse a Gitleaks JSON artifact file into safe normalized findings.
+    """Parse file Gitleaks JSON artifact thành finding đã normalize an toàn.
 
     Args:
         file_path: Path to the Gitleaks JSON report file.
@@ -75,7 +75,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
     Returns:
         A frozen ``ScannerParseResult`` containing normalized findings and errors.
     """
-    # --- Artifact-level validation ---
+    # --- Validate cấp artifact ---
 
     if not file_path.exists():
         return ScannerParseResult(
@@ -145,7 +145,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
     if len(data) == 0:
         return ScannerParseResult()
 
-    # --- Per-record parsing ---
+    # --- Parse theo từng record ---
 
     findings: list[NormalizedFinding] = []
     errors: list[ProcessingError] = []
@@ -164,7 +164,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required field: RuleID
+        # Trường bắt buộc: RuleID
         rule_id = record.get("RuleID")
         if not isinstance(rule_id, str) or not rule_id.strip():
             errors.append(
@@ -179,7 +179,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required field: File
+        # Trường bắt buộc: File
         file_path_str = record.get("File")
         if not isinstance(file_path_str, str) or not file_path_str.strip():
             errors.append(
@@ -194,7 +194,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required field: StartLine
+        # Trường bắt buộc: StartLine
         start_line = record.get("StartLine")
         if not isinstance(start_line, int) or start_line <= 0 or isinstance(start_line, bool):
             errors.append(
@@ -211,7 +211,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Optional field: EndLine
+        # Trường tùy chọn: EndLine
         end_line_raw = record.get("EndLine")
         if end_line_raw is None:
             end_line = start_line
@@ -230,7 +230,7 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
                 )
             )
 
-        # Optional field: Description
+        # Trường tùy chọn: Description
         desc = record.get("Description")
         if isinstance(desc, str) and desc.strip():
             rule_name: str | None = desc.strip()
@@ -248,10 +248,10 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
         if isinstance(entropy_raw, (int, float)) and not isinstance(entropy_raw, bool):
             metadata["entropy"] = float(entropy_raw)
 
-        # Deterministic finding ID
+        # Finding ID xác định
         finding_id = _generate_finding_id(rule_id, file_path_str, start_line, end_line)
 
-        # --- Early Redaction Boundary for Secret and Match ---
+        # --- Ranh giới redact sớm cho Secret và Match ---
         raw_secret = record.get("Secret")
         raw_match = record.get("Match")
 

@@ -1,0 +1,33 @@
+{
+  "run_id": "d90b204f-8a70-46d9-9ba6-41f0d783f84d",
+  "repository_name": "DjangoGoat-master",
+  "repository_identifier": "red-and-black/DjangoGoat@master",
+  "commit_sha": null,
+  "working_tree_state": null,
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS"
+  ],
+  "scanner_versions": {},
+  "scanner_config_ids": {},
+  "input_artifact_hashes": {
+    "semgrep": "e33c19173877184d171308e3ddd3de058dcc5ca519b2fbdb664ffe67679d5fdf",
+    "gitleaks": "14372c00a227d2db3e9e0efe3d5444f76a38076e5bd6f9e138e35dc83efe5c12"
+  },
+  "prompt_version": "triage-prompt-v4",
+  "model_version": "fake-triage-v1",
+  "policy_version": "conservative-policy-v1",
+  "triage_provider": "fake",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-07T03:28:24.922235Z",
+  "completed_at": "2026-08-07T03:28:24.952365Z",
+  "total_findings_parsed": 2,
+  "findings_triaged_ok": 2,
+  "findings_with_errors": 0
+}

@@ -1,4 +1,4 @@
-"""Deterministic evaluation metrics with explicit policy mapping semantics."""
+"""Metric đánh giá xác định với ngữ nghĩa ánh xạ policy tường minh."""
 
 from collections import Counter
 from typing import Any
@@ -8,7 +8,7 @@ from sast_triage.models import BatchResult, PolicyAction
 
 
 def evaluate_batch(dataset: BenchmarkDataset, batch_result: BatchResult) -> dict[str, Any]:
-    """Evaluate matching findings without treating policy actions as labels.
+    """Đánh giá finding khớp nhau mà không xem policy action là nhãn.
 
     DISPUTED and INSUFFICIENT_CONTEXT are excluded from binary TP/FP counts.
     Fake-provider runs explicitly receive ``quality_claim_supported=False``.

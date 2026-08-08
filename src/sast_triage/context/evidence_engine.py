@@ -1,8 +1,8 @@
-"""Bounded Python AST analysis used to build provider-safe evidence.
+"""Phân tích Python AST có giới hạn để xây dựng bằng chứng an toàn cho provider.
 
-The engine never executes target code. Raw source is retained only on this
-internal object; all expressions leaving it are structural and omit literal
-values.
+Engine không bao giờ thực thi mã đích. Mã nguồn thô chỉ được giữ trong object
+nội bộ này; mọi biểu thức đi ra ngoài đều là cấu trúc và không chứa literal
+value.
 """
 
 from __future__ import annotations
@@ -96,7 +96,7 @@ def _qualified_name(node: ast.AST) -> str | None:
 
 
 def _safe_expression(node: ast.AST | None) -> str:
-    """Render AST structure without literal values or source text."""
+    """Dựng cấu trúc AST mà không có literal value hoặc văn bản mã nguồn."""
     if node is None:
         return "<none>"
     if isinstance(node, ast.Name):
@@ -159,7 +159,7 @@ def _assigned_names(target: ast.AST) -> tuple[str, ...]:
 
 
 class CoreAnalysisEngine:
-    """Create bounded, structural evidence from one Python source file."""
+    """Tạo bằng chứng cấu trúc có giới hạn từ một file mã nguồn Python."""
 
     def __init__(
         self,
@@ -167,7 +167,7 @@ class CoreAnalysisEngine:
         source: SourceReadResult,
         sanitized_context: SanitizedContext,
     ) -> None:
-        """Initialize an internal analyzer for one finding and source file."""
+        """Khởi tạo analyzer nội bộ cho một finding và file mã nguồn."""
         self.finding = finding
         self.source = source
         self.sanitized_context = sanitized_context
@@ -215,7 +215,7 @@ class CoreAnalysisEngine:
         return min(candidates, key=lambda node: (node.end_lineno or node.lineno) - node.lineno) if candidates else None
 
     def target_function_id(self) -> str | None:
-        """Return the stable target function identifier, when available."""
+        """Trả về định danh hàm đích ổn định khi có thể."""
         return self._function_id(self._target_function) if self._target_function else None
 
     def _analysis_scope(self) -> ast.AST:
@@ -540,7 +540,7 @@ class CoreAnalysisEngine:
         expand_callers: bool = False,
         control_overrides: dict[str, bool | None] | None = None,
     ) -> EvidencePackage:
-        """Build initial or expanded evidence using the same analysis engine."""
+        """Xây dựng bằng chứng ban đầu hoặc đã mở rộng bằng cùng analysis engine."""
         overrides = control_overrides or {}
         sink_call, sink_type, dangerous_arg, dangerous_conditions = self._find_sink()
         sink_node = sink_call or dangerous_arg
@@ -670,7 +670,7 @@ class CoreAnalysisEngine:
         return self.finding.finding_type.value
 
     def caller_evidence(self, function_id: str) -> tuple[list[dict[str, object]], bool]:
-        """Return structural caller facts for a function in this analysis unit."""
+        """Trả về dữ kiện cấu trúc về caller của hàm trong đơn vị phân tích này."""
         function = self._functions.get(function_id)
         if function is None:
             return [], False
@@ -685,7 +685,7 @@ class CoreAnalysisEngine:
         ], bool(callers)
 
     def symbol_evidence(self, qualified_name: str) -> tuple[dict[str, object], bool]:
-        """Return bounded symbol structure without function source."""
+        """Trả về cấu trúc symbol có giới hạn mà không có mã nguồn hàm."""
         matches = [
             (function_id, function)
             for function_id, function in self._functions.items()
@@ -710,7 +710,7 @@ class CoreAnalysisEngine:
         }, True
 
     def symbol_value_evidence(self, symbol: str) -> tuple[dict[str, object], bool]:
-        """Describe a symbol value without returning the literal value."""
+        """Mô tả giá trị symbol mà không trả về literal value."""
         value = self._assignment_before(symbol, self.finding.start_line + 1, self._analysis_scope())
         if value is None:
             return {}, False
@@ -723,7 +723,7 @@ class CoreAnalysisEngine:
         }, True
 
     def analyze_security_control(self, symbol: str) -> bool | None:
-        """Conservatively classify a same-file custom sanitizer."""
+        """Phân loại thận trọng sanitizer tự tạo trong cùng file."""
         matches = [function for function in self._functions.values() if function.name == symbol.split(".")[-1]]
         if len(matches) != 1:
             return None

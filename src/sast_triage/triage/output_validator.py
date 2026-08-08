@@ -1,4 +1,4 @@
-"""Fail-closed validation for structured triage provider output."""
+"""Validate fail-closed cho output provider triage có cấu trúc."""
 
 import json
 from collections.abc import Mapping
@@ -25,7 +25,7 @@ _FORBIDDEN_KEYS = frozenset(
 
 
 def _walk_forbidden(node: Any, forbidden_values: tuple[str, ...]) -> None:
-    """Reject forbidden keys or values without including payload in errors."""
+    """Chặn key hoặc value cấm mà không đưa payload vào lỗi."""
     if isinstance(node, Mapping):
         for key, value in node.items():
             if str(key) in _FORBIDDEN_KEYS:
@@ -47,7 +47,7 @@ def _walk_forbidden(node: Any, forbidden_values: tuple[str, ...]) -> None:
 
 
 def _validate_sizes(node: Any) -> None:
-    """Reject oversized structured output fields."""
+    """Chặn các trường output có cấu trúc quá lớn."""
     if isinstance(node, str) and len(node) > _MAX_TEXT_LENGTH:
         raise SastTriageError(
             safe_message="Structured provider output contains an oversized text field.",
@@ -74,7 +74,7 @@ def parse_triage_decision(
     prompt_version: str,
     forbidden_values: tuple[str, ...] = (),
 ) -> TriageDecision:
-    """Parse and validate a provider response into a TriageDecision.
+    """Parse và validate response provider thành TriageDecision.
 
     Only a JSON object matching the domain model is accepted.  No policy action
     is accepted and no provider response text is copied into an error message.

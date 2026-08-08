@@ -171,7 +171,7 @@ def test_pipeline_source_file_missing_recovered(tmp_path: Path) -> None:
     res = triage_finding(finding, repo, provider)
 
     assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
-    assert res.context_summary == "Context unavailable."
+    assert res.context_summary == "Không có ngữ cảnh khả dụng."
     assert len(res.processing_errors) == 1
     assert res.processing_errors[0].stage == ProcessingStage.CONTEXT
     assert res.processing_errors[0].error_code == "CONTEXT_SOURCE_FILE_NOT_FOUND"
@@ -583,7 +583,7 @@ def test_pipeline_truncated_context_escalated(tmp_path: Path) -> None:
 
     assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
     assert res.policy_decision.escalated is True
-    assert "truncated" in res.context_summary
+    assert "đã bị cắt bớt" in res.context_summary
 
 
 def test_config_invalid_limits_rejected(tmp_path: Path) -> None:

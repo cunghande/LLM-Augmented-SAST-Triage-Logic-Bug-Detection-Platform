@@ -1,4 +1,4 @@
-"""Category-aware scoring for OWASP Benchmark Python scanner findings."""
+"""Chấm điểm theo danh mục cho finding scanner Python của OWASP Benchmark."""
 
 import csv
 import re
@@ -88,7 +88,7 @@ class OwaspBenchmarkScore:
 
 
 def load_owasp_expected_results(file_path: Path) -> OwaspBenchmarkDataset:
-    """Load OWASP Benchmark expectedresults CSV without source content."""
+    """Nạp CSV expectedresults OWASP Benchmark mà không chứa mã nguồn."""
     try:
         with file_path.open(encoding="utf-8", newline="") as handle:
             reader = csv.reader(handle)
@@ -143,7 +143,7 @@ def score_owasp_findings(
     rule_category_map: Mapping[str, str] | None = None,
     mapping_version: str = OWASP_RULE_MAPPING_VERSION,
 ) -> OwaspBenchmarkScore:
-    """Score Semgrep findings only when test identity and category both match."""
+    """Chấm điểm finding Semgrep chỉ khi test identity và danh mục cùng khớp."""
     mapping = rule_category_map or DEFAULT_SEMGREP_RULE_CATEGORY_MAP
     if not mapping or not mapping_version.strip():
         raise SastTriageError("OWASP rule mapping is invalid.", "BENCHMARK_MAPPING_INVALID")

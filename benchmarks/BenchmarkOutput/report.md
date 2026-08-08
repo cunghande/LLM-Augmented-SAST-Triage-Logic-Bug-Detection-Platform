@@ -1,4077 +1,1329 @@
 # SAST Triage Report
 
 ## Run summary
-- Run ID: bfa9e81b\-415b\-47c0\-9a04\-ae9d85aafd87
+- Run ID: 9b2bd7e4\-fe74\-4083\-84d6\-080a8e35481f
 - Repository: BenchmarkPython
 - Repository identifier: BenchmarkPython
-- Artifact repository match: UNVERIFIED
-- Started: 2026\-08\-05T08\:21\:54\.162388\+00\:00
-- Completed: 2026\-08\-05T08\:21\:54\.614485\+00\:00
+- Artifact repository match: VERIFIED
+- Started: 2026\-08\-06T05\:21\:51\.877866\+00\:00
+- Completed: 2026\-08\-06T05\:21\:51\.877866\+00\:00
 
 ## Scanner status
 - Attempted: SEMGREP; GITLEAKS
-- Succeeded: SEMGREP; GITLEAKS
+- Succeeded: GITLEAKS
 
 ## Finding totals
-- Parsed: 184
-- Triaged successfully: 184
+- Parsed: 0
+- Triaged successfully: 0
 - With errors: 0
 
 ## Policy-action counts
 - LIKELY_TP: 0
 - FP_CANDIDATE: 0
-- MANUAL_REVIEW: 184
+- MANUAL_REVIEW: 0
 - TRIAGE_ERROR: 0
 
 ## Findings
 
-### Finding 1
-- Finding ID: c859d02983834104
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00013\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-70, function BenchmarkTest00013\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 2
-- Finding ID: 8cb969b595181ef9
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00014\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00014\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 3
-- Finding ID: 765ac14fde225342
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00015\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00015\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 4
-- Finding ID: dc9fe91b995049f7
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00016\.py
-- Lines: 58-58
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-73, function BenchmarkTest00016\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 5
-- Finding ID: 3929f4735a614138
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00017\.py
-- Lines: 63-65
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00017\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 6
-- Finding ID: b12a565effb5d7f8
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00017\.py
-- Lines: 63-65
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00017\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 7
-- Finding ID: e5bdfdab404bc021
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00017\.py
-- Lines: 67-69
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00017\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 8
-- Finding ID: 4b25081b563adfb5
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00017\.py
-- Lines: 67-69
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00017\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 9
-- Finding ID: 8b44cc48c66bc36d
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00054\.py
-- Lines: 64-64
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-75, function BenchmarkTest00054\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 10
-- Finding ID: df4f78019cb18041
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00057\.py
-- Lines: 65-65
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-76, function BenchmarkTest00057\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 11
-- Finding ID: b18d8c15f1425047
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00058\.py
-- Lines: 65-65
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-76, function BenchmarkTest00058\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 12
-- Finding ID: 125154d14c5f0893
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00059\.py
-- Lines: 63-63
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-74, function BenchmarkTest00059\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 13
-- Finding ID: b377f0c6c9857ade
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00060\.py
-- Lines: 60-60
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 34\-71, function BenchmarkTest00060\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 14
-- Finding ID: 24d52a1be9f418b7
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00101\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00101\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 15
-- Finding ID: 1e5c8a3f3b93cd2b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00140\.py
-- Lines: 56-56
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00140\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 16
-- Finding ID: 9ca94418f892fd8f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00141\.py
-- Lines: 57-57
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00141\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 17
-- Finding ID: 71be759f3fcdca8a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00142\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00142\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 18
-- Finding ID: 78dac89ada622a3e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00143\.py
-- Lines: 54-54
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00143\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 19
-- Finding ID: d2bcca890129b574
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00166\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00166\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 20
-- Finding ID: e21e6ff914b45c34
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.subprocess\-injection\.subprocess\-injection
-- Rule name: null
-- File: testcode\\BenchmarkTest00167\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Detected user input entering a \`subprocess\` call unsafely\. This could result in a command injection vulnerability\. An attacker could use this vulnerability to execute arbitrary commands on the host, which allows them to download malware, scan sensitive data, or run any command they wish on the server\. Do not let users choose the command to run\. In general, prefer to use Python API versions of system commands\. If you must use subprocess, use a dictionary to allowlist a set of commands\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00167\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 21
-- Finding ID: adb5b580e925807c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.dangerous\-subprocess\-use\.dangerous\-subprocess\-use
-- Rule name: null
-- File: testcode\\BenchmarkTest00167\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Detected subprocess function 'run' with user controlled data\. A malicious actor could leverage this to perform command injection\. You may consider using 'shlex\.escape\(\)'\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00167\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 22
-- Finding ID: 1e6adcb92ba39b08
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00167\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00167\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 23
-- Finding ID: 064e953ba994d9cb
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.subprocess\-injection\.subprocess\-injection
-- Rule name: null
-- File: testcode\\BenchmarkTest00168\.py
-- Lines: 60-60
-- Severity: HIGH
-- Scanner message: Detected user input entering a \`subprocess\` call unsafely\. This could result in a command injection vulnerability\. An attacker could use this vulnerability to execute arbitrary commands on the host, which allows them to download malware, scan sensitive data, or run any command they wish on the server\. Do not let users choose the command to run\. In general, prefer to use Python API versions of system commands\. If you must use subprocess, use a dictionary to allowlist a set of commands\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00168\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 24
-- Finding ID: 9988e3bc87916e4e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.dangerous\-subprocess\-use\.dangerous\-subprocess\-use
-- Rule name: null
-- File: testcode\\BenchmarkTest00168\.py
-- Lines: 60-60
-- Severity: HIGH
-- Scanner message: Detected subprocess function 'run' with user controlled data\. A malicious actor could leverage this to perform command injection\. You may consider using 'shlex\.escape\(\)'\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00168\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 25
-- Finding ID: 3c5416919987fe7d
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00168\.py
-- Lines: 60-60
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00168\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 26
-- Finding ID: db0839375b03197c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00193\.py
-- Lines: 49-49
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00193\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 27
-- Finding ID: f56c97226a426fe2
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00194\.py
-- Lines: 48-48
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00194\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 28
-- Finding ID: 374f36b8428fd3af
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00195\.py
-- Lines: 50-50
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00195\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 29
-- Finding ID: ef7dabd9ecdf964a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00196\.py
-- Lines: 54-54
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00196\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 30
-- Finding ID: 375a2ae31d375161
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00197\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00197\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 31
-- Finding ID: 4794442120c057ea
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00198\.py
-- Lines: 45-45
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-60, function BenchmarkTest00198\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 32
-- Finding ID: 3fd07b52fcb9dc7c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00199\.py
-- Lines: 43-43
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-58, function BenchmarkTest00199\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 33
-- Finding ID: d06bb4ae41011807
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00200\.py
-- Lines: 45-45
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-60, function BenchmarkTest00200\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 34
-- Finding ID: 80470a29319d142f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00201\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00201\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 35
-- Finding ID: 69e688cd74fc96a2
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00202\.py
-- Lines: 45-45
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-60, function BenchmarkTest00202\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 36
-- Finding ID: 45116e6ca92fbe45
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00203\.py
-- Lines: 60-60
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-75, function BenchmarkTest00203\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 37
-- Finding ID: d63f2db8eabd5dd1
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00248\.py
-- Lines: 60-60
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00248\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 38
-- Finding ID: 77bdcbfd813e3321
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00249\.py
-- Lines: 57-57
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00249\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 39
-- Finding ID: b440fee9bed9113b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00250\.py
-- Lines: 60-60
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00250\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 40
-- Finding ID: 7a687d3a184bb5d2
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00251\.py
-- Lines: 59-59
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00251\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 41
-- Finding ID: 5e205da8eea18a1f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00269\.py
-- Lines: 44-44
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-54, function BenchmarkTest00269\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 42
-- Finding ID: 819bc85aa629060a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00270\.py
-- Lines: 41-41
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-51, function BenchmarkTest00270\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 43
-- Finding ID: 2eb64be6145fb0b4
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00288\.py
-- Lines: 50-50
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00288\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 44
-- Finding ID: 6b36965dc715d603
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00289\.py
-- Lines: 47-47
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-62, function BenchmarkTest00289\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 45
-- Finding ID: 79a64a13ddef14d2
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00290\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00290\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 46
-- Finding ID: ee12f23d201089dd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00319\.py
-- Lines: 56-56
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00319\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 47
-- Finding ID: 2a7f0f7938d6329a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00326\.py
-- Lines: 62-62
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-73, function BenchmarkTest00326\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 48
-- Finding ID: 167701c4e0805264
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00327\.py
-- Lines: 62-62
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-73, function BenchmarkTest00327\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 49
-- Finding ID: d54f60c1e9ace45e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00328\.py
-- Lines: 55-55
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00328\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 50
-- Finding ID: 9faa3a61e115d013
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00329\.py
-- Lines: 60-60
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00329\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 51
-- Finding ID: 1eeb7f5fc92362d6
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00350\.py
-- Lines: 58-58
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00350\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 52
-- Finding ID: e6ac7ecdce624fa9
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00368\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00368\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 53
-- Finding ID: 18c9b32880628773
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00369\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00369\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 54
-- Finding ID: d7f4e2e6b20d98c1
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00370\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00370\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 55
-- Finding ID: f7d10b69cd78e81b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00371\.py
-- Lines: 52-52
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00371\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 56
-- Finding ID: d12147ac8a313290
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00409\.py
-- Lines: 60-60
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00409\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 57
-- Finding ID: 85d4a70546b87e63
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00412\.py
-- Lines: 61-61
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-72, function BenchmarkTest00412\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 58
-- Finding ID: 8723b4656b91baa5
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00431\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00431\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 59
-- Finding ID: acc0ea386c6c9855
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00432\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00432\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 60
-- Finding ID: 634c533bd080fbfd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00433\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-56, function BenchmarkTest00433\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 61
-- Finding ID: 0ff42e322d1f82e4
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.tainted\-sql\-string\.tainted\-sql\-string
-- Rule name: null
-- File: testcode\\BenchmarkTest00454\.py
-- Lines: 41-41
-- Severity: HIGH
-- Scanner message: Detected user input used to manually construct a SQL string\. This is usually bad practice because manual construction could accidentally result in a SQL injection\. An attacker could use a SQL injection to steal or modify contents of the database\. Instead, use a parameterized query which is available by default in most database engines\. Alternatively, consider using an object\-relational mapper \(ORM\) such as SQLAlchemy which will protect your queries\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-50, function BenchmarkTest00454\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 62
-- Finding ID: 02062a35974cce44
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00456\.py
-- Lines: 49-49
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00456\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 63
-- Finding ID: e90a5526fb85f909
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00457\.py
-- Lines: 48-48
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00457\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 64
-- Finding ID: decf7ca64a968bad
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00458\.py
-- Lines: 50-50
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00458\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 65
-- Finding ID: 117eaaa3055aaee9
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00460\.py
-- Lines: 56-58
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00460\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 66
-- Finding ID: dbba15123c339796
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00460\.py
-- Lines: 56-58
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00460\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 67
-- Finding ID: c06281280ca5d56f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00460\.py
-- Lines: 60-62
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00460\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 68
-- Finding ID: 498bceb9290f2c96
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00460\.py
-- Lines: 60-62
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00460\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 69
-- Finding ID: 40ce4e6d97259de0
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00462\.py
-- Lines: 59-61
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00462\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 70
-- Finding ID: 4b9a3205fad397b3
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00462\.py
-- Lines: 59-61
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00462\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 71
-- Finding ID: 21b23fafd00e6014
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00462\.py
-- Lines: 63-65
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00462\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 72
-- Finding ID: bd548f47cae0dcbd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00462\.py
-- Lines: 63-65
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00462\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 73
-- Finding ID: 81adcdaa47555d98
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.request\-data\-write\.request\-data\-write
-- Rule name: null
-- File: testcode\\BenchmarkTest00471\.py
-- Lines: 31-72
-- Severity: MEDIUM
-- Scanner message: Found user\-controlled request data passed into '\.write\(\.\.\.\)'\. This could be dangerous if a malicious actor is able to control data into sensitive files\. For example, a malicious actor could force rolling of critical log files, or cause a denial\-of\-service by using up available disk space\. Instead, ensure that request data is properly escaped or sanitized\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-74, function BenchmarkTest00471\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 74
-- Finding ID: 3a82cdd280c78ad3
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.request\-data\-write\.request\-data\-write
-- Rule name: null
-- File: testcode\\BenchmarkTest00472\.py
-- Lines: 31-64
-- Severity: MEDIUM
-- Scanner message: Found user\-controlled request data passed into '\.write\(\.\.\.\)'\. This could be dangerous if a malicious actor is able to control data into sensitive files\. For example, a malicious actor could force rolling of critical log files, or cause a denial\-of\-service by using up available disk space\. Instead, ensure that request data is properly escaped or sanitized\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00472\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 75
-- Finding ID: 0bd3aef398329635
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00482\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00482\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 76
-- Finding ID: 846328648dd9756f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00489\.py
-- Lines: 54-54
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00489\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 77
-- Finding ID: 30a0657302e0b2af
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.audit\.avoid\-insecure\-deserialization\.avoid\-insecure\-deserialization
-- Rule name: null
-- File: testcode\\BenchmarkTest00507\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: Avoid using insecure deserialization library, backed by \`pickle\`, \`\_pickle\`, \`cpickle\`, \`dill\`, \`shelve\`, or \`yaml\`, which are known to lead to remote code execution vulnerabilities\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00507\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 78
-- Finding ID: 74beb5903f1f3115
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.audit\.avoid\-insecure\-deserialization\.avoid\-insecure\-deserialization
-- Rule name: null
-- File: testcode\\BenchmarkTest00508\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: Avoid using insecure deserialization library, backed by \`pickle\`, \`\_pickle\`, \`cpickle\`, \`dill\`, \`shelve\`, or \`yaml\`, which are known to lead to remote code execution vulnerabilities\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00508\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 79
-- Finding ID: fa2cc715ec788685
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.audit\.avoid\-insecure\-deserialization\.avoid\-insecure\-deserialization
-- Rule name: null
-- File: testcode\\BenchmarkTest00510\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: Avoid using insecure deserialization library, backed by \`pickle\`, \`\_pickle\`, \`cpickle\`, \`dill\`, \`shelve\`, or \`yaml\`, which are known to lead to remote code execution vulnerabilities\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-57, function BenchmarkTest00510\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 80
-- Finding ID: 06a521a0bd6c1d0b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00512\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00512\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 81
-- Finding ID: 2f741aa454d3a7ee
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.audit\.avoid\-insecure\-deserialization\.avoid\-insecure\-deserialization
-- Rule name: null
-- File: testcode\\BenchmarkTest00513\.py
-- Lines: 45-45
-- Severity: HIGH
-- Scanner message: Avoid using insecure deserialization library, backed by \`pickle\`, \`\_pickle\`, \`cpickle\`, \`dill\`, \`shelve\`, or \`yaml\`, which are known to lead to remote code execution vulnerabilities\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-55, function BenchmarkTest00513\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 82
-- Finding ID: b04779b2b6f7c2ba
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00513\.py
-- Lines: 45-45
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-55, function BenchmarkTest00513\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 83
-- Finding ID: 4d382704770c363e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00534\.py
-- Lines: 48-48
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00534\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 84
-- Finding ID: ceb88a438f3ef851
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00535\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00535\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 85
-- Finding ID: 273d6f8070ee6d93
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00536\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00536\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 86
-- Finding ID: 75f34f37c916a130
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00537\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00537\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 87
-- Finding ID: 67e7afe39faaf623
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00541\.py
-- Lines: 61-63
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00541\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 88
-- Finding ID: 0aae4e8e6c8c9d56
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00541\.py
-- Lines: 61-63
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00541\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 89
-- Finding ID: 770f7af3767bfd42
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00541\.py
-- Lines: 65-67
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00541\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 90
-- Finding ID: 3e60ffc5a653f11f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00541\.py
-- Lines: 65-67
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00541\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 91
-- Finding ID: 933a7ced24622e7f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00580\.py
-- Lines: 56-56
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00580\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 92
-- Finding ID: d9ea1bab271d4dfb
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00585\.py
-- Lines: 56-56
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00585\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 93
-- Finding ID: 38fc4a86c457921b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00586\.py
-- Lines: 59-59
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00586\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 94
-- Finding ID: f1d15471934e8840
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00606\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00606\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 95
-- Finding ID: 876b5285105fbc09
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00607\.py
-- Lines: 54-54
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00607\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 96
-- Finding ID: 94a4111bedeffc77
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00608\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00608\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 97
-- Finding ID: 88862bb41175c02f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00641\.py
-- Lines: 59-59
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00641\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 98
-- Finding ID: cb60c791d0d9d885
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00646\.py
-- Lines: 65-65
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-76, function BenchmarkTest00646\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 99
-- Finding ID: bfad25521b5b3449
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00647\.py
-- Lines: 61-61
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-72, function BenchmarkTest00647\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 100
-- Finding ID: 4f7985bf28264789
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00658\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00658\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 101
-- Finding ID: 4f1d97abc8eca14c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00674\.py
-- Lines: 49-49
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00674\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 102
-- Finding ID: 760aec2b164c7c20
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00675\.py
-- Lines: 44-44
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-59, function BenchmarkTest00675\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 103
-- Finding ID: 29c038460f1ae74f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00676\.py
-- Lines: 49-49
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00676\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 104
-- Finding ID: 55123f318f3c9068
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00677\.py
-- Lines: 45-45
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-60, function BenchmarkTest00677\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 105
-- Finding ID: cea9936a97a49861
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00678\.py
-- Lines: 57-59
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00678\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 106
-- Finding ID: c4dd14da230466ae
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00678\.py
-- Lines: 57-59
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00678\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 107
-- Finding ID: 89c3a9b529350119
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00678\.py
-- Lines: 61-63
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00678\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 108
-- Finding ID: 7b2ac310c5fce28f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest00678\.py
-- Lines: 61-63
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00678\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 109
-- Finding ID: 7f65c00923e11be2
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00707\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00707\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 110
-- Finding ID: f854dce799abeade
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00708\.py
-- Lines: 63-63
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-74, function BenchmarkTest00708\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 111
-- Finding ID: 35963349930d815a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00709\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00709\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 112
-- Finding ID: e9613b021cfdf49e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00713\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00713\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 113
-- Finding ID: 2806a84723fb6193
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00714\.py
-- Lines: 54-54
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00714\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 114
-- Finding ID: 1af34fcce77f0311
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00715\.py
-- Lines: 59-59
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00715\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 115
-- Finding ID: a9ee59e242ef1500
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00716\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00716\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 116
-- Finding ID: bf68da71e15a1eb3
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.audit\.avoid\-insecure\-deserialization\.avoid\-insecure\-deserialization
-- Rule name: null
-- File: testcode\\BenchmarkTest00734\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: Avoid using insecure deserialization library, backed by \`pickle\`, \`\_pickle\`, \`cpickle\`, \`dill\`, \`shelve\`, or \`yaml\`, which are known to lead to remote code execution vulnerabilities\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-57, function BenchmarkTest00734\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 117
-- Finding ID: c5d4278f06a0ee47
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.audit\.avoid\-insecure\-deserialization\.avoid\-insecure\-deserialization
-- Rule name: null
-- File: testcode\\BenchmarkTest00735\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: Avoid using insecure deserialization library, backed by \`pickle\`, \`\_pickle\`, \`cpickle\`, \`dill\`, \`shelve\`, or \`yaml\`, which are known to lead to remote code execution vulnerabilities\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-57, function BenchmarkTest00735\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 118
-- Finding ID: 9736e1bee0aa4b5b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00736\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00736\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 119
-- Finding ID: db68fb858a5f5154
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00756\.py
-- Lines: 50-50
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest00756\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 120
-- Finding ID: 25040fca70fb9819
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00757\.py
-- Lines: 47-47
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-62, function BenchmarkTest00757\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 121
-- Finding ID: 8c1f0bcf9e1b287a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00758\.py
-- Lines: 49-49
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest00758\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 122
-- Finding ID: 7d24c2925a7e6bc7
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00805\.py
-- Lines: 57-57
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00805\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 123
-- Finding ID: aeb2163ecd41527a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00806\.py
-- Lines: 59-59
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00806\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 124
-- Finding ID: 924c15cbf48525cf
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00827\.py
-- Lines: 43-43
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-53, function BenchmarkTest00827\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 125
-- Finding ID: 70cc5bd820484c75
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00843\.py
-- Lines: 52-52
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00843\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 126
-- Finding ID: c15af23713b8b2af
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00844\.py
-- Lines: 48-48
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00844\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 127
-- Finding ID: 54e1a23028d15239
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00845\.py
-- Lines: 52-52
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-67, function BenchmarkTest00845\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 128
-- Finding ID: 71cf2ea26d59fffb
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00846\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00846\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 129
-- Finding ID: 01c08474319d5808
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00847\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00847\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 130
-- Finding ID: fa14762d42d3d7bd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00848\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest00848\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 131
-- Finding ID: 5f08e8e8f0fbec09
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00849\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00849\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 132
-- Finding ID: cf97bc7ee5f92b3d
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00873\.py
-- Lines: 59-59
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-70, function BenchmarkTest00873\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 133
-- Finding ID: 3e197c784c4fc103
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00874\.py
-- Lines: 57-57
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest00874\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 134
-- Finding ID: 6b4e26efa8050252
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest00877\.py
-- Lines: 58-58
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00877\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 135
-- Finding ID: 540d9cf210833cce
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest00900\.py
-- Lines: 59-59
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest00900\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 136
-- Finding ID: 4c0d7dc2ddde076b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00927\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest00927\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 137
-- Finding ID: e92a3e4de5489045
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00928\.py
-- Lines: 68-68
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-83, function BenchmarkTest00928\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 138
-- Finding ID: fd1a191a4c602f4d
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest00929\.py
-- Lines: 68-68
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-83, function BenchmarkTest00929\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 139
-- Finding ID: 9967db4d5f0e6f91
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00973\.py
-- Lines: 61-61
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-72, function BenchmarkTest00973\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 140
-- Finding ID: c6255d1a6c3bdabb
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest00974\.py
-- Lines: 62-62
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-73, function BenchmarkTest00974\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 141
-- Finding ID: a8179ad0a44d37c0
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00977\.py
-- Lines: 66-66
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-77, function BenchmarkTest00977\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 142
-- Finding ID: 5a3cc8d53e6b9cd4
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest00978\.py
-- Lines: 64-64
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-75, function BenchmarkTest00978\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 143
-- Finding ID: ec685a0f3ab25967
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00994\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest00994\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 144
-- Finding ID: fcca23505f9d9611
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest00995\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest00995\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 145
-- Finding ID: 2a376e0a0a5e0876
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01022\.py
-- Lines: 47-47
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-62, function BenchmarkTest01022\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 146
-- Finding ID: bb312d826613a182
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01023\.py
-- Lines: 54-54
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest01023\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 147
-- Finding ID: 1781b8f2b0f249f3
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01025\.py
-- Lines: 61-63
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest01025\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 148
-- Finding ID: 0d84fdaf1465137a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01025\.py
-- Lines: 61-63
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest01025\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 149
-- Finding ID: fb6d08216b62ffb9
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01025\.py
-- Lines: 65-67
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest01025\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 150
-- Finding ID: a25c151633da46ea
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01025\.py
-- Lines: 65-67
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest01025\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 151
-- Finding ID: dc7967749ba337b9
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest01070\.py
-- Lines: 60-60
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest01070\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 152
-- Finding ID: a8666ec88ecd102a
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest01077\.py
-- Lines: 55-55
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest01077\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 153
-- Finding ID: 12dd13ebb4241b7e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest01097\.py
-- Lines: 55-55
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest01097\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 154
-- Finding ID: c0a5c586a4f31500
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest01098\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01098\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 155
-- Finding ID: b58fa6a694c69a02
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.deserialization\.avoid\-pyyaml\-load\.avoid\-pyyaml\-load
-- Rule name: null
-- File: testcode\\BenchmarkTest01099\.py
-- Lines: 47-47
-- Severity: HIGH
-- Scanner message: Detected a possible YAML deserialization vulnerability\. \`yaml\.unsafe\_load\`, \`yaml\.Loader\`, \`yaml\.CLoader\`, and \`yaml\.UnsafeLoader\` are all known to be unsafe methods of deserializing YAML\. An attacker with control over the YAML input could create special YAML input that allows the attacker to run arbitrary Python code\. This would allow the attacker to steal files, download and install malware, or otherwise take over the machine\. Use \`yaml\.safe\_load\` or \`yaml\.SafeLoader\` instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-57, function BenchmarkTest01099\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 156
-- Finding ID: f70ec69727be4044
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01116\.py
-- Lines: 53-53
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-68, function BenchmarkTest01116\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 157
-- Finding ID: bac0e11ae34fc36b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01117\.py
-- Lines: 48-48
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01117\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 158
-- Finding ID: b0f79c453d79beed
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01118\.py
-- Lines: 46-46
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest01118\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 159
-- Finding ID: c13e88dfaae4dedd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01119\.py
-- Lines: 48-48
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01119\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 160
-- Finding ID: 1404e5d7236c770c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01120\.py
-- Lines: 54-54
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-69, function BenchmarkTest01120\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 161
-- Finding ID: 135ed5a8a037e0d0
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01121\.py
-- Lines: 50-50
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest01121\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 162
-- Finding ID: 31c446f1709c539f
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest01145\.py
-- Lines: 53-53
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest01145\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 163
-- Finding ID: 5ff069a831cf5235
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest01147\.py
-- Lines: 52-52
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01147\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 164
-- Finding ID: 22979fe536b457d6
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest01148\.py
-- Lines: 54-54
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest01148\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 165
-- Finding ID: 7d3b1eab923c0962
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest01149\.py
-- Lines: 63-63
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-74, function BenchmarkTest01149\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 166
-- Finding ID: f6c4579dc5ad6069
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.audit\.subprocess\-shell\-true\.subprocess\-shell\-true
-- Rule name: null
-- File: testcode\\BenchmarkTest01173\.py
-- Lines: 51-51
-- Severity: HIGH
-- Scanner message: Found 'subprocess' function 'run' with 'shell\=True'\. This is dangerous because this call will spawn the command using a shell process\. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands\. Use 'shell\=False' instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-61, function BenchmarkTest01173\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 167
-- Finding ID: dbfb69295943aea0
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.path\-traversal\.path\-traversal\-open\.path\-traversal\-open
-- Rule name: null
-- File: testcode\\BenchmarkTest01179\.py
-- Lines: 31-54
-- Severity: MEDIUM
-- Scanner message: Found request data in a call to 'open'\. Ensure the request data is validated or sanitized, otherwise it could result in path traversal attacks and therefore sensitive data being leaked\. To mitigate, consider using os\.path\.abspath or os\.path\.realpath or the pathlib library\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-56, function BenchmarkTest01179\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 168
-- Finding ID: 47d6489e050ca18c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.path\-traversal\.path\-traversal\-open\.path\-traversal\-open
-- Rule name: null
-- File: testcode\\BenchmarkTest01180\.py
-- Lines: 31-60
-- Severity: MEDIUM
-- Scanner message: Found request data in a call to 'open'\. Ensure the request data is validated or sanitized, otherwise it could result in path traversal attacks and therefore sensitive data being leaked\. To mitigate, consider using os\.path\.abspath or os\.path\.realpath or the pathlib library\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-62, function BenchmarkTest01180\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 169
-- Finding ID: 9e46c3683c491d33
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\-md5\.insecure\-hash\-algorithm\-md5
-- Rule name: null
-- File: testcode\\BenchmarkTest01182\.py
-- Lines: 51-51
-- Severity: MEDIUM
-- Scanner message: Detected MD5 hash algorithm which is considered insecure\. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-62, function BenchmarkTest01182\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 170
-- Finding ID: 1633a50650253af8
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest01190\.py
-- Lines: 54-54
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-65, function BenchmarkTest01190\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 171
-- Finding ID: 3dab03df1eadb0dd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.path\-traversal\.path\-traversal\-open\.path\-traversal\-open
-- Rule name: null
-- File: testcode\\BenchmarkTest01196\.py
-- Lines: 31-48
-- Severity: MEDIUM
-- Scanner message: Found request data in a call to 'open'\. Ensure the request data is validated or sanitized, otherwise it could result in path traversal attacks and therefore sensitive data being leaked\. To mitigate, consider using os\.path\.abspath or os\.path\.realpath or the pathlib library\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-50, function BenchmarkTest01196\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 172
-- Finding ID: a63157cf2086fc88
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-algorithms\.insecure\-hash\-algorithm\-sha1
-- Rule name: null
-- File: testcode\\BenchmarkTest01197\.py
-- Lines: 51-51
-- Severity: MEDIUM
-- Scanner message: Detected SHA1 hash algorithm which is considered insecure\. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature\. Use SHA256 or SHA3 instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-62, function BenchmarkTest01197\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 173
-- Finding ID: 988eebefa4a86ec3
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.path\-traversal\.path\-traversal\-open\.path\-traversal\-open
-- Rule name: null
-- File: testcode\\BenchmarkTest01202\.py
-- Lines: 31-64
-- Severity: MEDIUM
-- Scanner message: Found request data in a call to 'open'\. Ensure the request data is validated or sanitized, otherwise it could result in path traversal attacks and therefore sensitive data being leaked\. To mitigate, consider using os\.path\.abspath or os\.path\.realpath or the pathlib library\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-66, function BenchmarkTest01202\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 174
-- Finding ID: 9d231d3b39b6a250
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01211\.py
-- Lines: 55-57
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01211\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 175
-- Finding ID: 30c44534f177d919
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01211\.py
-- Lines: 55-57
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01211\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 176
-- Finding ID: e83b39b4779eba95
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01211\.py
-- Lines: 59-61
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01211\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 177
-- Finding ID: 090c9f07b2b376dd
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01211\.py
-- Lines: 59-61
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01211\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 178
-- Finding ID: e2dcd31ab7dcb32e
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01212\.py
-- Lines: 56-58
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest01212\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 179
-- Finding ID: 1cc03b3df5f714d2
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01212\.py
-- Lines: 56-58
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest01212\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 180
-- Finding ID: 558c29a3a1679c3c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.django\.security\.injection\.raw\-html\-format\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01212\.py
-- Lines: 60-62
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`django\.shortcuts\.render\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest01212\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 181
-- Finding ID: 4e5c7e8d460dadf7
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.flask\.security\.injection\.raw\-html\-concat\.raw\-html\-format
-- Rule name: null
-- File: testcode\\BenchmarkTest01212\.py
-- Lines: 60-62
-- Severity: MEDIUM
-- Scanner message: Detected user input flowing into a manually constructed HTML string\. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross\-site scripting vulnerability, which could let attackers steal sensitive user data\. To be sure this is safe, check that the HTML is rendered safely\. Otherwise, use templates \(\`flask\.render\_template\`\) which will safely render HTML instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-64, function BenchmarkTest01212\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 182
-- Finding ID: 5cd50dd1f9edbd2b
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01217\.py
-- Lines: 56-56
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-71, function BenchmarkTest01217\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 183
-- Finding ID: 93a5bb6d73210d1c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.use\-defused\-xml\-parse\.use\-defused\-xml\-parse
-- Rule name: null
-- File: testcode\\BenchmarkTest01225\.py
-- Lines: 42-42
-- Severity: HIGH
-- Scanner message: The native Python \`xml\` library is vulnerable to XML External Entity \(XXE\) attacks\.  These attacks can leak confidential data and "XML bombs" can cause denial of service\. Do not use this library to parse untrusted input\. Instead  the Python documentation recommends using \`defusedxml\`\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-57, function BenchmarkTest01225\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
-### Finding 184
-- Finding ID: 6ae35b0c4890315c
-- Scanner: SEMGREP
-- Finding type: SAST
-- Rule ID: python\.lang\.security\.insecure\-hash\-function\.insecure\-hash\-function
-- Rule name: null
-- File: testcode\\BenchmarkTest01227\.py
-- Lines: 52-52
-- Severity: MEDIUM
-- Scanner message: Detected use of an insecure MD4 or MD5 hash function\. These functions have known vulnerabilities and are considered deprecated\. Consider using 'SHA256' or a similar function instead\.
-- Context summary: PYTHON\_FUNCTION context, lines 27\-63, function BenchmarkTest01227\_post\.
-- Model verdict: NEEDS\_REVIEW
-- Model confidence: MEDIUM
-- Policy action: MANUAL\_REVIEW
-- Policy version: conservative\-policy\-v1
-- Escalated: True
-- Escalation reason: Artifact binding is unverified or partial\.
-- Policy reasons:
-  - Scanner artifact repository binding is not fully verified\.
-- Processing errors:
-  - none
-
 ## Scanner errors
-- none
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[0\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[2\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[3\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[4\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[5\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[6\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[7\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[8\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[9\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[10\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[11\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[12\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[13\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[14\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[15\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[16\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[17\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[18\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[19\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[20\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[21\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[22\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[23\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[24\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[25\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[26\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[27\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[28\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[29\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[30\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[31\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[32\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[33\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[34\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[35\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[36\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[37\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[38\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[39\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[40\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[41\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[42\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[43\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[44\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[45\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[46\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[47\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[48\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[49\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[50\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[51\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[52\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[53\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[54\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[55\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[56\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[57\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[58\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[59\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[60\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[61\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[62\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[63\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[64\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[65\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[66\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[67\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[68\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[69\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[70\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[71\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[72\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[73\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[74\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[75\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[76\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[77\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[78\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[79\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[80\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[81\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[82\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[83\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[84\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[85\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[86\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[87\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[88\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[89\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[90\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[91\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[92\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[93\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[94\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[95\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[96\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[97\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[98\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[99\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[100\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[101\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[102\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[103\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[104\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[105\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[106\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[107\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[108\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[109\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[110\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[111\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[112\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[113\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[114\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[115\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[116\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[117\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[118\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[119\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[120\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[121\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[122\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[123\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[124\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[125\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[126\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[127\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[128\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[129\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[130\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[131\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[132\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[133\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[134\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[135\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[136\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[137\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[138\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[139\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[140\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[141\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[142\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[143\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[144\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[145\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[146\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[147\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[148\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[149\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[150\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[151\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[152\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[153\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[154\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[155\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[156\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[157\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[158\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[159\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[160\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[161\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[162\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[163\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[164\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[165\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[166\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[167\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[168\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[169\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[170\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[171\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[172\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[173\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[174\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[175\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[176\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[177\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[178\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[179\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[180\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[181\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[182\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[183\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[184\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[185\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[186\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[187\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[188\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[189\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[190\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[191\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[192\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[193\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[194\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[195\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[196\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[197\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[198\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[199\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[200\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[201\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[202\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[203\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[204\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[205\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[206\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[207\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[208\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[209\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[210\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[211\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[212\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[213\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[214\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[215\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[216\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[217\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[218\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[219\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[220\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[221\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[222\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[223\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[224\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[225\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[226\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[227\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[228\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[229\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[230\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[231\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[232\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[233\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[234\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[235\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[236\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[237\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[238\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[239\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[240\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[241\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[242\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[243\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[244\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[245\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[246\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[247\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[248\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[249\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[250\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[251\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[252\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[253\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[254\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[255\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[256\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[257\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[258\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[259\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[260\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[261\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[262\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[263\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[264\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[265\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[266\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[267\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[268\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[269\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[270\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[271\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[272\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[273\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[274\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[275\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[276\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[277\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[278\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[279\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[280\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[281\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[282\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[283\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[284\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[285\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[286\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[287\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[288\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[289\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[290\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[291\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[292\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[293\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[294\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[295\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[296\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[297\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[298\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[299\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[300\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[301\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[302\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[303\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[304\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[305\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[306\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[307\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[308\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[309\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[310\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[311\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[312\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[313\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[314\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[315\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[316\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[317\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[318\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[319\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[320\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[321\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[322\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[323\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[324\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[325\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[326\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[327\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[328\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[329\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[330\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[331\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[332\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[333\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[334\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[335\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[336\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[337\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[338\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[339\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[340\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[341\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[342\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[343\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[344\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[345\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[346\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[347\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[348\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[349\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[350\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[351\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[352\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[353\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[354\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[355\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[356\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[357\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[358\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[359\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[360\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[361\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[362\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[363\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[364\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[365\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[366\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[367\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[368\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[369\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[370\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[371\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[372\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[373\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[374\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[375\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[376\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[377\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[378\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[379\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[380\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[381\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[382\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[383\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[384\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[385\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[386\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[387\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[388\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[389\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[390\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[391\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[392\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[393\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[394\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[395\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[396\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[397\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[398\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[399\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[400\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[401\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[402\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[403\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[404\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[405\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[406\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[407\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[408\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[409\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[410\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[411\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[412\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[413\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[414\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[415\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[416\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[417\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[418\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[419\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[420\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[421\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[422\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[423\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[424\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[425\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[426\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[427\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[428\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[429\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[430\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[431\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[432\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[433\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[434\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[435\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[436\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[437\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[438\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[439\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[440\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[441\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[442\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[443\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[444\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[445\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[446\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[447\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[448\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[449\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[450\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[451\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[452\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[453\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[454\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[455\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[456\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[457\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[458\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[459\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[460\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[461\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[462\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[463\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[464\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[465\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[466\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[467\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[468\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[469\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[470\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[471\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[472\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[473\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[474\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[475\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[476\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[477\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[478\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[479\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[480\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[481\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[482\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[483\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[484\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[485\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[486\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[487\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[488\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[489\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[490\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[491\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[492\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[493\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[494\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[495\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[496\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[497\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[498\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[499\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[500\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[501\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[502\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[503\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[504\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[505\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[506\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[507\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[508\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[509\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[510\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[511\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[512\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[513\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[514\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[515\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[516\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[517\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[518\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[519\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[520\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[521\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[522\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[523\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[524\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[525\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[526\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[527\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[528\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[529\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[530\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[531\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[532\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[533\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[534\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[535\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[536\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[537\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[538\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[539\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[540\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[541\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[542\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[543\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[544\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[545\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[546\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[547\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[548\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[549\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[550\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[551\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[552\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[553\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[554\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[555\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[556\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[557\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[558\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[559\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[560\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[561\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[562\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[563\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[564\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[565\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[566\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[567\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[568\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[569\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[570\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[571\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[572\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[573\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[574\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[575\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[576\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[577\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[578\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[579\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[580\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[581\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[582\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[583\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[584\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[585\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[586\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[587\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[588\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[589\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[590\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[591\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[592\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[593\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[594\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[595\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[596\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[597\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[598\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[599\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[600\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[601\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[602\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[603\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[604\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[605\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[606\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[607\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[608\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[609\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[610\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[611\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[612\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[613\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[614\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[615\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[616\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[617\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[618\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[619\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[620\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[621\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[622\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[623\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[624\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[625\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[626\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[627\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[628\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[629\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[630\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[631\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[632\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[633\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[634\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[635\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[636\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[637\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[638\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[639\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[640\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[641\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[642\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[643\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[644\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[645\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[646\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[647\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[648\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[649\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[650\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[651\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[652\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[653\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[654\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[655\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[656\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[657\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[658\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[659\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[660\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[661\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[662\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[663\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[664\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[665\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[666\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[667\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[668\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[669\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[670\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[671\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[672\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[673\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[674\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[675\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[676\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[677\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[678\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[679\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[680\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[681\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[682\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[683\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[684\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[685\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[686\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[687\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[688\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[689\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[690\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[691\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[692\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[693\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[694\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[695\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[696\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[697\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[698\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[699\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[700\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[701\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[702\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[703\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[704\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[705\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[706\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[707\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[708\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[709\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[710\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[711\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[712\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[713\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[714\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[715\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[716\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[717\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[718\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[719\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[720\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[721\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[722\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[723\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[724\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[725\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[726\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[727\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[728\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[729\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[730\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[731\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[732\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[733\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[734\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[735\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[736\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[737\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[738\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[739\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[740\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[741\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[742\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[743\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[744\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[745\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[746\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[747\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[748\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[749\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[750\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[751\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[752\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[753\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[754\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[755\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[756\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[757\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[758\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[759\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[760\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[761\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[762\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[763\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[764\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[765\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[766\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[767\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[768\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[769\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[770\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[771\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[772\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[773\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[774\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[775\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[776\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[777\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[778\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[779\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[780\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[781\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[782\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[783\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[784\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[785\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[786\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[787\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[788\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[789\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[790\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[791\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[792\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[793\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[794\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[795\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[796\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[797\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[798\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[799\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[800\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[801\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[802\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[803\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[804\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[805\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[806\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[807\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[808\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[809\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[810\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[811\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[812\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[813\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[814\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[815\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[816\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[817\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[818\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[819\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[820\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[821\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[822\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[823\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[824\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[825\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[826\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[827\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[828\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[829\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[830\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[831\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[832\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[833\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[834\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[835\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[836\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[837\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[838\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[839\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[840\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[841\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[842\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[843\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[844\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[845\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[846\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[847\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[848\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[849\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[850\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[851\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[852\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[853\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[854\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[855\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[856\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[857\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[858\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[859\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[860\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[861\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[862\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[863\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[864\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[865\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[866\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[867\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[868\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[869\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[870\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[871\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[872\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[873\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[874\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[875\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[876\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[877\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[878\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[879\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[880\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[881\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[882\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[883\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[884\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[885\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[886\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[887\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[888\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[889\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[890\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[891\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[892\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[893\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[894\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[895\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[896\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[897\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[898\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[899\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[900\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[901\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[902\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[903\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[904\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[905\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[906\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[907\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[908\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[909\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[910\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[911\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[912\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[913\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[914\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[915\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[916\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[917\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[918\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[919\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[920\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[921\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[922\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[923\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[924\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[925\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[926\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[927\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[928\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[929\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[930\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[931\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[932\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[933\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[934\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[935\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[936\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[937\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[938\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[939\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[940\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[941\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[942\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[943\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[944\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[945\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[946\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[947\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[948\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[949\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[950\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[951\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[952\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[953\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[954\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[955\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[956\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[957\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[958\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[959\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[960\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[961\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[962\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[963\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[964\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[965\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[966\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[967\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[968\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[969\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[970\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[971\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[972\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[973\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[974\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[975\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[976\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[977\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[978\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[979\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[980\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[981\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[982\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[983\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[984\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[985\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[986\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[987\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[988\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[989\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[990\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[991\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[992\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[993\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[994\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[995\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[996\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[997\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[998\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[999\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1000\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1001\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1002\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1003\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1004\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1005\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1006\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1007\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1008\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1009\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1010\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1011\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1012\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1013\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1014\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1015\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1016\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1017\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1018\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1019\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1020\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1021\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1022\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1023\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1024\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1025\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1026\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1027\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1028\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1029\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1030\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1031\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1032\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1033\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1034\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1035\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1036\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1037\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1038\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1039\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1040\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1041\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1042\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1043\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1044\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1045\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1046\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1047\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1048\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1049\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1050\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1051\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1052\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1053\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1054\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1055\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1056\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1057\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1058\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1059\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1060\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1061\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1062\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1063\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1064\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1065\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1066\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1067\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1068\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1069\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1070\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1071\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1072\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1073\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1074\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1075\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1076\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1077\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1078\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1079\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1080\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1081\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1082\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1083\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1084\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1085\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1086\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1087\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1088\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1089\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1090\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1091\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1092\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1093\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1094\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1095\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1096\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1097\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1098\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1099\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1100\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1101\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1102\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1103\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1104\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1105\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1106\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1107\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1108\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1109\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1110\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1111\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1112\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1113\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1114\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1115\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1116\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1117\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1118\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1119\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1120\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1121\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1122\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1123\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1124\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1125\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1126\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1127\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1128\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1129\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1130\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1131\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1132\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1133\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1134\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1135\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1136\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1137\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1138\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1139\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1140\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1141\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1142\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1143\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1144\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1145\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1146\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1147\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1148\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1149\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1150\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1151\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1152\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1153\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1154\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1155\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1156\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1157\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1158\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1159\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1160\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1161\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1162\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1163\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1164\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1165\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1166\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1167\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1168\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1169\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1170\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1171\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1172\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1173\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1174\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1175\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1176\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1177\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1178\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1179\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1180\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1181\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1182\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1183\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1184\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1185\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1186\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1187\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1188\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1189\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1190\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1191\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1192\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1193\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1194\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1195\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1196\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1197\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1198\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1199\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1200\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1201\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1202\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1203\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1204\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1205\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1206\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1207\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1208\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1209\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1210\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1211\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1212\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1213\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1214\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1215\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1216\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1217\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1218\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1219\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1220\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1221\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1222\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1223\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1224\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1225\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1226\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1227\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1228\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1229\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1230\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1231\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1232\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1233\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1234\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1235\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1236\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1237\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1238\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1239\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1240\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1241\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1242\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1243\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1244\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1245\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1246\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1247\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1248\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1249\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1250\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1251\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1252\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1253\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1254\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1255\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1256\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1257\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1258\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1259\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1260\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1261\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1262\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1263\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1264\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1265\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1266\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1267\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1268\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1269\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1270\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1271\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1272\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1273\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1274\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1275\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1276\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1277\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1278\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1279\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1280\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1281\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1282\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1283\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1284\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1285\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1286\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1287\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1288\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1289\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1290\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1291\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1292\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1293\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1294\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1295\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1296\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1297\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1298\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: PARSE\_RECORD\_INVALID\_FIELD; scanner: SEMGREP; finding: null; retryable: False; message: Semgrep result\[1299\]\: record produced an invalid NormalizedFinding\.
+- stage: PARSE; code: SCANNER\_PROCESS\_FAILED; scanner: SEMGREP; finding: null; retryable: False; message: Scanner process returned a failure status\.

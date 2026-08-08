@@ -72,8 +72,10 @@ def _result(finding: NormalizedFinding, action: PolicyAction = PolicyAction.MANU
     decision = TriageDecision(
         model_verdict=ModelVerdict.NEEDS_REVIEW,
         model_confidence=ModelConfidence.MEDIUM,
-        summary="model summary",
-        evidence=["evidence"],
+        summary="Chưa đủ bằng chứng để xác nhận luồng dữ liệu tới điểm sử dụng nguy hiểm.",
+        evidence=["Nguồn: dữ liệu đầu vào chưa xác định.", "Điểm sử dụng: cần kiểm tra trực tiếp."],
+        missing_information=["Cần xác minh caller truyền dữ liệu nào vào hàm."],
+        assumptions=["Giả định context hiện tại chưa bao phủ caller."],
         model_version="model-v1",
         prompt_version="prompt-v1",
     )
@@ -103,14 +105,29 @@ def test_report_contains_required_sections_counts_and_safe_findings(tmp_path: Pa
     write_markdown_report(batch, output)
     text = output.read_text(encoding="utf-8")
 
-    for section in ("# SAST Triage Report", "## Run summary", "## Scanner status", "## Finding totals", "## Policy-action counts", "## Findings", "## Scanner errors"):
+    for section in (
+        "# Báo cáo SAST Triage",
+        "## 1. Tóm tắt điều hành",
+        "## 2. Cấu hình và khả năng tái lập",
+        "## 3. Cách đọc verdict và action",
+        "## 4. Hàng đợi review",
+        "## 5. Chi tiết từng finding",
+        "## 6. Lỗi scanner",
+        "## 7. Ghi chú bảo mật và giới hạn",
+    ):
         assert section in text
-    assert "LIKELY_TP: 0" in text
-    assert "FP_CANDIDATE: 1" in text
-    assert "MANUAL_REVIEW: 1" in text
-    assert "Finding ID: s\\-1" in text
-    assert "Finding ID: g\\-1" in text
+    assert "| LIKELY\\_TP — Có khả năng là lỗ hổng thật | 0 |" in text
+    assert "| FP\\_CANDIDATE — Ứng viên false positive — không tự động đóng | 1 |" in text
+    assert "| MANUAL\\_REVIEW — Cần chuyên gia review thủ công | 1 |" in text
+    assert "| Finding ID | s\\-1 |" in text
+    assert "| Finding ID | g\\-1 |" in text
     assert "safe context summary" in text
+    assert "#### Phân tích của LLM" in text
+    assert "Chưa đủ bằng chứng để xác nhận luồng dữ liệu" in text
+    assert "Nguồn\\: dữ liệu đầu vào chưa xác định\\." in text
+    assert "Cần xác minh caller truyền dữ liệu nào vào hàm\\." in text
+    assert "Giả định context hiện tại chưa bao phủ caller\\." in text
+    assert "không phải response thô" in text
     assert "SEMGREP_SOURCE_CANARY" not in text
     assert "GITLEAKS_SECRET_CANARY" not in text
 
@@ -131,6 +148,48 @@ def test_dynamic_values_are_neutralized_and_no_forbidden_fields_render(tmp_path:
     assert "```code```" not in text
     assert "source" not in text
     assert "snippet" not in text
+
+
+def test_llm_explanation_is_neutralized_before_rendering(tmp_path: Path) -> None:
+    finding = _finding("id", ScannerType.SEMGREP, "source")
+    result = _result(finding)
+    assert result.triage_decision is not None
+    decision = result.triage_decision.model_copy(
+        update={
+            "summary": "# fake heading\n<script>alert(1)</script>",
+            "evidence": ["[fake link](https://example.com)"],
+            "missing_information": ["- injected list"],
+            "assumptions": ["```injected block```"],
+        }
+    )
+    batch = _batch([result.model_copy(update={"triage_decision": decision})])
+    output = tmp_path / "report.md"
+
+    write_markdown_report(batch, output)
+    text = output.read_text(encoding="utf-8")
+
+    assert "\n# fake heading" not in text
+    assert "<script>" not in text
+    assert "[fake link](https://example.com)" not in text
+    assert "\n- injected list" not in text
+    assert "```injected block```" not in text
+
+
+def test_forbidden_value_inside_llm_explanation_fails_closed(tmp_path: Path) -> None:
+    canary = "LLM_EXPLANATION_CANARY_DO_NOT_LEAK"
+    finding = _finding("id", ScannerType.SEMGREP, "source")
+    result = _result(finding)
+    assert result.triage_decision is not None
+    decision = result.triage_decision.model_copy(update={"evidence": [canary]})
+    batch = _batch([result.model_copy(update={"triage_decision": decision})])
+    output = tmp_path / "report.md"
+
+    with pytest.raises(SastTriageError) as exc_info:
+        write_markdown_report(batch, output, forbidden_values=(canary,))
+
+    assert exc_info.value.error_code == "REPORT_LEAK_CHECK_FAILED"
+    assert canary not in str(exc_info.value)
+    assert not output.exists()
 
 
 def test_forbidden_value_fails_closed_without_echo_or_temp_file(tmp_path: Path) -> None:
@@ -175,7 +234,7 @@ def test_empty_report_is_valid_utf8_and_input_is_not_mutated(tmp_path: Path) -> 
     output = tmp_path / "report.md"
 
     write_markdown_report(batch, output)
-    assert "- Parsed: 0" in output.read_text(encoding="utf-8")
+    assert "| Finding đã parse | 0 |" in output.read_text(encoding="utf-8")
     assert output.read_bytes().decode("utf-8").endswith("\n")
     assert json.dumps(batch.model_dump(mode="json"), sort_keys=True) == before
 
@@ -199,6 +258,6 @@ def test_scanner_errors_are_rendered_as_safe_fields(tmp_path: Path) -> None:
     write_markdown_report(batch, output)
     text = output.read_text(encoding="utf-8")
 
-    assert "## Scanner errors" in text
+    assert "## 6. Lỗi scanner" in text
     assert r"PARSE\_INVALID\_JSON" in text
     assert r"Scanner artifact could not be parsed\." in text

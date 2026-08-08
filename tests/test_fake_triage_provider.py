@@ -219,7 +219,7 @@ def test_precedence_context_unavailable_overrides_tp_signal() -> None:
 
     assert dec.model_verdict == ModelVerdict.NEEDS_REVIEW
     assert dec.model_confidence == ModelConfidence.LOW
-    assert "unavailable" in dec.evidence[0].lower()
+    assert "không khả dụng" in dec.evidence[0].lower()
 
 
 def test_precedence_context_unavailable_overrides_fp_signal() -> None:

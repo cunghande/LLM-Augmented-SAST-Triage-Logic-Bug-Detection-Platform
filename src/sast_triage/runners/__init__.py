@@ -1,4 +1,4 @@
-"""Safe scanner subprocess runners."""
+"""Các scanner subprocess runner an toàn."""
 
 from sast_triage.runners.scanners import GitleaksRunner, ScannerRunResult, SemgrepRunner
 

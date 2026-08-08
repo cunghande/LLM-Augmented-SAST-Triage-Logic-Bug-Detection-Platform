@@ -1,13 +1,13 @@
-"""Per-finding triage pipeline for SAST Triage Platform.
+"""Pipeline triage theo từng finding cho SAST Triage Platform.
 
-Orchestrates context extraction, sanitization, triage input packaging,
-provider execution, policy evaluation, and TriageResult assembly for a single finding.
+Điều phối trích xuất context, sanitize, đóng gói triage input, chạy provider,
+đánh giá policy và tổng hợp TriageResult cho một finding.
 
-Security & Isolation Guarantees:
-- Transient SanitizedContext is used for LLM triage but NEVER stored in TriageResult.
-- Only a safe, high-level context_summary string is saved in TriageResult.
-- Operational errors are caught and converted to safe ProcessingError instances.
-- Unexpected programming or configuration errors are propagated immediately.
+Cam kết bảo mật và cô lập:
+- SanitizedContext tạm thời được dùng cho LLM triage nhưng KHÔNG BAO GIỜ lưu trong TriageResult.
+- Chỉ chuỗi context_summary cấp cao, an toàn được lưu trong TriageResult.
+- Lỗi vận hành được bắt và đổi thành ProcessingError an toàn.
+- Lỗi lập trình hoặc cấu hình bất ngờ được lan truyền ngay.
 """
 
 import time
@@ -40,7 +40,7 @@ from sast_triage.models import (
 )
 from sast_triage.policy.engine import POLICY_VERSION, apply_policy
 
-# --- Explicit Allowlist for Recoverable Context Layer Errors ---
+# --- Allowlist tường minh cho các lỗi context layer có thể phục hồi ---
 
 RECOVERABLE_CONTEXT_ERROR_MAP: dict[str, MissingContextReason] = {
     "CONTEXT_REPOSITORY_NOT_FOUND": MissingContextReason.SOURCE_FILE_NOT_FOUND,
@@ -60,7 +60,7 @@ def _make_unavailable_context(
     finding: NormalizedFinding,
     missing_reason: MissingContextReason,
 ) -> SanitizedContext:
-    """Internal helper to build a safe, empty SanitizedContext when extraction fails."""
+    """Helper nội bộ tạo SanitizedContext rỗng, an toàn khi trích xuất thất bại."""
     return SanitizedContext(
         finding_id=finding.finding_instance_id,
         sanitized_snippet=None,
@@ -84,23 +84,23 @@ def _make_unavailable_context(
 
 
 def _build_context_summary(context: SanitizedContext) -> str:
-    """Internal helper to construct a safe, deterministic context summary string."""
+    """Tạo tóm tắt ngữ cảnh tiếng Việt, an toàn và ổn định."""
     if not context.context_available:
-        return "Context unavailable."
+        return "Không có ngữ cảnh khả dụng."
 
-    parts: list[str] = [f"{context.context_strategy.value} context"]
+    parts: list[str] = [f"Ngữ cảnh {context.context_strategy.value}"]
 
     if context.context_start_line is not None and context.context_end_line is not None:
-        parts.append(f"lines {context.context_start_line}-{context.context_end_line}")
+        parts.append(f"dòng {context.context_start_line}-{context.context_end_line}")
 
     if context.enclosing_class:
-        parts.append(f"class {context.enclosing_class}")
+        parts.append(f"lớp {context.enclosing_class}")
 
     if context.enclosing_function:
-        parts.append(f"function {context.enclosing_function}")
+        parts.append(f"hàm {context.enclosing_function}")
 
     if context.truncated:
-        parts.append("truncated")
+        parts.append("đã bị cắt bớt")
 
     return ", ".join(parts) + "."
 
@@ -110,7 +110,7 @@ def triage_finding(
     repository_root: Path,
     provider: object,
     *,
-    prompt_version: str = "triage-prompt-v3",
+    prompt_version: str = "triage-prompt-v4",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,
@@ -123,9 +123,9 @@ def triage_finding(
     initial_processing_errors: tuple[ProcessingError, ...] = (),
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
 ) -> TriageResult:
-    """Triage a single NormalizedFinding through context extraction, LLM triage, and policy.
+    """Triage một NormalizedFinding qua trích xuất context, LLM triage và policy.
 
-    Args:
+    Tham số:
         finding: Target NormalizedFinding.
         repository_root: Absolute Path to the repository root directory.
         provider: FakeTriageProvider instance for LLM simulation.
@@ -141,16 +141,16 @@ def triage_finding(
         forbidden_values: Optional secret strings that must be redacted.
         initial_processing_errors: Optional tuple of parser diagnostics linked to this finding.
 
-    Returns:
-        A frozen, validated TriageResult Pydantic model.
+    Trả về:
+        Model Pydantic TriageResult bất biến, đã validate.
 
-    Raises:
-        SastTriageError: On invalid configuration parameters or initial processing error mismatch.
+    Ném lỗi:
+        SastTriageError: Khi tham số cấu hình không hợp lệ hoặc lỗi xử lý ban đầu không khớp.
     """
     start_perf = time.perf_counter()
     processed_at = datetime.now(UTC)
 
-    # 1. Configuration Parameter Validation
+    # 1. Validate tham số cấu hình
     if not prompt_version or not prompt_version.strip():
         raise SastTriageError(
             safe_message="prompt_version must be a non-empty string.",
@@ -225,16 +225,16 @@ def triage_finding(
     processing_errors: list[ProcessingError] = list(initial_processing_errors)
     sanitized: SanitizedContext | None = None
 
-    # 2. Context Extraction Steps
+    # 2. Các bước trích xuất context
     try:
-        # Step 2a: Read source file
+        # Bước 2a: Đọc file mã nguồn
         src_res = read_repository_source(
             repository_root,
             finding.file_path,
             max_file_size_bytes=max_file_size_bytes,
         )
 
-        # Step 2b: AST Scope Analysis
+        # Bước 2b: Phân tích AST Scope
         scope_res = select_python_scope(
             src_res,
             finding.start_line,
@@ -243,7 +243,7 @@ def triage_finding(
             max_import_lines=max_import_lines,
         )
 
-        # Step 2c: Raw Context Selection
+        # Bước 2c: Chọn Raw Context
         raw_ctx = select_raw_context(
             finding,
             src_res,
@@ -253,10 +253,10 @@ def triage_finding(
             max_context_characters=max_context_characters,
         )
 
-        # Step 2d: Context Sanitization
+        # Bước 2d: Sanitize Context
         sanitized = sanitize_context(finding, raw_ctx, forbidden_values=forbidden_values)
 
-        # Check if sanitizer produced an unavailable context with CONTEXT_SANITIZATION_FAILED
+        # Kiểm tra sanitizer có tạo context không khả dụng với CONTEXT_SANITIZATION_FAILED không
         if (
             not sanitized.context_available
             and MissingContextReason.CONTEXT_SANITIZATION_FAILED in sanitized.missing_context_reasons
@@ -287,14 +287,14 @@ def triage_finding(
             )
             sanitized = _make_unavailable_context(finding, mapped_reason)
         else:
-            # Unrecoverable contract/configuration error -> propagate
+            # Lỗi contract/cấu hình không thể phục hồi -> lan truyền
             raise
 
-    # Guarantee sanitized is present
+    # Bảo đảm sanitized luôn tồn tại
     if sanitized is None:
         sanitized = _make_unavailable_context(finding, MissingContextReason.SOURCE_FILE_NOT_FOUND)
 
-    # 3. Triage Input Packaging & Provider Execution
+    # 3. Đóng gói Triage Input và chạy Provider
     triage_dec: TriageDecision | None = None
     triage_input = TriageInput(
         finding=finding,
@@ -307,6 +307,11 @@ def triage_finding(
     try:
         triage_dec = provider.triage(triage_input)
     except SastTriageError as exc:
+        if exc.error_code in {
+            "TRIAGE_PROVIDER_RESOURCE_EXHAUSTED",
+            "TRIAGE_PROVIDER_MODAL_AUTH_ERROR",
+        }:
+            raise
         processing_errors.append(
             ProcessingError(
                 finding_id=finding.finding_instance_id,
@@ -319,7 +324,7 @@ def triage_finding(
         )
         triage_dec = None
 
-    # 4. Policy Evaluation
+    # 4. Đánh giá Policy
     policy_dec: PolicyDecision | None = None
     try:
         policy_dec = apply_policy(
@@ -348,7 +353,7 @@ def triage_finding(
             escalation_reason=None,
         )
 
-    # 5. Build Context Summary & Assemble TriageResult
+    # 5. Tạo Context Summary và tổng hợp TriageResult
     summary_str = _build_context_summary(sanitized)
     end_perf = time.perf_counter()
     duration_ms = max(0, int((end_perf - start_perf) * 1000))

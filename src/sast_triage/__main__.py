@@ -1,5 +1,5 @@
-"""Run the SAST Triage CLI as a module."""
+"""Chạy CLI SAST Triage thân thiện qua module."""
 
-from sast_triage.cli import main
+from sast_triage.entrypoint import main
 
 raise SystemExit(main())

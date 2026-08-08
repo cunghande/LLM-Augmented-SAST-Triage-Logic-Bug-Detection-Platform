@@ -1,4 +1,4 @@
-"""Source code context extraction and reading package."""
+"""Package đọc và trích xuất ngữ cảnh mã nguồn."""
 
 from sast_triage.context.python_scope import (
     ENCLOSING_SCOPE_EXCEEDED_LIMIT,

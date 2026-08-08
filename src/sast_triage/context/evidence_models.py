@@ -1,7 +1,7 @@
-"""Internal typed evidence models for bounded context analysis.
+"""Các model bằng chứng có kiểu, nội bộ, cho phân tích ngữ cảnh có giới hạn.
 
-These models are not public report/domain models.  Any code text stored here
-must already be sanitized before the package is rendered for a provider.
+Các model này không phải model domain/báo cáo công khai. Mọi văn bản mã nguồn
+lưu tại đây phải được làm sạch trước khi package được dựng cho provider.
 """
 
 from dataclasses import dataclass, field
@@ -10,7 +10,7 @@ from typing import Any
 
 
 class EvidenceStatus(str, Enum):
-    """Completeness state of context evidence."""
+    """Trạng thái đầy đủ của bằng chứng ngữ cảnh."""
 
     COMPLETE = "complete"
     PARTIAL = "partial"
@@ -18,7 +18,7 @@ class EvidenceStatus(str, Enum):
 
 
 class ToolStatus(str, Enum):
-    """Safe status returned by an evidence tool."""
+    """Trạng thái an toàn do tool bằng chứng trả về."""
 
     SUCCESS = "success"
     PARTIAL = "partial"
@@ -27,7 +27,7 @@ class ToolStatus(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class FindingEvidence:
-    """Allowlisted finding facts included in provider evidence."""
+    """Các dữ kiện finding đã allowlist trong bằng chứng gửi provider."""
 
     rule_id: str
     category: str | None
@@ -40,7 +40,7 @@ class FindingEvidence:
 
 @dataclass(frozen=True, slots=True)
 class RelevantCodeEvidence:
-    """Sanitized code selected around the finding."""
+    """Mã đã làm sạch được chọn quanh finding."""
 
     scope_type: str
     function_name: str | None
@@ -52,7 +52,7 @@ class RelevantCodeEvidence:
 
 @dataclass(frozen=True, slots=True)
 class SourceEvidence:
-    """Safe structural description of a potential data source."""
+    """Mô tả cấu trúc an toàn của một nguồn dữ liệu tiềm năng."""
 
     expression: str
     source_type: str
@@ -64,7 +64,7 @@ class SourceEvidence:
 
 @dataclass(frozen=True, slots=True)
 class SinkEvidence:
-    """Safe structural description of a security-sensitive sink."""
+    """Mô tả cấu trúc an toàn của một sink nhạy cảm bảo mật."""
 
     expression: str
     sink_type: str
@@ -76,7 +76,7 @@ class SinkEvidence:
 
 @dataclass(frozen=True, slots=True)
 class TaintStep:
-    """One safe source-to-sink step."""
+    """Một bước an toàn từ source đến sink."""
 
     order: int
     kind: str
@@ -88,7 +88,7 @@ class TaintStep:
 
 @dataclass(frozen=True, slots=True)
 class TaintPathEvidence:
-    """Bounded local or interprocedural taint result."""
+    """Kết quả taint nội bộ hoặc liên hàm có giới hạn."""
 
     path_type: str
     steps: tuple[TaintStep, ...]
@@ -98,7 +98,7 @@ class TaintPathEvidence:
 
 @dataclass(frozen=True, slots=True)
 class SecurityControlEvidence:
-    """Guard, validation, sanitizer, or safe API relevant to the taint path."""
+    """Guard, validation, sanitizer hoặc API an toàn liên quan đến đường taint."""
 
     symbol: str
     control_type: str
@@ -110,7 +110,7 @@ class SecurityControlEvidence:
 
 @dataclass(frozen=True, slots=True)
 class ContextCompleteness:
-    """Explicit context-sufficiency facts consumed by the gate."""
+    """Các dữ kiện tường minh về đủ ngữ cảnh mà cổng kiểm tra sử dụng."""
 
     status: EvidenceStatus
     source_resolved: bool
@@ -125,7 +125,7 @@ class ContextCompleteness:
 
 @dataclass(frozen=True, slots=True)
 class EvidencePackage:
-    """Internal evidence assembled from AST and bounded dataflow analysis."""
+    """Bằng chứng nội bộ tổng hợp từ AST và phân tích dataflow có giới hạn."""
 
     finding_id: str
     finding: FindingEvidence
@@ -140,7 +140,7 @@ class EvidencePackage:
 
 @dataclass(frozen=True, slots=True)
 class ToolResult:
-    """Uniform safe JSON-compatible tool result."""
+    """Kết quả tool thống nhất, an toàn và tương thích JSON."""
 
     status: ToolStatus
     complete: bool
@@ -149,7 +149,7 @@ class ToolResult:
     provenance: tuple[str, ...] = ()
 
     def to_json_dict(self) -> dict[str, Any]:
-        """Return the required JSON result shape."""
+        """Trả về hình dạng kết quả JSON bắt buộc."""
         return {
             "status": self.status.value,
             "complete": self.complete,
@@ -161,7 +161,7 @@ class ToolResult:
 
 @dataclass(frozen=True, slots=True)
 class EvidenceExpansionResult:
-    """Agent expansion result without raw tool transcripts."""
+    """Kết quả mở rộng của agent không chứa transcript tool thô."""
 
     evidence: EvidencePackage
     tool_calls: int

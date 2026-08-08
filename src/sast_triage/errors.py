@@ -1,12 +1,12 @@
-"""Domain exception classes for SAST Triage Platform."""
+"""Các lớp exception domain cho nền tảng SAST Triage."""
 
 
 class SastTriageError(Exception):
-    """Base exception for domain runtime errors in SAST Triage Platform.
+    """Exception gốc cho lỗi runtime domain của SAST Triage Platform.
 
-    This exception class is used for application flow control.
-    It carries a safe message (no secrets, raw source, or tracebacks),
-    an error code, and a retryable flag.
+    Lớp exception này dùng để điều khiển luồng ứng dụng. Nó mang thông báo
+    an toàn (không có secret, mã nguồn thô hoặc traceback), mã lỗi và cờ
+    cho biết có thể thử lại.
     """
 
     def __init__(

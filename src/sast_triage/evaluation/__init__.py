@@ -1,4 +1,4 @@
-"""Benchmark loading and deterministic triage evaluation utilities."""
+"""Tiện ích nạp benchmark và đánh giá triage xác định."""
 
 from sast_triage.evaluation.benchmark import (
     BenchmarkDataset,

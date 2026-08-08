@@ -1,0 +1,165 @@
+{
+  "run_metadata": {
+    "run_id": "d90b204f-8a70-46d9-9ba6-41f0d783f84d",
+    "repository_name": "DjangoGoat-master",
+    "repository_identifier": "red-and-black/DjangoGoat@master",
+    "commit_sha": null,
+    "working_tree_state": null,
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP",
+      "GITLEAKS"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP",
+      "GITLEAKS"
+    ],
+    "scanner_versions": {},
+    "scanner_config_ids": {},
+    "input_artifact_hashes": {
+      "semgrep": "e33c19173877184d171308e3ddd3de058dcc5ca519b2fbdb664ffe67679d5fdf",
+      "gitleaks": "14372c00a227d2db3e9e0efe3d5444f76a38076e5bd6f9e138e35dc83efe5c12"
+    },
+    "prompt_version": "triage-prompt-v4",
+    "model_version": "fake-triage-v1",
+    "policy_version": "conservative-policy-v1",
+    "triage_provider": "fake",
+    "tool_version": "0.1.0",
+    "cli_mode": "scan-and-triage",
+    "started_at": "2026-08-07T03:28:24.922235Z",
+    "completed_at": "2026-08-07T03:28:24.952365Z",
+    "total_findings_parsed": 2,
+    "findings_triaged_ok": 2,
+    "findings_with_errors": 0
+  },
+  "results": [
+    {
+      "finding": {
+        "finding_instance_id": "a59484cd86b5a3f1",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "generic.secrets.security.detected-private-key.detected-private-key",
+        "rule_name": null,
+        "file_path": "dg-server.key",
+        "start_line": 1,
+        "end_line": 2,
+        "severity": "HIGH",
+        "message": "Private Key detected. This is a sensitive credential and should not be hardcoded here. Instead, store this in a separate, private file.",
+        "metadata": {
+          "cwe": [
+            "CWE-798: Use of Hard-coded Credentials"
+          ],
+          "category": "security",
+          "technology": [
+            "secrets"
+          ],
+          "confidence": "LOW",
+          "owasp": [
+            "A07:2021 - Identification and Authentication Failures",
+            "A07:2025 - Authentication Failures"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures"
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1-12, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v4"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v1",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-07T03:28:24.922235+00:00",
+      "processing_duration_ms": 4
+    },
+    {
+      "finding": {
+        "finding_instance_id": "17b12ed046f0a923",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+        "rule_name": null,
+        "file_path": "features/environment.py",
+        "start_line": 37,
+        "end_line": 37,
+        "severity": "HIGH",
+        "message": "Found 'subprocess' function 'Popen' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "metadata": {
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Ngữ cảnh PYTHON_FUNCTION, dòng 24-42, hàm start_zap.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v4"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v1",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-07T03:28:24.926774+00:00",
+      "processing_duration_ms": 24
+    }
+  ],
+  "scanner_errors": [
+    {
+      "finding_id": null,
+      "scanner": "GITLEAKS",
+      "stage": "PARSE",
+      "error_code": "PARSE_RECORD_INVALID_FIELD",
+      "safe_message": "Gitleaks record[0] produced an invalid NormalizedFinding.",
+      "retryable": false
+    }
+  ]
+}

@@ -1,14 +1,14 @@
-"""Safe Repository Reader for SAST Triage Platform.
+"""Trình đọc repository an toàn cho SAST Triage Platform.
 
-Reads source files from a target Python repository while strictly enforcing
-path containment, symlink escape protection, file size limits, and UTF-8
-encoding validation.
+Đọc file mã nguồn từ Python repository đích, đồng thời thực thi nghiêm ngặt
+kiểm tra path containment, chống symlink escape, giới hạn kích thước file và
+validate encoding UTF-8.
 
-Security guarantees:
-- Resolved repository root is used for containment checks via Path.is_relative_to().
-- Traversal attacks (../, absolute paths, drive letters, UNC, symlink escapes) are blocked.
-- Two-layer file size defense prevents reading oversized files into RAM.
-- Safe messages and repr representations NEVER leak absolute paths or raw source text.
+Cam kết bảo mật:
+- Repository root đã resolve được dùng để kiểm tra containment qua Path.is_relative_to().
+- Chặn tấn công traversal (../, đường dẫn tuyệt đối, drive letter, UNC, symlink escape).
+- Phòng vệ kích thước file hai lớp tránh đọc file quá lớn vào RAM.
+- Thông báo an toàn và biểu diễn repr KHÔNG BAO GIỜ làm lộ đường dẫn tuyệt đối hoặc mã nguồn thô.
 """
 
 from dataclasses import dataclass, field
@@ -19,13 +19,13 @@ from sast_triage.errors import SastTriageError
 
 @dataclass(frozen=True, slots=True)
 class SourceReadResult:
-    """Internal ephemeral result of reading a repository source file.
+    """Kết quả tạm thời, nội bộ khi đọc file mã nguồn repository.
 
-    Attributes:
-        relative_path: Repository-relative source path.
-        text: Raw source code text (excluded from repr for security).
-        size_bytes: Size of the source file in bytes.
-        encoding: File encoding (always 'utf-8').
+    Thuộc tính:
+        relative_path: Đường dẫn mã nguồn tương đối với repository.
+        text: Văn bản mã nguồn thô (loại khỏi repr để bảo mật).
+        size_bytes: Kích thước file mã nguồn tính bằng byte.
+        encoding: Encoding file (luôn là 'utf-8').
     """
 
     relative_path: str
@@ -43,18 +43,18 @@ class SourceReadResult:
 
 
 def _is_invalid_relative_path_string(path_str: str) -> bool:
-    """Early string validation to reject non-relative or malformed path strings."""
+    """Validate chuỗi sớm để chặn đường dẫn không tương đối hoặc sai định dạng."""
     if not isinstance(path_str, str) or not path_str.strip():
         return True
     if "\0" in path_str:
         return True
 
     p = path_str.strip()
-    # Reject POSIX absolute, Windows rooted (\path), UNC (\\server or //server)
+    # Chặn đường dẫn tuyệt đối POSIX, rooted Windows (\path), UNC (\\server hoặc //server)
     if p.startswith(("/", "\\")):
         return True
 
-    # Reject Windows drive paths (C:\file, C:/file, C:relative)
+    # Chặn đường dẫn có drive Windows (C:\file, C:/file, C:relative)
     return len(p) >= 2 and p[1] == ":"
 
 
@@ -64,20 +64,20 @@ def read_repository_source(
     *,
     max_file_size_bytes: int = 1_048_576,
 ) -> SourceReadResult:
-    """Safely read a repository-relative source file with containment and size checks.
+    """Đọc an toàn file mã nguồn tương đối với repository, có kiểm tra containment và kích thước.
 
-    Args:
-        repository_root: Path to the target repository directory.
-        relative_source_path: Repository-relative file path string.
-        max_file_size_bytes: Maximum allowed file size in bytes (default 1MB).
+    Tham số:
+        repository_root: Path đến thư mục repository đích.
+        relative_source_path: Chuỗi đường dẫn file tương đối với repository.
+        max_file_size_bytes: Kích thước file tối đa tính bằng byte (mặc định 1MB).
 
-    Returns:
-        An internal immutable ``SourceReadResult``.
+    Trả về:
+        ``SourceReadResult`` nội bộ, bất biến.
 
-    Raises:
-        SastTriageError: On path containment failure, missing file, non-regular file,
-            size limit breach, unsupported encoding, or I/O failure. Safe message
-            never contains absolute paths or source code.
+    Ném lỗi:
+        SastTriageError: Khi containment thất bại, file thiếu, không phải file thường,
+            vượt giới hạn kích thước, encoding không hỗ trợ hoặc I/O lỗi. Thông báo an toàn
+            không bao giờ chứa đường dẫn tuyệt đối hoặc mã nguồn.
     """
     # 1. Validate max_file_size_bytes
     if (
@@ -91,7 +91,7 @@ def read_repository_source(
             retryable=False,
         )
 
-    # 2. Validate repository_root existence and directory status
+    # 2. Validate repository_root tồn tại và là thư mục
     if not isinstance(repository_root, Path):
         raise SastTriageError(
             safe_message="Repository root path is invalid.",
@@ -123,7 +123,7 @@ def read_repository_source(
             retryable=False,
         )
 
-    # 3. Validate relative_source_path format
+    # 3. Validate định dạng relative_source_path
     if _is_invalid_relative_path_string(relative_source_path):
         if not isinstance(relative_source_path, str) or not relative_source_path.strip():
             raise SastTriageError(
@@ -143,7 +143,7 @@ def read_repository_source(
             retryable=False,
         )
 
-    # 4. Resolve candidate path and enforce Path Containment
+    # 4. Resolve đường dẫn ứng viên và thực thi Path Containment
     candidate = resolved_root / relative_source_path
     try:
         resolved_candidate = candidate.resolve(strict=False)
@@ -161,7 +161,7 @@ def read_repository_source(
             retryable=False,
         )
 
-    # 5. Validate file existence and regular file status after containment pass
+    # 5. Validate file tồn tại và là file thường sau khi qua containment
     try:
         exists = resolved_candidate.exists()
     except (PermissionError, OSError):
@@ -194,8 +194,8 @@ def read_repository_source(
             retryable=False,
         )
 
-    # 6. Two-layer File Size Defense
-    # Layer 1: Check stat().st_size before opening
+    # 6. Phòng vệ kích thước file hai lớp
+    # Lớp 1: Kiểm tra stat().st_size trước khi mở
     try:
         file_size = resolved_candidate.stat().st_size
     except PermissionError:
@@ -218,7 +218,7 @@ def read_repository_source(
             retryable=False,
         )
 
-    # Layer 2: Bounded read (open binary and read up to max_file_size_bytes + 1)
+    # Lớp 2: Đọc có giới hạn (mở nhị phân, đọc tối đa max_file_size_bytes + 1)
     try:
         with resolved_candidate.open("rb") as f:
             raw_bytes = f.read(max_file_size_bytes + 1)

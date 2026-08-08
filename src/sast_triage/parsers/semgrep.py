@@ -1,4 +1,4 @@
-"""Semgrep JSON artifact parser.
+"""Parser Semgrep JSON artifact.
 
 Parses a Semgrep JSON report file into a ``ScannerParseResult``
 containing ``NormalizedFinding`` instances and per-record
@@ -31,7 +31,7 @@ from sast_triage.models import (
 
 logger = logging.getLogger(__name__)
 
-# --- Constants ---
+# --- Hằng số ---
 
 _SEVERITY_MAP: dict[str, Severity] = {
     "ERROR": Severity.HIGH,
@@ -51,7 +51,7 @@ _METADATA_ALLOWLIST: frozenset[str] = frozenset(
 )
 
 
-# --- Helpers ---
+# --- Helper ---
 
 
 def _generate_finding_id(
@@ -60,7 +60,7 @@ def _generate_finding_id(
     start_line: int,
     end_line: int | None,
 ) -> str:
-    """Generate a deterministic finding instance ID.
+    """Sinh finding instance ID xác định.
 
     Uses the contract from docs/domain-models.md:
     ``sha256(f"{scanner}:{rule_id}:{file_path}:{start_line}:{end_line}")[:16]``
@@ -71,14 +71,14 @@ def _generate_finding_id(
 
 
 def _map_severity(raw_severity: Any) -> Severity:
-    """Map Semgrep severity string to domain Severity enum (case-insensitive)."""
+    """Ánh xạ chuỗi severity Semgrep sang enum Severity domain (không phân biệt hoa thường)."""
     if not isinstance(raw_severity, str):
         return Severity.UNKNOWN
     return _SEVERITY_MAP.get(raw_severity.upper(), Severity.UNKNOWN)
 
 
 def _filter_metadata(raw_metadata: Any) -> dict[str, Any]:
-    """Extract only allowlisted keys from Semgrep extra.metadata."""
+    """Chỉ trích xuất các key đã allowlist từ Semgrep extra.metadata."""
     if not isinstance(raw_metadata, dict):
         return {}
     return {k: v for k, v in raw_metadata.items() if k in _METADATA_ALLOWLIST}
@@ -89,7 +89,7 @@ def _make_artifact_error(
     safe_message: str,
     retryable: bool = False,
 ) -> ProcessingError:
-    """Create an artifact-level ProcessingError for the Semgrep scanner."""
+    """Tạo ProcessingError cấp artifact cho scanner Semgrep."""
     return ProcessingError(
         finding_id=None,
         scanner=ScannerType.SEMGREP,
@@ -105,7 +105,7 @@ def _make_record_error(
     safe_message: str,
     record_index: int,
 ) -> ProcessingError:
-    """Create a per-record ProcessingError for the Semgrep scanner."""
+    """Tạo ProcessingError theo từng record cho scanner Semgrep."""
     return ProcessingError(
         finding_id=None,
         scanner=ScannerType.SEMGREP,
@@ -116,11 +116,11 @@ def _make_record_error(
     )
 
 
-# --- Public API ---
+# --- API công khai ---
 
 
 def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
-    """Parse a Semgrep JSON artifact file into normalized findings.
+    """Parse file Semgrep JSON artifact thành các finding đã normalize.
 
     Args:
         file_path: Path to the Semgrep JSON report file.
@@ -129,7 +129,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
         A frozen ``ScannerParseResult`` with parsed findings and
         any per-record or artifact-level errors.
     """
-    # --- Artifact-level validation ---
+    # --- Validate cấp artifact ---
 
     if not file_path.exists():
         return ScannerParseResult(
@@ -220,7 +220,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
     if len(results) == 0:
         return ScannerParseResult()
 
-    # --- Per-record parsing ---
+    # --- Parse theo từng record ---
 
     findings: list[NormalizedFinding] = []
     errors: list[ProcessingError] = []
@@ -236,7 +236,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required: check_id
+        # Bắt buộc: check_id
         check_id = record.get("check_id")
         if not isinstance(check_id, str) or not check_id.strip():
             errors.append(
@@ -248,7 +248,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required: path
+        # Bắt buộc: path
         path = record.get("path")
         if not isinstance(path, str) or not path.strip():
             errors.append(
@@ -260,7 +260,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required: start.line
+        # Bắt buộc: start.line
         start_obj = record.get("start")
         if not isinstance(start_obj, dict):
             errors.append(
@@ -283,7 +283,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Required: extra.message
+        # Bắt buộc: extra.message
         extra = record.get("extra")
         if not isinstance(extra, dict):
             errors.append(
@@ -306,7 +306,7 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
             )
             continue
 
-        # Optional: end.line
+        # Tùy chọn: end.line
         end_obj = record.get("end")
         end_line: int | None = None
         if isinstance(end_obj, dict):
@@ -314,17 +314,17 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
             if isinstance(raw_end_line, int) and raw_end_line >= start_line:
                 end_line = raw_end_line
 
-        # Optional: extra.severity
+        # Tùy chọn: extra.severity
         severity = _map_severity(extra.get("severity"))
 
-        # Optional: extra.lines → snippet
+        # Tùy chọn: extra.lines → snippet
         raw_lines = extra.get("lines")
         snippet = raw_lines if isinstance(raw_lines, str) else ""
 
-        # Optional: extra.metadata → allowlisted metadata
+        # Tùy chọn: extra.metadata → metadata đã allowlist
         metadata = _filter_metadata(extra.get("metadata"))
 
-        # Generate deterministic finding instance ID
+        # Sinh finding instance ID xác định
         finding_id = _generate_finding_id(check_id, path, start_line, end_line)
 
         try:

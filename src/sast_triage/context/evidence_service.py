@@ -1,4 +1,4 @@
-"""Safe evidence projection service for the provider boundary."""
+"""Dịch vụ chiếu bằng chứng an toàn cho ranh giới provider."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ MAX_EVIDENCE_JSON_CHARACTERS = 12_000
 
 @dataclass(frozen=True, slots=True)
 class EvidenceContextResult:
-    """Internal result used by the finding pipeline."""
+    """Kết quả nội bộ được pipeline finding sử dụng."""
 
     context: SanitizedContext
     evidence: EvidencePackage
@@ -69,7 +69,7 @@ def _security_control_projection(evidence: EvidencePackage) -> dict[str, list[di
 
 
 def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
-    """Return an explicit provider-safe allowlisted projection."""
+    """Trả về projection allowlist tường minh, an toàn cho provider."""
     sink = evidence.sink
     completeness = evidence.context_completeness
     return {
@@ -139,7 +139,7 @@ def build_evidence_context(
     max_tool_calls: int = 5,
     max_depth: int = 5,
 ) -> EvidenceContextResult:
-    """Analyze source and replace the provider snippet with safe evidence JSON."""
+    """Phân tích mã nguồn và thay snippet gửi provider bằng JSON bằng chứng an toàn."""
     engine = CoreAnalysisEngine(finding, source, sanitized_context)
     expansion = EvidenceExpansionAgent(
         engine,

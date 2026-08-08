@@ -1,4 +1,4 @@
-"""Multi-finding batch triage pipeline for SAST Triage Platform.
+"""Pipeline batch triage nhiều finding cho SAST Triage Platform.
 
 Orchestrates sequential per-finding triage over Semgrep and Gitleaks parser results,
 manages scanner attempted/succeeded state, isolates operational errors, and assembles
@@ -12,6 +12,7 @@ Security & Invariant Guarantees:
 """
 
 import uuid
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -35,7 +36,7 @@ from sast_triage.models import (
 from sast_triage.pipeline.finding import triage_finding
 from sast_triage.policy.engine import POLICY_VERSION
 
-# Record-level parse error codes that DO NOT cause scanner parse failure
+# Mã lỗi parse cấp record KHÔNG làm scanner parse thất bại
 RECORD_LEVEL_PARSE_ERROR_CODES: set[str] = {
     "PARSE_RECORD_MISSING_FIELD",
     "PARSE_RECORD_INVALID_FIELD",
@@ -46,7 +47,7 @@ def _validate_scanner_result_identity(
     semgrep_result: ScannerParseResult | None,
     gitleaks_result: ScannerParseResult | None,
 ) -> None:
-    """Validate that ScannerParseResult contents match their assigned scanner identity."""
+    """Validate nội dung ScannerParseResult khớp scanner identity đã gán."""
     if semgrep_result is not None:
         for finding in semgrep_result.findings:
             if finding.scanner != ScannerType.SEMGREP or finding.finding_type != FindingType.SAST:
@@ -81,7 +82,7 @@ def _validate_scanner_result_identity(
 
 
 def _has_artifact_level_parse_error(errors: tuple[ProcessingError, ...]) -> bool:
-    """Return True if any error in errors is an artifact-level PARSE stage failure."""
+    """Trả về True nếu errors có lỗi PARSE cấp artifact."""
     for err in errors:
         if err.stage == ProcessingStage.PARSE and err.error_code not in RECORD_LEVEL_PARSE_ERROR_CODES:
             return True
@@ -98,7 +99,7 @@ def triage_batch(
     commit_sha: str | None = None,
     working_tree_state: str | None = None,
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
-    prompt_version: str = "triage-prompt-v3",
+    prompt_version: str = "triage-prompt-v4",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,
@@ -112,10 +113,14 @@ def triage_batch(
     scanner_config_ids: dict[str, str | None] | None = None,
     input_artifact_hashes: dict[str, str | None] | None = None,
     cli_mode: str = "triage",
+    existing_results: tuple[TriageResult, ...] = (),
+    progress_callback: Callable[[tuple[TriageResult, ...]], None] | None = None,
+    triage_provider_name: str | None = None,
+    model_version: str | None = None,
 ) -> BatchResult:
-    """Triage a batch of static findings across Semgrep and Gitleaks scanner results.
+    """Triage một batch finding tĩnh từ kết quả scanner Semgrep và Gitleaks.
 
-    Args:
+    Tham số:
         repository_root: Absolute Path to the repository root directory.
         provider: FakeTriageProvider instance for LLM simulation.
         semgrep_result: Optional ScannerParseResult for Semgrep SAST findings.
@@ -139,13 +144,13 @@ def triage_batch(
         input_artifact_hashes: Optional mapping of scanner name to artifact SHA256 hash.
         cli_mode: CLI execution mode recorded in run metadata.
 
-    Returns:
-        A frozen BatchResult model containing RunMetadata, TriageResults, and ProcessingErrors.
+    Trả về:
+        BatchResult bất biến chứa RunMetadata, TriageResults và ProcessingErrors.
 
-    Raises:
-        SastTriageError: On invalid configuration parameters or scanner identity mismatch.
+    Ném lỗi:
+        SastTriageError: Khi tham số cấu hình không hợp lệ hoặc scanner identity không khớp.
     """
-    # 1. Configuration & Identity Pre-Validation
+    # 1. Validate trước cấu hình và identity
     if (
         not repository_identifier
         or not repository_identifier.strip()
@@ -223,13 +228,13 @@ def triage_batch(
                 retryable=False,
             )
 
-    # Validate scanner slot identity
+    # Validate identity của scanner slot
     _validate_scanner_result_identity(semgrep_result, gitleaks_result)
 
-    # Record started_at timestamp after pre-validation passes
+    # Ghi timestamp started_at sau khi validate trước thành công
     started_at = datetime.now(UTC)
 
-    # 2. Determine Attempted / Succeeded Scanners & Collect Parser Errors
+    # 2. Xác định scanner đã thử / thành công và thu thập lỗi parser
     scanners_attempted: list[ScannerType] = []
     scanners_succeeded: list[ScannerType] = []
     scanner_errors: list[ProcessingError] = []
@@ -250,16 +255,32 @@ def triage_batch(
             scanners_succeeded.append(ScannerType.GITLEAKS)
         findings_to_process.extend(gitleaks_result.findings)
 
-    # 3. Build finding_id Error Index & Sequential Per-Finding Triage Loop
+    # 3. Tạo Error Index theo finding_id và vòng triage tuần tự từng finding
     errors_by_finding_id: dict[str, list[ProcessingError]] = {}
     for err in scanner_errors:
         if err.finding_id is not None:
             errors_by_finding_id.setdefault(err.finding_id, []).append(err)
 
-    triage_results: list[TriageResult] = []
+    finding_by_id = {
+        finding.finding_instance_id: finding for finding in findings_to_process
+    }
+    result_by_id: dict[str, TriageResult] = {}
+    for existing in existing_results:
+        finding_id = existing.finding.finding_instance_id
+        current_finding = finding_by_id.get(finding_id)
+        if current_finding is None or current_finding != existing.finding or finding_id in result_by_id:
+            raise SastTriageError(
+                safe_message="Existing triage result does not match the current finding batch.",
+                error_code="PIPELINE_RESUME_RESULT_MISMATCH",
+                retryable=False,
+            )
+        result_by_id[finding_id] = existing
+
     for finding in findings_to_process:
+        if finding.finding_instance_id in result_by_id:
+            continue
         initial_errors = tuple(errors_by_finding_id.get(finding.finding_instance_id, ()))
-        # Calls per-finding pipeline; does NOT catch exceptions (propagates configuration/contract errors)
+        # Gọi pipeline từng finding; không bắt exception (lan truyền lỗi cấu hình/contract)
         result = triage_finding(
             finding,
             repository_root,
@@ -277,11 +298,23 @@ def triage_batch(
             initial_processing_errors=initial_errors,
             artifact_repository_match=artifact_repository_match,
         )
-        triage_results.append(result)
+        result_by_id[finding.finding_instance_id] = result
+        if progress_callback is not None:
+            progress_callback(
+                tuple(
+                    result_by_id[item.finding_instance_id]
+                    for item in findings_to_process
+                    if item.finding_instance_id in result_by_id
+                )
+            )
+
+    triage_results = [
+        result_by_id[finding.finding_instance_id] for finding in findings_to_process
+    ]
 
     completed_at = datetime.now(UTC)
 
-    # 4. Count Semantics Calculation
+    # 4. Tính ngữ nghĩa các bộ đếm
     total_findings_parsed = len(findings_to_process)
     findings_triaged_ok = len(
         [
@@ -298,7 +331,7 @@ def triage_batch(
         ]
     )
 
-    # 5. Assemble RunMetadata & BatchResult
+    # 5. Tổng hợp RunMetadata và BatchResult
     run_id = str(uuid.uuid4())
     repository_name = repository_root.name
 
@@ -319,9 +352,17 @@ def triage_batch(
         scanner_config_ids=sc_config_ids,
         input_artifact_hashes=artifact_hashes,
         prompt_version=prompt_version,
-        model_version=getattr(provider, "model_version", None),
+        model_version=(
+            model_version
+            if model_version is not None
+            else getattr(provider, "model_version", None)
+        ),
         policy_version=POLICY_VERSION,
-        triage_provider=getattr(provider, "provider_name", provider.__class__.__name__),
+        triage_provider=(
+            triage_provider_name
+            if triage_provider_name is not None
+            else getattr(provider, "provider_name", provider.__class__.__name__)
+        ),
         tool_version=TOOL_VERSION,
         cli_mode=cli_mode,
         started_at=started_at,

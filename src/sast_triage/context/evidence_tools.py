@@ -1,4 +1,4 @@
-"""Bounded tool wrappers over the shared core evidence engine."""
+"""Các wrapper tool có giới hạn trên core evidence engine dùng chung."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from sast_triage.context.evidence_models import ToolResult, ToolStatus
 
 
 class EvidenceToolbox:
-    """Expose safe structural analysis tools with per-finding budgets."""
+    """Cung cấp các tool phân tích cấu trúc an toàn với ngân sách theo finding."""
 
     def __init__(
         self,
@@ -16,7 +16,7 @@ class EvidenceToolbox:
         max_tool_calls: int = 5,
         max_depth: int = 5,
     ) -> None:
-        """Create a toolbox with hard call and traversal-depth limits."""
+        """Tạo toolbox với giới hạn cứng số lần gọi và độ sâu duyệt."""
         if max_tool_calls < 1 or max_tool_calls > 5:
             raise ValueError("max_tool_calls must be between 1 and 5")
         if max_depth < 1 or max_depth > 5:
@@ -28,7 +28,7 @@ class EvidenceToolbox:
 
     @property
     def calls_used(self) -> int:
-        """Return the number of accepted tool invocations."""
+        """Trả về số lần gọi tool được chấp nhận."""
         return self._calls
 
     def _begin(self, requested_depth: int | None = None) -> ToolResult | None:
@@ -54,7 +54,7 @@ class EvidenceToolbox:
         return None
 
     def trace_taint_path(self, finding_id: str, max_depth: int) -> ToolResult:
-        """Expand the target taint path through bounded callers."""
+        """Mở rộng đường taint đích qua các caller có giới hạn."""
         rejected = self._begin(max_depth)
         if rejected:
             return rejected
@@ -90,7 +90,7 @@ class EvidenceToolbox:
         )
 
     def find_callers(self, function_id: str, max_depth: int) -> ToolResult:
-        """Find bounded same-analysis-unit callers for a function."""
+        """Tìm caller cùng đơn vị phân tích của một hàm, trong giới hạn."""
         rejected = self._begin(max_depth)
         if rejected:
             return rejected
@@ -104,7 +104,7 @@ class EvidenceToolbox:
         )
 
     def find_entrypoint_path(self, function_id: str, max_depth: int) -> ToolResult:
-        """Return a bounded caller path usable as entrypoint evidence."""
+        """Trả về đường caller có giới hạn, dùng được làm bằng chứng entrypoint."""
         rejected = self._begin(max_depth)
         if rejected:
             return rejected
@@ -121,7 +121,7 @@ class EvidenceToolbox:
         )
 
     def inspect_symbol(self, qualified_name: str) -> ToolResult:
-        """Inspect a symbol's signature and call names without returning code."""
+        """Kiểm tra signature và tên lời gọi của symbol mà không trả về mã nguồn."""
         rejected = self._begin()
         if rejected:
             return rejected
@@ -135,7 +135,7 @@ class EvidenceToolbox:
         )
 
     def resolve_symbol_value(self, symbol: str, file_path: str) -> ToolResult:
-        """Resolve a symbol structurally without exposing its literal value."""
+        """Resolve một symbol theo cấu trúc mà không làm lộ literal value."""
         rejected = self._begin()
         if rejected:
             return rejected
@@ -160,7 +160,7 @@ class EvidenceToolbox:
         symbol: str,
         vulnerability_type: str,
     ) -> ToolResult:
-        """Classify a custom control using the shared AST engine."""
+        """Phân loại control tự tạo bằng AST engine dùng chung."""
         rejected = self._begin()
         if rejected:
             return rejected

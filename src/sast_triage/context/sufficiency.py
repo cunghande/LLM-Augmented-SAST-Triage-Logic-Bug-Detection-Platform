@@ -1,10 +1,10 @@
-"""Deterministic context-sufficiency gate."""
+"""Cổng kiểm tra mức độ đủ ngữ cảnh theo cách xác định."""
 
 from sast_triage.context.evidence_models import EvidencePackage, EvidenceStatus
 
 
 def requires_context_expansion(evidence: EvidencePackage) -> bool:
-    """Return whether bounded tools must attempt to complete evidence."""
+    """Trả về liệu các tool có giới hạn có phải thử hoàn thiện bằng chứng hay không."""
     completeness = evidence.context_completeness
     if completeness.status != EvidenceStatus.COMPLETE:
         return True

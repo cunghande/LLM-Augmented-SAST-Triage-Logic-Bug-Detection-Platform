@@ -1,5 +1,6 @@
 """Offline tests for scanner subprocess safety."""
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -18,6 +19,7 @@ def test_semgrep_runner_uses_safe_arguments_and_writes_artifact(tmp_path: Path) 
     assert result.artifact_path is not None and result.artifact_path.read_bytes() == b'{"results": []}'
     args = run.call_args.args[0]
     assert isinstance(args, list)
+    assert args[-1] == str(repo.resolve())
     assert run.call_args.kwargs["shell"] is False
     assert run.call_args.kwargs["cwd"] == repo.resolve()
 
@@ -56,3 +58,54 @@ def test_runner_failure_does_not_leak_stderr_or_canary(tmp_path: Path) -> None:
         result = SemgrepRunner().run(repo, tmp_path / "run")
     assert result.succeeded is False
     assert "SCANNER_RUNNER_CANARY_DO_NOT_LEAK" not in result.errors[0].safe_message
+
+
+def test_semgrep_runner_normalizes_absolute_result_paths(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    source = repo / "app.py"
+    source.write_text("x = 1\n", encoding="utf-8")
+    artifact_payload = {
+        "results": [
+            {
+                "check_id": "rule",
+                "path": str(source.resolve()),
+                "start": {"line": 1},
+                "extra": {"message": "message"},
+            }
+        ]
+    }
+    with patch("sast_triage.runners.scanners.subprocess.run") as run:
+        run.return_value.returncode = 0
+        run.return_value.stdout = json.dumps(artifact_payload).encode("utf-8")
+        result = SemgrepRunner().run(repo, tmp_path / "run")
+
+    assert result.succeeded is True
+    assert result.artifact_path is not None
+    artifact = json.loads(result.artifact_path.read_text(encoding="utf-8"))
+    assert artifact["results"][0]["path"] == "app.py"
+
+
+def test_semgrep_runner_rejects_result_path_outside_repository(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    outside = tmp_path / "outside.py"
+    outside.write_text("x = 1\n", encoding="utf-8")
+    artifact_payload = {
+        "results": [
+            {
+                "check_id": "rule",
+                "path": str(outside.resolve()),
+                "start": {"line": 1},
+                "extra": {"message": "message"},
+            }
+        ]
+    }
+    with patch("sast_triage.runners.scanners.subprocess.run") as run:
+        run.return_value.returncode = 0
+        run.return_value.stdout = json.dumps(artifact_payload).encode("utf-8")
+        result = SemgrepRunner().run(repo, tmp_path / "run")
+
+    assert result.succeeded is False
+    assert result.errors[0].error_code == "SCANNER_ARTIFACT_PATH_INVALID"
+    assert str(outside.resolve()) not in result.errors[0].safe_message

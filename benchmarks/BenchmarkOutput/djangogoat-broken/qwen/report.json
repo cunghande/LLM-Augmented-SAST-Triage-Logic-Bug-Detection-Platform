@@ -1,0 +1,293 @@
+{
+  "run_metadata": {
+    "run_id": "8f82ee68-6d0e-49f8-b9de-3d804bf67487",
+    "repository_name": "DjangoGoat-broken",
+    "repository_identifier": "red-and-black/DjangoGoat@broken",
+    "commit_sha": "b5123eba8c002adb4f5513197e7e69a724385d29",
+    "working_tree_state": "clean",
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP",
+      "GITLEAKS"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP",
+      "GITLEAKS"
+    ],
+    "scanner_versions": {},
+    "scanner_config_ids": {},
+    "input_artifact_hashes": {},
+    "prompt_version": "triage-prompt-v4",
+    "model_version": "Qwen/Qwen3-14B-AWQ",
+    "policy_version": "conservative-policy-v1",
+    "triage_provider": "modal-qwen-structured",
+    "tool_version": "0.1.0",
+    "cli_mode": "benchmark-modal-qwen-djangogoat",
+    "started_at": "2026-08-07T03:34:44.268512Z",
+    "completed_at": "2026-08-07T03:36:16.574182Z",
+    "total_findings_parsed": 4,
+    "findings_triaged_ok": 4,
+    "findings_with_errors": 0
+  },
+  "results": [
+    {
+      "finding": {
+        "finding_instance_id": "e6ce663816670c94",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.injection.tainted-sql-string.tainted-sql-string",
+        "rule_name": null,
+        "file_path": "authentication/views.py",
+        "start_line": 46,
+        "end_line": 55,
+        "severity": "HIGH",
+        "message": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using the Django object-relational mappers (ORM) instead of raw SQL queries.",
+        "metadata": {
+          "cwe": [
+            "CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Attributes"
+          ],
+          "owasp": [
+            "A08:2021 - Software and Data Integrity Failures",
+            "A08:2025 - Software or Data Integrity Failures"
+          ],
+          "references": [
+            "https://docs.djangoproject.com/en/3.0/topics/security/#sql-injection-protection"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Ngữ cảnh PYTHON_FUNCTION, dòng 40-66, hàm log_in.",
+      "triage_decision": {
+        "model_verdict": "LIKELY_TP",
+        "model_confidence": "HIGH",
+        "summary": "Rule đang kiểm tra việc xây dựng chuỗi SQL thủ công từ đầu vào người dùng, điều này có thể dẫn đến lỗ hổng SQL injection. Trong code, username và password từ request.POST được sử dụng trực tiếp trong chuỗi SQL không được parameterized. Không có guard, sanitizer hay validation nào được áp dụng để bảo vệ đầu vào. Điều này cho thấy khả năng cao là true positive.",
+        "evidence": [
+          "Nguồn: username và password được lấy từ request.POST, là đầu vào người dùng.",
+          "Luồng dữ liệu: username và password được chèn trực tiếp vào chuỗi SQL bằng toán tử %, không được parameterized.",
+          "Điểm sử dụng nguy hiểm: query = (\"... WHERE username = '%s' AND ...\" % (username, password))",
+          "Kết luận: không có cơ chế bảo vệ đầu vào, dẫn đến nguy cơ SQL injection."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Giả định rằng username và password có thể bị kiểm soát bởi người tấn công, vì chúng là đầu vào người dùng."
+        ],
+        "model_version": "Qwen/Qwen3-14B-AWQ",
+        "prompt_version": "triage-prompt-v4"
+      },
+      "policy_decision": {
+        "action": "LIKELY_TP",
+        "reasons": [
+          "Model verdict is LIKELY_TP with HIGH confidence."
+        ],
+        "policy_version": "conservative-policy-v1",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-07T03:34:44.268512+00:00",
+      "processing_duration_ms": 22049
+    },
+    {
+      "finding": {
+        "finding_instance_id": "453c2cf5b6eb7976",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.audit.raw-query.avoid-raw-sql",
+        "rule_name": null,
+        "file_path": "authentication/views.py",
+        "start_line": 57,
+        "end_line": 57,
+        "severity": "MEDIUM",
+        "message": "Detected the use of 'RawSQL' or 'raw' indicating the execution of a non-parameterized SQL query. This could lead to a SQL injection and therefore protected information could be leaked. Instead, use Django ORM and parameterized queries before raw SQL. An example of using the Django ORM is: `People.objects.get(name='Bob')`",
+        "metadata": {
+          "cwe": [
+            "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+          ],
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://docs.djangoproject.com/en/3.0/ref/models/expressions/#raw-sql-expressions",
+            "https://semgrep.dev/blog/2020/preventing-sql-injection-a-django-authors-perspective/"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Ngữ cảnh PYTHON_FUNCTION, dòng 40-66, hàm log_in.",
+      "triage_decision": {
+        "model_verdict": "LIKELY_TP",
+        "model_confidence": "HIGH",
+        "summary": "Rule đang kiểm tra việc sử dụng RawSQL hoặc raw trong Django, điều này có thể dẫn đến SQL injection. Trong code, query được xây dựng bằng cách chèn trực tiếp username và password vào chuỗi SQL, không sử dụng parameterized query. Điều này cho thấy có nguy cơ lỗ hổng SQL injection. Không có guard/sanitizer nào được áp dụng để bảo vệ dữ liệu đầu vào. Do đó, đây là true positive.",
+        "evidence": [
+          "Nguồn: username và password được lấy từ request.POST, là input người dùng.",
+          "Luồng dữ liệu: username và password được chèn trực tiếp vào chuỗi SQL bằng cách sử dụng toán tử %, không có tham số hóa.",
+          "Điểm sử dụng nguy hiểm: User.objects.raw(query) được gọi với query chứa dữ liệu người dùng không được kiểm tra.",
+          "Kết luận: Không có cơ chế bảo vệ nào được áp dụng, dẫn đến nguy cơ SQL injection."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Giả định rằng username và password có thể bị kiểm soát bởi người tấn công."
+        ],
+        "model_version": "Qwen/Qwen3-14B-AWQ",
+        "prompt_version": "triage-prompt-v4"
+      },
+      "policy_decision": {
+        "action": "LIKELY_TP",
+        "reasons": [
+          "Model verdict is LIKELY_TP with HIGH confidence."
+        ],
+        "policy_version": "conservative-policy-v1",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-07T03:35:06.318175+00:00",
+      "processing_duration_ms": 42445
+    },
+    {
+      "finding": {
+        "finding_instance_id": "a59484cd86b5a3f1",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "generic.secrets.security.detected-private-key.detected-private-key",
+        "rule_name": null,
+        "file_path": "dg-server.key",
+        "start_line": 1,
+        "end_line": 2,
+        "severity": "HIGH",
+        "message": "Private Key detected. This is a sensitive credential and should not be hardcoded here. Instead, store this in a separate, private file.",
+        "metadata": {
+          "cwe": [
+            "CWE-798: Use of Hard-coded Credentials"
+          ],
+          "category": "security",
+          "technology": [
+            "secrets"
+          ],
+          "confidence": "LOW",
+          "owasp": [
+            "A07:2021 - Identification and Authentication Failures",
+            "A07:2025 - Authentication Failures"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures"
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1-12, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "LIKELY_TP",
+        "model_confidence": "HIGH",
+        "summary": "Rule đang kiểm tra việc phát hiện khóa riêng tư được mã hóa cứng trong mã nguồn. Context cho thấy một khóa riêng tư dạng PEM được lưu trữ trực tiếp trong tệp dg-server.key, không được bảo vệ hoặc ẩn. Không có guard/sanitizer nào được áp dụng để bảo vệ thông tin nhạy cảm này. Việc lưu trữ khóa riêng tư trong mã nguồn là một lỗ hổng bảo mật rõ ràng theo CWE-798 và OWASP A07. Khóa này có thể bị lộ nếu mã nguồn bị rò rỉ.",
+        "evidence": [
+          "Nguồn: Khóa riêng tư dạng PEM được lưu trữ trực tiếp trong tệp dg-server.key (line_range=1-2).",
+          "Loại bằng chứng: Điểm sử dụng nguy hiểm - Khóa riêng tư được lưu trữ trong mã nguồn, không được bảo vệ.",
+          "Loại bằng chứng: Guard/Sanitizer - Không có cơ chế nào được áp dụng để bảo vệ khóa riêng tư.",
+          "Loại bằng chứng: Kết luận - Khóa riêng tư được phát hiện trong mã nguồn, không được lưu trữ an toàn."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Giả định: Tệp dg-server.key là một tệp mã nguồn và không được bảo vệ bằng bất kỳ cơ chế nào như môi trường biến hoặc tệp cấu hình riêng tư."
+        ],
+        "model_version": "Qwen/Qwen3-14B-AWQ",
+        "prompt_version": "triage-prompt-v4"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v1",
+        "escalated": true,
+        "escalation_reason": "Model verdict was produced without complete source-to-sink evidence."
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-07T03:35:48.764122+00:00",
+      "processing_duration_ms": 13560
+    },
+    {
+      "finding": {
+        "finding_instance_id": "10bd4ae8d3815e93",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.audit.xss.template-autoescape-off.template-autoescape-off",
+        "rule_name": null,
+        "file_path": "notes/templates/conversation.html",
+        "start_line": 46,
+        "end_line": 46,
+        "severity": "MEDIUM",
+        "message": "Detected a template block where autoescaping is explicitly disabled with '{% autoescape off %}'. This allows rendering of raw HTML in this segment. Turn autoescaping on to prevent cross-site scripting (XSS). If you must do this, consider instead, using `mark_safe` in Python code.",
+        "metadata": {
+          "cwe": [
+            "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          ],
+          "owasp": [
+            "A07:2017 - Cross-Site Scripting (XSS)",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://docs.djangoproject.com/en/3.1/ref/templates/builtins/#autoescape"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 36-56, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Rule kiểm tra việc tắt autoescape trong Django template, điều này có thể dẫn đến XSS nếu nội dung không được xử lý đúng. Đoạn mã sử dụng `{% autoescape off %}` để hiển thị `note.content` mà không có bảo vệ. Tuy nhiên, không có bằng chứng rõ ràng cho thấy `note.content` chứa dữ liệu người dùng không được kiểm tra hoặc không được đánh dấu an toàn. Cần xác minh liệu `note.content` có được xử lý an toàn trước khi truyền vào template hay không.",
+        "evidence": [
+          "Nguồn: `{% autoescape off %}` được sử dụng để hiển thị `note.content` mà không có bảo vệ.",
+          "Điểm sử dụng nguy hiểm: `{{ note.content }}` được hiển thị trực tiếp mà không có `mark_safe` hoặc xử lý bảo vệ.",
+          "Guard/Sanitizer: Không có bằng chứng về việc `note.content` được kiểm tra hoặc xử lý an toàn trước khi truyền vào template."
+        ],
+        "missing_information": [
+          "Liệu `note.content` có chứa dữ liệu người dùng không được kiểm tra hay không?",
+          "Liệu `note.content` có được xử lý bằng `mark_safe` hoặc các phương pháp tương tự trước khi truyền vào template hay không?"
+        ],
+        "assumptions": [
+          "Giả định rằng `note.content` có thể chứa dữ liệu người dùng không được kiểm tra, vì không có bằng chứng ngược lại."
+        ],
+        "model_version": "Qwen/Qwen3-14B-AWQ",
+        "prompt_version": "triage-prompt-v4"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v1",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-07T03:36:02.324671+00:00",
+      "processing_duration_ms": 14249
+    }
+  ],
+  "scanner_errors": [
+    {
+      "finding_id": null,
+      "scanner": "GITLEAKS",
+      "stage": "PARSE",
+      "error_code": "PARSE_RECORD_INVALID_FIELD",
+      "safe_message": "Gitleaks record[0] produced an invalid NormalizedFinding.",
+      "retryable": false
+    }
+  ]
+}

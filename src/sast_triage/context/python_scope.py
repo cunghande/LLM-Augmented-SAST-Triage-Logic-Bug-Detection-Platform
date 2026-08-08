@@ -1,13 +1,13 @@
-"""Python AST Scope Analysis for SAST Triage Platform.
+"""Phân tích scope Python AST cho SAST Triage Platform.
 
-Analyzes Python source code using standard library `ast` to find the smallest
-enclosing function or class scope covering a static analysis finding line range.
+Phân tích mã nguồn Python bằng thư viện chuẩn `ast` để tìm scope hàm hoặc lớp
+bao quanh nhỏ nhất phủ khoảng dòng finding của static analysis.
 
-Security guarantees:
-- `PythonScopeResult` is internal, immutable, and ephemeral.
-- Raw text fields (`selected_text`, `limited_imports`, `limited_decorators`) use `repr=False`
-  so that `repr(result)` and `str(result)` NEVER leak raw source code or secrets.
-- Does NOT execute decorators or imports, does NOT call `eval`, and does NOT use `ast.unparse()`.
+Cam kết bảo mật:
+- `PythonScopeResult` là nội bộ, bất biến và tạm thời.
+- Các trường văn bản thô (`selected_text`, `limited_imports`, `limited_decorators`) dùng `repr=False`
+  để `repr(result)` và `str(result)` KHÔNG BAO GIỜ làm lộ mã nguồn thô hoặc secret.
+- Không thực thi decorator hoặc import, không gọi `eval`, không dùng `ast.unparse()`.
 """
 
 import ast
@@ -18,7 +18,7 @@ from sast_triage.context.reader import SourceReadResult
 from sast_triage.errors import SastTriageError
 from sast_triage.models import ContextStrategy
 
-# --- Diagnostic Constants ---
+# --- Hằng số chẩn đoán ---
 
 PYTHON_AST_PARSE_FAILED: str = "PYTHON_AST_PARSE_FAILED"
 NO_ENCLOSING_SCOPE: str = "NO_ENCLOSING_SCOPE"
@@ -27,19 +27,19 @@ ENCLOSING_SCOPE_EXCEEDED_LIMIT: str = "ENCLOSING_SCOPE_EXCEEDED_LIMIT"
 
 @dataclass(frozen=True, slots=True)
 class PythonScopeResult:
-    """Internal ephemeral result of Python AST scope analysis.
+    """Kết quả tạm thời, nội bộ của phân tích scope Python AST.
 
-    Attributes:
-        strategy: Applied context strategy (PYTHON_FUNCTION, PYTHON_CLASS, or UNAVAILABLE).
-        selected_text: Raw source code of the selected scope (excluded from repr).
-        context_start_line: 1-based start line of selected scope (including decorators).
-        context_end_line: 1-based end line of selected scope.
-        enclosing_function: Name of the enclosing function/method (if any).
-        enclosing_class: Name of the enclosing class (if any).
-        limited_imports: Module-level import source statements (excluded from repr).
-        limited_decorators: Decorator source text lines for selected scope (excluded from repr).
-        diagnostic_reasons: Tuple of diagnostic reason strings.
-        scope_exceeded_limit: True if enclosing scope exceeded size limits.
+    Thuộc tính:
+        strategy: Chiến lược context áp dụng (PYTHON_FUNCTION, PYTHON_CLASS hoặc UNAVAILABLE).
+        selected_text: Mã nguồn thô của scope được chọn (loại khỏi repr).
+        context_start_line: Dòng bắt đầu 1-based của scope được chọn (gồm decorator).
+        context_end_line: Dòng kết thúc 1-based của scope được chọn.
+        enclosing_function: Tên hàm/method bao quanh (nếu có).
+        enclosing_class: Tên lớp bao quanh (nếu có).
+        limited_imports: Câu lệnh import cấp module (loại khỏi repr).
+        limited_decorators: Các dòng văn bản decorator của scope được chọn (loại khỏi repr).
+        diagnostic_reasons: Tuple chuỗi lý do chẩn đoán.
+        scope_exceeded_limit: True khi scope bao quanh vượt giới hạn kích thước.
     """
 
     strategy: ContextStrategy
@@ -55,7 +55,7 @@ class PythonScopeResult:
 
 
 def _get_effective_start_line(node: ast.AST) -> int:
-    """Return effective start line including decorators if present."""
+    """Trả về dòng bắt đầu hiệu dụng, gồm cả decorator nếu có."""
     decorator_list: list[ast.AST] = getattr(node, "decorator_list", [])
     if decorator_list:
         return min(dec.lineno for dec in decorator_list)
@@ -67,7 +67,7 @@ def _collect_module_imports(
     source_lines: list[str],
     max_import_lines: int,
 ) -> tuple[str, ...]:
-    """Collect module-level import statement texts up to max_import_lines."""
+    """Thu thập văn bản import cấp module tối đa đến max_import_lines."""
     if max_import_lines <= 0:
         return ()
 
@@ -102,23 +102,23 @@ def select_python_scope(
     max_context_characters: int = 12_000,
     max_import_lines: int = 20,
 ) -> PythonScopeResult:
-    """Select the smallest enclosing Python function or class scope for a finding.
+    """Chọn scope hàm hoặc lớp Python bao quanh nhỏ nhất cho một finding.
 
-    Args:
-        source: Immutable ``SourceReadResult`` containing raw source text.
-        finding_start_line: 1-based start line of the finding.
-        finding_end_line: 1-based end line of the finding (defaults to start line).
-        max_scope_lines: Maximum allowed line count for selected scope (default 120).
-        max_context_characters: Maximum allowed character count for selected scope (default 12,000).
-        max_import_lines: Maximum module-level import lines to collect (default 20).
+    Tham số:
+        source: ``SourceReadResult`` bất biến chứa mã nguồn thô.
+        finding_start_line: Dòng bắt đầu 1-based của finding.
+        finding_end_line: Dòng kết thúc 1-based của finding (mặc định là dòng bắt đầu).
+        max_scope_lines: Số dòng tối đa cho scope đã chọn (mặc định 120).
+        max_context_characters: Số ký tự tối đa cho scope đã chọn (mặc định 12.000).
+        max_import_lines: Số dòng import cấp module tối đa cần thu thập (mặc định 20).
 
-    Returns:
-        An internal immutable ``PythonScopeResult``.
+    Trả về:
+        ``PythonScopeResult`` nội bộ, bất biến.
 
-    Raises:
-        SastTriageError: On invalid line range or invalid scope limits.
+    Ném lỗi:
+        SastTriageError: Khi khoảng dòng hoặc giới hạn scope không hợp lệ.
     """
-    # 1. Input Validation
+    # 1. Validate đầu vào
     if (
         not isinstance(finding_start_line, int)
         or isinstance(finding_start_line, bool)
@@ -186,16 +186,16 @@ def select_python_scope(
             retryable=False,
         ) from exc
 
-    # 3. Collect module-level imports
+    # 3. Thu thập import cấp module
     limited_imports = _collect_module_imports(tree, source_lines, max_import_lines)
 
-    # 4. Build Parent Map
+    # 4. Xây dựng Parent Map
     parent_map: dict[ast.AST, ast.AST] = {}
     for parent in ast.walk(tree):
         for child in ast.iter_child_nodes(parent):
             parent_map[child] = parent
 
-    # 5. Find Scope Candidates
+    # 5. Tìm các scope ứng viên
     matching_func_nodes: list[tuple[ast.AST, int]] = []
     matching_class_nodes: list[tuple[ast.AST, int]] = []
 
@@ -217,13 +217,13 @@ def select_python_scope(
     enclosing_class: str | None = None
 
     if matching_func_nodes:
-        # Smallest span function node
+        # Node hàm có khoảng phủ nhỏ nhất
         matching_func_nodes.sort(key=lambda item: item[1])
         target_node = matching_func_nodes[0][0]
         enclosing_function = target_node.name
         strategy = ContextStrategy.PYTHON_FUNCTION
 
-        # Walk up parent_map to find nearest enclosing ClassDef
+        # Duyệt ngược parent_map để tìm ClassDef bao quanh gần nhất
         curr: ast.AST | None = parent_map.get(target_node)
         while curr is not None:
             if isinstance(curr, ast.ClassDef):
@@ -232,7 +232,7 @@ def select_python_scope(
             curr = parent_map.get(curr)
 
     elif matching_class_nodes:
-        # Smallest span class node
+        # Node lớp có khoảng phủ nhỏ nhất
         matching_class_nodes.sort(key=lambda item: item[1])
         target_node = matching_class_nodes[0][0]
         enclosing_class = target_node.name
@@ -245,7 +245,7 @@ def select_python_scope(
             diagnostic_reasons=(NO_ENCLOSING_SCOPE,),
         )
 
-    # 6. Extract Decorators
+    # 6. Trích xuất decorator
     limited_decorators: list[str] = []
     decorator_list: list[ast.AST] = getattr(target_node, "decorator_list", [])
     for dec in decorator_list:
@@ -254,7 +254,7 @@ def select_python_scope(
         dec_text = "".join(source_lines[dec_start - 1 : dec_end]).strip()
         limited_decorators.append(dec_text)
 
-    # 7. Extract Source Text & Enforce Limits
+    # 7. Trích xuất văn bản mã nguồn và áp dụng giới hạn
     eff_start = _get_effective_start_line(target_node)
     eff_end = target_node.end_lineno if target_node.end_lineno is not None else eff_start
     scope_line_count = eff_end - eff_start + 1

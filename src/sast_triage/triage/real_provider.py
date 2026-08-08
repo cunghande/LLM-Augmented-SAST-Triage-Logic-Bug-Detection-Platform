@@ -1,4 +1,4 @@
-"""Minimal OpenAI-compatible HTTP triage provider with safe boundaries."""
+"""HTTP triage provider tối giản tương thích OpenAI, có ranh giới an toàn."""
 
 import json
 import os
@@ -15,7 +15,7 @@ Transport = Callable[[str, dict[str, object], dict[str, str], float], bytes]
 
 
 def _http_transport(url: str, payload: dict[str, object], headers: dict[str, str], timeout_seconds: float) -> bytes:
-    """Send one HTTP request without exposing payload or response in errors."""
+    """Gửi một HTTP request mà không làm lộ payload hoặc response trong lỗi."""
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     request = Request(url, data=body, headers=headers, method="POST")
     with urlopen(request, timeout=timeout_seconds) as response:  # nosec B310: configured endpoint
@@ -23,7 +23,7 @@ def _http_transport(url: str, payload: dict[str, object], headers: dict[str, str
 
 
 class RealTriageProvider:
-    """OpenAI-compatible synchronous provider using validated structured output."""
+    """Provider đồng bộ tương thích OpenAI dùng output có cấu trúc đã validate."""
 
     def __init__(
         self,
@@ -34,6 +34,7 @@ class RealTriageProvider:
         timeout_seconds: float = 30.0,
         reasoning_effort: str | None = None,
         transport: Transport | None = None,
+        provider_name: str = "real-openai-compatible",
     ) -> None:
         if not api_key or not api_key.strip():
             raise SastTriageError("Real provider API key is not configured.", "TRIAGE_CONFIGURATION_ERROR")
@@ -43,16 +44,19 @@ class RealTriageProvider:
             raise SastTriageError("Real provider model or timeout is invalid.", "TRIAGE_CONFIGURATION_ERROR")
         if reasoning_effort not in {None, "none", "low", "medium", "high", "max"}:
             raise SastTriageError("Real provider reasoning effort is invalid.", "TRIAGE_CONFIGURATION_ERROR")
+        if not provider_name or not provider_name.strip():
+            raise SastTriageError("Real provider name is invalid.", "TRIAGE_CONFIGURATION_ERROR")
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")
         self._model = model
         self._timeout_seconds = timeout_seconds
         self._reasoning_effort = reasoning_effort
         self._transport = transport or _http_transport
+        self._provider_name = provider_name
 
     @classmethod
     def from_environment(cls, *, transport: Transport | None = None) -> "RealTriageProvider":
-        """Create a provider from documented environment variables."""
+        """Tạo provider từ các environment variable đã tài liệu hóa."""
         try:
             timeout = float(os.getenv("SAST_TRIAGE_LLM_TIMEOUT_SECONDS", "30"))
         except ValueError:
@@ -66,18 +70,38 @@ class RealTriageProvider:
             transport=transport,
         )
 
+    @classmethod
+    def for_ollama(cls, *, transport: Transport | None = None) -> "RealTriageProvider":
+        """Tạo provider Ollama local với default chạy được mà không cần env."""
+        try:
+            timeout = float(os.getenv("SAST_TRIAGE_LLM_TIMEOUT_SECONDS", "180"))
+        except ValueError:
+            timeout = -1
+        return cls(
+            api_key=os.getenv("SAST_TRIAGE_LLM_API_KEY", "ollama"),
+            base_url=os.getenv(
+                "SAST_TRIAGE_LLM_BASE_URL",
+                "http://localhost:11434/v1",
+            ),
+            model=os.getenv("SAST_TRIAGE_LLM_MODEL", "qwen3:8b"),
+            timeout_seconds=timeout,
+            reasoning_effort=os.getenv("SAST_TRIAGE_LLM_REASONING_EFFORT") or "medium",
+            transport=transport,
+            provider_name="ollama",
+        )
+
     @property
     def provider_name(self) -> str:
-        """Return the stable provider identifier."""
-        return "real"
+        """Trả về định danh provider ổn định."""
+        return self._provider_name
 
     @property
     def model_version(self) -> str:
-        """Return configured model identifier."""
+        """Trả về định danh model đã cấu hình."""
         return self._model
 
     def triage(self, triage_input: TriageInput) -> TriageDecision:
-        """Send a safe prompt and validate the structured provider response."""
+        """Gửi prompt an toàn và validate response provider có cấu trúc."""
         if not isinstance(triage_input, TriageInput):
             raise SastTriageError("triage() requires a TriageInput instance.", "TRIAGE_INVALID_INPUT")
         prompt = build_triage_prompt(triage_input, model_version=self._model)

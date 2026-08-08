@@ -1,4 +1,4 @@
-"""Deterministic, bounded evidence expansion orchestration."""
+"""Điều phối mở rộng bằng chứng có giới hạn và xác định."""
 
 from sast_triage.context.evidence_engine import CoreAnalysisEngine
 from sast_triage.context.evidence_models import EvidenceExpansionResult
@@ -7,7 +7,7 @@ from sast_triage.context.sufficiency import requires_context_expansion
 
 
 class EvidenceExpansionAgent:
-    """Call only tools needed to fill explicit evidence gaps."""
+    """Chỉ gọi các tool cần thiết để lấp khoảng trống bằng chứng tường minh."""
 
     def __init__(
         self,
@@ -16,7 +16,7 @@ class EvidenceExpansionAgent:
         max_tool_calls: int = 5,
         max_depth: int = 5,
     ) -> None:
-        """Initialize the system-controlled expansion agent."""
+        """Khởi tạo agent mở rộng do hệ thống kiểm soát."""
         self._engine = engine
         self._max_depth = max_depth
         self._toolbox = EvidenceToolbox(
@@ -26,7 +26,7 @@ class EvidenceExpansionAgent:
         )
 
     def expand(self) -> EvidenceExpansionResult:
-        """Fill declared missing information within the configured budget."""
+        """Bổ sung thông tin thiếu đã khai báo trong ngân sách cấu hình."""
         evidence = self._engine.build_evidence()
         if not requires_context_expansion(evidence):
             return EvidenceExpansionResult(evidence=evidence, tool_calls=0, tool_names=())

@@ -1,4 +1,4 @@
-"""Pipeline package for SAST Triage Platform."""
+"""Package pipeline của SAST Triage Platform."""
 
 from sast_triage.pipeline.batch import triage_batch
 from sast_triage.pipeline.finding import triage_finding

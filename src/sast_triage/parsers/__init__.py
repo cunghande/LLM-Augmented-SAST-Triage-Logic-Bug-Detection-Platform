@@ -1,4 +1,4 @@
-"""Scanner output parsers for SAST Triage Platform."""
+"""Các parser output scanner cho SAST Triage Platform."""
 
 from sast_triage.parsers.gitleaks import parse_gitleaks_json
 from sast_triage.parsers.semgrep import parse_semgrep_json

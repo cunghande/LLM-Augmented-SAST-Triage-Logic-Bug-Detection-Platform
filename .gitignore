@@ -1,0 +1,18 @@
+# Môi trường Python cục bộ
+.venv/
+venv/
+
+# Bytecode và cache kiểm thử/lint
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# File tạm và log cục bộ
+*.tmp
+*.bak
+*.log
+
+# Repository bên ngoài dùng làm target benchmark
+benchmarks/ExternalTargets/
+

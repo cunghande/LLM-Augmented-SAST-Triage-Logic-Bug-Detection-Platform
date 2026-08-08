@@ -1,14 +1,14 @@
-"""Raw Context Selection for SAST Triage Platform.
+"""Chọn raw context cho SAST Triage Platform.
 
-Selects raw internal context (AST scope or line window) for a NormalizedFinding
-from a SourceReadResult and optional PythonScopeResult.
+Chọn raw context nội bộ (AST scope hoặc line window) cho một NormalizedFinding
+từ SourceReadResult và PythonScopeResult tùy chọn.
 
-Security guarantees:
-- `RawContextSelection` is internal, immutable, and ephemeral.
-- Raw text fields (`selected_text`, `limited_imports`, `limited_decorators`) use `repr=False`
-  so that `repr(result)` and `str(result)` NEVER leak raw source code or secrets.
-- Gitleaks findings ALWAYS use LINE_WINDOW in raw selection (with GITLEAKS_REDACTION_REQUIRED diagnostic).
-  The strategy becomes REDACTED_LINE_WINDOW only after sanitization in Task 3.4.
+Cam kết bảo mật:
+- `RawContextSelection` là nội bộ, bất biến và tạm thời.
+- Các trường văn bản thô (`selected_text`, `limited_imports`, `limited_decorators`) dùng `repr=False`
+  để `repr(result)` và `str(result)` KHÔNG BAO GIỜ làm lộ mã nguồn thô hoặc secret.
+- Finding Gitleaks LUÔN dùng LINE_WINDOW khi chọn raw context (có chẩn đoán GITLEAKS_REDACTION_REQUIRED).
+  Chiến lược chỉ thành REDACTED_LINE_WINDOW sau bước sanitize ở Task 3.4.
 """
 
 from dataclasses import dataclass, field
@@ -19,7 +19,7 @@ from sast_triage.context.reader import SourceReadResult
 from sast_triage.errors import SastTriageError
 from sast_triage.models import ContextStrategy, NormalizedFinding, ScannerType
 
-# --- Diagnostic Constants ---
+# --- Hằng số chẩn đoán ---
 
 LINE_WINDOW_FALLBACK: str = "LINE_WINDOW_FALLBACK"
 GITLEAKS_REDACTION_REQUIRED: str = "GITLEAKS_REDACTION_REQUIRED"
@@ -29,25 +29,25 @@ CONTEXT_TRUNCATED_TO_LIMIT: str = "CONTEXT_TRUNCATED_TO_LIMIT"
 
 @dataclass(frozen=True, slots=True)
 class RawContextSelection:
-    """Internal ephemeral result of raw context selection.
+    """Kết quả tạm thời, nội bộ của việc chọn raw context.
 
-    Attributes:
-        finding_id: Unique finding instance ID.
-        scanner: Scanner type of the finding (SEMGREP or GITLEAKS).
-        strategy: Raw context strategy applied (PYTHON_FUNCTION, PYTHON_CLASS, or LINE_WINDOW).
-        selected_text: Raw selected context text (excluded from repr).
-        context_start_line: 1-based start line of selected context.
-        context_end_line: 1-based end line of selected context.
-        finding_start_line: 1-based start line of finding.
-        finding_end_line: 1-based end line of finding.
-        enclosing_function: Name of enclosing function (if available).
-        enclosing_class: Name of enclosing class (if available).
-        limited_imports: Module-level import lines (excluded from repr).
-        limited_decorators: Decorator lines for scope (excluded from repr).
-        truncated: True if context was line-truncated to fit character limits.
-        context_available: True if context text is available.
-        diagnostic_reasons: Tuple of diagnostic reason codes.
-        analysis_source: Full source retained only for internal evidence analysis.
+    Thuộc tính:
+        finding_id: ID instance finding duy nhất.
+        scanner: Loại scanner của finding (SEMGREP hoặc GITLEAKS).
+        strategy: Chiến lược raw context đã áp dụng (PYTHON_FUNCTION, PYTHON_CLASS hoặc LINE_WINDOW).
+        selected_text: Văn bản raw context đã chọn (loại khỏi repr).
+        context_start_line: Dòng bắt đầu 1-based của context đã chọn.
+        context_end_line: Dòng kết thúc 1-based của context đã chọn.
+        finding_start_line: Dòng bắt đầu 1-based của finding.
+        finding_end_line: Dòng kết thúc 1-based của finding.
+        enclosing_function: Tên hàm bao quanh (nếu có).
+        enclosing_class: Tên lớp bao quanh (nếu có).
+        limited_imports: Các dòng import cấp module (loại khỏi repr).
+        limited_decorators: Các dòng decorator của scope (loại khỏi repr).
+        truncated: True nếu context bị cắt dòng để khớp giới hạn ký tự.
+        context_available: True nếu văn bản context khả dụng.
+        diagnostic_reasons: Tuple mã lý do chẩn đoán.
+        analysis_source: Full source chỉ giữ cho phân tích bằng chứng nội bộ.
     """
 
     finding_id: str
@@ -69,7 +69,7 @@ class RawContextSelection:
 
 
 def _paths_match(path1: str, path2: str) -> bool:
-    """Check if two relative path strings refer to the same normalized relative file path."""
+    """Kiểm tra hai đường dẫn tương đối có cùng chỉ đến một file đã normalize hay không."""
     p1 = Path(path1).as_posix()
     p2 = Path(path2).as_posix()
     return p1 == p2
@@ -84,23 +84,23 @@ def select_raw_context(
     line_window_after: int = 10,
     max_context_characters: int = 12_000,
 ) -> RawContextSelection:
-    """Select raw context text and metadata for a finding from source and scope.
+    """Chọn văn bản raw context và metadata cho finding từ source và scope.
 
-    Args:
-        finding: Normalized finding from static analyzer.
-        source: Immutable ``SourceReadResult`` for target source file.
-        scope: Optional ``PythonScopeResult`` from AST analysis.
-        line_window_before: Lines to include before finding start line (default 10).
-        line_window_after: Lines to include after finding end line (default 10).
-        max_context_characters: Maximum character limit for selected context (default 12,000).
+    Tham số:
+        finding: Finding đã normalize từ static analyzer.
+        source: ``SourceReadResult`` bất biến của file mã nguồn đích.
+        scope: ``PythonScopeResult`` tùy chọn từ phân tích AST.
+        line_window_before: Số dòng trước dòng bắt đầu finding cần lấy (mặc định 10).
+        line_window_after: Số dòng sau dòng kết thúc finding cần lấy (mặc định 10).
+        max_context_characters: Giới hạn ký tự của context được chọn (mặc định 12.000).
 
-    Returns:
-        An internal immutable ``RawContextSelection``.
+    Trả về:
+        ``RawContextSelection`` nội bộ, bất biến.
 
-    Raises:
-        SastTriageError: On path mismatch, invalid line range, or invalid limits.
+    Ném lỗi:
+        SastTriageError: Khi path không khớp, khoảng dòng hoặc giới hạn không hợp lệ.
     """
-    # 1. Input Validation
+    # 1. Validate đầu vào
     if not _paths_match(finding.file_path, source.relative_path):
         raise SastTriageError(
             safe_message="Finding file_path does not match source relative_path.",
@@ -152,7 +152,7 @@ def select_raw_context(
             retryable=False,
         )
 
-    # 2. Decision Tree Strategy Selection
+    # 2. Chọn chiến lược theo cây quyết định
     is_semgrep = finding.scanner == ScannerType.SEMGREP
 
     has_valid_ast_scope = (
@@ -177,7 +177,7 @@ def select_raw_context(
         if scope.diagnostic_reasons:
             diagnostics.extend(scope.diagnostic_reasons)
     else:
-        # Fallback / Default Line Window Strategy
+        # Chiến lược Line Window dự phòng / mặc định
         strategy = ContextStrategy.LINE_WINDOW
 
         if is_semgrep:
@@ -194,11 +194,11 @@ def select_raw_context(
         end_line = min(total_source_lines, finding_end + line_window_after)
         raw_text = "".join(source_lines[start_line - 1 : end_line])
 
-    # 3. Truncation and Character Limit Defense
+    # 3. Phòng vệ cắt ngắn và giới hạn ký tự
     finding_lines_text = "".join(source_lines[finding_start - 1 : finding_end])
     finding_char_count = len(finding_lines_text)
 
-    # Case A: Finding lines alone exceed character limit
+    # Trường hợp A: Riêng các dòng finding đã vượt giới hạn ký tự
     if finding_char_count > max_context_characters:
         diagnostics.append(FINDING_EXCEEDS_CONTEXT_LIMIT)
         return RawContextSelection(
@@ -220,7 +220,7 @@ def select_raw_context(
             analysis_source=source,
         )
 
-    # Case B: Context fits within character limit
+    # Trường hợp B: Context nằm trong giới hạn ký tự
     if len(raw_text) <= max_context_characters:
         return RawContextSelection(
             finding_id=finding.finding_instance_id,
@@ -241,7 +241,7 @@ def select_raw_context(
             analysis_source=source,
         )
 
-    # Case C: Context exceeds limit -> Truncate lines surrounding finding
+    # Trường hợp C: Context vượt giới hạn -> Cắt các dòng quanh finding
     diagnostics.append(CONTEXT_TRUNCATED_TO_LIMIT)
     curr_start = start_line
     curr_end = end_line
@@ -251,7 +251,7 @@ def select_raw_context(
         if curr_len <= max_context_characters:
             break
 
-        # Trim top or bottom
+        # Cắt phần trên hoặc dưới
         top_dist = finding_start - curr_start
         bottom_dist = curr_end - finding_end
 

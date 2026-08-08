@@ -1,4 +1,4 @@
-"""Domain models and enums for SAST Triage Platform."""
+"""Các domain model và enum cho SAST Triage Platform."""
 
 from datetime import datetime
 from enum import Enum
@@ -7,25 +7,25 @@ from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-# --- Enums ---
+# --- Enum ---
 
 
 class ScannerType(str, Enum):
-    """Supported static security scanner tools."""
+    """Các công cụ scanner bảo mật tĩnh được hỗ trợ."""
 
     SEMGREP = "SEMGREP"
     GITLEAKS = "GITLEAKS"
 
 
 class FindingType(str, Enum):
-    """Category of security finding."""
+    """Danh mục finding bảo mật."""
 
     SAST = "SAST"
     SECRET = "SECRET"
 
 
 class Severity(str, Enum):
-    """Normalized finding severity level."""
+    """Mức severity finding đã normalize."""
 
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
@@ -36,7 +36,7 @@ class Severity(str, Enum):
 
 
 class ContextStrategy(str, Enum):
-    """Strategy used for source code context extraction."""
+    """Chiến lược dùng để trích xuất context mã nguồn."""
 
     PYTHON_FUNCTION = "PYTHON_FUNCTION"
     PYTHON_CLASS = "PYTHON_CLASS"
@@ -46,13 +46,13 @@ class ContextStrategy(str, Enum):
 
 
 class SourceKind(str, Enum):
-    """Origin of extracted source code."""
+    """Nguồn gốc mã nguồn được trích xuất."""
 
     WORKTREE = "WORKTREE"
 
 
 class PathCategory(str, Enum):
-    """Classification of file path for policy decisions."""
+    """Phân loại file path để đưa ra quyết định policy."""
 
     PRODUCTION = "PRODUCTION"
     TEST = "TEST"
@@ -63,7 +63,7 @@ class PathCategory(str, Enum):
 
 
 class MissingContextReason(str, Enum):
-    """Reasons why source context could not be extracted or is limited."""
+    """Lý do source context không thể trích xuất hoặc bị giới hạn."""
 
     SOURCE_FILE_NOT_FOUND = "SOURCE_FILE_NOT_FOUND"
     SOURCE_PATH_OUTSIDE_REPOSITORY = "SOURCE_PATH_OUTSIDE_REPOSITORY"
@@ -78,7 +78,7 @@ class MissingContextReason(str, Enum):
 
 
 class ModelVerdict(str, Enum):
-    """Triage verdict proposed by LLM."""
+    """Verdict triage do LLM đề xuất."""
 
     LIKELY_TP = "LIKELY_TP"
     LIKELY_FP = "LIKELY_FP"
@@ -86,7 +86,7 @@ class ModelVerdict(str, Enum):
 
 
 class ModelConfidence(str, Enum):
-    """Confidence level of LLM verdict."""
+    """Mức confidence của verdict LLM."""
 
     LOW = "LOW"
     MEDIUM = "MEDIUM"
@@ -94,7 +94,7 @@ class ModelConfidence(str, Enum):
 
 
 class PolicyAction(str, Enum):
-    """System-level triage decision action."""
+    """Action quyết định triage ở cấp hệ thống."""
 
     LIKELY_TP = "LIKELY_TP"
     FP_CANDIDATE = "FP_CANDIDATE"
@@ -103,7 +103,7 @@ class PolicyAction(str, Enum):
 
 
 class ProcessingStage(str, Enum):
-    """Pipeline processing stages."""
+    """Các giai đoạn xử lý của pipeline."""
 
     PARSE = "PARSE"
     CONTEXT = "CONTEXT"
@@ -115,7 +115,7 @@ class ProcessingStage(str, Enum):
 
 
 class ArtifactRepositoryMatch(str, Enum):
-    """Verification status of artifact-to-repository binding."""
+    """Trạng thái verify liên kết artifact với repository."""
 
     VERIFIED = "VERIFIED"
     PARTIAL = "PARTIAL"
@@ -123,11 +123,11 @@ class ArtifactRepositoryMatch(str, Enum):
     MISMATCH = "MISMATCH"
 
 
-# --- Helper Functions ---
+# --- Hàm helper ---
 
 
 def _is_absolute_path(path_str: str) -> bool:
-    """Check if path string represents an absolute path."""
+    """Kiểm tra chuỗi path có biểu diễn đường dẫn tuyệt đối hay không."""
     if not path_str:
         return False
     path_obj = Path(path_str)
@@ -138,20 +138,20 @@ def _is_absolute_path(path_str: str) -> bool:
     )
 
 
-# --- Base Model ---
+# --- Model cơ sở ---
 
 
 class BaseDomainModel(BaseModel):
-    """Immutable base Pydantic model for public boundary models."""
+    """Pydantic model cơ sở bất biến cho các model public boundary."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
-# --- Domain Models ---
+# --- Domain model ---
 
 
 class NormalizedFinding(BaseDomainModel):
-    """Normalized security finding produced by a scanner parser.
+    """Finding bảo mật đã normalize do scanner parser tạo ra.
 
     The `metadata` dictionary contains allowlisted, sanitized, serialization-safe
     scanner metadata (e.g. CWE, OWASP, technology, secret_category, rule_description).
@@ -174,7 +174,7 @@ class NormalizedFinding(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for NormalizedFinding."""
+        """Thực thi các invariant domain của NormalizedFinding."""
         if not self.finding_instance_id or not self.finding_instance_id.strip():
             raise ValueError("finding_instance_id must not be empty")
 
@@ -204,7 +204,7 @@ class NormalizedFinding(BaseDomainModel):
 
 
 class SanitizedContext(BaseDomainModel):
-    """Sanitized source code context safe for LLM provider consumption."""
+    """Context mã nguồn đã sanitize, an toàn để LLM provider sử dụng."""
 
     finding_id: str
     sanitized_snippet: str | None = None
@@ -227,7 +227,7 @@ class SanitizedContext(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for SanitizedContext."""
+        """Thực thi các invariant domain của SanitizedContext."""
         if not self.finding_id or not self.finding_id.strip():
             raise ValueError("finding_id must not be empty")
 
@@ -271,7 +271,7 @@ class SanitizedContext(BaseDomainModel):
 
 
 class TriageInput(BaseDomainModel):
-    """Input payload provided to TriageProvider."""
+    """Payload đầu vào cung cấp cho TriageProvider."""
 
     finding: NormalizedFinding
     context: SanitizedContext
@@ -281,7 +281,7 @@ class TriageInput(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for TriageInput."""
+        """Thực thi các invariant domain của TriageInput."""
         if self.context.finding_id != self.finding.finding_instance_id:
             raise ValueError(
                 f"context.finding_id ('{self.context.finding_id}') must match "
@@ -297,7 +297,7 @@ class TriageInput(BaseDomainModel):
 
 
 class TriageDecision(BaseDomainModel):
-    """Triage decision produced by LLM provider."""
+    """Quyết định triage do LLM provider tạo ra."""
 
     model_verdict: ModelVerdict
     model_confidence: ModelConfidence
@@ -310,7 +310,7 @@ class TriageDecision(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for TriageDecision."""
+        """Thực thi các invariant domain của TriageDecision."""
         if not self.summary or not self.summary.strip():
             raise ValueError("summary must not be empty")
         if not self.model_version or not self.model_version.strip():
@@ -321,7 +321,7 @@ class TriageDecision(BaseDomainModel):
 
 
 class PolicyDecision(BaseDomainModel):
-    """System decision after applying conservative policy rules."""
+    """Quyết định hệ thống sau khi áp dụng policy thận trọng."""
 
     action: PolicyAction
     reasons: list[str]
@@ -331,7 +331,7 @@ class PolicyDecision(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for PolicyDecision."""
+        """Thực thi các invariant domain của PolicyDecision."""
         if not self.reasons:
             raise ValueError("reasons must not be empty")
         if not self.policy_version or not self.policy_version.strip():
@@ -342,7 +342,7 @@ class PolicyDecision(BaseDomainModel):
 
 
 class ProcessingError(BaseDomainModel):
-    """Safe, serializable error record for pipeline reports."""
+    """Bản ghi lỗi an toàn, có thể serialize cho báo cáo pipeline."""
 
     finding_id: str | None = None
     scanner: ScannerType | None = None
@@ -353,7 +353,7 @@ class ProcessingError(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for ProcessingError."""
+        """Thực thi các invariant domain của ProcessingError."""
         if not self.error_code or not self.error_code.strip():
             raise ValueError("error_code must not be empty")
         if not self.safe_message or not self.safe_message.strip():
@@ -362,7 +362,7 @@ class ProcessingError(BaseDomainModel):
 
 
 class TriageResult(BaseDomainModel):
-    """Aggregated final result for a single finding."""
+    """Kết quả cuối đã tổng hợp cho một finding."""
 
     finding: NormalizedFinding
     context_summary: str | None = None
@@ -374,7 +374,7 @@ class TriageResult(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for TriageResult."""
+        """Thực thi các invariant domain của TriageResult."""
         if self.context_summary is not None and not self.context_summary.strip():
             raise ValueError("context_summary must not be empty or whitespace only when provided")
 
@@ -397,7 +397,7 @@ class TriageResult(BaseDomainModel):
 
 
 class RunMetadata(BaseDomainModel):
-    """Run-level metadata without absolute repository paths."""
+    """Metadata cấp lần chạy không có đường dẫn repository tuyệt đối."""
 
     run_id: str
     repository_name: str
@@ -424,7 +424,7 @@ class RunMetadata(BaseDomainModel):
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
-        """Enforce domain invariants for RunMetadata."""
+        """Thực thi các invariant domain của RunMetadata."""
         if not self.run_id or not self.run_id.strip():
             raise ValueError("run_id must not be empty")
 
@@ -458,7 +458,7 @@ class RunMetadata(BaseDomainModel):
 
 
 class BatchResult(BaseDomainModel):
-    """Top-level batch execution output model."""
+    """Model output thực thi batch cấp cao nhất."""
 
     run_metadata: RunMetadata
     results: list[TriageResult]
@@ -466,7 +466,7 @@ class BatchResult(BaseDomainModel):
 
 
 class ScannerParseResult(BaseDomainModel):
-    """Immutable result of parsing a single scanner artifact.
+    """Kết quả bất biến khi parse một scanner artifact.
 
     Uses tuples (not lists) so that the returned collections cannot be
     mutated after the parser hands them off.  Does not contain the raw

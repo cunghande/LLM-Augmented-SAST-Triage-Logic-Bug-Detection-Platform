@@ -1,0 +1,101 @@
+"""Tests for the user-friendly one-command CLI entrypoint."""
+
+import json
+from pathlib import Path
+
+from sast_triage import entrypoint
+
+
+def test_ollama_provider_remains_an_independent_cli_choice(monkeypatch) -> None:
+    monkeypatch.delenv("SAST_TRIAGE_LLM_MODEL", raising=False)
+    arguments, uses_ollama = entrypoint._prepare_arguments(
+        ["scan-and-triage", "--provider", "ollama"]
+    )
+
+    assert uses_ollama is True
+    assert arguments == ["scan-and-triage", "--provider", "ollama"]
+    assert "SAST_TRIAGE_LLM_MODEL" not in entrypoint.os.environ
+
+
+def test_argument_preparation_does_not_override_explicit_environment(monkeypatch) -> None:
+    monkeypatch.setenv("SAST_TRIAGE_LLM_MODEL", "custom-local-model")
+
+    entrypoint._prepare_arguments(["scan-and-triage", "--provider=ollama"])
+
+    assert entrypoint.os.environ["SAST_TRIAGE_LLM_MODEL"] == "custom-local-model"
+
+
+def test_entrypoint_prints_report_summary(tmp_path: Path, monkeypatch, capsys) -> None:
+    output = tmp_path / "output"
+    output.mkdir()
+
+    def fake_cli(arguments: list[str]) -> int:
+        assert "ollama" in arguments
+        (output / "run-metadata.json").write_text(
+            json.dumps(
+                {
+                    "total_findings_parsed": 12,
+                    "findings_triaged_ok": 10,
+                    "findings_with_errors": 2,
+                }
+            ),
+            encoding="utf-8",
+        )
+        (output / "report.json").write_text("{}", encoding="utf-8")
+        (output / "report.md").write_text("# report\n", encoding="utf-8")
+        return 0
+
+    monkeypatch.setattr(entrypoint, "run_cli", fake_cli)
+
+    exit_code = entrypoint.main(
+        [
+            "scan-and-triage",
+            "--repository",
+            "repo",
+            "--output-dir",
+            str(output),
+            "--provider",
+            "ollama",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Đang bắt đầu scanner" in captured.out
+    assert "đã_parse=12" in captured.out
+    assert "triage_thành_công=10" in captured.out
+    assert "report.json" in captured.out
+
+
+def test_entrypoint_explains_modal_checkpoint_resume(tmp_path: Path, monkeypatch, capsys) -> None:
+    output = tmp_path / "output"
+    output.mkdir()
+    (output / "triage-checkpoint.json").write_text(
+        json.dumps(
+            {
+                "status": "resource_exhausted",
+                "failure_code": "TRIAGE_PROVIDER_RESOURCE_EXHAUSTED",
+                "completed_count": 3,
+                "total_count": 8,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(entrypoint, "run_cli", lambda arguments: 5)
+
+    exit_code = entrypoint.main(
+        [
+            "scan-and-triage",
+            "--repository",
+            "repo",
+            "--output-dir",
+            str(output),
+            "--provider",
+            "real",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 5
+    assert "3/8 finding" in captured.err
+    assert "--provider ollama --resume" in captured.err

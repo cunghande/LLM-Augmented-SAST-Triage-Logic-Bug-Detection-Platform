@@ -1,4 +1,4 @@
-"""Conservative PolicyEngine for SAST Triage Platform.
+"""PolicyEngine thận trọng cho SAST Triage Platform.
 
 Applies deterministic, conservative rules to convert LLM opinions and pipeline state
 into system policy decisions (PolicyDecision).
@@ -34,7 +34,7 @@ POLICY_VERSION: str = "conservative-policy-v1"
 
 
 def _evidence_is_incomplete(context: SanitizedContext) -> bool:
-    """Read only the safe completeness flag from a projected evidence package."""
+    """Chỉ đọc cờ đầy đủ an toàn từ evidence package đã projection."""
     snippet = context.sanitized_snippet
     if not snippet or not snippet.lstrip().startswith("{"):
         return MissingContextReason.PYTHON_AST_PARSE_FAILED in context.missing_context_reasons
@@ -57,7 +57,7 @@ def apply_policy(
     processing_errors: tuple[ProcessingError, ...] = (),
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
 ) -> PolicyDecision:
-    """Apply conservative policy rules to generate a system PolicyDecision.
+    """Áp dụng policy thận trọng để sinh PolicyDecision của hệ thống.
 
     Args:
         finding: Target NormalizedFinding.
@@ -71,7 +71,7 @@ def apply_policy(
     Raises:
         SastTriageError: On invalid input state or mismatched identifiers.
     """
-    # 1. Input Consistency Validation
+    # 1. Validate tính nhất quán đầu vào
     if context.finding_id != finding.finding_instance_id:
         raise SastTriageError(
             safe_message="context.finding_id does not match finding.finding_instance_id.",
@@ -87,7 +87,7 @@ def apply_policy(
                 retryable=False,
             )
 
-    # 2. Rule 1 — Provider Failure Check
+    # 2. Rule 1 — Kiểm tra provider thất bại
     if triage_decision is None:
         has_triage_error = any(err.stage == ProcessingStage.TRIAGE for err in processing_errors)
         if not has_triage_error:
@@ -120,11 +120,11 @@ def apply_policy(
             escalation_reason="Artifact binding is unverified or partial.",
         )
 
-    # Helper flags for errors
+    # Các cờ helper cho lỗi
     has_sanitize_error = any(err.stage == ProcessingStage.SANITIZE for err in processing_errors)
     has_sanitization_failed = MissingContextReason.CONTEXT_SANITIZATION_FAILED in context.missing_context_reasons
 
-    # 3. Rule 2 — Context Unavailable
+    # 3. Rule 2 — Context không khả dụng
     if not context.context_available:
         escalated = triage_decision.model_verdict in (ModelVerdict.LIKELY_TP, ModelVerdict.LIKELY_FP)
         escalation_reason = (
@@ -138,7 +138,7 @@ def apply_policy(
             escalation_reason=escalation_reason,
         )
 
-    # 4. Rule 3 — Existing SANITIZE Stage Errors
+    # 4. Rule 3 — Lỗi SANITIZE hiện có
     if has_sanitize_error:
         escalated = triage_decision.model_verdict in (ModelVerdict.LIKELY_TP, ModelVerdict.LIKELY_FP)
         escalation_reason = (
@@ -152,8 +152,8 @@ def apply_policy(
             escalation_reason=escalation_reason,
         )
 
-    # Evidence expansion is advisory to the model but authoritative for policy
-    # sufficiency: incomplete paths can never become automatic TP/FP decisions.
+    # Mở rộng bằng chứng chỉ tư vấn model nhưng có thẩm quyền với mức đủ cho policy:
+    # đường dẫn chưa hoàn chỉnh không bao giờ thành quyết định TP/FP tự động.
     if finding.scanner == ScannerType.SEMGREP and _evidence_is_incomplete(context):
         escalated = triage_decision.model_verdict in (
             ModelVerdict.LIKELY_TP,
@@ -171,7 +171,7 @@ def apply_policy(
             ),
         )
 
-    # 5. Rule 4 — Model Verdict is NEEDS_REVIEW
+    # 5. Rule 4 — Model Verdict là NEEDS_REVIEW
     if triage_decision.model_verdict == ModelVerdict.NEEDS_REVIEW:
         return PolicyDecision(
             action=PolicyAction.MANUAL_REVIEW,
@@ -181,7 +181,7 @@ def apply_policy(
             escalation_reason=None,
         )
 
-    # 6. Rule 5 — Model Verdict is LIKELY_TP
+    # 6. Rule 5 — Model Verdict là LIKELY_TP
     if triage_decision.model_verdict == ModelVerdict.LIKELY_TP:
         if triage_decision.model_confidence == ModelConfidence.HIGH:
             return PolicyDecision(
@@ -200,7 +200,7 @@ def apply_policy(
             escalation_reason=f"Model confidence '{triage_decision.model_confidence.value}' is insufficient for automatic TP classification.",
         )
 
-    # 7. Rule 6 — Model Verdict is LIKELY_FP with non-HIGH Confidence
+    # 7. Rule 6 — Model Verdict là LIKELY_FP với Confidence khác HIGH
     if triage_decision.model_confidence != ModelConfidence.HIGH:
         return PolicyDecision(
             action=PolicyAction.MANUAL_REVIEW,
@@ -210,8 +210,8 @@ def apply_policy(
             escalation_reason=f"Model confidence '{triage_decision.model_confidence.value}' is insufficient for FP candidate status.",
         )
 
-    # 8. Rules 7 & 8 — Model Verdict is LIKELY_FP with HIGH Confidence
-    # Check truncated context or sanitization failures blocking FP candidate
+    # 8. Rules 7 & 8 — Model Verdict là LIKELY_FP với Confidence HIGH
+    # Kiểm tra context bị cắt ngắn hoặc sanitize thất bại có chặn FP candidate không
     if context.truncated or has_sanitization_failed:
         return PolicyDecision(
             action=PolicyAction.MANUAL_REVIEW,
@@ -221,7 +221,7 @@ def apply_policy(
             escalation_reason="Context is truncated or has sanitization issues; FP candidate status is blocked.",
         )
 
-    # Rule 7 — Semgrep Scanner
+    # Rule 7 — Scanner Semgrep
     if finding.scanner == ScannerType.SEMGREP:
         if finding.severity in (Severity.CRITICAL, Severity.HIGH):
             return PolicyDecision(
@@ -240,7 +240,7 @@ def apply_policy(
             escalation_reason=None,
         )
 
-    # Rule 8 — Gitleaks Scanner
+    # Rule 8 — Scanner Gitleaks
     allowed_gitleaks_paths = (PathCategory.TEST, PathCategory.FIXTURE, PathCategory.EXAMPLE)
     if context.path_category in allowed_gitleaks_paths:
         return PolicyDecision(

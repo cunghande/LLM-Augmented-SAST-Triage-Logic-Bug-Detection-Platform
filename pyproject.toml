@@ -6,9 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "sast-triage"
 version = "0.1.0"
 description = "LLM-Augmented SAST Triage & Logic Bug Detection Platform"
-readme = "AGENTS.md"
+readme = "README.md"
 requires-python = ">=3.11, <3.14"
 dependencies = [
+    # Modal SDK is required by the built-in `--provider real` Qwen3-14B adapter.
+    # The standard library cannot authenticate, package, or invoke Modal GPU functions.
+    "modal>=1.5.3,<2.0.0",
     "pydantic>=2.0.0,<3.0.0",
 ]
 
@@ -19,7 +22,7 @@ dev = [
 ]
 
 [project.scripts]
-sast-triage = "sast_triage.cli:main"
+sast-triage = "sast_triage.entrypoint:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

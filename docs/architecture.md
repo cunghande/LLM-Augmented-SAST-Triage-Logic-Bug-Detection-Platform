@@ -342,71 +342,31 @@ cấu hình phải xuất hiện trong `RunMetadata`.
 
 ## Cấu trúc thư mục
 
-### Kiến trúc mục tiêu (Chỉ để tham khảo)
+### Cấu trúc hiện tại
 
-```
+```text
 src/sast_triage/
-├── __init__.py
-├── __main__.py                   # Iteration 5
-├── cli.py                        # Iteration 5
-├── pipeline.py                   # Iteration 4
-├── models.py                     # Iteration 1
-├── errors.py                     # Iteration 1
-├── config.py                     # Iteration 4
-├── parsers/
-│   ├── __init__.py               # Iteration 2
-│   ├── base.py                   # Iteration 2
-│   ├── semgrep.py                # Iteration 2
-│   └── gitleaks.py               # Iteration 2
-├── context/
-│   ├── __init__.py               # Iteration 3
-│   ├── service.py                # Iteration 3 — SafeContextService (public API)
-│   ├── reader.py                 # Iteration 3 — SafeRepositoryReader (internal)
-│   ├── python_extractor.py       # Iteration 3 — Python AST extraction (internal)
-│   └── sanitizer.py              # Iteration 3 — ContextSanitizer (internal)
-├── triage/
-│   ├── __init__.py               # Iteration 4
-│   ├── base.py                   # Iteration 4
-│   ├── input_builder.py          # Iteration 4 — TriageInputBuilder
-│   ├── fake_provider.py          # Iteration 4
-│   ├── llm_provider.py           # Iteration 7
-│   └── prompt.py                 # Iteration 4
-├── policy/
-│   ├── __init__.py               # Iteration 4
-│   └── engine.py                 # Iteration 4
-├── runners/
-│   ├── __init__.py               # Iteration 6
-│   ├── base.py                   # Iteration 6
-│   ├── semgrep_runner.py         # Iteration 6
-│   └── gitleaks_runner.py        # Iteration 6
-├── reporting/
-│   ├── __init__.py               # Iteration 5
-│   ├── json_report.py            # Iteration 5
-│   └── markdown_report.py        # Iteration 5
-└── binding.py                    # Iteration 4
-
-tests/
-├── __init__.py
-├── conftest.py
-├── fixtures/
-│   ├── semgrep_valid.json
-│   ├── semgrep_malformed.json
-│   ├── gitleaks_valid.json
-│   ├── gitleaks_malformed.json
-│   └── sample_repo/
-│       ├── app.py
-│       └── config.py
-├── test_models.py                # Iteration 1
-├── test_parsers/                 # Iteration 2
-├── test_context/                 # Iteration 3
-├── test_triage/                  # Iteration 4
-├── test_policy.py                # Iteration 4
-├── test_pipeline.py              # Iteration 4
-├── test_reporting/               # Iteration 5
-├── test_cli.py                   # Iteration 5
-├── test_runners/                 # Iteration 6
-└── test_e2e.py                   # Iteration 5
+├── cli.py                 # Chỉ parse lệnh và đổi lỗi thành exit code
+├── entrypoint.py          # Thông báo bắt đầu/kết thúc cho người dùng
+├── checkpoint.py          # Lưu tiến độ theo finding
+├── application/           # Điều phối use case, không chứa thuật toán domain
+│   ├── run.py             # Luồng end-to-end
+│   ├── artifacts.py       # Chạy/đọc Semgrep và Gitleaks
+│   ├── providers.py       # Chọn fake, Ollama hoặc Modal
+│   └── console.py         # Thông báo tiếng Việt an toàn
+├── parsers/               # Chuẩn hóa artifact scanner
+├── context/               # Đọc, chọn và làm sạch context
+├── triage/                # Prompt, provider, validate output LLM
+├── policy/                # Quyết định bảo thủ của hệ thống
+├── pipeline/              # Pipeline một finding và cả batch
+├── runners/               # Tiến trình Semgrep/Gitleaks
+├── reporting/             # Báo cáo JSON/Markdown
+└── evaluation/            # Benchmark và metric
 ```
+
+Quy tắc đọc code: bắt đầu ở `cli.py`, đi sang `application/run.py`, sau đó mới
+đi vào `pipeline/`. Cách này tách giao diện CLI khỏi logic phân tích và giúp
+thay provider hoặc scanner mà không sao chép pipeline.
 
 ### Cấu trúc Iteration 1 (Tối đa)
 

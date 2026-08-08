@@ -1,4 +1,4 @@
-"""Small, safe benchmark schema and JSON loader."""
+"""Schema benchmark nhỏ, an toàn và JSON loader."""
 
 import json
 from dataclasses import dataclass
@@ -12,7 +12,7 @@ _LABELS = frozenset({"TP", "FP", "DISPUTED", "INSUFFICIENT_CONTEXT"})
 
 @dataclass(frozen=True)
 class BenchmarkRecord:
-    """One ground-truth benchmark record without raw scanner content."""
+    """Một record benchmark ground-truth không chứa nội dung scanner thô."""
 
     benchmark_id: str
     repository_identifier: str
@@ -28,7 +28,7 @@ class BenchmarkRecord:
 
 @dataclass(frozen=True)
 class BenchmarkDataset:
-    """Immutable benchmark dataset."""
+    """Dataset benchmark bất biến."""
 
     version: str
     records: tuple[BenchmarkRecord, ...]
@@ -36,7 +36,7 @@ class BenchmarkDataset:
 
 
 def _record(raw: Any, index: int, forbidden_values: tuple[str, ...]) -> BenchmarkRecord:
-    """Validate and construct one benchmark record."""
+    """Validate và tạo một benchmark record."""
     if not isinstance(raw, dict):
         raise SastTriageError("Benchmark record is not an object.", "BENCHMARK_RECORD_INVALID")
     required = (
@@ -58,7 +58,7 @@ def _record(raw: Any, index: int, forbidden_values: tuple[str, ...]) -> Benchmar
 
 
 def load_benchmark(file_path: Path, *, forbidden_values: tuple[str, ...] = ()) -> BenchmarkDataset:
-    """Load a versioned benchmark JSON object or reject it safely."""
+    """Nạp benchmark JSON có phiên bản hoặc chặn an toàn."""
     try:
         raw = json.loads(file_path.read_text(encoding="utf-8"))
     except FileNotFoundError:
