@@ -5,11 +5,53 @@ from __future__ import annotations
 import json
 import os
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from sast_triage.application.console import configure_console_encoding
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, read_checkpoint_summary
 from sast_triage.cli import main as run_cli
+
+_COMMANDS = frozenset({"triage", "scan-and-triage"})
+
+
+def _automatic_output_dir(repository: Path, timestamp: str | None = None) -> Path:
+    """Chọn thư mục run mới cạnh ``target-repos`` cho lệnh quét rút gọn."""
+    resolved = repository.resolve()
+    if resolved.parent.name.casefold() == "target-repos":
+        runs_root = resolved.parent.parent / "triage-runs"
+    else:
+        runs_root = resolved.parent / "triage-runs"
+    run_stamp = timestamp or datetime.now(UTC).strftime("%Y%m%d-%H%M%SZ")
+    base = runs_root / f"{resolved.name}-qwen14b-{run_stamp}"
+    candidate = base
+    suffix = 2
+    while candidate.exists():
+        candidate = Path(f"{base}-{suffix:02d}")
+        suffix += 1
+    return candidate
+
+
+def _expand_repository_shortcut(arguments: list[str]) -> list[str]:
+    """Biến ``sast-triage REPO`` thành lần quét Qwen3-14B đầy đủ."""
+    if not arguments or arguments[0] in _COMMANDS or arguments[0].startswith("-"):
+        return list(arguments)
+    repository = Path(arguments[0])
+    output_dir = _automatic_output_dir(repository)
+    return [
+        "scan-and-triage",
+        "--repository",
+        str(repository),
+        "--output-dir",
+        str(output_dir),
+        "--provider",
+        "real",
+        "--semgrep-config",
+        "p/python",
+        "--semgrep-config",
+        "p/security-audit",
+        *arguments[1:],
+    ]
 
 
 def _prepare_arguments(arguments: list[str]) -> tuple[list[str], bool]:
@@ -40,8 +82,8 @@ def _argument_value(arguments: list[str], option: str) -> str | None:
 def _display_path(path: Path) -> str:
     """Trả về đường dẫn hữu ích mà không để lộ đường dẫn tuyệt đối không cần thiết."""
     try:
-        return str(path.resolve().relative_to(Path.cwd().resolve()))
-    except ValueError:
+        return os.path.relpath(path.resolve(), Path.cwd().resolve())
+    except (OSError, ValueError):
         return path.name
 
 
@@ -94,7 +136,9 @@ def _print_summary(output_dir_text: str | None, exit_code: int) -> None:
 def main(argv: list[str] | None = None) -> int:
     """Chạy CLI với mặc định Ollama và trạng thái hiển thị an toàn."""
     configure_console_encoding()
-    arguments = list(sys.argv[1:] if argv is None else argv)
+    arguments = _expand_repository_shortcut(
+        list(sys.argv[1:] if argv is None else argv)
+    )
     prepared, uses_ollama = _prepare_arguments(arguments)
     command = prepared[0] if prepared else None
     if command == "scan-and-triage":

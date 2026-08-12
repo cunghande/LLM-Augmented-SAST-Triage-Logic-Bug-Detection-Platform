@@ -15,6 +15,7 @@ import json
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ArtifactRepositoryMatch,
+    FindingType,
     MissingContextReason,
     ModelConfidence,
     ModelVerdict,
@@ -25,7 +26,6 @@ from sast_triage.models import (
     ProcessingError,
     ProcessingStage,
     SanitizedContext,
-    ScannerType,
     Severity,
     TriageDecision,
 )
@@ -48,6 +48,36 @@ def _evidence_is_incomplete(context: SanitizedContext) -> bool:
     if not isinstance(completeness, dict):
         return True
     return completeness.get("status") != "complete"
+
+
+def _fp_has_deterministic_support(
+    finding: NormalizedFinding,
+    context: SanitizedContext,
+) -> bool | None:
+    """Require structured benign evidence before any SAST FP candidate action."""
+    snippet = context.sanitized_snippet
+    if not snippet or not snippet.lstrip().startswith("{"):
+        return None
+    try:
+        payload = json.loads(snippet)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    verification = payload.get("deterministic_verification")
+    if not isinstance(verification, dict):
+        return None
+    if verification.get("evidence_complete") is not True or verification.get("has_evidence_conflict") is True:
+        return False
+    if verification.get("mechanism") == "intrinsic_usage":
+        # Generic sanitizer/guard detection cannot make a matched weak primitive safe.
+        # Its security relevance still needs human review, so never auto-dismiss it.
+        return False
+    return (
+        verification.get("source_user_controlled") is False
+        or verification.get("source_reaches_sink") is False
+        or bool(verification.get("effective_controls"))
+    )
 
 
 def apply_policy(
@@ -154,7 +184,7 @@ def apply_policy(
 
     # Mở rộng bằng chứng chỉ tư vấn model nhưng có thẩm quyền với mức đủ cho policy:
     # đường dẫn chưa hoàn chỉnh không bao giờ thành quyết định TP/FP tự động.
-    if finding.scanner == ScannerType.SEMGREP and _evidence_is_incomplete(context):
+    if finding.finding_type == FindingType.SAST and _evidence_is_incomplete(context):
         escalated = triage_decision.model_verdict in (
             ModelVerdict.LIKELY_TP,
             ModelVerdict.LIKELY_FP,
@@ -222,7 +252,15 @@ def apply_policy(
         )
 
     # Rule 7 — Scanner Semgrep
-    if finding.scanner == ScannerType.SEMGREP:
+    if finding.finding_type == FindingType.SAST:
+        if _fp_has_deterministic_support(finding, context) is False:
+            return PolicyDecision(
+                action=PolicyAction.MANUAL_REVIEW,
+                reasons=["Structured evidence does not safely support FP candidate status."],
+                policy_version=POLICY_VERSION,
+                escalated=True,
+                escalation_reason="Model FP opinion lacks deterministic benign-path support.",
+            )
         if finding.severity in (Severity.CRITICAL, Severity.HIGH):
             return PolicyDecision(
                 action=PolicyAction.MANUAL_REVIEW,

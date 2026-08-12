@@ -1,6 +1,8 @@
 # Chạy Qwen3-14B-AWQ độc lập trên Modal
 
-Tài liệu này mô tả backend `modal_apps/qwen14b_modal.py`. Backend được tích
+Tài liệu này mô tả backend đóng gói tại
+`src/sast_triage/triage/qwen14b_modal_app.py`. File
+`modal_apps/qwen14b_modal.py` là entrypoint tương thích cho các lệnh Modal. Backend được tích
 hợp vào CLI qua `--provider real`; script prompt và benchmark riêng vẫn được giữ
 để chẩn đoán và đánh giá.
 
@@ -25,8 +27,9 @@ trong container CPU của Modal và ghi vào Modal Volume.
 - Image GPU: CUDA 12.9, Python 3.12.
 - Dependency trong image: `vllm==0.26.0` và
   `huggingface-hub==1.24.0`.
-- GPU mặc định: một `H100` để demo và benchmark ưu tiên tốc độ; có thể chọn
-  `L40S` hoặc `L4` khi ưu tiên tiết kiệm chi phí.
+- GPU mặc định: một `B200`; có thể chọn `H100`, `H200`, `L40S` hoặc `L4` bằng
+  `MODAL_GPU`. Benchmark thực tế phải tách cold start khỏi latency steady-state vì
+  GPU mạnh hơn không bảo đảm tổng thời gian ngắn hơn cho batch tuần tự nhỏ.
 - `max_containers=1`, `min_containers=0`, `scaledown_window=300` giây.
 - Timeout GPU: 1200 giây.
 - `max_model_len=4096`, `max_num_seqs=1`,
@@ -51,14 +54,14 @@ Mở PowerShell tại thư mục gốc repository:
 
 ```powershell
 py -m pip install --upgrade modal
-py -m modal setup
+python -m modal setup
 ```
 
 Nếu máy không có Python Launcher `py`, thay `py` bằng `python` trong toàn bộ
 các lệnh của tài liệu.
 
 `modal setup` mở luồng xác thực và lưu credential Modal trên máy. Nếu lệnh chạy
-báo chưa xác thực, chạy lại `py -m modal setup` và xác nhận đúng Workspace.
+báo chưa xác thực, chạy lại `python -m modal setup` và xác nhận đúng Workspace.
 
 ## 2. Kiểm tra plan, credit và budget trước khi chạy
 
@@ -83,7 +86,7 @@ Tham khảo [Modal Pricing](https://modal.com/pricing),
 Chạy đúng entrypoint từ thư mục gốc repository:
 
 ```powershell
-py -m modal run modal_apps/qwen14b_modal.py::download_model
+python -m modal run modal_apps/qwen14b_modal.py::download_model
 ```
 
 Lệnh này build image CPU nhỏ, tạo Volume nếu chưa có, gọi
@@ -107,7 +110,7 @@ lưu trong Volume.
 ## 4. Chạy prompt thử
 
 ```powershell
-py -m modal run modal_apps/qwen14b_modal.py
+python -m modal run modal_apps/qwen14b_modal.py
 ```
 
 Local entrypoint gửi prompt mẫu bằng `.remote()`, chờ GPU trả kết quả, rồi in
@@ -117,25 +120,25 @@ cần `modal deploy`.
 Prompt riêng:
 
 ```powershell
-py -m modal run modal_apps/qwen14b_modal.py --prompt "Analyze this Python code"
+python -m modal run modal_apps/qwen14b_modal.py --prompt "Analyze this Python code"
 ```
 
 Bật thinking có giới hạn:
 
 ```powershell
-py -m modal run modal_apps/qwen14b_modal.py --thinking --max-tokens 512 --prompt "Analyze this complex data flow"
+python -m modal run modal_apps/qwen14b_modal.py --thinking --max-tokens 512 --prompt "Analyze this complex data flow"
 ```
 
 `thinking=false` truyền `enable_thinking=False` qua Qwen chat template. Khi bật
 thinking, ứng dụng vẫn loại bỏ block `<think>...</think>` và chỉ trả final text;
 reasoning không được lưu hoặc trả về terminal. `max_tokens` luôn phải từ 1 đến
-1024. Modal SDK hiện tại biểu diễn tham số `bool` mặc định `False` bằng flag
+1536. Modal SDK hiện tại biểu diễn tham số `bool` mặc định `False` bằng flag
 `--thinking` (không thêm giá trị `true`).
 
 Xem các option do Modal sinh tự động:
 
 ```powershell
-py -m modal run modal_apps/qwen14b_modal.py --help
+python -m modal run modal_apps/qwen14b_modal.py --help
 ```
 
 ## 5. Cấu hình qua biến môi trường PowerShell
@@ -144,15 +147,15 @@ Không cần file `.env`. Đặt biến trong session PowerShell trước khi ch
 
 ```powershell
 $env:MODAL_MODEL_ID = "Qwen/Qwen3-14B-AWQ"
-$env:MODAL_GPU = "H100"
+$env:MODAL_GPU = "B200"
 $env:MODAL_MAX_MODEL_LEN = "4096"
 $env:MODAL_MAX_TOKENS = "256"
 $env:MODAL_THINKING = "false"
 $env:MODAL_SCALEDOWN_WINDOW = "300"
 ```
 
-Các giá trị được đọc khi Modal import file. GPU chỉ chấp nhận `L4`, `L40S` hoặc
-`H100`; context bị giới hạn tối đa 4096 trong app độc lập này.
+Các giá trị được đọc khi Modal import file. GPU chấp nhận `L4`, `L40S`, `A100`,
+`H100`, `H200` hoặc `B200`; context bị giới hạn tối đa 4096 trong app độc lập này.
 
 ## 6. Hai Volume và vòng đời container
 
@@ -171,7 +174,7 @@ theo thời gian sử dụng. Theo dõi credit trên Dashboard; với Modal SDK 
 lên cũng có thể xem tóm tắt tháng bằng:
 
 ```powershell
-py -m modal billing summary
+python -m modal billing summary
 ```
 
 ## 7. Xử lý CUDA Out Of Memory
@@ -190,7 +193,7 @@ Không chuyển GPU đắt hơn ngay. Thử theo thứ tự:
 
    ```powershell
    $env:MODAL_GPU = "L40S"
-   py -m modal run modal_apps/qwen14b_modal.py --max-tokens 128 --prompt "Test after OOM"
+   python -m modal run modal_apps/qwen14b_modal.py --max-tokens 128 --prompt "Test after OOM"
    ```
 
 App không tự động fallback từ L4 sang L40S. Nếu lỗi không phải OOM, kiểm tra
@@ -201,15 +204,15 @@ log vLLM, snapshot Volume và phiên bản dependency trước khi đổi GPU.
 Mở Dashboard bằng CLI:
 
 ```powershell
-py -m modal dashboard
+python -m modal dashboard
 ```
 
 Trong Dashboard, chọn app `qwen3-14b-awq` để xem Functions, Containers, Logs,
 GPU metrics và thời gian chạy. Với app còn xuất hiện theo tên, có thể dùng:
 
 ```powershell
-py -m modal app logs qwen3-14b-awq
-py -m modal app dashboard qwen3-14b-awq
+python -m modal app logs qwen3-14b-awq
+python -m modal app dashboard qwen3-14b-awq
 ```
 
 `modal run` tạo ephemeral App và bình thường tự dừng khi lệnh local kết thúc.
@@ -217,7 +220,7 @@ Nếu một run đang treo, nhấn `Ctrl+C`, kiểm tra Apps/Containers trên Da
 rồi dừng app đang chạy nếu cần:
 
 ```powershell
-py -m modal app stop qwen3-14b-awq
+python -m modal app stop qwen3-14b-awq
 ```
 
 Lệnh stop chấm dứt container đang chạy nhưng không xóa hai Volume. Không xóa
@@ -225,7 +228,7 @@ Volume nếu còn muốn tái sử dụng model cache.
 
 ## 9. Lỗi thường gặp
 
-- **Modal chưa setup / AuthError:** chạy `py -m modal setup`, kiểm tra Workspace
+- **Modal chưa setup / AuthError:** chạy `python -m modal setup`, kiểm tra Workspace
   đang active.
 - **Model chưa tải:** chạy `::download_model` và đợi thông báo commit thành
   công.
@@ -237,8 +240,8 @@ Volume nếu còn muốn tái sử dụng model cache.
 - **Timeout:** xem log để biết image build, cold start hay inference bị kẹt; kiểm
   tra credit/budget trước khi retry.
 - **Prompt rỗng / max token sai:** truyền prompt có nội dung và giá trị từ 1 đến
-  1024.
-- **Output rỗng:** tắt thinking hoặc tăng `--max-tokens` nhưng không vượt 1024.
+  1536.
+- **Output rỗng:** tắt thinking hoặc tăng `--max-tokens` nhưng không vượt 1536.
 
 ## Giới hạn xác minh
 

@@ -1,10 +1,14 @@
 """Offline tests cho adapter Qwen3-14B Modal của CLI."""
 
 import json
+import subprocess
+import sys
+from pathlib import Path
 
 import modal
 import pytest
 
+from modal_apps.qwen14b_benchmark import ModalQwenProvider as BenchmarkModalQwenProvider
 from modal_apps.qwen14b_modal import MODEL_ID
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
@@ -19,6 +23,35 @@ from sast_triage.models import (
     TriageInput,
 )
 from sast_triage.triage.modal_provider import ModalQwenProvider
+
+
+def test_modal_app_import_does_not_require_pydantic(tmp_path: Path) -> None:
+    script = """
+import importlib.abc
+import sys
+
+class BlockPydantic(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "pydantic" or fullname.startswith("pydantic."):
+            raise ModuleNotFoundError("pydantic blocked for Modal image regression test")
+        return None
+
+sys.meta_path.insert(0, BlockPydantic())
+from sast_triage.triage.qwen14b_modal_app import MODEL_ID
+print(MODEL_ID)
+"""
+
+    completed = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=tmp_path,
+        capture_output=True,
+        check=False,
+        text=True,
+        timeout=30,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip() == MODEL_ID
 
 
 def _input() -> TriageInput:
@@ -54,19 +87,24 @@ def _input() -> TriageInput:
 
 
 class _RemoteMethod:
-    def __init__(self, response: str | BaseException) -> None:
+    def __init__(self, response: str | BaseException | list[str | BaseException]) -> None:
         self.response = response
         self.calls: list[dict[str, object]] = []
 
     def remote(self, **kwargs: object) -> str:
         self.calls.append(kwargs)
-        if isinstance(self.response, BaseException):
-            raise self.response
-        return self.response
+        response = (
+            self.response.pop(0)
+            if isinstance(self.response, list)
+            else self.response
+        )
+        if isinstance(response, BaseException):
+            raise response
+        return response
 
 
 class _RemoteModel:
-    def __init__(self, response: str | BaseException) -> None:
+    def __init__(self, response: str | BaseException | list[str | BaseException]) -> None:
         self.chat = _RemoteMethod(response)
 
 
@@ -92,6 +130,84 @@ def test_modal_provider_builds_safe_structured_request() -> None:
     schema = remote.chat.calls[0]["json_schema"]
     assert isinstance(schema, dict)
     assert schema["properties"]["prompt_version"]["enum"] == ["p1"]
+    assert remote.chat.calls[0]["temperature"] == 0.0
+    assert remote.chat.calls[0]["seed"] == 42
+
+
+def test_modal_provider_retries_truncated_json_with_larger_budget() -> None:
+    valid_response = json.dumps(
+        {
+            "model_verdict": "LIKELY_FP",
+            "model_confidence": "HIGH",
+            "summary": "summary",
+            "evidence": ["evidence"],
+            "missing_information": [],
+            "assumptions": [],
+            "model_version": MODEL_ID,
+            "prompt_version": "p1",
+        }
+    )
+    remote = _RemoteModel(['{"model_verdict":', valid_response])
+
+    decision = ModalQwenProvider(remote).triage(_input())
+
+    assert decision.model_verdict.value == "LIKELY_FP"
+    assert [call["max_tokens"] for call in remote.chat.calls] == [512, 1536]
+
+
+def test_benchmark_modal_provider_retries_truncated_json() -> None:
+    triage_input = _input().model_copy(update={"prompt_version": "triage-prompt-v9"})
+    valid_response = json.dumps(
+        {
+            "model_verdict": "LIKELY_TP",
+            "model_confidence": "HIGH",
+            "summary": "summary",
+            "evidence": ["evidence"],
+            "missing_information": [],
+            "assumptions": [],
+            "model_version": MODEL_ID,
+            "prompt_version": "triage-prompt-v9",
+        }
+    )
+    remote = _RemoteModel(['{"model_verdict":', valid_response])
+
+    decision = BenchmarkModalQwenProvider(remote).triage(triage_input)
+
+    assert decision.model_verdict.value == "LIKELY_TP"
+    assert [call["max_tokens"] for call in remote.chat.calls] == [512, 1536]
+    retry_messages = remote.chat.calls[1]["messages"]
+    assert isinstance(retry_messages, list)
+    assert "OUTPUT RECOVERY" in retry_messages[0]["content"]
+
+
+@pytest.mark.parametrize("provider_type", [ModalQwenProvider, BenchmarkModalQwenProvider])
+def test_modal_provider_uses_minimal_schema_after_two_invalid_full_outputs(
+    provider_type: type[ModalQwenProvider] | type[BenchmarkModalQwenProvider],
+) -> None:
+    triage_input = _input().model_copy(update={"prompt_version": "triage-prompt-v9"})
+    remote = _RemoteModel(
+        [
+            '{"model_verdict":',
+            '{"model_verdict":',
+            json.dumps(
+                {
+                    "model_verdict": "LIKELY_TP",
+                    "model_confidence": "HIGH",
+                }
+            ),
+        ]
+    )
+
+    decision = provider_type(remote).triage(triage_input)
+
+    assert decision.model_verdict.value == "LIKELY_TP"
+    assert [call["max_tokens"] for call in remote.chat.calls] == [512, 1536, 128]
+    minimal_schema = remote.chat.calls[2]["json_schema"]
+    assert isinstance(minimal_schema, dict)
+    assert set(minimal_schema["properties"]) == {
+        "model_verdict",
+        "model_confidence",
+    }
 
 
 def test_modal_resource_exhaustion_has_dedicated_safe_error() -> None:

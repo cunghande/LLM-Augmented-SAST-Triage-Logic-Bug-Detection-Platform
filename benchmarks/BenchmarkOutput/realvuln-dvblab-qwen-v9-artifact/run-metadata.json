@@ -1,0 +1,47 @@
+{
+  "run_id": "0f6d252d-1902-45a3-a61b-49a34ce9cd10",
+  "repository_name": "realvuln-dvblab",
+  "repository_identifier": "realvuln-dvblab",
+  "commit_sha": "25bdef1e32055bfb6366856acc5db829e61e3647",
+  "working_tree_state": "clean",
+  "artifact_repository_match": "UNVERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.150.0",
+    "GITLEAKS": null,
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "artifact-provided",
+    "GITLEAKS": "artifact-provided",
+    "MODULE2": "python-cross-file-evidence-v1"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "677c3f0c9134e8688bc6f4a371958acda1739e1be3509f946f8e3f5cce4b3a5d",
+    "gitleaks": "50056c08ce479cc2f54c4d6595a4264bdf32bf84f2995d59ff3bd513897ab414"
+  },
+  "analysis_backend": "native",
+  "analysis_backend_version": "0.1.0",
+  "analysis_config_id": "python-cross-file-evidence-v1",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 0.045612,
+  "prompt_version": "triage-prompt-v9",
+  "model_version": "Qwen/Qwen3-14B-AWQ",
+  "policy_version": "conservative-policy-v1",
+  "triage_provider": "real-modal-qwen",
+  "tool_version": "0.1.0",
+  "cli_mode": "triage-resume",
+  "started_at": "2026-08-12T03:35:27.711181Z",
+  "completed_at": "2026-08-12T03:38:28.375043Z",
+  "total_findings_parsed": 30,
+  "findings_triaged_ok": 30,
+  "findings_with_errors": 0
+}

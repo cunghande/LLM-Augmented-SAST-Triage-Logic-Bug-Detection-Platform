@@ -28,6 +28,9 @@ def safe_error_message(error_code: str) -> str:
             "Chưa xác thực Modal; hãy chạy 'python -m modal setup' một lần."
         ),
         "TRIAGE_PROVIDER_MODAL_TIMEOUT": "Yêu cầu Qwen trên Modal đã quá thời gian chờ.",
+        "TRIAGE_PROVIDER_DEPENDENCY_MISSING": (
+            "Python hiện tại chưa cài dependency Modal; hãy dùng môi trường dự án hoặc cài extra LLM."
+        ),
         "CHECKPOINT_NOT_FOUND": "Không tìm thấy checkpoint để tiếp tục.",
         "CHECKPOINT_BINDING_MISMATCH": (
             "Checkpoint không khớp repository, artifact hoặc phiên bản prompt hiện tại."

@@ -6,6 +6,60 @@ from pathlib import Path
 from sast_triage import entrypoint
 
 
+def test_repository_shortcut_builds_real_qwen_scan(tmp_path: Path) -> None:
+    repository = tmp_path / "target-repos" / "sample-repo"
+    expected_root = tmp_path / "triage-runs"
+
+    arguments = entrypoint._expand_repository_shortcut([str(repository)])
+
+    assert arguments[:5] == [
+        "scan-and-triage",
+        "--repository",
+        str(repository),
+        "--output-dir",
+        arguments[4],
+    ]
+    assert Path(arguments[4]).parent == expected_root
+    assert Path(arguments[4]).name.startswith("sample-repo-qwen14b-")
+    assert arguments[5:] == [
+        "--provider",
+        "real",
+        "--semgrep-config",
+        "p/python",
+        "--semgrep-config",
+        "p/security-audit",
+    ]
+
+
+def test_repository_shortcut_preserves_extra_options(tmp_path: Path) -> None:
+    repository = tmp_path / "target-repos" / "sample-repo"
+
+    arguments = entrypoint._expand_repository_shortcut(
+        [str(repository), "--no-module2"]
+    )
+
+    assert arguments[-1] == "--no-module2"
+
+
+def test_explicit_commands_are_not_rewritten() -> None:
+    arguments = ["scan-and-triage", "--repository", "repo"]
+
+    assert entrypoint._expand_repository_shortcut(arguments) == arguments
+
+
+def test_display_path_keeps_sibling_output_useful(
+    tmp_path: Path, monkeypatch
+) -> None:
+    current = tmp_path / "target-repos"
+    report = tmp_path / "triage-runs" / "run-01" / "report.md"
+    current.mkdir()
+    monkeypatch.chdir(current)
+
+    displayed = entrypoint._display_path(report)
+
+    assert displayed == str(Path("..") / "triage-runs" / "run-01" / "report.md")
+
+
 def test_ollama_provider_remains_an_independent_cli_choice(monkeypatch) -> None:
     monkeypatch.delenv("SAST_TRIAGE_LLM_MODEL", raising=False)
     arguments, uses_ollama = entrypoint._prepare_arguments(

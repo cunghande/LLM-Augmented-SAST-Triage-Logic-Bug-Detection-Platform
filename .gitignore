@@ -1,12 +1,16 @@
 # Môi trường Python cục bộ
 .venv/
 venv/
+*.egg-info/
 
 # Bytecode và cache kiểm thử/lint
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.pytest-tmp*/
 .ruff_cache/
+.coverage
+htmlcov/
 
 # File tạm và log cục bộ
 *.tmp
@@ -16,3 +20,6 @@ __pycache__/
 # Repository bên ngoài dùng làm target benchmark
 benchmarks/ExternalTargets/
 
+# Target và kết quả chạy nếu vô tình tạo bên trong source
+target-repos/
+triage-runs/

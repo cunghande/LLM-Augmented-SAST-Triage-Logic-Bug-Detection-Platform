@@ -1,6 +1,7 @@
 """Thu thập và parse artifact của scanner."""
 
 import hashlib
+import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,6 +22,8 @@ class ArtifactBundle:
     semgrep: ScannerParseResult
     gitleaks: ScannerParseResult
     hashes: dict[str, str | None]
+    scanner_versions: dict[str, str | None]
+    scanner_config_ids: dict[str, str | None]
     scanner_failed: bool = False
 
 
@@ -43,6 +46,8 @@ def collect_artifacts(
     resume: bool,
     semgrep_json: str | None,
     gitleaks_json: str | None,
+    semgrep_config: str | tuple[str, ...] = "p/python",
+    gitleaks_config: str | None = None,
     progress: ProgressCallback,
 ) -> ArtifactBundle:
     """Đọc artifact có sẵn hoặc chạy hai scanner tuần tự."""
@@ -57,6 +62,8 @@ def collect_artifacts(
                 "semgrep": _hash_file(semgrep_path),
                 "gitleaks": _hash_file(gitleaks_path),
             },
+            scanner_versions={"SEMGREP": _semgrep_artifact_version(semgrep_path), "GITLEAKS": None},
+            scanner_config_ids={"SEMGREP": "artifact-provided", "GITLEAKS": "artifact-provided"},
         )
 
     artifacts_dir = output_dir / "scanner-artifacts"
@@ -71,13 +78,18 @@ def collect_artifacts(
                 "semgrep": _hash_file(semgrep_path),
                 "gitleaks": _hash_file(gitleaks_path),
             },
+            scanner_versions={"SEMGREP": _semgrep_artifact_version(semgrep_path), "GITLEAKS": None},
+            scanner_config_ids={
+                "SEMGREP": "+".join(semgrep_config) if isinstance(semgrep_config, tuple) else semgrep_config,
+                "GITLEAKS": gitleaks_config or "gitleaks-built-in",
+            },
         )
 
     semgrep_run = _run_scanner(
-        "Semgrep", SemgrepRunner(), repository, artifacts_dir, progress
+        "Semgrep", SemgrepRunner(config=semgrep_config), repository, artifacts_dir, progress
     )
     gitleaks_run = _run_scanner(
-        "Gitleaks", GitleaksRunner(), repository, artifacts_dir, progress
+        "Gitleaks", GitleaksRunner(config=gitleaks_config), repository, artifacts_dir, progress
     )
     return ArtifactBundle(
         semgrep=_result_from_run(ScannerType.SEMGREP, semgrep_run),
@@ -86,8 +98,26 @@ def collect_artifacts(
             "semgrep": _hash_file(semgrep_run.artifact_path),
             "gitleaks": _hash_file(gitleaks_run.artifact_path),
         },
+        scanner_versions={
+            "SEMGREP": semgrep_run.version,
+            "GITLEAKS": gitleaks_run.version,
+        },
+        scanner_config_ids={
+            "SEMGREP": semgrep_run.config_id,
+            "GITLEAKS": gitleaks_run.config_id,
+        },
         scanner_failed=bool(semgrep_run.errors or gitleaks_run.errors),
     )
+
+
+def _semgrep_artifact_version(path: Path) -> str | None:
+    """Read only the safe Semgrep version field from an existing artifact."""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    version = payload.get("version") if isinstance(payload, dict) else None
+    return version if isinstance(version, str) and version.strip() else None
 
 
 def _artifact_path(path_text: str | None, repository: Path) -> Path:

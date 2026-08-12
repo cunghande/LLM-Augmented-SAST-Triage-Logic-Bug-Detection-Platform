@@ -15,6 +15,7 @@ class ScannerType(str, Enum):
 
     SEMGREP = "SEMGREP"
     GITLEAKS = "GITLEAKS"
+    MODULE2 = "MODULE2"
 
 
 class FindingType(str, Enum):
@@ -182,6 +183,8 @@ class NormalizedFinding(BaseDomainModel):
             raise ValueError("SEMGREP scanner findings must have SAST finding_type")
         if self.scanner == ScannerType.GITLEAKS and self.finding_type != FindingType.SECRET:
             raise ValueError("GITLEAKS scanner findings must have SECRET finding_type")
+        if self.scanner == ScannerType.MODULE2 and self.finding_type != FindingType.SAST:
+            raise ValueError("MODULE2 findings must have SAST finding_type")
 
         if not self.file_path or not self.file_path.strip():
             raise ValueError("file_path must not be empty")
@@ -410,6 +413,11 @@ class RunMetadata(BaseDomainModel):
     scanner_versions: dict[str, str | None] = Field(default_factory=dict)
     scanner_config_ids: dict[str, str | None] = Field(default_factory=dict)
     input_artifact_hashes: dict[str, str | None] = Field(default_factory=dict)
+    analysis_backend: str = "native"
+    analysis_backend_version: str | None = None
+    analysis_config_id: str | None = None
+    cpg_build_status: str = "not_applicable"
+    cpg_build_seconds: float = 0.0
     prompt_version: str | None = None
     model_version: str | None = None
     policy_version: str
@@ -454,6 +462,12 @@ class RunMetadata(BaseDomainModel):
             raise ValueError("Finding counts cannot be negative")
         if not set(self.scanners_succeeded).issubset(set(self.scanners_attempted)):
             raise ValueError("scanners_succeeded must be a subset of scanners_attempted")
+        if self.analysis_backend not in {"native", "joern"}:
+            raise ValueError("analysis_backend must be native or joern")
+        if self.cpg_build_status not in {"not_applicable", "complete", "partial", "failed"}:
+            raise ValueError("cpg_build_status is invalid")
+        if self.cpg_build_seconds < 0:
+            raise ValueError("cpg_build_seconds cannot be negative")
         return self
 
 

@@ -355,10 +355,10 @@ def test_pipeline_policy_semgrep_high_severity_fp_escalated(tmp_path: Path) -> N
     assert res.policy_decision.escalated is True
 
 
-def test_pipeline_policy_semgrep_medium_severity_fp_candidate(tmp_path: Path) -> None:
-    """Requirement Protected: Medium-severity Semgrep LIKELY_FP finding becomes FP_CANDIDATE.
+def test_pipeline_policy_semgrep_fp_without_benign_proof_requires_review(tmp_path: Path) -> None:
+    """Structured evidence must support a Semgrep FP before FP_CANDIDATE.
 
-    Expected Result: PolicyAction.FP_CANDIDATE.
+    Expected Result: PolicyAction.MANUAL_REVIEW.
     Test Category: Policy Rule
     """
     repo = tmp_path / "repo"
@@ -371,7 +371,8 @@ def test_pipeline_policy_semgrep_medium_severity_fp_candidate(tmp_path: Path) ->
 
     res = triage_finding(finding, repo, provider, prompt_type="fake.fp.high")
 
-    assert res.policy_decision.action == PolicyAction.FP_CANDIDATE
+    assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
+    assert res.policy_decision.escalated is True
 
 
 def test_pipeline_policy_failure_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

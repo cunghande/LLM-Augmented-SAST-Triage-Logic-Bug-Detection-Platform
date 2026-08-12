@@ -1,207 +1,533 @@
-# Hướng dẫn chạy CLI
+# Hướng dẫn CLI
 
-## 1. Chuẩn bị môi trường
+Tài liệu này dành cho người nhận source lần đầu: cài môi trường, chuẩn bị target,
+chạy CLI, đọc báo cáo và xử lý các lỗi thường gặp. Ví dụ dùng PowerShell trên
+Windows và Python 3.12.
 
-Công cụ hỗ trợ Python từ 3.11 đến 3.13. Trên PowerShell:
+## 1. Mô hình thư mục
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+Giữ source công cụ, repository mục tiêu và kết quả chạy tách biệt:
+
+```text
+D:\Code\
+├── AI security\       source của SAST Triage
+├── target-repos\      repository được đưa vào scanner
+└── triage-runs\       artifact, checkpoint và report theo từng run
 ```
 
-Kiểm tra CLI:
+Không clone target hoặc ghi output vào `AI security` vì scanner có thể quét lại
+source/report của công cụ. Không ghi output vào target vì sẽ làm checkout dirty
+và có thể đưa artifact nhạy cảm vào commit.
+
+`target-repos` do người dùng tạo một lần. Với lệnh rút gọn, `triage-runs` được
+CLI tự tạo.
+
+## 2. Yêu cầu hệ thống
+
+### 2.1 Công cụ bắt buộc
+
+- Python `>=3.11,<3.14`; khuyến nghị Python 3.12.
+- Git.
+- Semgrep trong `PATH`.
+- Gitleaks trong `PATH`.
+- Kết nối Internet để tải ruleset Semgrep và chạy Modal lần đầu.
+
+Kiểm tra:
 
 ```powershell
-python -m sast_triage --help
-python -m sast_triage scan-and-triage --help
-```
-
-Chế độ `scan-and-triage` yêu cầu hai executable sau có trong `PATH`:
-
-```powershell
+python --version
+git --version
 semgrep --version
 gitleaks version
 ```
 
-CLI không tự tải hoặc cài scanner.
+Nếu `python --version` không nằm trong khoảng 3.11–3.13, cài Python 3.12 và
+đảm bảo lệnh `python` trỏ tới đúng bản đó trước khi tạo `.venv`.
 
-## 2. Chọn provider
-
-### Fake provider
-
-Dùng để kiểm tra pipeline, parser, context, policy và reporter mà không gọi mạng
-hoặc tốn chi phí LLM. Không dùng kết quả fake provider để đánh giá độ chính xác.
-
-### Ollama
-
-Dùng LLM cục bộ qua API tương thích OpenAI. Mặc định CLI sử dụng `qwen3:8b`:
+Nếu Semgrep chưa có, cài theo cách Python chính thức trên Windows:
 
 ```powershell
-ollama pull qwen3:8b
-ollama serve
+python -m pip install semgrep
+semgrep --version
 ```
 
-Có thể ghi đè cấu hình:
+Gitleaks cung cấp binary Windows tại
+[GitHub Releases](https://github.com/gitleaks/gitleaks/releases). Giải nén
+`gitleaks.exe`, thêm thư mục chứa executable vào `PATH`, mở PowerShell mới rồi
+kiểm tra:
 
 ```powershell
-$env:SAST_TRIAGE_LLM_API_KEY = "ollama"
-$env:SAST_TRIAGE_LLM_BASE_URL = "http://localhost:11434/v1"
-$env:SAST_TRIAGE_LLM_MODEL = "qwen3:8b"
-$env:SAST_TRIAGE_LLM_TIMEOUT_SECONDS = "180"
-$env:SAST_TRIAGE_LLM_REASONING_EFFORT = "medium"
+gitleaks version
+Get-Command gitleaks | Select-Object Source
 ```
 
-`SAST_TRIAGE_LLM_REASONING_EFFORT` nhận `none`, `low`, `medium`, `high` hoặc
-`max` nếu provider hỗ trợ.
+Tài liệu tham khảo chính thức:
 
-### Real provider: Qwen3-14B trên Modal
+- [Semgrep Community Edition](https://semgrep.dev/products/community-edition/)
+- [Gitleaks](https://github.com/gitleaks/gitleaks)
+- [Modal user account setup](https://modal.com/docs/guide/modal-user-account-setup)
 
-`--provider real` nay gọi trực tiếp `Qwen/Qwen3-14B-AWQ` trên Modal. CLI tự
-kiểm tra/tải model vào Volume, không cần cấu hình endpoint hay model qua biến môi
-trường. Mỗi máy chỉ cần xác thực Modal một lần:
+### 2.2 Cài source dự án
+
+```powershell
+cd "D:\Code\AI security"
+python -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e ".[dev]"
+```
+
+Kiểm tra package và CLI:
+
+```powershell
+python -c "import sast_triage; print(sast_triage.__version__)"
+python -m sast_triage --help
+python -m sast_triage scan-and-triage --help
+```
+
+### 2.3 Xác thực Modal
+
+Chỉ cần cho provider `real`:
 
 ```powershell
 python -m modal setup
+python -m modal token info
 ```
 
-Mặc định Modal dùng một H100, giữ container trong 300 giây trong app session,
-tắt thinking và dùng prefix cache. Thời gian 1–2 phút chỉ là mục tiêu cho repo
-ít finding khi GPU/model đã warm; scanner, cold start, hàng đợi và số finding vẫn có
-thể làm lần chạy lâu hơn.
+Không đưa Modal token vào source, `.env`, report hoặc ảnh chụp màn hình.
 
-## 3. Quét repository rồi triage
+## 3. Chạy nhanh nhất với Qwen3-14B
 
-Đây là luồng sử dụng thông thường.
+### 3.1 Clone target
 
-Chạy thử bằng fake provider:
+```powershell
+New-Item -ItemType Directory -Force "D:\Code\target-repos"
+cd "D:\Code\target-repos"
+git clone https://github.com/cunghande/Sequential-Recommender
+```
+
+Nếu Git báo:
+
+```text
+destination path 'Sequential-Recommender' already exists
+```
+
+thì repository đã được clone; không chạy `git clone` lần nữa.
+
+Kiểm tra checkout:
+
+```powershell
+git -C .\Sequential-Recommender branch --show-current
+git -C .\Sequential-Recommender rev-parse HEAD
+git -C .\Sequential-Recommender status --short
+```
+
+`status --short` nên không in gì.
+
+### 3.2 Chạy một lệnh
+
+Khi `.venv` đang active và PowerShell đang ở `D:\Code\target-repos`:
+
+```powershell
+python -m sast_triage Sequential-Recommender
+```
+
+Nếu đang đứng trong source công cụ, truyền đường dẫn tương đối:
+
+```powershell
+cd "D:\Code\AI security"
+python -m sast_triage ..\target-repos\Sequential-Recommender
+```
+
+Nếu chưa activate `.venv`, gọi Python của dự án trực tiếp:
+
+```powershell
+cd "D:\Code\target-repos"
+& "D:\Code\AI security\.venv\Scripts\python.exe" -m sast_triage Sequential-Recommender
+```
+
+Ba cách trên tương đương. Lệnh rút gọn tự cấu hình:
+
+```text
+provider       = real
+model          = Qwen/Qwen3-14B-AWQ
+GPU            = B200
+Semgrep config = p/python + p/security-audit
+Gitleaks       = built-in config
+Module 2       = enabled
+```
+
+Mỗi lần chạy tạo output mới:
+
+```text
+D:\Code\triage-runs\<repo>-qwen14b-YYYYMMDD-HHMMSSZ
+```
+
+Do có timestamp, lệnh rút gọn không ghi đè run cũ.
+
+### 3.3 Tiến trình bình thường
+
+```text
+[1/7] Kiểm tra repository/output
+[2/7] Chạy Semgrep và Gitleaks
+[3/7] Parse finding và lập Module 2 index
+[4/7] Khởi động provider
+[5/7] Triage từng finding và ghi checkpoint
+[6/7] Ghi report
+[7/7] Hoàn tất
+```
+
+Cold start B200/vLLM có thể mất 4–7 phút. Các dòng `Loading images`, tải shard,
+compile, FlashInfer warm-up và CUDA graph capture là bình thường. Không bấm
+`Ctrl+C` khi chưa có lỗi rõ ràng.
+
+## 4. Các provider
+
+| Provider | Mục đích | Cần thêm |
+|---|---|---|
+| `fake` | Kiểm tra scanner/pipeline/report offline | Không cần LLM |
+| `ollama` | LLM chạy trên máy | Ollama và model local |
+| `real` | Qwen3-14B-AWQ trên Modal B200 | Modal account/token/credit |
+
+### 4.1 Fake provider
+
+Fake provider không đo chất lượng model; chỉ dùng smoke test kỹ thuật:
 
 ```powershell
 python -m sast_triage scan-and-triage `
-  --repository .\duong-dan-repo-python `
-  --output-dir .\output\smoke-test `
+  --repository "D:\Code\target-repos\Sequential-Recommender" `
+  --output-dir "D:\Code\triage-runs\Sequential-Recommender-fake" `
   --provider fake `
-  --repository-identifier my-project
+  --semgrep-config p/python `
+  --semgrep-config p/security-audit `
+  --module2 `
+  --no-overwrite
 ```
 
-Chạy bằng Ollama:
+### 4.2 Ollama
 
 ```powershell
+ollama pull qwen3:8b
+$env:SAST_TRIAGE_LLM_MODEL = "qwen3:8b"
+
 python -m sast_triage scan-and-triage `
-  --repository .\duong-dan-repo-python `
-  --output-dir .\output\ollama `
+  --repository "D:\Code\target-repos\Sequential-Recommender" `
+  --output-dir "D:\Code\triage-runs\Sequential-Recommender-ollama" `
   --provider ollama `
-  --repository-identifier my-project
+  --semgrep-config p/python `
+  --semgrep-config p/security-audit `
+  --module2 `
+  --no-overwrite
 ```
 
-Chạy Qwen3-14B trên Modal:
+### 4.3 Modal/Qwen3-14B với lệnh đầy đủ
+
+Dùng lệnh đầy đủ khi muốn tự chọn output hoặc cần resume:
+
+```powershell
+$env:MODAL_GPU = "B200"
+
+python -m sast_triage scan-and-triage `
+  --repository "D:\Code\target-repos\Sequential-Recommender" `
+  --output-dir "D:\Code\triage-runs\Sequential-Recommender-modal-manual" `
+  --provider real `
+  --repository-identifier Sequential-Recommender `
+  --semgrep-config p/python `
+  --semgrep-config p/security-audit `
+  --module2 `
+  --no-overwrite
+```
+
+Không cần chạy `modal deploy`; provider tự mở một App session, sử dụng model
+cache trong Modal Volume và scale GPU về 0 khi hoàn thành.
+
+## 5. Hai chế độ CLI
+
+### 5.1 `scan-and-triage`
+
+Chạy scanner rồi triage. Đây là chế độ thông thường:
 
 ```powershell
 python -m sast_triage scan-and-triage `
-  --repository .\duong-dan-repo-python `
-  --output-dir .\output\modal-qwen14b `
-  --provider real `
-  --repository-identifier my-project
+  --repository <repo-path> `
+  --output-dir <run-path> `
+  --provider fake|ollama|real
 ```
 
-Không dùng cùng một `output-dir` cho hai lần chạy nếu muốn giữ cả hai kết quả.
+### 5.2 `triage`
 
-## 4. Triage artifact scanner có sẵn
-
-Dùng chế độ này khi Semgrep và Gitleaks đã được chạy trước đó:
+Dùng artifact Semgrep/Gitleaks có sẵn, không chạy scanner:
 
 ```powershell
 python -m sast_triage triage `
-  --repository .\duong-dan-repo-python `
-  --semgrep-json .\artifacts\semgrep.json `
-  --gitleaks-json .\artifacts\gitleaks.json `
-  --output-dir .\output\artifact-run `
-  --provider fake
+  --repository "D:\Code\target-repos\MyRepo" `
+  --semgrep-json "D:\Artifacts\semgrep.json" `
+  --gitleaks-json "D:\Artifacts\gitleaks.json" `
+  --output-dir "D:\Code\triage-runs\MyRepo-artifact-run" `
+  --provider fake `
+  --no-overwrite
 ```
 
-Artifact phải thuộc đúng repository. Nếu không xác minh được liên kết,
-policy sẽ chuyển kết quả sang hướng thận trọng hơn.
+Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây là lý do
+`scan-and-triage` được ưu tiên cho demo.
 
-## 5. Đọc output
+## 6. Option quan trọng
 
-Mỗi lần chạy thành công hoặc thành công một phần tạo:
+| Option | Ý nghĩa |
+|---|---|
+| `--repository` | Đường dẫn target repository. |
+| `--output-dir` | Thư mục riêng của một run đầy đủ. |
+| `--provider` | `fake`, `ollama` hoặc `real`. |
+| `--repository-identifier` | ID tương đối ghi vào metadata; mặc định là tên repo. |
+| `--analysis-backend` | `native` (mặc định) hoặc `joern` (Docker, thử nghiệm). |
+| `--semgrep-config` | Có thể lặp nhiều lần để thêm ruleset/YAML. |
+| `--gitleaks-config` | Config Gitleaks tùy chọn. |
+| `--module2` / `--no-module2` | Bật/tắt cross-file index Python. |
+| `--overwrite` / `--no-overwrite` | Cho phép/chặn ghi đè file report. |
+| `--resume` | Dùng lại scanner artifact và checkpoint của cùng output dir. |
+
+Xem toàn bộ option:
+
+```powershell
+python -m sast_triage scan-and-triage --help
+python -m sast_triage triage --help
+```
+
+Thiết lập image, smoke test và troubleshooting của `--analysis-backend joern`
+được mô tả tại [joern-analysis.md](joern-analysis.md).
+
+## 7. Module 2 và monorepo
+
+Module 2 hiện index file `*.py` và nhận diện component qua:
 
 ```text
-output-dir/
+pyproject.toml
+setup.cfg
+setup.py
+```
+
+Nó lưu symbol, call-site, file tương đối và số dòng; không lưu raw source trong
+repository index. Giới hạn mặc định:
+
+- tối đa 20.000 file Python;
+- mỗi file tối đa 1 MiB;
+- bỏ `.git`, `.venv`, `venv`, `node_modules`, `.tox`, symlink;
+- trace tối đa 5 tầng;
+- Evidence Agent tối đa 5 tool call.
+
+Module 2 chưa phải taint engine toàn diện như Semgrep Pro/CodeQL. Dynamic
+dispatch, reflection, monkey patching hoặc framework wiring phức tạp có thể cần
+review thủ công.
+
+## 8. Output và cách đọc báo cáo
+
+Một run `scan-and-triage` có cấu trúc:
+
+```text
+run-directory\
 ├── report.md
 ├── report.json
 ├── run-metadata.json
-└── scanner-artifacts/       chỉ có ở chế độ scan-and-triage
+└── scanner-artifacts\
+    ├── semgrep.json
+    └── gitleaks.json
 ```
 
-- `report.md`: dành cho security reviewer; nên đọc file này trước.
-- `report.json`: output máy đọc, gồm metadata, finding, quyết định LLM và policy.
-- `run-metadata.json`: phiên bản prompt/model/policy, bộ đếm và thời gian chạy.
-- `scanner-artifacts/`: dữ liệu scanner thô; phải bảo vệ vì có thể chứa secret.
+Trong khi chạy có thể xuất hiện `triage-checkpoint.json`; file này tự xóa sau
+khi report và metadata được ghi thành công.
 
-Khi provider Modal hết quota/credit/capacity, CLI trả exit code `5` và giữ
-`triage-checkpoint.json`. Checkpoint chỉ có finding ID, decision đã validate,
-policy và lỗi an toàn; không có raw source, prompt hay response thô. Tiếp tục bằng
-Ollama với cùng repository, output directory và artifact:
+### 8.1 File nào dùng cho việc gì?
+
+- `report.md`: đọc bằng mắt, dùng khi trình bày mentor.
+- `report.json`: tích hợp chương trình hoặc benchmark.
+- `run-metadata.json`: kiểm tra commit, trạng thái worktree, binding, model,
+  scanner version/config và số finding lỗi.
+- `scanner-artifacts/`: dùng debug nội bộ, không gửi ra ngoài mặc định.
+
+### 8.2 Model verdict
+
+| Verdict | Ý nghĩa |
+|---|---|
+| `LIKELY_TP` | LLM nghiêng về lỗi thật. |
+| `LIKELY_FP` | LLM nghiêng về cảnh báo giả. |
+| `NEEDS_REVIEW` | LLM không đủ cơ sở kết luận. |
+
+### 8.3 Policy action
+
+| Action | Ý nghĩa |
+|---|---|
+| `AUTO_ACCEPT` | Policy có đủ evidence để chấp nhận finding. |
+| `AUTO_REJECT` | Policy có đủ evidence để loại finding. |
+| `MANUAL_REVIEW` | Cần con người xem vì evidence thiếu/xung đột. |
+| `TRIAGE_ERROR` | Lỗi xử lý; finding vẫn được giữ. |
+
+Không đánh đồng `LIKELY_FP` với `AUTO_REJECT`: policy có thể giữ finding ở
+`MANUAL_REVIEW` nếu LLM đoán FP nhưng deterministic evidence chưa chứng minh.
+
+### 8.4 Kiểm tra run hợp lệ
+
+```powershell
+$runPath = "D:\Code\triage-runs\Sequential-Recommender-qwen14b-..."
+$metadata = Get-Content "$runPath\run-metadata.json" -Raw | ConvertFrom-Json
+$report = Get-Content "$runPath\report.json" -Raw | ConvertFrom-Json
+
+$metadata | Select-Object repository_identifier, commit_sha, working_tree_state,
+  artifact_repository_match, triage_provider, model_version,
+  total_findings_parsed, findings_triaged_ok, findings_with_errors
+
+$report.results |
+  Group-Object { $_.policy_decision.action } |
+  Select-Object Name, Count
+```
+
+Run demo tốt nên có:
+
+```text
+artifact_repository_match = VERIFIED
+model_version              = Qwen/Qwen3-14B-AWQ
+findings_with_errors       = 0
+report result count        = total_findings_parsed
+```
+
+## 9. Checkpoint và resume
+
+Nếu Modal hết credit/quota/capacity, CLI trả exit code `5` và giữ checkpoint.
+Chạy lại bằng đúng repository, output directory, prompt/schema và scanner config:
 
 ```powershell
 python -m sast_triage scan-and-triage `
-  --repository .\duong-dan-repo-python `
-  --output-dir .\output\modal-qwen14b `
-  --provider ollama `
+  --repository "D:\Code\target-repos\Sequential-Recommender" `
+  --output-dir "D:\Code\triage-runs\RUN-BI-GIAN-DOAN" `
+  --provider real `
+  --semgrep-config p/python `
+  --semgrep-config p/security-audit `
+  --module2 `
   --resume
 ```
 
-Trong `scan-and-triage`, `--resume` không chạy lại scanner; nó bind và tái sử dụng
-`scanner-artifacts` của lần chạy bị gián đoạn. Checkpoint tự xóa sau khi cả ba
-report/metadata đã ghi thành công.
+Có thể chuyển phần finding còn lại sang Ollama:
 
-CLI hiển thị tiến trình theo bảy stage: validate, scanner/artifact, parse, provider,
-triage từng finding, ghi report và hoàn tất. Tiến trình chỉ in số lượng và
-policy action an toàn; không in source, secret, prompt hay response LLM. Lỗi vận hành
-in `LỖI [error_code]` cùng thông báo an toàn, không in traceback.
-
-Trong mỗi finding:
-
-```text
-finding          Scanner phát hiện điều gì
-context_summary  Phạm vi context an toàn đã phân tích
-triage_decision  LLM nhận định gì
-policy_decision  Hệ thống quyết định xử lý thế nào
-processing_errors Lỗi của riêng finding
+```powershell
+python -m sast_triage scan-and-triage `
+  --repository "D:\Code\target-repos\Sequential-Recommender" `
+  --output-dir "D:\Code\triage-runs\RUN-BI-GIAN-DOAN" `
+  --provider ollama `
+  --semgrep-config p/python `
+  --semgrep-config p/security-audit `
+  --module2 `
+  --resume
 ```
 
-`scanner_errors` ở cấp cao nhất chứa lỗi scanner/artifact không thuộc riêng một
-finding. `triage_decision = null` nghĩa là provider không tạo được output hợp lệ.
+Trong `scan-and-triage`, resume dùng lại `scanner-artifacts`; scanner không chạy
+lại. Checkpoint không chứa raw source, prompt hoặc response thô.
 
-## 6. Exit code
+## 10. Exit code
 
-| Mã | Ý nghĩa |
+| Code | Ý nghĩa |
 |---:|---|
-| `0` | Chạy thành công. |
-| `2` | Cấu hình hoặc input không hợp lệ. |
-| `3` | Scanner/artifact có lỗi; report vẫn có thể đã được tạo. |
-| `4` | Không ghi được report an toàn. |
-| `5` | Modal hết quota/credit/capacity; checkpoint đã được lưu để resume. |
+| `0` | Hoàn tất; vẫn cần đọc warning và policy action. |
+| `2` | Cấu hình/repository/checkpoint/provider không hợp lệ. |
+| `3` | Scanner hoặc parser gặp lỗi. |
+| `4` | Không thể kiểm tra hoặc ghi báo cáo. |
+| `5` | Modal hết quota/credit/capacity; có thể resume. |
 
-Luôn kiểm tra cả exit code và `scanner_errors` trong report. Trên Windows,
-Gitleaks hiện có thể trả file path tuyệt đối; parser sẽ fail closed và ghi
-`PARSE_RECORD_INVALID_FIELD` thay vì làm lộ hoặc triage nhầm finding.
+Trong PowerShell:
 
-## 7. Báo cáo dành cho reviewer
+```powershell
+python -m sast_triage Sequential-Recommender
+$LASTEXITCODE
+```
 
-`report.md` sắp xếp finding theo mức cần xử lý: `TRIAGE_ERROR`,
-`MANUAL_REVIEW`, `LIKELY_TP`, rồi `FP_CANDIDATE`; trong cùng nhóm, severity cao
-được đưa lên trước.
+Luôn kiểm tra cả exit code và `findings_with_errors` trong metadata.
 
-Phần “Phân tích của LLM” gồm verdict, confidence, kết luận, evidence, thông tin
-còn thiếu và giả định. Phần policy do chương trình tạo theo quy tắc cố định,
-không phải nội dung LLM. Báo cáo không chứa raw source, prompt thô, response LLM
-thô, traceback hoặc đường dẫn repository tuyệt đối.
+## 11. Xử lý lỗi thường gặp
 
-## 8. Qwen trên Modal
+### `CLI_INVALID_REPOSITORY`
 
-Modal Qwen3-14B là provider `real` mặc định của CLI. Xem
-[MODAL_QWEN14B_SETUP.md](MODAL_QWEN14B_SETUP.md) để biết chi tiết Volume, GPU,
-chi phí, benchmark và cách kiểm tra app đã scale về 0.
+Tên repo được resolve theo thư mục hiện tại. Nếu đang ở source:
+
+```powershell
+python -m sast_triage ..\target-repos\Sequential-Recommender
+```
+
+### Git báo target đã tồn tại
+
+Không clone lại. Chạy CLI với thư mục đã có.
+
+### `semgrep` hoặc `gitleaks` không được nhận diện
+
+```powershell
+Get-Command semgrep | Select-Object Source
+Get-Command gitleaks | Select-Object Source
+```
+
+Sửa `PATH`, mở PowerShell mới rồi kiểm tra version trước khi chạy CLI.
+
+### Modal đứng lâu ở `[4/7]`
+
+Cold start gồm tải image, model shard, compile và GPU warm-up. Chờ tối đa khoảng
+7–10 phút trước khi coi là bất thường. Không chạy nhiều phiên B200 song song.
+
+### `PartialParsing` từ Semgrep
+
+Finding khác vẫn được giữ, nhưng file liên quan có thể chưa được phân tích đầy
+đủ. Ghi rõ warning khi trình bày kết quả.
+
+### Repository chủ yếu là `.ipynb`
+
+CLI chưa phân tích notebook trực tiếp. Chuyển notebook thành script trước:
+
+```powershell
+jupyter nbconvert --to script .\notebooks\example.ipynb
+```
+
+Sau đó quét bản `.py` trong một checkout/output riêng.
+
+## 12. Checklist demo cho mentor
+
+Trước buổi demo:
+
+```powershell
+cd "D:\Code\AI security"
+.\.venv\Scripts\Activate.ps1
+python --version
+semgrep --version
+gitleaks version
+python -m modal token info
+python -m pytest -p no:cacheprovider -q --basetemp=.pytest-tmp-demo
+python -m ruff check src tests modal_apps
+```
+
+Kiểm tra target:
+
+```powershell
+git -C "D:\Code\target-repos\Sequential-Recommender" status --short
+```
+
+Chạy:
+
+```powershell
+cd "D:\Code\target-repos"
+python -m sast_triage Sequential-Recommender
+```
+
+Khi hoàn tất, mở `report.md` trong run mới nhất. Giữ một report validation an
+toàn làm phương án dự phòng nếu Modal cold start hoặc quota gặp vấn đề.
+
+## 13. Kiểm thử dành cho người phát triển
+
+```powershell
+cd "D:\Code\AI security"
+.\.venv\Scripts\Activate.ps1
+$env:PYTHONDONTWRITEBYTECODE = "1"
+python -m pytest -p no:cacheprovider -q --basetemp=.pytest-tmp-local
+python -m ruff check src tests modal_apps
+```
+
+Kết quả gần nhất: `437 passed, 2 skipped`; Ruff đạt. Validation thật trên
+Sequential-Recommender: 4 finding parsed, 4 triage thành công, 0 lỗi, binding
+`VERIFIED`, exit code `0`.
+
+Đọc kiến trúc tại [`code-map.md`](code-map.md) và
+[`sprint-1-system-flow.md`](sprint-1-system-flow.md).

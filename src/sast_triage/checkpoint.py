@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -16,6 +17,22 @@ from sast_triage.models import NormalizedFinding, TriageResult
 
 CHECKPOINT_VERSION = "triage-checkpoint-v1"
 CHECKPOINT_FILENAME = "triage-checkpoint.json"
+_REPLACE_ATTEMPTS = 8
+_REPLACE_INITIAL_DELAY_SECONDS = 0.05
+
+
+def _replace_with_retry(source: Path, destination: Path) -> None:
+    """Replace a checkpoint despite short-lived Windows file-sharing locks."""
+    delay = _REPLACE_INITIAL_DELAY_SECONDS
+    for attempt in range(_REPLACE_ATTEMPTS):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == _REPLACE_ATTEMPTS - 1:
+                raise
+            time.sleep(delay)
+            delay = min(delay * 2, 0.4)
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,6 +76,9 @@ class TriageCheckpointStore:
         finding_ids: tuple[str, ...],
         prompt_version: str,
         output_schema_version: str,
+        analysis_backend: str = "native",
+        analysis_backend_version: str | None = None,
+        analysis_config_id: str | None = None,
     ) -> None:
         self.path = path
         self.repository_identifier = repository_identifier
@@ -66,6 +86,9 @@ class TriageCheckpointStore:
         self.finding_ids = finding_ids
         self.prompt_version = prompt_version
         self.output_schema_version = output_schema_version
+        self.analysis_backend = analysis_backend
+        self.analysis_backend_version = analysis_backend_version
+        self.analysis_config_id = analysis_config_id
 
     def load(self, findings: tuple[NormalizedFinding, ...]) -> CheckpointLoadResult:
         """Khôi phục các result đã xong bằng finding hiện tại từ parser."""
@@ -93,6 +116,9 @@ class TriageCheckpointStore:
             "finding_ids": list(self.finding_ids),
             "prompt_version": self.prompt_version,
             "output_schema_version": self.output_schema_version,
+            "analysis_backend": self.analysis_backend,
+            "analysis_backend_version": self.analysis_backend_version,
+            "analysis_config_id": self.analysis_config_id,
         }
         for key, expected in expected_binding.items():
             if payload.get(key) != expected:
@@ -194,6 +220,9 @@ class TriageCheckpointStore:
             "finding_ids": list(self.finding_ids),
             "prompt_version": self.prompt_version,
             "output_schema_version": self.output_schema_version,
+            "analysis_backend": self.analysis_backend,
+            "analysis_backend_version": self.analysis_backend_version,
+            "analysis_config_id": self.analysis_config_id,
             "status": status,
             "failure_code": failure_code,
             "completed_count": len(results),
@@ -217,7 +246,7 @@ class TriageCheckpointStore:
                 handle.write(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
                 handle.flush()
                 os.fsync(handle.fileno())
-            os.replace(temporary, self.path)
+            _replace_with_retry(temporary, self.path)
             temporary = None
         except OSError:
             raise SastTriageError(

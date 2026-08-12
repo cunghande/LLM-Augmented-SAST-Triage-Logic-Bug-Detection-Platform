@@ -1,0 +1,179 @@
+{
+  "model": "Qwen/Qwen3-14B-AWQ",
+  "gpu_requested": "B200",
+  "temperature": 0.0,
+  "seed": 42,
+  "benchmark_version": "0.1",
+  "mapping_version": "semgrep-python-category-map-v1",
+  "analysis": {
+    "query_count": 304,
+    "query_latency_seconds_total": 56.847509,
+    "query_latency_seconds_mean": 0.186998,
+    "query_latency_seconds_max": 2.45473,
+    "tool_call_distribution": {
+      "find_reachability": 25,
+      "inspect_security_control": 25,
+      "trace_dataflow": 68
+    }
+  },
+  "artifact": "benchmarks/BenchmarkRun/semgrep-p-python.json",
+  "dataset_scope": "OWASP findings with matching test identity and category",
+  "parsed_findings": 184,
+  "scoreable_findings": 93,
+  "unique_scoreable_cases": 88,
+  "ground_truth": {
+    "vulnerable": 77,
+    "benign": 16
+  },
+  "schema_success": 93,
+  "schema_success_rate": 1.0,
+  "errors": 0,
+  "error_codes": {},
+  "verdicts": {
+    "LIKELY_FP": 1,
+    "LIKELY_TP": 92
+  },
+  "policy_actions": {
+    "LIKELY_TP": 25,
+    "MANUAL_REVIEW": 68
+  },
+  "decisive": 93,
+  "correct_decisive": 78,
+  "coverage": 1.0,
+  "selective_accuracy": 0.8387096774193549,
+  "accuracy_with_abstentions_unresolved": 0.8387096774193549,
+  "vulnerable_recognition_rate": 1.0,
+  "benign_recognition_rate": 0.0625,
+  "balanced_accuracy_with_abstentions_unresolved": 0.53125,
+  "case_level": {
+    "total": 88,
+    "decisive": 88,
+    "coverage": 1.0,
+    "selective_accuracy": 0.8409090909090909,
+    "accuracy_with_abstentions_unresolved": 0.8409090909090909
+  },
+  "policy_safety": {
+    "unsafe_vulnerable_fp_candidate": 0,
+    "benign_fp_candidate": 0,
+    "tp_retention_rate": 1.0,
+    "automatic_resolution_rate": 0.26881720430107525
+  },
+  "context": {
+    "status_counts": {
+      "complete": 25,
+      "partial": 68
+    },
+    "path_type_counts": {
+      "intrinsic_usage": 54,
+      "same_file": 25,
+      "unknown": 14
+    },
+    "outcomes": {
+      "complete": {
+        "correct": 16,
+        "incorrect": 9
+      },
+      "partial": {
+        "correct": 62,
+        "incorrect": 6
+      }
+    }
+  },
+  "confusion": {
+    "benign_likely_fp": 1,
+    "benign_likely_tp": 15,
+    "vulnerable_likely_tp": 77
+  },
+  "elapsed_seconds_including_cold_start": 720.07,
+  "latency": {
+    "first_request_seconds_including_cold_start": 383.74,
+    "steady_state_mean_seconds": 1.89,
+    "steady_state_requests": 92
+  },
+  "categories": {
+    "cmdi": {
+      "correct": 11,
+      "incorrect": 7,
+      "total": 18
+    },
+    "deserialization": {
+      "correct": 9,
+      "incorrect": 7,
+      "total": 16
+    },
+    "hash": {
+      "correct": 54,
+      "total": 54
+    },
+    "pathtraver": {
+      "correct": 3,
+      "incorrect": 1,
+      "total": 4
+    },
+    "sqli": {
+      "correct": 1,
+      "total": 1
+    }
+  },
+  "run_metadata": {
+    "run_id": "d4de6f22-4ea0-4de8-9bb6-df70edb40e29",
+    "repository_name": "BenchmarkPython",
+    "repository_identifier": "BenchmarkPython-Qwen3-14B-AWQ-scoreable",
+    "commit_sha": null,
+    "working_tree_state": null,
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python"
+    },
+    "input_artifact_hashes": {},
+    "analysis_backend": "joern",
+    "analysis_backend_version": "4.0.600",
+    "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v1",
+    "cpg_build_status": "complete",
+    "cpg_build_seconds": 98.531312,
+    "prompt_version": "triage-prompt-v8",
+    "model_version": "Qwen/Qwen3-14B-AWQ",
+    "policy_version": "conservative-policy-v1",
+    "triage_provider": "modal-qwen-structured",
+    "tool_version": "0.1.0",
+    "cli_mode": "benchmark-modal-qwen-joern",
+    "started_at": "2026-08-11T07:20:29.396718Z",
+    "completed_at": "2026-08-11T07:30:44.023720Z",
+    "total_findings_parsed": 93,
+    "findings_triaged_ok": 93,
+    "findings_with_errors": 0
+  },
+  "limitations": [
+    "Single deterministic run; no confidence interval.",
+    "This measures LLM triage on scoreable scanner findings, not scanner recall.",
+    "OWASP ground truth supplies vulnerable/benign labels only for this run.",
+    "NEEDS_REVIEW and provider errors are counted as unresolved."
+  ],
+  "quality_evaluation": {
+    "required": {
+      "schema_success_100_percent": true,
+      "provider_errors_zero": true,
+      "unsafe_vulnerable_fp_zero": true
+    },
+    "quality": {
+      "overall_accuracy_above_86_02_percent": false,
+      "selective_accuracy_at_least_90_91_percent": false,
+      "partial_context_below_14": false
+    },
+    "targets": {
+      "benign_recognition_above_62_5_percent": false,
+      "automatic_resolution_above_72_04_percent": false
+    },
+    "quality_win": false,
+    "default_recommendation": "keep_native_default_joern_experimental"
+  }
+}

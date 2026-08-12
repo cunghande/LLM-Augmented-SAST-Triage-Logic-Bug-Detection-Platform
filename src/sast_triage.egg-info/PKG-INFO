@@ -4,156 +4,235 @@ Version: 0.1.0
 Summary: LLM-Augmented SAST Triage & Logic Bug Detection Platform
 Requires-Python: <3.14,>=3.11
 Description-Content-Type: text/markdown
+Requires-Dist: modal<2.0.0,>=1.5.3
 Requires-Dist: pydantic<3.0.0,>=2.0.0
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0.0; extra == "dev"
 Requires-Dist: ruff; extra == "dev"
+Provides-Extra: joern
+Requires-Dist: cpgqls-client==0.0.9; extra == "joern"
 
-# AGENTS.md — CLI SAST Triage Platform
+# LLM-Augmented SAST Triage
 
-## Tổng quan dự án
+Công cụ CLI hỗ trợ reviewer phân loại finding bảo mật từ Semgrep và Gitleaks.
+Pipeline quét repository, chuẩn hóa finding, đọc context an toàn, tạo evidence
+same-file/cross-file, gọi LLM, áp dụng policy bảo thủ và xuất báo cáo JSON cùng
+Markdown.
 
-Công cụ CLI phân loại (triage) các phát hiện từ Semgrep (phân tích mã
-tĩnh) và Gitleaks (phát hiện bí mật) bằng phân tích hỗ trợ LLM.
+> LLM chỉ đưa ra đề xuất. Hệ thống không tự động xóa hoặc làm mất finding; khi
+> bằng chứng chưa đủ, kết quả được chuyển sang `MANUAL_REVIEW`.
 
-Đầu vào là một Python repository. Hệ thống quét repository, chuẩn hóa
-các phát hiện, trích xuất ngữ cảnh mã nguồn, làm sạch dữ liệu nhạy
-cảm, gọi LLM để đề xuất phân loại, áp dụng chính sách bảo thủ, và
-xuất báo cáo JSON cùng Markdown.
+## Phạm vi hiện tại
 
-## Quy tắc kiến trúc
+- Đầu vào chính: repository Python; Semgrep vẫn có thể quét thêm ngôn ngữ nếu
+  ruleset được cấu hình, nhưng Evidence Engine và Module 2 hiện chỉ hiểu Python.
+- Scanner: Semgrep Community Edition và Gitleaks.
+- Provider: fake (offline), Ollama hoặc Qwen3-14B-AWQ trên Modal.
+- Module 2: index Python theo component, symbol và call-site; trace source-to-sink
+  cross-file có giới hạn.
+- Xử lý tuần tự trong Sprint 1; không chạy finding song song.
+- Notebook `.ipynb` chưa được phân tích trực tiếp; cần chuyển sang `.py` trước.
 
-1. **Một pipeline triage duy nhất.** Cả hai chế độ CLI (`triage` và
-   `scan-and-triage`) dùng chung một pipeline. Không bao giờ sao chép
-   logic triage.
+## Luồng hệ thống
 
-2. **Tách biệt domain model.** Sáu public model rời khỏi ranh giới
-   component. Không được gộp chúng lại:
-   - `NormalizedFinding` — dữ kiện scanner an toàn.
-   - `SanitizedContext` — ngữ cảnh duy nhất LLM provider được nhận.
-   - `TriageInput` — gói đầu vào cho provider.
-   - `TriageDecision` — kết quả từ LLM.
-   - `PolicyDecision` — quyết định của hệ thống.
-   - `TriageResult` — kết quả tổng hợp cuối cùng, bất biến.
+```text
+Repository
+  → Semgrep + Gitleaks
+  → NormalizedFinding
+  → Safe context + redaction
+  → Evidence Agent + Module 2 index
+  → TriageInput
+  → LLM verdict đã validate
+  → PolicyDecision
+  → report.json + report.md
+```
 
-3. **Raw source không vượt component boundary.** Mã nguồn thô từ
-   repository chỉ tồn tại trong local scope của `SafeContextService`.
-   Không có public Pydantic model nào chứa raw source text. Kiểu nội
-   bộ tạm thời (ContextPackage) không phải public model.
+`triage` và `scan-and-triage` dùng chung pipeline. Module 1 và Module 2 cũng
+không phải hai pipeline cạnh tranh: Module 2 chỉ bổ sung finding/evidence
+cross-file trước khi mọi finding đi qua cùng provider và policy.
 
-4. **Xử lý tuần tự.** Không dùng async, không song song trong
-   Sprint 1.
+## Bắt đầu nhanh trên Windows
 
-5. **Không tự động loại bỏ.** Mọi phát hiện phải xuất hiện trong
-   báo cáo bất kể kết quả phân loại.
+### 1. Yêu cầu
 
-6. **Model đầu ra bất biến.** Dùng Pydantic v2 frozen model cho tất
-   cả kiểu domain rời khỏi ranh giới component. Trạng thái nội bộ
-   có thể thay đổi không bao giờ được serialize vào báo cáo hoặc
-   metadata.
+- Python 3.11, 3.12 hoặc 3.13 (khuyến nghị 3.12).
+- Git.
+- Semgrep và Gitleaks trong `PATH`.
+- Tài khoản Modal có credit/quota nếu chạy Qwen3-14B thật.
 
-7. **Ràng buộc repository-artifact.** Các phát hiện từ repository A
-   không bao giờ được triage bằng ngữ cảnh từ repository B. Pipeline
-   phải xác minh ràng buộc trước khi xử lý.
+Kiểm tra:
 
-## Quy tắc bảo mật
+```powershell
+python --version
+git --version
+semgrep --version
+gitleaks version
+```
 
-### Bí mật (Secrets)
+Nếu `python --version` không nằm trong khoảng 3.11–3.13, hãy cài Python 3.12
+và bảo đảm lệnh `python` trỏ tới đúng bản đó trước khi tạo `.venv`.
 
-- Giá trị bí mật thô từ Gitleaks chỉ tồn tại trong phạm vi cục bộ
-  hẹp của `GitleaksParser`. Chúng không được đưa vào bất kỳ public
-  model, log, exception message, prompt, hay báo cáo nào.
-- Placeholder cho bí mật đã redact: `<REDACTED_SECRET>`.
-- Không hash bí mật thô trong Sprint 1.
-- Ngữ cảnh mã nguồn trích xuất cho phát hiện Gitleaks phải được
-  redact lại vì file nguồn có thể vẫn chứa bí mật.
+Semgrep hỗ trợ cài bằng Python trên Windows. Gitleaks cung cấp binary Windows
+tại trang Releases chính thức. Xem hướng dẫn chi tiết trong
+[`docs/cli-usage.md`](docs/cli-usage.md).
 
-### Ngữ cảnh (Context)
+### 2. Cài dự án
 
-- Tất cả ngữ cảnh mã nguồn (Semgrep và Gitleaks) phải đi qua
-  `SafeContextService` trước khi đến `TriageProvider`.
-- Raw source chỉ trong local scope của `SafeContextService`. Không
-  serialize, log, đưa vào exception, hay `repr` public model.
-- Không bao giờ coi quá trình sanitize cho Semgrep là không cần thiết.
-  Mã nguồn gần phát hiện có thể chứa thông tin xác thực.
-- Mã nguồn là dữ liệu không đáng tin cậy. Nó có thể chứa payload
-  prompt injection.
-- `TriageProvider` chỉ nhận `TriageInput`, không nhận raw source hay
-  `NormalizedFinding` trực tiếp.
+Mở PowerShell tại thư mục source:
 
-### Đường dẫn (Paths)
+```powershell
+cd "D:\Code\AI security"
+python -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e ".[dev]"
+```
 
-- Resolve cả đường dẫn gốc repository và đường dẫn file ứng viên.
-- Xác minh đường dẫn ứng viên nằm bên trong gốc repository bằng kiểm
-  tra path containment thực sự, không dùng so sánh chuỗi đơn giản.
-- Chặn traversal `../`, thoát đường dẫn tuyệt đối, và symlink escape.
-- Lỗi trích xuất ngữ cảnh không được xóa phát hiện. Chuyển nó đến
-  `MANUAL_REVIEW` hoặc `TRIAGE_ERROR` qua policy.
+### 3. Xác thực Modal một lần
 
-### Báo cáo (Reports)
+```powershell
+python -m modal setup
+python -m modal token info
+```
 
-- Không chứa bí mật thô.
-- Không chứa prompt thô gửi cho LLM.
-- Không chứa response thô từ LLM.
-- Không chứa traceback.
-- Không chứa đường dẫn tuyệt đối của repository trong báo cáo mặc định.
-- Reporter phải thực hiện kiểm tra rò rỉ phòng thủ sâu trước khi ghi file.
+Bỏ qua bước này nếu chỉ dùng `--provider fake` hoặc Ollama.
 
-### LLM
+### 4. Chuẩn bị repository mục tiêu
 
-- Validate tất cả output của LLM theo schema.
-- Không bao giờ thực thi output của LLM.
-- Khi provider lỗi: `triage_decision = null`,
-  `PolicyAction = TRIAGE_ERROR`, tạo `ProcessingError` an toàn.
+Không clone target vào source công cụ. Đặt source, target và output thành ba thư
+mục ngang hàng:
 
-## Ngôn ngữ và phụ thuộc
+```text
+D:\Code\
+├── AI security\       source công cụ
+├── target-repos\      repository cần quét
+└── triage-runs\       CLI tự tạo artifact và báo cáo
+```
 
-- Python >= 3.11, < 3.14.
-- Không dùng câu lệnh `match` hoặc cú pháp Python mới trừ khi nó
-  làm code rõ ràng hơn đáng kể.
-- Pydantic v2 cho domain model contracts.
-- Module `logging` của thư viện chuẩn. Không thêm `structlog` mà
-  không có lý do cụ thể và phân tích đánh đổi.
-- Framework CLI được hoãn đến Iteration 5. Mặc định dùng `argparse`
-  trừ khi độ phức tạp đòi hỏi khác.
-- Không thêm phụ thuộc mà không giải thích tại sao thư viện chuẩn
-  không đủ.
+Chỉ cần tự tạo `target-repos`; `triage-runs` được CLI tạo tự động:
 
-## Quy ước viết code
+```powershell
+New-Item -ItemType Directory -Force "D:\Code\target-repos"
+cd "D:\Code\target-repos"
+git clone https://github.com/cunghande/Sequential-Recommender
+```
 
-- Type hint trên tất cả hàm public và trường model.
-- Docstring trên tất cả class và hàm public.
-- Không dùng tham số mặc định có thể thay đổi (mutable default).
-- Không dùng `except` trần. Bắt exception cụ thể.
-- Giữ nguyên comment và docstring hiện có không liên quan đến thay đổi.
+Nếu repository đã tồn tại, không clone lại.
 
-## Quy tắc testing
+### 5. Chạy Qwen3-14B bằng một lệnh
 
-- Mọi domain model phải có test kiểm tra validation.
-- Pipeline Gitleaks phải có canary secret test: chèn một bí mật giả
-  đã biết và xác minh nó không xuất hiện trong model đã serialize,
-  log, prompt, hay báo cáo.
-- Test fixture dùng để kiểm tra tính đúng đắn. Chúng không phải
-  benchmark chất lượng model.
-- Không báo cáo precision, recall, hay F1 từ fixture tổng hợp.
+Khi `.venv` đang được kích hoạt và PowerShell đang ở `target-repos`:
 
-## Kỷ luật iteration
+```powershell
+python -m sast_triage Sequential-Recommender
+```
 
-- Tuân thủ thứ tự iteration trong `docs/sprint-1-scope.md`.
-- Không triển khai scanner runner trước khi pipeline dựa trên artifact
-  chạy end-to-end.
-- Không tích hợp real LLM provider trước khi pipeline với fake
-  provider chạy end-to-end.
-- Iteration 1 tạo tối đa:
-  - `pyproject.toml`
-  - `src/sast_triage/__init__.py`
-  - `src/sast_triage/models.py`
-  - `src/sast_triage/errors.py`
-  - `tests/test_models.py`
+Lệnh rút gọn tự chọn:
 
-## Tham khảo
+- `Qwen/Qwen3-14B-AWQ` trên Modal B200;
+- Semgrep `p/python` và `p/security-audit`;
+- Gitleaks built-in rules;
+- Module 2 bật;
+- output mới có timestamp, không ghi đè run cũ.
 
-- [Phạm vi Sprint 1](docs/sprint-1-scope.md)
+Output có dạng:
+
+```text
+D:\Code\triage-runs\Sequential-Recommender-qwen14b-YYYYMMDD-HHMMSSZ\
+├── report.md
+├── report.json
+├── run-metadata.json
+└── scanner-artifacts\
+    ├── semgrep.json
+    └── gitleaks.json
+```
+
+Cold start Modal có thể mất khoảng 4–7 phút. Chờ đến khi CLI in `[7/7]` và
+`exit_code=0`.
+
+## Đọc kết quả
+
+- `report.md`: báo cáo chính cho reviewer/mentor.
+- `report.json`: dữ liệu đầy đủ cho đánh giá tự động.
+- `run-metadata.json`: commit, scanner version/config, model và binding.
+- `scanner-artifacts/`: artifact nội bộ; không nên gửi ra ngoài vì có thể chứa
+  source snippet hoặc dữ liệu nhạy cảm.
+
+Policy action:
+
+| Action | Ý nghĩa |
+|---|---|
+| `AUTO_ACCEPT` | Evidence đủ để chấp nhận lỗi thật theo policy. |
+| `AUTO_REJECT` | Evidence đủ để xác định cảnh báo giả theo policy. |
+| `MANUAL_REVIEW` | Chưa đủ evidence hoặc có bất đồng cần con người xem. |
+| `TRIAGE_ERROR` | Finding gặp lỗi xử lý nhưng vẫn được giữ trong báo cáo. |
+
+`LIKELY_TP`/`LIKELY_FP` là ý kiến của LLM; action phía trên mới là quyết định
+cuối của hệ thống.
+
+## Cấu trúc source
+
+```text
+.
+├── src/sast_triage/
+│   ├── application/          điều phối một CLI run và provider session
+│   ├── runners/              chạy Semgrep/Gitleaks
+│   ├── parsers/              scanner JSON → NormalizedFinding
+│   ├── context/              safe read, AST, sanitize, evidence, Module 2
+│   ├── pipeline/             xử lý một finding và toàn batch
+│   ├── triage/               system prompt, provider, schema validation
+│   ├── policy/               LLM verdict → system action
+│   ├── reporting/            report JSON/Markdown an toàn
+│   └── evaluation/           benchmark loader và metric
+├── modal_apps/               entrypoint/runner Modal và benchmark
+├── tests/                    unit, integration và security regression test
+├── benchmarks/               dataset/artifact/báo cáo benchmark có kiểm soát
+├── docs/                     tài liệu kiến trúc và vận hành
+├── pyproject.toml            package, dependency và cấu hình test
+└── README.md                 điểm bắt đầu này
+```
+
+Ba file nên đọc đầu tiên:
+
+1. `src/sast_triage/entrypoint.py` — lệnh rút gọn và tóm tắt output.
+2. `src/sast_triage/application/run.py` — điều phối scanner, Module 2, provider,
+   checkpoint và reporter.
+3. `src/sast_triage/pipeline/finding.py` — xử lý một finding từ context đến
+   policy.
+
+Xem thêm [`docs/code-map.md`](docs/code-map.md) để lần theo từng component.
+
+## Kiểm thử
+
+```powershell
+cd "D:\Code\AI security"
+.\.venv\Scripts\Activate.ps1
+$env:PYTHONDONTWRITEBYTECODE = "1"
+python -m pytest -p no:cacheprovider -q --basetemp=.pytest-tmp-local
+python -m ruff check src tests modal_apps
+```
+
+Trạng thái kiểm tra gần nhất: `437 passed, 2 skipped`; Ruff đạt. Validation thật
+với Sequential-Recommender xử lý thành công 4/4 finding, 0 triage error, binding
+`VERIFIED`, exit code `0`.
+
+## Nguyên tắc bảo mật
+
+- Raw source chỉ tồn tại trong context layer và không nằm trong public model.
+- Secret thô từ Gitleaks không đi vào prompt, log hoặc report.
+- Context gửi provider luôn được sanitize và coi là dữ liệu không đáng tin cậy.
+- Prompt/response LLM thô không được lưu trong báo cáo.
+- Output LLM bị ràng buộc JSON Schema và được validate lại.
+- Provider lỗi không làm finding biến mất.
+- Report mặc định không chứa đường dẫn repository tuyệt đối.
+
+## Tài liệu
+
+- [Hướng dẫn CLI đầy đủ](docs/cli-usage.md)
+- [Bản đồ mã nguồn](docs/code-map.md)
+- [Luồng hệ thống Sprint 1](docs/sprint-1-system-flow.md)
 - [Kiến trúc](docs/architecture.md)
-- [Domain Models](docs/domain-models.md)
+- [Domain model](docs/domain-models.md)
 - [Chính sách bảo mật](docs/security-policy.md)
+- [Thiết lập Qwen3-14B trên Modal](docs/MODAL_QWEN14B_SETUP.md)

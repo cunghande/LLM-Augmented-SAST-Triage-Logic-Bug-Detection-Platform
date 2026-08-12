@@ -8,8 +8,20 @@ value.
 from __future__ import annotations
 
 import ast
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
+from sast_triage.context.ast_utils import (
+    _CUSTOM_CONTROL_MARKERS,
+    _KNOWN_SANITIZER_SUFFIXES,
+    _KNOWN_TRANSPARENT_CALL_SUFFIXES,
+    _SINK_CALL_SUFFIXES,
+    _SOURCE_CALL_SUFFIXES,
+    _UNRESOLVED_CONSTANT,
+    _assigned_names,
+    _matches_suffix,
+    _qualified_name,
+    _safe_expression,
+)
 from sast_triage.context.evidence_models import (
     ContextCompleteness,
     EvidencePackage,
@@ -25,56 +37,6 @@ from sast_triage.context.evidence_models import (
 from sast_triage.context.reader import SourceReadResult
 from sast_triage.models import NormalizedFinding, SanitizedContext
 
-_SOURCE_CALL_SUFFIXES: dict[str, str] = {
-    "input": "console_input",
-    "request.args.get": "http_query_parameter",
-    "request.form.get": "http_form_parameter",
-    "request.get_json": "http_json_body",
-    "request.cookies.get": "http_cookie",
-    "request.headers.get": "http_header",
-    "request.values.get": "http_request_value",
-    "request.files.get": "http_file_upload",
-    "os.environ.get": "environment_variable",
-}
-
-_SINK_CALL_SUFFIXES: dict[str, str] = {
-    "execute": "sql_query",
-    "executemany": "sql_query",
-    "eval": "code_execution",
-    "exec": "code_execution",
-    "os.system": "command_execution",
-    "subprocess.run": "command_execution",
-    "subprocess.call": "command_execution",
-    "subprocess.Popen": "command_execution",
-    "render_template_string": "html_rendering",
-    "mark_safe": "html_rendering",
-    "Markup": "html_rendering",
-    "xpath": "xpath_query",
-    "fromstring": "xml_parsing",
-    "parse": "xml_parsing",
-    "open": "file_access",
-}
-
-_KNOWN_SANITIZER_SUFFIXES: dict[str, str] = {
-    "html.escape": "output_encoding",
-    "markupsafe.escape": "output_encoding",
-    "bleach.clean": "html_sanitizer",
-    "shlex.quote": "shell_escaping",
-    "urllib.parse.quote": "url_encoding",
-    "int": "type_validation",
-    "float": "type_validation",
-}
-
-_CUSTOM_CONTROL_MARKERS = (
-    "sanitize",
-    "sanitise",
-    "validate",
-    "escape",
-    "clean",
-    "verify",
-    "check",
-)
-
 
 @dataclass(frozen=True, slots=True)
 class _Origin:
@@ -84,78 +46,6 @@ class _Origin:
     unresolved_symbols: tuple[str, ...]
     source_reaches_sink: bool | None
     parameter_name: str | None = None
-
-
-def _qualified_name(node: ast.AST) -> str | None:
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        base = _qualified_name(node.value)
-        return f"{base}.{node.attr}" if base else node.attr
-    return None
-
-
-def _safe_expression(node: ast.AST | None) -> str:
-    """Dựng cấu trúc AST mà không có literal value hoặc văn bản mã nguồn."""
-    if node is None:
-        return "<none>"
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        return _qualified_name(node) or "<attribute>"
-    if isinstance(node, ast.Constant):
-        if isinstance(node.value, str):
-            return "<string_literal>"
-        if isinstance(node.value, bool):
-            return "<boolean_literal>"
-        if node.value is None:
-            return "<none_literal>"
-        if isinstance(node.value, (int, float, complex)):
-            return "<number_literal>"
-        return "<literal>"
-    if isinstance(node, ast.Call):
-        name = _qualified_name(node.func) or "<callable>"
-        args = ", ".join(_safe_expression(arg) for arg in node.args[:3])
-        if len(node.args) > 3:
-            args = f"{args}, ..."
-        return f"{name}({args})"
-    if isinstance(node, ast.Subscript):
-        return f"{_safe_expression(node.value)}[<index>]"
-    if isinstance(node, ast.BinOp):
-        return f"{_safe_expression(node.left)} <operator> {_safe_expression(node.right)}"
-    if isinstance(node, ast.JoinedStr):
-        return "<formatted_string>"
-    if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
-        items = ", ".join(_safe_expression(item) for item in node.elts[:3])
-        return f"<{node.__class__.__name__.lower()}>({items})"
-    if isinstance(node, ast.Dict):
-        return "<dictionary_expression>"
-    if isinstance(node, ast.UnaryOp):
-        return f"<unary> {_safe_expression(node.operand)}"
-    if isinstance(node, ast.Compare):
-        return "<comparison_expression>"
-    return f"<{node.__class__.__name__.lower()}_expression>"
-
-
-def _matches_suffix(name: str | None, suffixes: dict[str, str]) -> tuple[str, str] | None:
-    if name is None:
-        return None
-    for suffix, kind in suffixes.items():
-        if name == suffix or name.endswith(f".{suffix}"):
-            return suffix, kind
-    return None
-
-
-def _assigned_names(target: ast.AST) -> tuple[str, ...]:
-    if isinstance(target, ast.Name):
-        return (target.id,)
-    if isinstance(target, (ast.Tuple, ast.List)):
-        return tuple(
-            name
-            for item in target.elts
-            for name in _assigned_names(item)
-        )
-    return ()
 
 
 class CoreAnalysisEngine:
@@ -287,17 +177,284 @@ class CoreAnalysisEngine:
         scope: ast.AST,
     ) -> ast.AST | None:
         matches: list[tuple[int, ast.AST]] = []
+        uncertain: list[tuple[int, ast.AST]] = []
         for node in ast.walk(scope):
-            if isinstance(node, ast.Assign) and node.lineno < line:
+            if not isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+                continue
+            if node.lineno >= line:
+                continue
+            reaches = self._assignment_can_reach_line(node, line, scope)
+            destination = matches if reaches else uncertain
+            if isinstance(node, ast.Assign):
                 if any(name in _assigned_names(target) for target in node.targets):
-                    matches.append((node.lineno, node.value))
+                    destination.append((node.lineno, node.value))
             elif (
                 isinstance(node, ast.AnnAssign)
                 and node.value is not None
-                and node.lineno < line
                 and name in _assigned_names(node.target)
             ):
-                matches.append((node.lineno, node.value))
+                destination.append((node.lineno, node.value))
+            elif isinstance(node, ast.AugAssign) and name in _assigned_names(node.target):
+                combined = ast.copy_location(
+                    ast.BinOp(left=node.target, op=node.op, right=node.value),
+                    node,
+                )
+                destination.append((node.lineno, combined))
+        matches.extend(self._selected_match_assignments(name, line, scope))
+        matches.extend(self._selected_if_assignments(name, line, scope))
+        base = max(matches, key=lambda item: item[0])[1] if matches else None
+        uncertain = [
+            item
+            for item in uncertain
+            if self._conditional_assignment_is_feasible(item[1], line, scope)
+        ]
+        if not uncertain:
+            return base
+        values = [value for _, value in uncertain]
+        if base is not None:
+            values.append(base)
+        return ast.copy_location(ast.Tuple(elts=values, ctx=ast.Load()), values[0])
+
+    def _conditional_assignment_is_feasible(
+        self,
+        value: ast.AST,
+        target_line: int,
+        scope: ast.AST,
+    ) -> bool:
+        """Keep unknown branch writes; discard writes in statically dead branches."""
+        parent = self._parent_map.get(value)
+        child: ast.AST = value
+        while parent is not None and parent is not scope:
+            if isinstance(parent, ast.If) and target_line > (parent.end_lineno or parent.lineno):
+                condition = self._constant_value(parent.test, parent.lineno, scope)
+                if isinstance(condition, bool):
+                    selected = parent.body if condition else parent.orelse
+                    return any(child is item or child in ast.walk(item) for item in selected)
+            if isinstance(parent, ast.Match) and target_line > (
+                parent.end_lineno or parent.lineno
+            ):
+                subject = self._constant_value(parent.subject, parent.lineno, scope)
+                if subject is not _UNRESOLVED_CONSTANT:
+                    selected: list[ast.stmt] = []
+                    for case in parent.cases:
+                        if self._pattern_matches(case.pattern, subject):
+                            selected = case.body
+                            break
+                    return any(child is item or child in ast.walk(item) for item in selected)
+            child = parent
+            parent = self._parent_map.get(parent)
+        return True
+
+    def _constant_value(
+        self,
+        node: ast.AST,
+        line: int,
+        scope: ast.AST,
+        seen: frozenset[str] = frozenset(),
+    ) -> object:
+        """Evaluate a small literal-only subset for deterministic branch selection."""
+        if isinstance(node, ast.Constant):
+            return node.value
+        if isinstance(node, ast.Name):
+            if node.id in seen:
+                return _UNRESOLVED_CONSTANT
+            candidates: list[tuple[int, ast.AST]] = []
+            for candidate in ast.walk(scope):
+                if not isinstance(candidate, (ast.Assign, ast.AnnAssign)):
+                    continue
+                if candidate.lineno >= line:
+                    continue
+                if not self._assignment_can_reach_line(candidate, line, scope):
+                    continue
+                if isinstance(candidate, ast.Assign):
+                    if any(node.id in _assigned_names(target) for target in candidate.targets):
+                        candidates.append((candidate.lineno, candidate.value))
+                elif candidate.value is not None and node.id in _assigned_names(candidate.target):
+                    candidates.append((candidate.lineno, candidate.value))
+            if not candidates:
+                return _UNRESOLVED_CONSTANT
+            _, value = max(candidates, key=lambda item: item[0])
+            return self._constant_value(value, getattr(value, "lineno", line), scope, seen | {node.id})
+        if isinstance(node, ast.Subscript):
+            container = self._constant_value(node.value, line, scope, seen)
+            index = self._constant_value(node.slice, line, scope, seen)
+            if isinstance(container, (str, tuple)) and isinstance(index, int):
+                try:
+                    return container[index]
+                except IndexError:
+                    return _UNRESOLVED_CONSTANT
+        if isinstance(node, ast.UnaryOp):
+            operand = self._constant_value(node.operand, line, scope, seen)
+            if operand is _UNRESOLVED_CONSTANT:
+                return _UNRESOLVED_CONSTANT
+            if isinstance(node.op, ast.Not):
+                return not operand
+            if isinstance(node.op, ast.USub) and isinstance(operand, (int, float)):
+                return -operand
+        if isinstance(node, ast.BinOp):
+            left = self._constant_value(node.left, line, scope, seen)
+            right = self._constant_value(node.right, line, scope, seen)
+            if left is _UNRESOLVED_CONSTANT or right is _UNRESOLVED_CONSTANT:
+                return _UNRESOLVED_CONSTANT
+            try:
+                if isinstance(node.op, ast.Add):
+                    return left + right
+                if isinstance(node.op, ast.Sub):
+                    return left - right
+                if isinstance(node.op, ast.Mult):
+                    return left * right
+            except TypeError:
+                return _UNRESOLVED_CONSTANT
+        if isinstance(node, ast.Compare) and len(node.ops) == len(node.comparators) == 1:
+            left = self._constant_value(node.left, line, scope, seen)
+            right = self._constant_value(node.comparators[0], line, scope, seen)
+            if left is _UNRESOLVED_CONSTANT or right is _UNRESOLVED_CONSTANT:
+                return _UNRESOLVED_CONSTANT
+            operator = node.ops[0]
+            try:
+                if isinstance(operator, ast.Gt):
+                    return left > right
+                if isinstance(operator, ast.GtE):
+                    return left >= right
+                if isinstance(operator, ast.Lt):
+                    return left < right
+                if isinstance(operator, ast.LtE):
+                    return left <= right
+                if isinstance(operator, ast.Eq):
+                    return left == right
+                if isinstance(operator, ast.NotEq):
+                    return left != right
+                if isinstance(operator, ast.In):
+                    return left in right
+                if isinstance(operator, ast.NotIn):
+                    return left not in right
+            except TypeError:
+                return _UNRESOLVED_CONSTANT
+        if isinstance(node, ast.IfExp):
+            condition = self._constant_value(node.test, line, scope, seen)
+            if not isinstance(condition, bool):
+                return _UNRESOLVED_CONSTANT
+            branch = node.body if condition else node.orelse
+            return self._constant_value(branch, line, scope, seen)
+        return _UNRESOLVED_CONSTANT
+
+    @staticmethod
+    def _pattern_matches(pattern: ast.pattern, value: object) -> bool:
+        if value is _UNRESOLVED_CONSTANT:
+            return False
+        if isinstance(pattern, ast.MatchValue) and isinstance(pattern.value, ast.Constant):
+            return pattern.value.value == value
+        if isinstance(pattern, ast.MatchSingleton):
+            return pattern.value is value
+        if isinstance(pattern, ast.MatchOr):
+            return any(CoreAnalysisEngine._pattern_matches(item, value) for item in pattern.patterns)
+        return isinstance(pattern, ast.MatchAs) and pattern.pattern is None
+
+    def _selected_match_assignments(
+        self,
+        name: str,
+        line: int,
+        scope: ast.AST,
+    ) -> list[tuple[int, ast.AST]]:
+        """Return assignments from statically selected match cases before a sink."""
+        selected: list[tuple[int, ast.AST]] = []
+        for match_node in ast.walk(scope):
+            if not isinstance(match_node, ast.Match):
+                continue
+            if (match_node.end_lineno or match_node.lineno) >= line:
+                continue
+            subject = self._constant_value(match_node.subject, match_node.lineno, scope)
+            for case in match_node.cases:
+                if not self._pattern_matches(case.pattern, subject):
+                    continue
+                for candidate in ast.walk(ast.Module(body=case.body, type_ignores=[])):
+                    if isinstance(candidate, ast.Assign):
+                        if any(name in _assigned_names(target) for target in candidate.targets):
+                            selected.append((candidate.lineno, candidate.value))
+                    elif (
+                        isinstance(candidate, ast.AnnAssign)
+                        and candidate.value is not None
+                        and name in _assigned_names(candidate.target)
+                    ):
+                        selected.append((candidate.lineno, candidate.value))
+                break
+        return selected
+
+    def _selected_if_assignments(
+        self,
+        name: str,
+        line: int,
+        scope: ast.AST,
+    ) -> list[tuple[int, ast.AST]]:
+        """Return assignments from compile-time-selected ``if`` branches."""
+        selected: list[tuple[int, ast.AST]] = []
+        for if_node in ast.walk(scope):
+            if not isinstance(if_node, ast.If):
+                continue
+            if (if_node.end_lineno or if_node.lineno) >= line:
+                continue
+            condition = self._constant_value(if_node.test, if_node.lineno, scope)
+            if not isinstance(condition, bool):
+                continue
+            branch = if_node.body if condition else if_node.orelse
+            for candidate in ast.walk(ast.Module(body=branch, type_ignores=[])):
+                value: ast.AST | None = None
+                if (
+                    isinstance(candidate, ast.Assign)
+                    and any(
+                        name in _assigned_names(target)
+                        for target in candidate.targets
+                    )
+                ) or (
+                    isinstance(candidate, ast.AnnAssign)
+                    and candidate.value is not None
+                    and name in _assigned_names(candidate.target)
+                ):
+                    value = candidate.value
+                if value is not None:
+                    selected.append((candidate.lineno, value))
+        return selected
+
+    def _assignment_can_reach_line(
+        self,
+        assignment: ast.AST,
+        target_line: int,
+        scope: ast.AST,
+    ) -> bool:
+        """Reject branch-local overwrites when the target is after that branch."""
+        parent = self._parent_map.get(assignment)
+        while parent is not None and parent is not scope:
+            if isinstance(parent, (ast.If, ast.Match, ast.For, ast.AsyncFor, ast.While)):
+                end_line = parent.end_lineno or parent.lineno
+                if target_line > end_line:
+                    return False
+            parent = self._parent_map.get(parent)
+        return True
+
+    def _subscript_assignment_before(
+        self,
+        node: ast.Subscript,
+        line: int,
+        scope: ast.AST,
+    ) -> ast.AST | None:
+        """Resolve the latest same-key dictionary/list write before a read."""
+        container = _qualified_name(node.value)
+        if container is None:
+            return None
+        expected_slice = ast.dump(node.slice, include_attributes=False)
+        matches: list[tuple[int, ast.AST]] = []
+        for candidate in ast.walk(scope):
+            if not isinstance(candidate, ast.Assign) or candidate.lineno >= line:
+                continue
+            if not self._assignment_can_reach_line(candidate, line, scope):
+                continue
+            for target in candidate.targets:
+                if not isinstance(target, ast.Subscript):
+                    continue
+                if _qualified_name(target.value) != container:
+                    continue
+                if ast.dump(target.slice, include_attributes=False) == expected_slice:
+                    matches.append((candidate.lineno, candidate.value))
         return max(matches, key=lambda item: item[0])[1] if matches else None
 
     def _source_from_call(self, node: ast.Call) -> SourceEvidence | None:
@@ -318,6 +475,33 @@ class CoreAnalysisEngine:
             line=node.lineno,
             confidence="high",
         )
+
+    def _config_get_value(self, node: ast.Call, scope: ast.AST) -> ast.AST | None:
+        """Resolve a preceding ``ConfigParser.set`` for the same literal key."""
+        name = _qualified_name(node.func)
+        if not name or not name.endswith(".get") or len(node.args) < 2:
+            return None
+        receiver = name.rsplit(".", 1)[0]
+        section = self._constant_value(node.args[0], node.lineno, scope)
+        key = self._constant_value(node.args[1], node.lineno, scope)
+        if section is _UNRESOLVED_CONSTANT or key is _UNRESOLVED_CONSTANT:
+            return None
+        matches: list[tuple[int, ast.AST]] = []
+        for candidate in ast.walk(scope):
+            if not isinstance(candidate, ast.Call) or candidate.lineno >= node.lineno:
+                continue
+            candidate_name = _qualified_name(candidate.func)
+            if candidate_name != f"{receiver}.set" or len(candidate.args) < 3:
+                continue
+            candidate_section = self._constant_value(
+                candidate.args[0], candidate.lineno, scope
+            )
+            candidate_key = self._constant_value(
+                candidate.args[1], candidate.lineno, scope
+            )
+            if candidate_section == section and candidate_key == key:
+                matches.append((candidate.lineno, candidate.args[2]))
+        return max(matches, key=lambda item: item[0])[1] if matches else None
 
     def _local_source(self, node: ast.AST, source_type: str = "local_value") -> SourceEvidence:
         return SourceEvidence(
@@ -350,6 +534,15 @@ class CoreAnalysisEngine:
                 return _Origin(direct_source, (step,), (), (), True)
 
             name = _qualified_name(node.func) or "<callable>"
+            config_value = self._config_get_value(node, scope)
+            if config_value is not None:
+                return self._origin(
+                    config_value,
+                    scope=scope,
+                    line=getattr(config_value, "lineno", node.lineno),
+                    control_overrides=control_overrides,
+                    seen=seen,
+                )
             sanitizer = _matches_suffix(name, _KNOWN_SANITIZER_SUFFIXES)
             is_custom = any(marker in name.lower() for marker in _CUSTOM_CONTROL_MARKERS)
             if sanitizer or is_custom:
@@ -384,14 +577,33 @@ class CoreAnalysisEngine:
                 )
 
             if node.args:
+                transparent_receiver = (
+                    node.func.value
+                    if isinstance(node.func, ast.Attribute)
+                    and node.func.attr in {"encode", "decode"}
+                    else node.args[0]
+                )
                 inner = self._origin(
-                    node.args[0],
+                    transparent_receiver,
                     scope=scope,
                     line=node.lineno,
                     control_overrides=control_overrides,
                     seen=seen,
                 )
                 if inner.source is not None or inner.parameter_name is not None:
+                    is_transparent = any(
+                        name == suffix or name.endswith(f".{suffix}")
+                        for suffix in _KNOWN_TRANSPARENT_CALL_SUFFIXES
+                    )
+                    if is_transparent:
+                        return _Origin(
+                            inner.source,
+                            (*inner.steps, self._step(len(inner.steps) + 1, "transform", node)),
+                            inner.controls,
+                            inner.unresolved_symbols,
+                            inner.source_reaches_sink,
+                            inner.parameter_name,
+                        )
                     unresolved = tuple(dict.fromkeys((*inner.unresolved_symbols, name)))
                     return _Origin(
                         inner.source,
@@ -402,6 +614,57 @@ class CoreAnalysisEngine:
                         inner.parameter_name,
                     )
             return _Origin(None, (), (), (name,), None)
+
+        if isinstance(node, ast.IfExp):
+            condition = self._constant_value(node.test, line, scope)
+            if isinstance(condition, bool):
+                selected = node.body if condition else node.orelse
+                return self._origin(
+                    selected,
+                    scope=scope,
+                    line=line,
+                    control_overrides=control_overrides,
+                    seen=seen,
+                )
+            body = self._origin(
+                node.body,
+                scope=scope,
+                line=line,
+                control_overrides=control_overrides,
+                seen=seen,
+            )
+            other = self._origin(
+                node.orelse,
+                scope=scope,
+                line=line,
+                control_overrides=control_overrides,
+                seen=seen,
+            )
+            if any(
+                origin.source is not None and origin.source.user_controlled
+                for origin in (body, other)
+            ):
+                return body if body.source and body.source.user_controlled else other
+            return body if body.source is not None else other
+
+        if isinstance(node, ast.Attribute):
+            name = _qualified_name(node)
+            if name in {
+                "request.path",
+                "request.query_string",
+                "request.data",
+                "request.json",
+                "request.remote_addr",
+            }:
+                source = SourceEvidence(
+                    expression=_safe_expression(node),
+                    source_type="http_request_attribute",
+                    user_controlled=True,
+                    file_path=self.finding.file_path,
+                    line=node.lineno,
+                    confidence="high",
+                )
+                return _Origin(source, (self._step(1, "source", node),), (), (), True)
 
         if isinstance(node, ast.Name):
             if node.id in seen:
@@ -423,6 +686,20 @@ class CoreAnalysisEngine:
                     origin.source_reaches_sink,
                     origin.parameter_name,
                 )
+            for loop in ast.walk(scope):
+                if not isinstance(loop, (ast.For, ast.AsyncFor)) or loop.lineno >= line:
+                    continue
+                if node.id not in _assigned_names(loop.target):
+                    continue
+                loop_origin = self._origin(
+                    loop.iter,
+                    scope=scope,
+                    line=loop.lineno,
+                    control_overrides=control_overrides,
+                    seen=seen | {node.id},
+                )
+                if loop_origin.source is not None:
+                    return loop_origin
             if node.id in self._parameters(self._target_function):
                 return _Origin(None, (), (), (node.id,), None, node.id)
             return _Origin(None, (), (), (node.id,), None)
@@ -440,6 +717,36 @@ class CoreAnalysisEngine:
                     confidence="high",
                 )
                 return _Origin(source, (self._step(1, "source", node),), (), (), True)
+            assignment = self._subscript_assignment_before(node, line, scope)
+            if assignment is not None:
+                return self._origin(
+                    assignment,
+                    scope=scope,
+                    line=getattr(assignment, "lineno", line),
+                    control_overrides=control_overrides,
+                    seen=seen,
+                )
+            if isinstance(node.value, ast.Name):
+                augmented_values = [
+                    candidate.value
+                    for candidate in ast.walk(scope)
+                    if isinstance(candidate, ast.AugAssign)
+                    and candidate.lineno < line
+                    and node.value.id in _assigned_names(candidate.target)
+                ]
+                for value in augmented_values:
+                    augmented_origin = self._origin(
+                        value,
+                        scope=scope,
+                        line=getattr(value, "lineno", line),
+                        control_overrides=control_overrides,
+                        seen=seen,
+                    )
+                    if (
+                        augmented_origin.source is not None
+                        and augmented_origin.source.user_controlled
+                    ):
+                        return augmented_origin
             return self._origin(
                 node.value,
                 scope=scope,
@@ -469,6 +776,45 @@ class CoreAnalysisEngine:
                 return right
             return left if left.source else right
 
+        if isinstance(node, ast.JoinedStr):
+            origins = [
+                self._origin(
+                    value.value,
+                    scope=scope,
+                    line=line,
+                    control_overrides=control_overrides,
+                    seen=seen,
+                )
+                for value in node.values
+                if isinstance(value, ast.FormattedValue)
+            ]
+            for origin in origins:
+                if origin.source is not None and origin.source.user_controlled:
+                    return origin
+            for origin in origins:
+                if origin.source is not None or origin.parameter_name is not None:
+                    return origin
+            return _Origin(self._local_source(node, "formatted_local_value"), (), (), (), False)
+
+        if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+            origins = [
+                self._origin(
+                    item,
+                    scope=scope,
+                    line=line,
+                    control_overrides=control_overrides,
+                    seen=seen,
+                )
+                for item in node.elts
+            ]
+            for origin in origins:
+                if origin.source is not None and origin.source.user_controlled:
+                    return origin
+            for origin in origins:
+                if origin.source is not None or origin.parameter_name is not None:
+                    return origin
+            return _Origin(None, (), (), (), None)
+
         return _Origin(self._local_source(node), (), (), (), False)
 
     def _step(self, order: int, kind: str, node: ast.AST) -> TaintStep:
@@ -480,6 +826,97 @@ class CoreAnalysisEngine:
             file_path=self.finding.file_path,
             line=getattr(node, "lineno", None),
         )
+
+    def _dependency_names(
+        self,
+        node: ast.AST | None,
+        *,
+        line: int,
+        scope: ast.AST,
+        depth: int = 0,
+        seen: frozenset[str] = frozenset(),
+    ) -> set[str]:
+        """Collect bounded identifier dependencies for guard-to-sink matching."""
+        if node is None or depth >= 5:
+            return set()
+        names = {item.id for item in ast.walk(node) if isinstance(item, ast.Name)}
+        expanded = set(names)
+        for name in names - set(seen):
+            assignment = self._assignment_before(name, line, scope)
+            if assignment is not None:
+                expanded.update(
+                    self._dependency_names(
+                        assignment,
+                        line=getattr(assignment, "lineno", line),
+                        scope=scope,
+                        depth=depth + 1,
+                        seen=seen | {name},
+                    )
+                )
+        return expanded
+
+    def _effective_exit_guards(
+        self,
+        dangerous_arg: ast.AST | None,
+        *,
+        sink_line: int,
+        sink_type: str,
+    ) -> tuple[SecurityControlEvidence, ...]:
+        """Recognize a narrow early-exit guard that protects a path sink."""
+        if sink_type != "file_access" or dangerous_arg is None:
+            return ()
+        scope = self._analysis_scope()
+        dependencies = self._dependency_names(
+            dangerous_arg,
+            line=sink_line,
+            scope=scope,
+        )
+        for candidate in ast.walk(scope):
+            if (
+                not isinstance(candidate, ast.If)
+                or candidate.lineno >= sink_line
+                or not any(isinstance(item, (ast.Return, ast.Raise)) for item in candidate.body)
+            ):
+                continue
+            condition_names = {
+                item.id for item in ast.walk(candidate.test) if isinstance(item, ast.Name)
+            }
+            blocked_parent_reference = any(
+                isinstance(item, ast.Constant)
+                and isinstance(item.value, str)
+                and ".." in item.value
+                for item in ast.walk(candidate.test)
+            )
+            if dependencies & condition_names and blocked_parent_reference:
+                return (
+                    SecurityControlEvidence(
+                        symbol="early_exit_path_validation",
+                        control_type="guard_parent_path_rejection",
+                        on_taint_path=True,
+                        protects_target=True,
+                        effective=True,
+                        confidence="high",
+                    ),
+                )
+        return ()
+
+    @staticmethod
+    def _control_matches_sink(control_type: str, sink_type: str) -> bool:
+        """Prevent a sanitizer for one vulnerability class from proving another safe."""
+        compatible = {
+            "output_encoding": {"html_rendering"},
+            "html_sanitizer": {"html_rendering"},
+            "shell_escaping": {"command_execution"},
+            "url_encoding": {"file_access"},
+            "type_validation": {
+                "command_execution",
+                "sql_query",
+                "file_access",
+                "xpath_query",
+            },
+        }
+        allowed = compatible.get(control_type)
+        return allowed is None or sink_type in allowed
 
     def _find_callers(self, function_name: str) -> list[tuple[ast.Call, ast.AST, ast.AST | None]]:
         callers: list[tuple[ast.Call, ast.AST, ast.AST | None]] = []
@@ -559,6 +996,46 @@ class CoreAnalysisEngine:
             line=getattr(sink_node, "lineno", self.finding.start_line),
             control_overrides=overrides,
         )
+        incompatible_controls = tuple(
+            control
+            for control in origin.controls
+            if control.effective is True
+            and not self._control_matches_sink(control.control_type, sink_type)
+        )
+        if incompatible_controls:
+            controls = tuple(
+                replace(control, effective=False, protects_target=False)
+                if control in incompatible_controls
+                else control
+                for control in origin.controls
+            )
+            reaches = (
+                True
+                if origin.source is not None and origin.source.user_controlled
+                else origin.source_reaches_sink
+            )
+            origin = _Origin(
+                origin.source,
+                origin.steps,
+                controls,
+                origin.unresolved_symbols,
+                reaches,
+                origin.parameter_name,
+            )
+        guard_controls = self._effective_exit_guards(
+            dangerous_arg,
+            sink_line=getattr(sink_node, "lineno", self.finding.start_line),
+            sink_type=sink_type,
+        )
+        if guard_controls:
+            origin = _Origin(
+                origin.source,
+                origin.steps,
+                (*origin.controls, *guard_controls),
+                origin.unresolved_symbols,
+                origin.source_reaches_sink,
+                origin.parameter_name,
+            )
         interprocedural = False
         if expand_callers and origin.parameter_name:
             expanded = self._expand_parameter_origin(origin.parameter_name, overrides)

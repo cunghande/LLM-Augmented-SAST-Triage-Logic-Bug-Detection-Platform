@@ -20,6 +20,11 @@ dev = [
     "pytest>=7.0.0",
     "ruff",
 ]
+joern = [
+    # Joern's query server uses a WebSocket protocol; the standard library
+    # does not provide a compatible client.
+    "cpgqls-client==0.0.9",
+]
 
 [project.scripts]
 sast-triage = "sast_triage.entrypoint:main"

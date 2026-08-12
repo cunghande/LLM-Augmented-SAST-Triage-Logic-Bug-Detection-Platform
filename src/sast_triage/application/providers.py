@@ -4,6 +4,7 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 
+from sast_triage.errors import SastTriageError
 from sast_triage.triage.fake_provider import FakeTriageProvider
 from sast_triage.triage.real_provider import RealTriageProvider
 
@@ -19,7 +20,16 @@ def provider_session(provider_name: str) -> Iterator[object]:
         return
 
     # Chỉ import Modal khi người dùng chọn provider real.
-    from sast_triage.triage.modal_provider import modal_qwen_provider_session
+    try:
+        from sast_triage.triage.modal_provider import modal_qwen_provider_session
+    except ModuleNotFoundError as exc:
+        if exc.name != "modal":
+            raise
+        raise SastTriageError(
+            "Modal provider dependency is not installed in this Python environment.",
+            "TRIAGE_PROVIDER_DEPENDENCY_MISSING",
+            retryable=False,
+        ) from None
 
     with modal_qwen_provider_session() as provider:
         yield provider
@@ -32,4 +42,3 @@ def provider_identity(provider_name: str) -> tuple[str, str | None]:
     if provider_name == "ollama":
         return "ollama", os.getenv("SAST_TRIAGE_LLM_MODEL", "qwen3:8b")
     return "real-modal-qwen", "Qwen/Qwen3-14B-AWQ"
-

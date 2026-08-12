@@ -1,0 +1,25 @@
+{
+  "version": "triage-checkpoint-v1",
+  "repository_identifier": "realvuln-dvblab",
+  "artifact_hashes": {
+    "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "semgrep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finding_ids": [],
+  "prompt_version": "triage-prompt-v9",
+  "output_schema_version": "triage-decision-v1",
+  "analysis_backend": "native",
+  "analysis_backend_version": "0.1.0",
+  "analysis_config_id": "python-cross-file-evidence-v1",
+  "status": "in_progress",
+  "failure_code": null,
+  "completed_count": 0,
+  "total_count": 0,
+  "provider_history": [
+    {
+      "provider": "real-modal-qwen",
+      "model": "Qwen/Qwen3-14B-AWQ"
+    }
+  ],
+  "completed_results": []
+}

@@ -1,0 +1,150 @@
+{
+  "model": "Qwen/Qwen3-14B-AWQ",
+  "gpu_requested": "B200",
+  "temperature": 0.0,
+  "seed": 42,
+  "benchmark_version": "0.1",
+  "mapping_version": "semgrep-python-category-map-v1",
+  "artifact": "benchmarks/BenchmarkRun/semgrep-p-python.json",
+  "dataset_scope": "OWASP findings with matching test identity and category",
+  "parsed_findings": 184,
+  "scoreable_findings": 93,
+  "unique_scoreable_cases": 88,
+  "ground_truth": {
+    "vulnerable": 77,
+    "benign": 16
+  },
+  "schema_success": 93,
+  "schema_success_rate": 1.0,
+  "errors": 0,
+  "error_codes": {},
+  "verdicts": {
+    "LIKELY_FP": 13,
+    "LIKELY_TP": 75,
+    "NEEDS_REVIEW": 5
+  },
+  "policy_actions": {
+    "LIKELY_TP": 67,
+    "MANUAL_REVIEW": 26
+  },
+  "decisive": 88,
+  "correct_decisive": 80,
+  "coverage": 0.946236559139785,
+  "selective_accuracy": 0.9090909090909091,
+  "accuracy_with_abstentions_unresolved": 0.8602150537634409,
+  "vulnerable_recognition_rate": 0.9090909090909091,
+  "benign_recognition_rate": 0.625,
+  "balanced_accuracy_with_abstentions_unresolved": 0.7670454545454546,
+  "case_level": {
+    "total": 88,
+    "decisive": 83,
+    "coverage": 0.9431818181818182,
+    "selective_accuracy": 0.9156626506024096,
+    "accuracy_with_abstentions_unresolved": 0.8636363636363636
+  },
+  "policy_safety": {
+    "unsafe_vulnerable_fp_candidate": 0,
+    "benign_fp_candidate": 0,
+    "tp_retention_rate": 1.0,
+    "automatic_resolution_rate": 0.7204301075268817
+  },
+  "context": {
+    "status_counts": {
+      "complete": 79,
+      "partial": 14
+    },
+    "path_type_counts": {
+      "local": 93
+    },
+    "outcomes": {
+      "complete": {
+        "correct": 75,
+        "incorrect": 4
+      },
+      "partial": {
+        "correct": 5,
+        "incorrect": 4,
+        "unresolved": 5
+      }
+    }
+  },
+  "confusion": {
+    "benign_likely_fp": 10,
+    "benign_likely_tp": 5,
+    "benign_needs_review": 1,
+    "vulnerable_likely_fp": 3,
+    "vulnerable_likely_tp": 70,
+    "vulnerable_needs_review": 4
+  },
+  "elapsed_seconds_including_cold_start": 320.16,
+  "latency": {
+    "first_request_seconds_including_cold_start": 146.81,
+    "steady_state_mean_seconds": 1.8,
+    "steady_state_requests": 92
+  },
+  "categories": {
+    "cmdi": {
+      "correct": 15,
+      "incorrect": 3,
+      "total": 18
+    },
+    "deserialization": {
+      "abstain": 5,
+      "correct": 6,
+      "incorrect": 5,
+      "total": 16
+    },
+    "hash": {
+      "correct": 54,
+      "total": 54
+    },
+    "pathtraver": {
+      "correct": 4,
+      "total": 4
+    },
+    "sqli": {
+      "correct": 1,
+      "total": 1
+    }
+  },
+  "run_metadata": {
+    "run_id": "f1369f21-ef31-4c19-99d2-a505d69522a3",
+    "repository_name": "BenchmarkPython",
+    "repository_identifier": "BenchmarkPython-Qwen3-14B-AWQ-scoreable",
+    "commit_sha": null,
+    "working_tree_state": null,
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0",
+      "MODULE2": "0.1.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python",
+      "MODULE2": "python-cross-file-evidence-v1"
+    },
+    "input_artifact_hashes": {},
+    "prompt_version": "triage-prompt-v8",
+    "model_version": "Qwen/Qwen3-14B-AWQ",
+    "policy_version": "conservative-policy-v1",
+    "triage_provider": "modal-qwen-structured",
+    "tool_version": "0.1.0",
+    "cli_mode": "benchmark-modal-qwen-structured",
+    "started_at": "2026-08-09T15:11:18.592150Z",
+    "completed_at": "2026-08-09T15:16:31.494070Z",
+    "total_findings_parsed": 93,
+    "findings_triaged_ok": 93,
+    "findings_with_errors": 0
+  },
+  "limitations": [
+    "Single deterministic run; no confidence interval.",
+    "This measures LLM triage on scoreable scanner findings, not scanner recall.",
+    "OWASP ground truth supplies vulnerable/benign labels only for this run.",
+    "NEEDS_REVIEW and provider errors are counted as unresolved."
+  ]
+}

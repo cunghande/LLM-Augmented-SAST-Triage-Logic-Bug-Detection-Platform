@@ -63,10 +63,33 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default="fake",
         help="fake=không LLM, ollama=LLM local, real=Qwen3-14B trên Modal",
     )
-    parser.add_argument("--prompt-version", default="triage-prompt-v4")
+    parser.add_argument("--prompt-version", default="triage-prompt-v9")
     parser.add_argument("--output-schema-version", default="triage-decision-v1")
     parser.add_argument("--prompt-type", default="fake.default")
     parser.add_argument("--repository-identifier", default=None)
+    parser.add_argument(
+        "--analysis-backend",
+        choices=("native", "joern"),
+        default="native",
+        help="Backend phân tích: native (mặc định) hoặc Joern CPG qua Docker",
+    )
+    parser.add_argument(
+        "--semgrep-config",
+        action="append",
+        default=None,
+        help="Repeatable Semgrep registry ruleset or local YAML path (default: p/python)",
+    )
+    parser.add_argument(
+        "--gitleaks-config",
+        default=None,
+        help="Optional Gitleaks config path; built-in rules are used when omitted",
+    )
+    parser.add_argument(
+        "--module2",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Enable bounded cross-file discovery and evidence routing (default: enabled)",
+    )
     parser.add_argument(
         "--overwrite", action=argparse.BooleanOptionalAction, default=True
     )

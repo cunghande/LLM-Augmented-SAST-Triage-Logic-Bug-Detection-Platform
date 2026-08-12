@@ -17,7 +17,12 @@ from pathlib import Path
 from sast_triage.context.python_scope import PythonScopeResult
 from sast_triage.context.reader import SourceReadResult
 from sast_triage.errors import SastTriageError
-from sast_triage.models import ContextStrategy, NormalizedFinding, ScannerType
+from sast_triage.models import (
+    ContextStrategy,
+    FindingType,
+    NormalizedFinding,
+    ScannerType,
+)
 
 # --- Hằng số chẩn đoán ---
 
@@ -153,10 +158,10 @@ def select_raw_context(
         )
 
     # 2. Chọn chiến lược theo cây quyết định
-    is_semgrep = finding.scanner == ScannerType.SEMGREP
+    is_sast = finding.finding_type == FindingType.SAST
 
     has_valid_ast_scope = (
-        is_semgrep
+        is_sast
         and scope is not None
         and scope.strategy in (ContextStrategy.PYTHON_FUNCTION, ContextStrategy.PYTHON_CLASS)
         and scope.selected_text is not None
@@ -180,7 +185,7 @@ def select_raw_context(
         # Chiến lược Line Window dự phòng / mặc định
         strategy = ContextStrategy.LINE_WINDOW
 
-        if is_semgrep:
+        if is_sast:
             diagnostics.append(LINE_WINDOW_FALLBACK)
             if scope and scope.diagnostic_reasons:
                 diagnostics.extend(scope.diagnostic_reasons)

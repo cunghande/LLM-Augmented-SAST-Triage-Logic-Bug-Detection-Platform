@@ -544,11 +544,11 @@ dùng để báo cáo accuracy.
 
 Đây là adapter phục vụ benchmark/đánh giá, chưa phải provider mặc định của CLI:
 
-- cấu hình app/GPU/model: [`qwen14b_modal.py`](../modal_apps/qwen14b_modal.py#L10);
+- cấu hình app/GPU/model: [`qwen14b_modal_app.py`](../src/sast_triage/triage/qwen14b_modal_app.py#L10);
 - tải và cache model trên Modal Volume:
-  [`download_model()`](../modal_apps/qwen14b_modal.py#L94);
-- load vLLM: [`Qwen14B.load_model()`](../modal_apps/qwen14b_modal.py#L137);
-- inference: [`Qwen14B.chat()`](../modal_apps/qwen14b_modal.py#L179);
+  [`download_model()`](../src/sast_triage/triage/qwen14b_modal_app.py#L94);
+- load vLLM: [`Qwen14B.load_model()`](../src/sast_triage/triage/qwen14b_modal_app.py#L137);
+- inference: [`Qwen14B.chat()`](../src/sast_triage/triage/qwen14b_modal_app.py#L179);
 - bridge từ pipeline sang remote model:
   [`ModalQwenProvider.triage()`](../modal_apps/qwen14b_benchmark.py#L99).
 
@@ -871,7 +871,7 @@ mẫu quá nhỏ để coi là accuracy tổng quát.
 | Cả batch chạy tuần tự ở đâu? | [`triage_batch()`](../src/sast_triage/pipeline/batch.py#L91) |
 | JSON report loại field nào? | [`json_reporter.py`](../src/sast_triage/reporting/json_reporter.py#L31) |
 | Markdown report bố trí phần LLM ở đâu? | [`_render_report()`](../src/sast_triage/reporting/markdown_reporter.py#L299) |
-| Qwen chạy trên Modal ra sao? | [`qwen14b_modal.py`](../modal_apps/qwen14b_modal.py#L133) |
+| Qwen chạy trên Modal ra sao? | [`qwen14b_modal_app.py`](../src/sast_triage/triage/qwen14b_modal_app.py#L133) |
 | Benchmark tính metric ở đâu? | [`_metrics()`](../modal_apps/qwen14b_benchmark.py#L178) |
 
 ## 20. Kịch bản demo ngắn cho buổi báo cáo

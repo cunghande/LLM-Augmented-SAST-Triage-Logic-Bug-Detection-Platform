@@ -2,10 +2,12 @@
 
 from pathlib import Path
 
+from sast_triage.analysis.base import GraphEvidence
 from sast_triage.context.evidence_agent import EvidenceExpansionAgent
 from sast_triage.context.evidence_engine import CoreAnalysisEngine
 from sast_triage.context.evidence_models import EvidenceStatus
 from sast_triage.context.evidence_service import (
+    _merge_bounded_local_verification,
     build_evidence_context,
     project_evidence,
 )
@@ -95,6 +97,169 @@ def test_source_and_sink_in_same_function_is_complete() -> None:
     assert evidence.taint_path.source_reaches_sink is True
     assert evidence.context_completeness.status == EvidenceStatus.COMPLETE
     assert requires_context_expansion(evidence) is False
+
+
+def test_branch_default_does_not_hide_request_source_through_f_string() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.form.get('value')\n"
+        "    if not param:\n"
+        "        param = ''\n"
+        "    filename = f'/tmp/{param}'\n"
+        "    open(filename, 'wb')\n"
+    )
+    finding, source, context = _inputs(code, 6)
+
+    evidence = CoreAnalysisEngine(finding, source, context).build_evidence()
+
+    assert evidence.source is not None
+    assert evidence.source.user_controlled is True
+    assert evidence.taint_path.source_reaches_sink is True
+
+
+def test_dictionary_write_and_augmented_f_string_preserve_taint() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.form.get('value')\n"
+        "    values = {}\n"
+        "    values['selected'] = param\n"
+        "    bar = values['selected']\n"
+        "    command = 'sh -c '\n"
+        "    command += f'echo {bar}'\n"
+        "    subprocess.run(command, shell=True)\n"
+    )
+    finding, source, context = _inputs(code, 8)
+
+    evidence = CoreAnalysisEngine(finding, source, context).build_evidence()
+
+    assert evidence.source is not None
+    assert evidence.source.user_controlled is True
+    assert evidence.taint_path.source_reaches_sink is True
+
+
+def test_constant_match_selects_only_feasible_safe_assignment() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.headers.get('value')\n"
+        "    selector = 'ABC'[1]\n"
+        "    match selector:\n"
+        "        case 'A':\n"
+        "            bar = param\n"
+        "        case 'B':\n"
+        "            bar = 'safe'\n"
+        "    pickle.loads(bar)\n"
+    )
+    finding, source, context = _inputs(code, 9)
+
+    evidence = CoreAnalysisEngine(finding, source, context).build_evidence()
+
+    assert evidence.source is not None
+    assert evidence.source.source_type == "local_constant"
+    assert evidence.source.user_controlled is False
+    assert evidence.taint_path.source_reaches_sink is False
+
+
+def test_constant_if_and_transparent_decode_prove_safe_final_value() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.form.get('value')\n"
+        "    number = 86\n"
+        "    if 7 * 42 - number > 200:\n"
+        "        value = 'fixed'\n"
+        "    else:\n"
+        "        value = param\n"
+        "    decoded = base64.b64decode(value)\n"
+        "    pickle.loads(decoded)\n"
+    )
+    finding, source, context = _inputs(code, 9)
+
+    evidence = CoreAnalysisEngine(finding, source, context).build_evidence()
+
+    assert evidence.taint_path.source_reaches_sink is False
+    assert evidence.context_completeness.status == EvidenceStatus.COMPLETE
+
+
+def test_config_get_for_same_literal_key_resolves_constant_value() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.form.get('value')\n"
+        "    config.set('section', 'unsafe', param)\n"
+        "    config.set('section', 'safe', 'fixed')\n"
+        "    value = config.get('section', 'safe')\n"
+        "    subprocess.run(value, shell=True)\n"
+    )
+    finding, source, context = _inputs(code, 6)
+
+    evidence = CoreAnalysisEngine(finding, source, context).build_evidence()
+
+    assert evidence.taint_path.source_reaches_sink is False
+    assert evidence.context_completeness.status == EvidenceStatus.COMPLETE
+
+
+def test_early_exit_parent_path_guard_is_effective_for_target_sink() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.form.get('value')\n"
+        "    if '../' in param:\n"
+        "        return 'blocked'\n"
+        "    filename = f'/tmp/{param}'\n"
+        "    open(filename, 'rb')\n"
+    )
+    finding, source, context = _inputs(code, 6)
+
+    evidence = CoreAnalysisEngine(finding, source, context).build_evidence()
+
+    assert evidence.security_controls[0].symbol == "early_exit_path_validation"
+    assert evidence.security_controls[0].effective is True
+
+
+def test_path_sensitive_negative_refines_joern_may_flow() -> None:
+    code = (
+        "def handler():\n"
+        "    param = request.form.get('value')\n"
+        "    value = param\n"
+        "    value = 'fixed'\n"
+        "    subprocess.run(value, shell=True)\n"
+    )
+    finding, source, context = _inputs(code, 5)
+    local = CoreAnalysisEngine(finding, source, context).build_evidence()
+    graph = GraphEvidence(
+        sink_symbol="run",
+        source_type="user_controlled_call",
+        source_reaches_sink=True,
+        path_complete=True,
+        reachability_resolved=True,
+        provenance=("JOERN_CPG", "JOERN_DATAFLOW"),
+    )
+
+    merged = _merge_bounded_local_verification(finding, graph, local)
+
+    assert merged.source_reaches_sink is False
+    assert "BOUNDED_LOCAL_NEGATIVE_PROOF" in merged.provenance
+    assert "JOERN_MAY_FLOW_REFINED_BY_LOCAL_PROOF" in merged.provenance
+
+
+def test_local_positive_never_refines_joern_flow_to_negative() -> None:
+    code = (
+        "def handler():\n"
+        "    value = request.form.get('value')\n"
+        "    subprocess.run(value, shell=True)\n"
+    )
+    finding, source, context = _inputs(code, 3)
+    local = CoreAnalysisEngine(finding, source, context).build_evidence()
+    graph = GraphEvidence(
+        sink_symbol="run",
+        source_type="user_controlled_call",
+        source_reaches_sink=True,
+        path_complete=True,
+        reachability_resolved=True,
+        provenance=("JOERN_CPG", "JOERN_DATAFLOW"),
+    )
+
+    merged = _merge_bounded_local_verification(finding, graph, local)
+
+    assert merged.source_reaches_sink is True
+    assert "BOUNDED_LOCAL_NEGATIVE_PROOF" not in merged.provenance
 
 
 def test_source_in_caller_and_sink_in_callee_is_expanded() -> None:

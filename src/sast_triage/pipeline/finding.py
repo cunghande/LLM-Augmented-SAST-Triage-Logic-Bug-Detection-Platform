@@ -10,12 +10,15 @@ Cam kết bảo mật và cô lập:
 - Lỗi lập trình hoặc cấu hình bất ngờ được lan truyền ngay.
 """
 
+import json
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+from sast_triage.analysis.base import AnalysisBackend
 from sast_triage.context.python_scope import select_python_scope
 from sast_triage.context.reader import read_repository_source
+from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.context.sanitizer import (
     KNOWN_PLACEHOLDERS,
     sanitize_context,
@@ -25,6 +28,7 @@ from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ArtifactRepositoryMatch,
     ContextStrategy,
+    FindingType,
     MissingContextReason,
     NormalizedFinding,
     PathCategory,
@@ -88,6 +92,61 @@ def _build_context_summary(context: SanitizedContext) -> str:
     if not context.context_available:
         return "Không có ngữ cảnh khả dụng."
 
+    try:
+        projected = json.loads(context.sanitized_snippet or "{}")
+    except json.JSONDecodeError:
+        projected = {}
+    if isinstance(projected, dict) and "JOERN_CPG" in projected.get("provenance", []):
+        source = projected.get("source")
+        sink = projected.get("sink")
+        taint_path = projected.get("taint_path")
+        controls = projected.get("security_controls")
+        completeness = projected.get("context_completeness")
+        source_location = "chưa xác định"
+        sink_location = "chưa xác định"
+        path_text = "chưa có đường đi đầy đủ"
+        control_names: list[str] = []
+        if isinstance(source, dict):
+            source_location = f"{source.get('file_path')}:{source.get('line')}"
+        if isinstance(sink, dict):
+            sink_location = f"{sink.get('file_path')}:{sink.get('line')}"
+        if isinstance(taint_path, dict) and isinstance(taint_path.get("steps"), list):
+            safe_steps = []
+            for step in taint_path["steps"][:10]:
+                if isinstance(step, dict):
+                    safe_steps.append(f"{step.get('file_path')}:{step.get('line')}")
+            if safe_steps:
+                path_text = " → ".join(safe_steps)
+        if isinstance(controls, dict):
+            for group in controls.values():
+                if isinstance(group, list):
+                    control_names.extend(
+                        str(item.get("symbol"))
+                        for item in group
+                        if isinstance(item, dict) and item.get("symbol")
+                    )
+        status = "partial"
+        stop_reason = "INSUFFICIENT_EVIDENCE"
+        if isinstance(completeness, dict):
+            status = str(completeness.get("status", status))
+            limitations = completeness.get("limitations", [])
+            if isinstance(limitations, list):
+                reasons = [
+                    str(item)
+                    for item in limitations
+                    if str(item).startswith(("AGENT_", "MAX_TOOL_CALLS"))
+                ]
+                if reasons:
+                    stop_reason = reasons[-1]
+            if status == "complete" and stop_reason == "INSUFFICIENT_EVIDENCE":
+                stop_reason = "EVIDENCE_SUFFICIENT"
+        return (
+            f"Joern CPG evidence {status}; source {source_location}; sink {sink_location}; "
+            f"đường source–sink {path_text}; control "
+            f"{', '.join(dict.fromkeys(control_names)) if control_names else 'không tìm thấy'}; "
+            f"Agent dừng vì {stop_reason}."
+        )
+
     parts: list[str] = [f"Ngữ cảnh {context.context_strategy.value}"]
 
     if context.context_start_line is not None and context.context_end_line is not None:
@@ -110,7 +169,7 @@ def triage_finding(
     repository_root: Path,
     provider: object,
     *,
-    prompt_version: str = "triage-prompt-v4",
+    prompt_version: str = "triage-prompt-v9",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,
@@ -122,6 +181,8 @@ def triage_finding(
     forbidden_values: tuple[str, ...] = (),
     initial_processing_errors: tuple[ProcessingError, ...] = (),
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
+    repository_index: RepositoryEvidenceIndex | None = None,
+    analysis_backend: AnalysisBackend | None = None,
 ) -> TriageResult:
     """Triage một NormalizedFinding qua trích xuất context, LLM triage và policy.
 
@@ -235,26 +296,49 @@ def triage_finding(
         )
 
         # Bước 2b: Phân tích AST Scope
-        scope_res = select_python_scope(
-            src_res,
-            finding.start_line,
-            finding.end_line,
-            max_scope_lines=max_scope_lines,
-            max_import_lines=max_import_lines,
+        uses_joern_cpg = (
+            analysis_backend is not None
+            and analysis_backend.identity.backend == "joern"
+            and finding.finding_type == FindingType.SAST
         )
+        scope_res = None
+        if not uses_joern_cpg:
+            scope_res = select_python_scope(
+                src_res,
+                finding.start_line,
+                finding.end_line,
+                max_scope_lines=max_scope_lines,
+                max_import_lines=max_import_lines,
+            )
+
+        effective_window_before = line_window_before
+        effective_window_after = line_window_after
+        if uses_joern_cpg:
+            # Match the native function-scope evidence budget without invoking
+            # the native AST. SafeContextService still sanitizes the bounded
+            # source window before it is placed in Evidence Card v8.
+            half_scope = max_scope_lines // 2
+            effective_window_before = max(line_window_before, half_scope)
+            effective_window_after = max(line_window_after, half_scope)
 
         # Bước 2c: Chọn Raw Context
         raw_ctx = select_raw_context(
             finding,
             src_res,
             scope=scope_res,
-            line_window_before=line_window_before,
-            line_window_after=line_window_after,
+            line_window_before=effective_window_before,
+            line_window_after=effective_window_after,
             max_context_characters=max_context_characters,
         )
 
         # Bước 2d: Sanitize Context
-        sanitized = sanitize_context(finding, raw_ctx, forbidden_values=forbidden_values)
+        sanitized = sanitize_context(
+            finding,
+            raw_ctx,
+            forbidden_values=forbidden_values,
+            repository_index=repository_index,
+            analysis_backend=analysis_backend,
+        )
 
         # Kiểm tra sanitizer có tạo context không khả dụng với CONTEXT_SANITIZATION_FAILED không
         if (

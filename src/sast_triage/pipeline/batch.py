@@ -17,6 +17,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from sast_triage import __version__ as TOOL_VERSION
+from sast_triage.analysis.base import AnalysisBackend, AnalysisIdentity
+from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.context.sanitizer import KNOWN_PLACEHOLDERS
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
@@ -46,6 +48,7 @@ RECORD_LEVEL_PARSE_ERROR_CODES: set[str] = {
 def _validate_scanner_result_identity(
     semgrep_result: ScannerParseResult | None,
     gitleaks_result: ScannerParseResult | None,
+    module2_result: ScannerParseResult | None,
 ) -> None:
     """Validate nội dung ScannerParseResult khớp scanner identity đã gán."""
     if semgrep_result is not None:
@@ -80,6 +83,22 @@ def _validate_scanner_result_identity(
                     retryable=False,
                 )
 
+    if module2_result is not None:
+        for finding in module2_result.findings:
+            if finding.scanner != ScannerType.MODULE2 or finding.finding_type != FindingType.SAST:
+                raise SastTriageError(
+                    safe_message="ScannerParseResult contents do not match expected scanner slot identity.",
+                    error_code="PIPELINE_SCANNER_RESULT_MISMATCH",
+                    retryable=False,
+                )
+        for err in module2_result.errors:
+            if err.scanner is not None and err.scanner != ScannerType.MODULE2:
+                raise SastTriageError(
+                    safe_message="ScannerParseResult contents do not match expected scanner slot identity.",
+                    error_code="PIPELINE_SCANNER_RESULT_MISMATCH",
+                    retryable=False,
+                )
+
 
 def _has_artifact_level_parse_error(errors: tuple[ProcessingError, ...]) -> bool:
     """Trả về True nếu errors có lỗi PARSE cấp artifact."""
@@ -95,11 +114,15 @@ def triage_batch(
     *,
     semgrep_result: ScannerParseResult | None = None,
     gitleaks_result: ScannerParseResult | None = None,
+    module2_result: ScannerParseResult | None = None,
+    repository_index: RepositoryEvidenceIndex | None = None,
+    analysis_backend: AnalysisBackend | None = None,
+    analysis_identity: AnalysisIdentity | None = None,
     repository_identifier: str,
     commit_sha: str | None = None,
     working_tree_state: str | None = None,
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
-    prompt_version: str = "triage-prompt-v4",
+    prompt_version: str = "triage-prompt-v9",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,
@@ -229,7 +252,7 @@ def triage_batch(
             )
 
     # Validate identity của scanner slot
-    _validate_scanner_result_identity(semgrep_result, gitleaks_result)
+    _validate_scanner_result_identity(semgrep_result, gitleaks_result, module2_result)
 
     # Ghi timestamp started_at sau khi validate trước thành công
     started_at = datetime.now(UTC)
@@ -254,6 +277,13 @@ def triage_batch(
         if not _has_artifact_level_parse_error(gitleaks_result.errors):
             scanners_succeeded.append(ScannerType.GITLEAKS)
         findings_to_process.extend(gitleaks_result.findings)
+
+    if module2_result is not None:
+        scanners_attempted.append(ScannerType.MODULE2)
+        scanner_errors.extend(list(module2_result.errors))
+        if not _has_artifact_level_parse_error(module2_result.errors):
+            scanners_succeeded.append(ScannerType.MODULE2)
+        findings_to_process.extend(module2_result.findings)
 
     # 3. Tạo Error Index theo finding_id và vòng triage tuần tự từng finding
     errors_by_finding_id: dict[str, list[ProcessingError]] = {}
@@ -297,6 +327,8 @@ def triage_batch(
             forbidden_values=forbidden_values,
             initial_processing_errors=initial_errors,
             artifact_repository_match=artifact_repository_match,
+            repository_index=repository_index,
+            analysis_backend=analysis_backend,
         )
         result_by_id[finding.finding_instance_id] = result
         if progress_callback is not None:
@@ -351,6 +383,11 @@ def triage_batch(
         scanner_versions=sc_versions,
         scanner_config_ids=sc_config_ids,
         input_artifact_hashes=artifact_hashes,
+        analysis_backend=(analysis_identity.backend if analysis_identity else "native"),
+        analysis_backend_version=(analysis_identity.version if analysis_identity else TOOL_VERSION),
+        analysis_config_id=(analysis_identity.config_id if analysis_identity else "native-evidence-v1"),
+        cpg_build_status=(analysis_identity.build_status if analysis_identity else "not_applicable"),
+        cpg_build_seconds=(analysis_identity.build_seconds if analysis_identity else 0.0),
         prompt_version=prompt_version,
         model_version=(
             model_version

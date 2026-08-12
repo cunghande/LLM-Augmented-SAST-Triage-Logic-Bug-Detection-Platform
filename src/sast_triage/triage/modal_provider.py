@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterator
 from contextlib import contextmanager
 
 import modal
 
-from modal_apps.qwen14b_modal import MODEL_ID, Qwen14B, app, download_model
 from sast_triage.errors import SastTriageError
-from sast_triage.models import TriageDecision, TriageInput
+from sast_triage.models import (
+    ModelConfidence,
+    ModelVerdict,
+    TriageDecision,
+    TriageInput,
+)
 from sast_triage.triage.output_validator import parse_triage_decision
 from sast_triage.triage.prompt_builder import build_triage_prompt
+from sast_triage.triage.qwen14b_modal_app import MODEL_ID, Qwen14B, app, download_model
 
 
 def _decision_schema(prompt_version: str) -> dict[str, object]:
@@ -50,6 +56,59 @@ def _decision_schema(prompt_version: str) -> dict[str, object]:
         "required": list(properties),
         "additionalProperties": False,
     }
+
+
+def minimal_recovery_schema() -> dict[str, object]:
+    """Return a tiny strict schema used only after full-schema serialization fails."""
+    properties: dict[str, object] = {
+        "model_verdict": {
+            "type": "string",
+            "enum": ["LIKELY_TP", "LIKELY_FP", "NEEDS_REVIEW"],
+        },
+        "model_confidence": {
+            "type": "string",
+            "enum": ["LOW", "MEDIUM", "HIGH"],
+        },
+    }
+    return {
+        "type": "object",
+        "properties": properties,
+        "required": list(properties),
+        "additionalProperties": False,
+    }
+
+
+def parse_minimal_recovery_decision(
+    response: str,
+    *,
+    prompt_version: str,
+) -> TriageDecision:
+    """Validate a minimal LLM verdict and build a source-free standard explanation."""
+    try:
+        payload = json.loads(response)
+        if not isinstance(payload, dict) or set(payload) != {
+            "model_verdict",
+            "model_confidence",
+        }:
+            raise ValueError
+        verdict = ModelVerdict(payload["model_verdict"])
+        confidence = ModelConfidence(payload["model_confidence"])
+    except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+        raise SastTriageError(
+            "Minimal Modal recovery output failed validation.",
+            "TRIAGE_OUTPUT_SCHEMA_INVALID",
+            retryable=False,
+        ) from None
+    return TriageDecision(
+        model_verdict=verdict,
+        model_confidence=confidence,
+        summary="LLM đã trả về verdict hợp lệ qua schema phục hồi tối giản.",
+        evidence=["Policy sử dụng Evidence Card đã được kiểm tra và làm sạch."],
+        missing_information=[],
+        assumptions=["Phần giải thích đầy đủ không được dùng do lỗi serialization."],
+        model_version=MODEL_ID,
+        prompt_version=prompt_version,
+    )
 
 
 def _translate_modal_exception(exc: BaseException) -> SastTriageError:
@@ -101,26 +160,75 @@ class ModalQwenProvider:
             {"role": "system", "content": prompt.system_message},
             {"role": "user", "content": prompt.user_message},
         ]
-        try:
-            response = self._remote_model.chat.remote(
-                messages=messages,
-                thinking=False,
-                max_tokens=512,
-                json_schema=_decision_schema(triage_input.prompt_version),
-            )
-        except modal.exception.ResourceExhaustedError as exc:
-            raise _translate_modal_exception(exc) from None
-        except modal.exception.AuthError as exc:
-            raise _translate_modal_exception(exc) from None
-        except modal.exception.TimeoutError as exc:
-            raise _translate_modal_exception(exc) from None
-        except (modal.exception.Error, RuntimeError, TypeError, ValueError) as exc:
-            raise _translate_modal_exception(exc) from None
+        decision: TriageDecision | None = None
+        for max_tokens in (512, 1536):
+            try:
+                response = self._remote_model.chat.remote(
+                    messages=messages,
+                    thinking=False,
+                    max_tokens=max_tokens,
+                    json_schema=_decision_schema(triage_input.prompt_version),
+                    temperature=0.0,
+                    seed=42,
+                )
+            except modal.exception.ResourceExhaustedError as exc:
+                raise _translate_modal_exception(exc) from None
+            except modal.exception.AuthError as exc:
+                raise _translate_modal_exception(exc) from None
+            except modal.exception.TimeoutError as exc:
+                raise _translate_modal_exception(exc) from None
+            except (modal.exception.Error, RuntimeError, TypeError, ValueError) as exc:
+                raise _translate_modal_exception(exc) from None
 
-        decision = parse_triage_decision(
-            response,
-            prompt_version=triage_input.prompt_version,
-        )
+            try:
+                decision = parse_triage_decision(
+                    response,
+                    prompt_version=triage_input.prompt_version,
+                )
+                break
+            except SastTriageError as exc:
+                recoverable_output_codes = {
+                    "TRIAGE_OUTPUT_INVALID_JSON",
+                    "TRIAGE_OUTPUT_SCHEMA_INVALID",
+                }
+                if exc.error_code not in recoverable_output_codes:
+                    raise
+                if max_tokens == 1536:
+                    break
+
+        if decision is None:
+            recovery_messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        prompt.system_message
+                        + "\n\nMINIMAL OUTPUT RECOVERY: Return only model_verdict and "
+                        "model_confidence using the supplied strict schema."
+                    ),
+                },
+                messages[1],
+            ]
+            try:
+                response = self._remote_model.chat.remote(
+                    messages=recovery_messages,
+                    thinking=False,
+                    max_tokens=128,
+                    json_schema=minimal_recovery_schema(),
+                    temperature=0.0,
+                    seed=42,
+                )
+                decision = parse_minimal_recovery_decision(
+                    response,
+                    prompt_version=triage_input.prompt_version,
+                )
+            except modal.exception.ResourceExhaustedError as exc:
+                raise _translate_modal_exception(exc) from None
+            except modal.exception.AuthError as exc:
+                raise _translate_modal_exception(exc) from None
+            except modal.exception.TimeoutError as exc:
+                raise _translate_modal_exception(exc) from None
+            except (modal.exception.Error, RuntimeError, TypeError, ValueError) as exc:
+                raise _translate_modal_exception(exc) from None
         self._completed += 1
         if self._completed == 1 or self._completed % 10 == 0:
             print(

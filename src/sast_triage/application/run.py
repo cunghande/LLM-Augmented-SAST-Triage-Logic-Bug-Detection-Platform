@@ -6,15 +6,24 @@ import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from sast_triage.application.artifacts import collect_artifacts, validate_repository
+from sast_triage import __version__ as TOOL_VERSION
+from sast_triage.analysis.base import AnalysisBackend
+from sast_triage.analysis.factory import analysis_backend_session
+from sast_triage.application.artifacts import (
+    collect_artifacts,
+    validate_repository,
+)
 from sast_triage.application.console import show_progress
 from sast_triage.application.providers import provider_identity, provider_session
+from sast_triage.application.repository_state import read_repository_state
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, TriageCheckpointStore
+from sast_triage.context.repository_index import MODULE2_CONFIG_ID
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ArtifactRepositoryMatch,
     BatchResult,
     NormalizedFinding,
+    ScannerParseResult,
     TriageResult,
 )
 from sast_triage.pipeline.batch import triage_batch
@@ -29,6 +38,25 @@ EXIT_PROVIDER_RESOURCE_EXHAUSTED = 5
 
 
 def execute_run(args: argparse.Namespace) -> int:
+    """Run the pipeline with exactly one analysis backend session."""
+    repository = validate_repository(args.repository)
+    repository_id = args.repository_identifier or repository.name
+    backend_name = getattr(args, "analysis_backend", "native")
+    show_progress(
+        "PREFLIGHT",
+        f"Đang khởi tạo analysis backend={backend_name}.",
+    )
+    with analysis_backend_session(
+        backend_name,
+        repository,
+        repository_id,
+        module2_enabled=args.module2,
+    ) as backend:
+        args._analysis_backend = backend
+        return _execute_run(args)
+
+
+def _execute_run(args: argparse.Namespace) -> int:
     """Chạy scanner/artifact, triage, checkpoint rồi ghi báo cáo."""
     show_progress("1/7", "Đang kiểm tra repository và cấu hình output.")
     repository = validate_repository(args.repository)
@@ -42,9 +70,29 @@ def execute_run(args: argparse.Namespace) -> int:
         resume=args.resume,
         semgrep_json=getattr(args, "semgrep_json", None),
         gitleaks_json=getattr(args, "gitleaks_json", None),
+        semgrep_config=tuple(args.semgrep_config or ("p/python",)),
+        gitleaks_config=args.gitleaks_config,
         progress=show_progress,
     )
-    findings = artifacts.semgrep.findings + artifacts.gitleaks.findings
+    analysis_backend: AnalysisBackend = args._analysis_backend
+    repository_index = analysis_backend.repository_index
+    module2_result = None
+    if args.module2:
+        show_progress("3/7", "Đang lập chỉ mục Python theo component cho Module 2.")
+        module2_findings = analysis_backend.discover_findings(
+            artifacts.semgrep.findings,
+        )
+        module2_result = ScannerParseResult(findings=module2_findings)
+    scanner_versions = dict(artifacts.scanner_versions)
+    scanner_config_ids = dict(artifacts.scanner_config_ids)
+    if module2_result is not None:
+        scanner_versions["MODULE2"] = TOOL_VERSION
+        scanner_config_ids["MODULE2"] = MODULE2_CONFIG_ID
+    findings = (
+        artifacts.semgrep.findings
+        + artifacts.gitleaks.findings
+        + (() if module2_result is None else module2_result.findings)
+    )
     show_progress(
         "3/7",
         f"Đã parse {len(findings)} finding: "
@@ -53,6 +101,7 @@ def execute_run(args: argparse.Namespace) -> int:
     )
 
     repository_id = args.repository_identifier or repository.name
+    commit_sha, working_tree_state = read_repository_state(repository)
     checkpoint = TriageCheckpointStore(
         output_dir / CHECKPOINT_FILENAME,
         repository_identifier=repository_id,
@@ -60,6 +109,9 @@ def execute_run(args: argparse.Namespace) -> int:
         finding_ids=tuple(item.finding_instance_id for item in findings),
         prompt_version=args.prompt_version,
         output_schema_version=args.output_schema_version,
+        analysis_backend=analysis_backend.identity.backend,
+        analysis_backend_version=analysis_backend.identity.version,
+        analysis_config_id=analysis_backend.identity.config_id,
     )
     previous_results, provider_history = _restore_checkpoint(
         checkpoint, findings, args.resume
@@ -95,7 +147,13 @@ def execute_run(args: argparse.Namespace) -> int:
                 provider,
                 semgrep_result=artifacts.semgrep,
                 gitleaks_result=artifacts.gitleaks,
+                module2_result=module2_result,
+                repository_index=repository_index,
+                analysis_backend=analysis_backend,
+                analysis_identity=analysis_backend.identity,
                 repository_identifier=repository_id,
+                commit_sha=commit_sha,
+                working_tree_state=working_tree_state,
                 artifact_repository_match=(
                     ArtifactRepositoryMatch.VERIFIED
                     if args.command == "scan-and-triage"
@@ -105,6 +163,8 @@ def execute_run(args: argparse.Namespace) -> int:
                 output_schema_version=args.output_schema_version,
                 prompt_type=args.prompt_type,
                 input_artifact_hashes=artifacts.hashes,
+                scanner_versions=scanner_versions,
+                scanner_config_ids=scanner_config_ids,
                 cli_mode=f"{args.command}-resume" if args.resume else args.command,
                 existing_results=previous_results,
                 progress_callback=save_progress,
