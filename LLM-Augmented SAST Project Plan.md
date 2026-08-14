@@ -1,3 +1,10 @@
+> [!IMPORTANT]
+> **Tài liệu lưu trữ của đề xuất v9 — không phải kế hoạch triển khai hiện tại.**
+> Các mục tiêu risk scoring, remediation, auto-suppression, 20 custom rules,
+> Jenkins, dashboard và phát hiện năm lớp logic bug chưa được chấp nhận làm
+> deliverable. Xem [`docs/current-project-plan.md`](docs/current-project-plan.md)
+> và [`docs/sprint-1-scope.md`](docs/sprint-1-scope.md).
+
 # KẾ HOẠCH DỰ ÁN
 
 ## LLM-Augmented SAST Triage & Logic-Bug Detection Platform

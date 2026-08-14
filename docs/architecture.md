@@ -308,7 +308,7 @@ gitleaks.json
 | Component | Sở hữu | Đầu vào | Đầu ra | Không được |
 |-----------|--------|---------|--------|------------|
 | `SemgrepParser` | Parse JSON semgrep | Đường dẫn file | `List[NormalizedFinding]` | Trích xuất ngữ cảnh, gọi LLM |
-| `GitleaksParser` | Parse JSON gitleaks, redact sớm | Đường dẫn file | `List[NormalizedFinding]` (đã redact) | Để bí mật thô rời phạm vi cục bộ |
+| `GitleaksParser` | Parse JSON gitleaks, bỏ raw secret/source preview | Đường dẫn file | `List[NormalizedFinding]` không có source text | Để bí mật thô rời phạm vi cục bộ |
 | `SafeContextService` | Đọc source, chọn scope, sanitize | `NormalizedFinding` + repo config | `SanitizedContext` | Để raw source rời component; trả ContextPackage ra ngoài |
 | `TriageInputBuilder` | Đóng gói đầu vào cho provider | `NormalizedFinding` + `SanitizedContext` | `TriageInput` | Bao gồm trường không an toàn (author email, etc.) |
 | `TriageProvider` | Gọi LLM để phân loại | `TriageInput` | `TriageDecision \| null` | Nhận NormalizedFinding trực tiếp, raw source, bịa quyết định khi lỗi |

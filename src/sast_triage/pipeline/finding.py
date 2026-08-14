@@ -10,6 +10,7 @@ Cam kết bảo mật và cô lập:
 - Lỗi lập trình hoặc cấu hình bất ngờ được lan truyền ngay.
 """
 
+import hashlib
 import json
 import time
 from datetime import UTC, datetime
@@ -169,7 +170,7 @@ def triage_finding(
     repository_root: Path,
     provider: object,
     *,
-    prompt_version: str = "triage-prompt-v9",
+    prompt_version: str = "triage-prompt-v10",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,
@@ -387,7 +388,11 @@ def triage_finding(
         output_schema_version=output_schema_version,
         prompt_type=prompt_type,
     )
+    triage_input_digest = hashlib.sha256(
+        triage_input.model_dump_json().encode("utf-8")
+    ).hexdigest()
 
+    provider_start_perf = time.perf_counter()
     try:
         triage_dec = provider.triage(triage_input)
     except SastTriageError as exc:
@@ -407,6 +412,10 @@ def triage_finding(
             )
         )
         triage_dec = None
+    provider_duration_ms = max(
+        0,
+        int((time.perf_counter() - provider_start_perf) * 1000),
+    )
 
     # 4. Đánh giá Policy
     policy_dec: PolicyDecision | None = None
@@ -450,4 +459,6 @@ def triage_finding(
         processing_errors=processing_errors,
         processed_at=processed_at,
         processing_duration_ms=duration_ms,
+        provider_duration_ms=provider_duration_ms,
+        triage_input_digest=triage_input_digest,
     )

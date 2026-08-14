@@ -14,8 +14,9 @@ Markdown.
   ruleset được cấu hình, nhưng Evidence Engine và Module 2 hiện chỉ hiểu Python.
 - Scanner: Semgrep Community Edition và Gitleaks.
 - Provider: fake (offline), Ollama hoặc Qwen3-14B-AWQ trên Modal.
-- Module 2: index Python theo component, symbol và call-site; trace source-to-sink
-  cross-file có giới hạn.
+- Module 2: index Python theo component, symbol, call-site và `FunctionSummary`
+  source-free (parameter→sink, parameter→return, control); trace source-to-sink
+  cross-file có giới hạn và nhận diện entrypoint Flask/FastAPI/Django thông dụng.
 - Xử lý tuần tự trong Sprint 1; không chạy finding song song.
 - Notebook `.ipynb` chưa được phân tích trực tiếp; cần chuyển sang `.py` trước.
 
@@ -34,8 +35,15 @@ Repository
 ```
 
 `triage` và `scan-and-triage` dùng chung pipeline. Module 1 và Module 2 cũng
-không phải hai pipeline cạnh tranh: Module 2 chỉ bổ sung finding/evidence
-cross-file trước khi mọi finding đi qua cùng provider và policy.
+không phải hai pipeline cạnh tranh: Module 2 bổ sung evidence cross-file cho
+finding của scanner trước khi mọi finding đi qua cùng provider và policy. Việc
+tự tạo finding Module 2 là chế độ thử nghiệm Sprint 3, chỉ bật khi truyền
+`--module2-discovery`.
+
+`FunctionSummary` là nền cho Sprint 2/3: Sprint 2 dùng nó để chứng minh flow
+cross-file tốt hơn; Sprint 3 có thể dùng lại cùng index để mở rộng discovery.
+Summary chỉ chứa identifier, đường dẫn tương đối, dòng và loại flow/control;
+không chứa source code hoặc literal bí mật.
 
 ## Bắt đầu nhanh trên Windows
 
@@ -220,9 +228,11 @@ với Sequential-Recommender xử lý thành công 4/4 finding, 0 triage error, 
 ## Tài liệu
 
 - [Hướng dẫn CLI đầy đủ](docs/cli-usage.md)
+- [Kế hoạch triển khai hiện tại](docs/current-project-plan.md)
+- [Threat model](docs/threat-model.md)
 - [Thiết lập và chạy Joern CPG](docs/joern-analysis.md)
-- [Báo cáo Joern v9 trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v9-joern-b200.md)
-- [Baseline Joern v8 trước cải tiến](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v8-joern-b200.md)
+- [Benchmark native prompt v10 trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v10-native-b200.md)
+- [Báo cáo Joern v9 lịch sử trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v9-joern-b200.md)
 - [Bản đồ mã nguồn](docs/code-map.md)
 - [Luồng hệ thống Sprint 1](docs/sprint-1-system-flow.md)
 - [Kiến trúc](docs/architecture.md)

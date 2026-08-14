@@ -9,7 +9,6 @@ from sast_triage.models import (
     Severity,
 )
 from sast_triage.parsers.gitleaks import parse_gitleaks_json
-from sast_triage.redaction import REDACTED_SECRET_PLACEHOLDER
 
 FIXTURES = Path(__file__).parent / "fixtures" / "gitleaks"
 CANARY = "CANARY_SUPER_SECRET_DO_NOT_LEAK"
@@ -46,8 +45,8 @@ def test_valid_single_mapping() -> None:
 def test_valid_single_redaction_applied() -> None:
     result = parse_gitleaks_json(FIXTURES / "valid_single.json")
     f = result.findings[0]
-    assert REDACTED_SECRET_PLACEHOLDER in f.snippet
-    assert CANARY not in f.snippet
+    assert "snippet" not in f.model_dump()
+    assert CANARY not in f.model_dump_json()
 
 
 def test_canary_absent_from_all_representations() -> None:
@@ -149,8 +148,8 @@ def test_redaction_no_match_fallback(tmp_path: Path) -> None:
     result = parse_gitleaks_json(f)
     assert len(result.findings) == 1
     f_out = result.findings[0]
-    assert f_out.snippet == REDACTED_SECRET_PLACEHOLDER
-    assert "UNRELATED_VALUE" not in f_out.snippet
+    assert "snippet" not in f_out.model_dump()
+    assert "UNRELATED_VALUE" not in f_out.model_dump_json()
 
     assert len(result.errors) == 1
     err = result.errors[0]
@@ -176,8 +175,8 @@ def test_missing_secret_value_fallback(tmp_path: Path) -> None:
     result = parse_gitleaks_json(f)
     assert len(result.findings) == 1
     f_out = result.findings[0]
-    assert f_out.snippet == REDACTED_SECRET_PLACEHOLDER
-    assert "SOME_RAW_VALUE" not in f_out.snippet
+    assert "snippet" not in f_out.model_dump()
+    assert "SOME_RAW_VALUE" not in f_out.model_dump_json()
 
     assert len(result.errors) == 1
     assert result.errors[0].error_code == "SANITIZE_SECRET_VALUE_MISSING"
@@ -199,7 +198,7 @@ def test_missing_match_string_fallback(tmp_path: Path) -> None:
     result = parse_gitleaks_json(f)
     assert len(result.findings) == 1
     f_out = result.findings[0]
-    assert f_out.snippet == REDACTED_SECRET_PLACEHOLDER
+    assert "snippet" not in f_out.model_dump()
 
     assert len(result.errors) == 1
     assert result.errors[0].error_code == "SANITIZE_SECRET_MATCH_MISSING"

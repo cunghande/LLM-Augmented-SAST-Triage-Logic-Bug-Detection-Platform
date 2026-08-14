@@ -47,7 +47,6 @@ def make_semgrep_finding(
         end_line=start_line,
         severity=severity,
         message="Semgrep message",
-        snippet="eval(x)",
     )
 
 
@@ -66,7 +65,6 @@ def make_gitleaks_finding(
         end_line=start_line,
         severity=Severity.UNKNOWN,
         message="Gitleaks message",
-        snippet="<REDACTED_SECRET>",
     )
 
 

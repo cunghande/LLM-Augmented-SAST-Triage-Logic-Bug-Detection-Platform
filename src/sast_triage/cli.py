@@ -63,7 +63,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default="fake",
         help="fake=không LLM, ollama=LLM local, real=Qwen3-14B trên Modal",
     )
-    parser.add_argument("--prompt-version", default="triage-prompt-v9")
+    parser.add_argument("--prompt-version", default="triage-prompt-v10")
     parser.add_argument("--output-schema-version", default="triage-decision-v1")
     parser.add_argument("--prompt-type", default="fake.default")
     parser.add_argument("--repository-identifier", default=None)
@@ -88,7 +88,16 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         "--module2",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Enable bounded cross-file discovery and evidence routing (default: enabled)",
+        help="Enable bounded Python cross-file index and evidence routing (default: enabled)",
+    )
+    parser.add_argument(
+        "--module2-discovery",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Experimental: add bounded Module 2 findings in addition to scanner "
+            "findings (default: disabled)"
+        ),
     )
     parser.add_argument(
         "--overwrite", action=argparse.BooleanOptionalAction, default=True

@@ -694,7 +694,6 @@ class JoernAnalysisBackend:
                     end_line=sink_line,
                     severity=Severity.HIGH,
                     message="Joern found a bounded cross-file source-to-sink path.",
-                    snippet="",
                     metadata={"analysis_scope": "cross_file", "analysis_backend": "joern"},
                 )
             )

@@ -123,6 +123,8 @@ def _project_batch_result(batch_result: BatchResult) -> dict[str, Any]:
                 ],
                 "processed_at": result.processed_at.isoformat(),
                 "processing_duration_ms": result.processing_duration_ms,
+                "provider_duration_ms": result.provider_duration_ms,
+                "triage_input_digest": result.triage_input_digest,
             }
         )
 

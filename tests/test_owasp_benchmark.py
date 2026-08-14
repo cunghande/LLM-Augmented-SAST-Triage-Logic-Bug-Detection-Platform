@@ -22,7 +22,6 @@ def _finding(identifier: str, rule_id: str) -> NormalizedFinding:
         start_line=1,
         severity=Severity.HIGH,
         message="safe message",
-        snippet="",
     )
 
 

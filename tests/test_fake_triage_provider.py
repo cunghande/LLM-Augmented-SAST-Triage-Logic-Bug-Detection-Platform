@@ -43,7 +43,6 @@ def make_finding(
         end_line=start_line,
         severity=Severity.HIGH,
         message="Finding message",
-        snippet="snippet",
     )
 
 

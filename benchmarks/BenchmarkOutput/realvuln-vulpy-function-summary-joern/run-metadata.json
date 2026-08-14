@@ -1,0 +1,44 @@
+{
+  "run_id": "defc279b-46a1-4a75-8967-a0707f48cb69",
+  "repository_name": "realvuln-vulpy",
+  "repository_identifier": "realvuln-vulpy",
+  "commit_sha": "5249cc8b05a1c37f6b2f757b1cf16a509c327122",
+  "working_tree_state": "clean",
+  "artifact_repository_match": "UNVERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.150.0",
+    "GITLEAKS": null
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "artifact-provided",
+    "GITLEAKS": "artifact-provided"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "126d7e40da54fbcd8a367cd6cc57f3126389cd69c39303cb6eb92214d5dc18e0",
+    "gitleaks": "21ab839157f531ef0c1a56e6cb6c9c039e77fab6b3a0466ab2146f4231071ff4"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 31.892008,
+  "prompt_version": "triage-prompt-v10",
+  "model_version": "Qwen/Qwen3-14B-AWQ",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "real-modal-qwen",
+  "tool_version": "0.1.0",
+  "cli_mode": "triage-resume",
+  "started_at": "2026-08-13T02:46:38.784484Z",
+  "completed_at": "2026-08-13T02:50:39.307218Z",
+  "total_findings_parsed": 46,
+  "findings_triaged_ok": 46,
+  "findings_with_errors": 0
+}

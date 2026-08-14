@@ -61,6 +61,8 @@ def _safe_result_projection(result: TriageResult) -> dict[str, Any]:
         ],
         "processed_at": result.processed_at.isoformat(),
         "processing_duration_ms": result.processing_duration_ms,
+        "provider_duration_ms": result.provider_duration_ms,
+        "triage_input_digest": result.triage_input_digest,
     }
 
 
@@ -159,6 +161,8 @@ class TriageCheckpointStore:
                             "processing_errors": raw.get("processing_errors", []),
                             "processed_at": raw.get("processed_at"),
                             "processing_duration_ms": raw.get("processing_duration_ms"),
+                            "provider_duration_ms": raw.get("provider_duration_ms"),
+                            "triage_input_digest": raw.get("triage_input_digest"),
                         }
                     )
                 )

@@ -8,6 +8,7 @@ from typing import Any
 from sast_triage.errors import SastTriageError
 
 _LABELS = frozenset({"TP", "FP", "DISPUTED", "INSUFFICIENT_CONTEXT"})
+_SPLITS = frozenset({"development", "calibration", "held_out"})
 
 
 @dataclass(frozen=True)
@@ -54,6 +55,8 @@ def _record(raw: Any, index: int, forbidden_values: tuple[str, ...]) -> Benchmar
             raise SastTriageError("Benchmark contains a forbidden value.", "BENCHMARK_FORBIDDEN_VALUE")
     if raw["expected_label"] not in _LABELS:
         raise SastTriageError("Benchmark label is invalid.", "BENCHMARK_LABEL_INVALID")
+    if raw["split"] not in _SPLITS:
+        raise SastTriageError("Benchmark split is invalid.", "BENCHMARK_SPLIT_INVALID")
     return BenchmarkRecord(**{key: raw[key] for key in required})
 
 
@@ -68,6 +71,11 @@ def load_benchmark(file_path: Path, *, forbidden_values: tuple[str, ...] = ()) -
     if not isinstance(raw, dict) or not isinstance(raw.get("version"), str) or not isinstance(raw.get("records"), list):
         raise SastTriageError("Benchmark root has an invalid schema.", "BENCHMARK_SCHEMA_INVALID")
     records = tuple(_record(item, index, forbidden_values) for index, item in enumerate(raw["records"]))
+    finding_ids = [record.finding_instance_id for record in records]
+    if len(finding_ids) != len(set(finding_ids)):
+        raise SastTriageError("Benchmark finding IDs must be unique.", "BENCHMARK_DUPLICATE_FINDING")
+    if any(record.benchmark_version != raw["version"] for record in records):
+        raise SastTriageError("Benchmark record version mismatch.", "BENCHMARK_VERSION_MISMATCH")
     dataset_kind = raw.get("dataset_kind", "curated")
     if not isinstance(dataset_kind, str) or not dataset_kind.strip():
         raise SastTriageError("Benchmark dataset_kind is invalid.", "BENCHMARK_SCHEMA_INVALID")

@@ -1,5 +1,6 @@
 """Các domain model và enum cho SAST Triage Platform."""
 
+import json
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -163,14 +164,13 @@ class NormalizedFinding(BaseDomainModel):
     finding_instance_id: str
     scanner: ScannerType
     finding_type: FindingType
-    rule_id: str
-    rule_name: str | None = None
-    file_path: str
+    rule_id: str = Field(max_length=512)
+    rule_name: str | None = Field(default=None, max_length=1_000)
+    file_path: str = Field(max_length=2_048)
     start_line: int
     end_line: int | None = None
     severity: Severity
-    message: str
-    snippet: str
+    message: str = Field(max_length=4_000)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
@@ -202,6 +202,18 @@ class NormalizedFinding(BaseDomainModel):
 
         if self.end_line is not None and self.end_line < self.start_line:
             raise ValueError("end_line must be greater than or equal to start_line")
+
+        try:
+            encoded_metadata = json.dumps(
+                self.metadata,
+                ensure_ascii=False,
+                sort_keys=True,
+                allow_nan=False,
+            )
+        except (TypeError, ValueError):
+            raise ValueError("metadata must contain JSON-safe values") from None
+        if len(encoded_metadata) > 16_000:
+            raise ValueError("metadata exceeds the safe size limit")
 
         return self
 
@@ -374,6 +386,8 @@ class TriageResult(BaseDomainModel):
     processing_errors: list[ProcessingError] = Field(default_factory=list)
     processed_at: datetime
     processing_duration_ms: int | None = None
+    provider_duration_ms: int | None = None
+    triage_input_digest: str | None = None
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
@@ -396,6 +410,12 @@ class TriageResult(BaseDomainModel):
 
         if self.processing_duration_ms is not None and self.processing_duration_ms < 0:
             raise ValueError("processing_duration_ms cannot be negative")
+        if self.provider_duration_ms is not None and self.provider_duration_ms < 0:
+            raise ValueError("provider_duration_ms cannot be negative")
+        if self.triage_input_digest is not None:
+            digest = self.triage_input_digest
+            if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+                raise ValueError("triage_input_digest must be a lowercase SHA-256 hex digest")
         return self
 
 

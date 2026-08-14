@@ -30,7 +30,7 @@ from sast_triage.reporting.markdown_reporter import write_markdown_report
 NOW = datetime(2025, 1, 1, tzinfo=UTC)
 
 
-def _finding(identifier: str, scanner: ScannerType, snippet: str) -> NormalizedFinding:
+def _finding(identifier: str, scanner: ScannerType, _source_canary: str) -> NormalizedFinding:
     return NormalizedFinding(
         finding_instance_id=identifier,
         scanner=scanner,
@@ -42,7 +42,6 @@ def _finding(identifier: str, scanner: ScannerType, snippet: str) -> NormalizedF
         end_line=3,
         severity=Severity.HIGH if scanner == ScannerType.SEMGREP else Severity.UNKNOWN,
         message="scanner message",
-        snippet=snippet,
         metadata={"secret_category": "api_key"} if scanner == ScannerType.GITLEAKS else {},
     )
 

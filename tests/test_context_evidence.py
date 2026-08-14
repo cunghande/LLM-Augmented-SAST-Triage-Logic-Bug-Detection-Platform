@@ -48,7 +48,6 @@ def _inputs(
         end_line=finding_line,
         severity=Severity.HIGH,
         message="Potential security-sensitive data flow.",
-        snippet="SCANNER_SNIPPET_MUST_NOT_BE_USED",
         metadata={"category": "security"},
     )
     source = SourceReadResult(
@@ -452,7 +451,7 @@ def test_semgrep_pipeline_sends_evidence_projection_to_provider(tmp_path: Path) 
 
     result = triage_finding(finding, repo, provider, prompt_type="fake.tp.high")
 
-    assert result.policy_decision.action == PolicyAction.LIKELY_TP
+    assert result.policy_decision.action == PolicyAction.MANUAL_REVIEW
     assert provider.received is not None
     snippet = provider.received.context.sanitized_snippet or ""
     assert '"context_completeness"' in snippet

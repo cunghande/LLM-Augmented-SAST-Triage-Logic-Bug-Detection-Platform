@@ -56,6 +56,9 @@ def test_monorepo_index_discovers_explicit_cross_component_path(tmp_path: Path) 
     assert trace is not None
     assert trace.source_file == "packages/web/src/web/routes.py"
     assert trace.sink_file == finding.file_path
+    summary = index.summary_for("shared.danger.run_command")
+    assert summary is not None
+    assert summary.parameter_to_sinks == (("value", "command_execution"),)
 
 
 def test_module2_finding_uses_same_sequential_triage_pipeline(tmp_path: Path) -> None:
@@ -73,7 +76,7 @@ def test_module2_finding_uses_same_sequential_triage_pipeline(tmp_path: Path) ->
     )
 
     assert batch.run_metadata.scanners_attempted == [ScannerType.MODULE2]
-    assert batch.results[0].policy_decision.action == PolicyAction.LIKELY_TP
+    assert batch.results[0].policy_decision.action == PolicyAction.MANUAL_REVIEW
 
 
 def test_repository_index_does_not_retain_source_canary(tmp_path: Path) -> None:
@@ -94,6 +97,51 @@ def test_repository_index_does_not_retain_source_canary(tmp_path: Path) -> None:
     assert canary not in serialized_shape
 
 
+def test_framework_entrypoint_and_function_summary_support_cross_file_trace(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    (repo / "service").mkdir(parents=True)
+    (repo / "api").mkdir(parents=True)
+    (repo / "service" / "danger.py").write_text(
+        "import subprocess\n\ndef run(value):\n    subprocess.run(value, shell=True)\n",
+        encoding="utf-8",
+    )
+    (repo / "api" / "routes.py").write_text(
+        "from service.danger import run\n\n@app.get('/run')\ndef handler(command):\n    run(command)\n",
+        encoding="utf-8",
+    )
+
+    index = build_repository_index(repo, "example/fastapi")
+    findings = index.discover_findings()
+
+    assert len(findings) == 1
+    trace = index.trace_for_finding(findings[0])
+    assert trace is not None
+    assert trace.source_type == "http_route_parameter"
+    assert trace.source_file == "api/routes.py"
+    route_summary = index.summary_for("api.routes.handler")
+    assert route_summary is not None
+    assert route_summary.returned_parameters == ()
+
+
+def test_function_summary_records_return_and_control_without_source_text(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "app.py").write_text(
+        "import html\n\ndef transform(value):\n    safe = html.escape(value)\n    return value\n",
+        encoding="utf-8",
+    )
+
+    index = build_repository_index(repo, "example/summaries")
+    summary = index.summary_for("app.transform")
+
+    assert summary is not None
+    assert summary.returned_parameters == ("value",)
+    assert summary.security_controls == ("output_encoding",)
+    assert "html.escape" not in repr(summary)
+
+
 def test_intrinsic_usage_rule_is_not_fp_candidate_from_non_tainted_source(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -111,7 +159,6 @@ def test_intrinsic_usage_rule_is_not_fp_candidate_from_non_tainted_source(tmp_pa
         end_line=4,
         severity=Severity.MEDIUM,
         message="Insecure hash usage requires review.",
-        snippet="",
     )
 
     class CapturingProvider(FakeTriageProvider):

@@ -17,6 +17,24 @@ Reviewers should use cross-review and adjudication for disputed records. A
 policy action is not a ground-truth label: `MANUAL_REVIEW` and `TRIAGE_ERROR`
 must not be silently counted as FP or FN.
 
+## Split discipline
+
+- `development`: may be inspected while implementing evidence extraction.
+- `calibration`: may be used to choose a prompt/policy version, but changes must
+  be frozen before held-out evaluation.
+- `held_out`: must not be inspected to tune prompts, rules or thresholds.
+
+The loader rejects any other split, duplicate finding IDs and record-level
+benchmark version mismatches. Metrics are reported separately for every split.
+A model-quality claim is supported only when a real provider is evaluated on a
+non-synthetic dataset with matched held-out records.
+
+For the claim-bearing sample, use two independent reviewers when possible.
+Record disagreement as `DISPUTED`; an adjudicator must document the final
+rationale before converting a disputed record to TP or FP. If staffing permits
+only one reviewer, state that limitation instead of presenting the labels as
+independently verified ground truth.
+
 ## OWASP Benchmark Python scoring
 
 Use `load_owasp_expected_results()` and `score_owasp_findings()` for OWASP

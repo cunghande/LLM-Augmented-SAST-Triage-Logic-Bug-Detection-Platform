@@ -64,7 +64,6 @@ def _input() -> TriageInput:
         start_line=1,
         severity=Severity.LOW,
         message="message",
-        snippet="RAW_MODAL_SNIPPET",
     )
     context = SanitizedContext(
         finding_id="f-1",

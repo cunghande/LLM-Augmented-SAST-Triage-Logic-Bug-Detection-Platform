@@ -1,5 +1,7 @@
 """Unit tests for Conservative PolicyEngine."""
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
@@ -41,7 +43,6 @@ def make_finding(
         end_line=1,
         severity=severity,
         message="Finding message",
-        snippet="snippet",
     )
 
 
@@ -68,6 +69,27 @@ def make_context(
         context_available=context_available,
         missing_context_reasons=missing_context_reasons,
         truncated=truncated,
+    )
+
+
+def make_complete_taint_context(finding_id: str = "find123456789012") -> SanitizedContext:
+    """Create a safe evidence projection proving a complete unsafe taint path."""
+    context = make_context(finding_id=finding_id)
+    return context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "taint_flow",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "source_user_controlled": True,
+                        "source_reaches_sink": True,
+                    },
+                }
+            )
+        }
     )
 
 
@@ -257,13 +279,26 @@ def test_likely_tp_high_confidence_classified_tp() -> None:
     Test Category: TP Classification
     """
     finding = make_finding()
-    ctx = make_context()
+    ctx = make_complete_taint_context()
     dec = make_triage_decision(verdict=ModelVerdict.LIKELY_TP, confidence=ModelConfidence.HIGH)
 
     res = apply_policy(finding, ctx, dec)
 
     assert res.action == PolicyAction.LIKELY_TP
     assert res.escalated is False
+
+
+def test_likely_tp_without_deterministic_support_is_manual_review() -> None:
+    """High-confidence TP opinions without a proven rule mechanism remain reviewable."""
+    finding = make_finding()
+    ctx = make_context()
+    dec = make_triage_decision(verdict=ModelVerdict.LIKELY_TP, confidence=ModelConfidence.HIGH)
+
+    res = apply_policy(finding, ctx, dec)
+
+    assert res.action == PolicyAction.MANUAL_REVIEW
+    assert res.escalated is True
+    assert res.escalation_reason == "Model TP opinion lacks deterministic rule-mechanism support."
 
 
 def test_likely_tp_medium_confidence_escalated_to_manual_review() -> None:

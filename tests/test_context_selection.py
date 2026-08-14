@@ -47,7 +47,6 @@ def make_finding(
         end_line=actual_end,
         severity=Severity.HIGH if scanner == ScannerType.SEMGREP else Severity.UNKNOWN,
         message="Finding message",
-        snippet="snippet",
     )
 
 

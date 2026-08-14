@@ -40,7 +40,6 @@ def _finding() -> NormalizedFinding:
         end_line=5,
         severity=Severity.HIGH,
         message="Potential command injection",
-        snippet="",
         metadata={},
     )
 

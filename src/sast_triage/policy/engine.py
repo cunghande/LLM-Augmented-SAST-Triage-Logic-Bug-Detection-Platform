@@ -30,7 +30,7 @@ from sast_triage.models import (
     TriageDecision,
 )
 
-POLICY_VERSION: str = "conservative-policy-v1"
+POLICY_VERSION: str = "conservative-policy-v2"
 
 
 def _evidence_is_incomplete(context: SanitizedContext) -> bool:
@@ -78,6 +78,47 @@ def _fp_has_deterministic_support(
         or verification.get("source_reaches_sink") is False
         or bool(verification.get("effective_controls"))
     )
+
+
+def _tp_has_deterministic_support(
+    finding: NormalizedFinding,
+    context: SanitizedContext,
+) -> bool | None:
+    """Require rule-appropriate evidence before a SAST TP is auto-resolved.
+
+    This gate does not reject or hide a finding. It only prevents a high-confidence
+    model opinion from becoming an automatic ``LIKELY_TP`` action when the safe
+    evidence projection has not established the mechanism claimed by the rule.
+    """
+    snippet = context.sanitized_snippet
+    if not snippet or not snippet.lstrip().startswith("{"):
+        return None
+    try:
+        payload = json.loads(snippet)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    verification = payload.get("deterministic_verification")
+    if not isinstance(verification, dict):
+        return None
+    if verification.get("evidence_complete") is not True:
+        return False
+    if verification.get("has_evidence_conflict") is True:
+        return False
+
+    mechanism = verification.get("mechanism")
+    if mechanism == "taint_flow":
+        return (
+            verification.get("source_user_controlled") is True
+            and verification.get("source_reaches_sink") is True
+        )
+    if mechanism == "intrinsic_usage":
+        return verification.get("unsafe_primitive_observed") is True
+
+    # A generic rule-specific projection is not enough to auto-resolve a
+    # configuration/framework finding. Keep it visible for manual review.
+    return False
 
 
 def apply_policy(
@@ -214,6 +255,16 @@ def apply_policy(
     # 6. Rule 5 — Model Verdict là LIKELY_TP
     if triage_decision.model_verdict == ModelVerdict.LIKELY_TP:
         if triage_decision.model_confidence == ModelConfidence.HIGH:
+            if finding.finding_type == FindingType.SAST:
+                support = _tp_has_deterministic_support(finding, context)
+                if support is not True:
+                    return PolicyDecision(
+                        action=PolicyAction.MANUAL_REVIEW,
+                        reasons=["Structured evidence does not safely support automatic TP classification."],
+                        policy_version=POLICY_VERSION,
+                        escalated=True,
+                        escalation_reason="Model TP opinion lacks deterministic rule-mechanism support.",
+                    )
             return PolicyDecision(
                 action=PolicyAction.LIKELY_TP,
                 reasons=["Model verdict is LIKELY_TP with HIGH confidence."],

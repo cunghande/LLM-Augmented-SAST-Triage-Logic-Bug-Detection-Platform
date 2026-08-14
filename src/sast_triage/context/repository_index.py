@@ -12,9 +12,14 @@ import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 
+from sast_triage.context.framework_registry import (
+    FRAMEWORK_REGISTRY_VERSION,
+    endpoint_source_type,
+    source_type_for_call,
+)
 from sast_triage.models import FindingType, NormalizedFinding, ScannerType, Severity
 
-MODULE2_CONFIG_ID = "python-cross-file-evidence-v1"
+MODULE2_CONFIG_ID = f"python-cross-file-evidence-v2-{FRAMEWORK_REGISTRY_VERSION}"
 _PROJECT_MARKERS = ("pyproject.toml", "setup.cfg", "setup.py")
 _SKIPPED_PARTS = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__", ".tox"})
 _SOURCE_SUFFIXES = (
@@ -45,6 +50,14 @@ _SINK_SUFFIXES: dict[str, str] = {
     "parse": "xml_parsing",
     "open": "file_access",
 }
+_CONTROL_SUFFIXES: dict[str, str] = {
+    "escape": "output_encoding",
+    "clean": "sanitizer_candidate",
+    "quote": "escaping_candidate",
+    "validate": "validation_candidate",
+    "check": "validation_candidate",
+    "verify": "validation_candidate",
+}
 
 
 def _qualified_name(node: ast.AST) -> str | None:
@@ -71,8 +84,13 @@ def _source_type(node: ast.AST, parameters: tuple[str, ...]) -> tuple[str | None
         if name in {"request.args", "request.form", "request.headers", "request.cookies", "sys.argv"}:
             return "request_or_command_input", None
     for item in ast.walk(node):
-        if isinstance(item, ast.Call) and _matches(_qualified_name(item.func), _SOURCE_SUFFIXES):
-            return "user_controlled_call", None
+        if isinstance(item, ast.Call):
+            name = _qualified_name(item.func)
+            framework_source = source_type_for_call(name)
+            if framework_source:
+                return framework_source, None
+            if _matches(name, _SOURCE_SUFFIXES):
+                return "user_controlled_call", None
     return None, None
 
 
@@ -132,6 +150,19 @@ class FunctionSymbol:
     line: int
     end_line: int
     parameters: tuple[str, ...]
+    entrypoint_source_type: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class FunctionSummary:
+    """A source-free interprocedural summary prepared for Sprint 2/3 queries."""
+
+    function: str
+    file_path: str
+    component: str
+    parameter_to_sinks: tuple[tuple[str, str], ...]
+    returned_parameters: tuple[str, ...]
+    security_controls: tuple[str, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -179,6 +210,7 @@ class RepositoryEvidenceIndex:
     repository_identifier: str
     components: tuple[RepositoryComponent, ...]
     functions: tuple[FunctionSymbol, ...]
+    summaries: tuple[FunctionSummary, ...]
     calls: tuple[CallSite, ...]
     sinks: tuple[SinkCandidate, ...]
     skipped_files: int = 0
@@ -196,6 +228,10 @@ class RepositoryEvidenceIndex:
         """Return the narrowest function containing a finding line."""
         matches = [item for item in self.functions if item.file_path == file_path and item.line <= line <= item.end_line]
         return min(matches, key=lambda item: item.end_line - item.line) if matches else None
+
+    def summary_for(self, function_name: str) -> FunctionSummary | None:
+        """Return the safe summary used by bounded future interprocedural queries."""
+        return next((item for item in self.summaries if item.function == function_name), None)
 
     def trace_for_finding(self, finding: NormalizedFinding, max_depth: int = 5) -> CrossFileTrace | None:
         """Trace an unresolved sink parameter to a source in another file."""
@@ -251,6 +287,16 @@ class RepositoryEvidenceIndex:
                 )
                 if found is not None:
                     return found
+        if function.entrypoint_source_type and parameter in function.parameters:
+            return CrossFileTrace(
+                source_file=function.file_path,
+                source_line=function.line,
+                source_type=function.entrypoint_source_type,
+                sink_file=sink.file_path,
+                sink_line=sink.line,
+                sink_type=sink.sink_type,
+                function_path=(*visited, function_name),
+            )
         return None
 
     def discover_findings(
@@ -282,7 +328,6 @@ class RepositoryEvidenceIndex:
                     end_line=sink.line,
                     severity=Severity.HIGH,
                     message="A bounded cross-file source-to-sink path requires security triage.",
-                    snippet="",
                     metadata={
                         "analysis_scope": "cross_file",
                         "component": sink.component,
@@ -414,6 +459,7 @@ def build_repository_index(
                 line=node.lineno,
                 end_line=node.end_lineno or node.lineno,
                 parameters=parameters,
+                entrypoint_source_type=endpoint_source_type(node),
             )
             functions.append(symbol)
             function_nodes[qualified] = node
@@ -421,11 +467,21 @@ def build_repository_index(
 
     calls: list[CallSite] = []
     sinks: list[SinkCandidate] = []
+    summaries: list[FunctionSummary] = []
     parsed_by_path = {item.path: item for item in parsed_files}
     for function in frozen_functions:
         node = function_nodes[function.qualified_name]
         parsed = parsed_by_path[function.file_path]
+        parameter_to_sinks: list[tuple[str, str]] = []
+        returned_parameters: list[str] = []
+        controls: list[str] = []
         for child in _walk_function(node):
+            if (
+                isinstance(child, ast.Return)
+                and isinstance(child.value, ast.Name)
+                and child.value.id in function.parameters
+            ):
+                returned_parameters.append(child.value.id)
             if not isinstance(child, ast.Call):
                 continue
             raw_callee = _qualified_name(child.func)
@@ -464,6 +520,7 @@ def build_repository_index(
             if sink_match and child.args:
                 _, parameter = _source_type(child.args[0], function.parameters)
                 if parameter:
+                    parameter_to_sinks.append((parameter, sink_match))
                     sinks.append(
                         SinkCandidate(
                             function=function.qualified_name,
@@ -474,10 +531,31 @@ def build_repository_index(
                             parameter=parameter,
                         )
                     )
+            control = next(
+                (
+                    control_type
+                    for suffix, control_type in _CONTROL_SUFFIXES.items()
+                    if raw_callee == suffix or raw_callee.endswith(f".{suffix}")
+                ),
+                None,
+            )
+            if control:
+                controls.append(control)
+        summaries.append(
+            FunctionSummary(
+                function=function.qualified_name,
+                file_path=function.file_path,
+                component=function.component,
+                parameter_to_sinks=tuple(dict.fromkeys(parameter_to_sinks)),
+                returned_parameters=tuple(dict.fromkeys(returned_parameters)),
+                security_controls=tuple(dict.fromkeys(controls)),
+            )
+        )
     return RepositoryEvidenceIndex(
         repository_identifier=repository_identifier,
         components=components,
         functions=frozen_functions,
+        summaries=tuple(summaries),
         calls=tuple(calls),
         sinks=tuple(sinks),
         skipped_files=skipped,

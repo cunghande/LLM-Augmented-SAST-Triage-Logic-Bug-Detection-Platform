@@ -31,7 +31,7 @@
 | `end.line` | `end_line` | `int \| None` | Không | Đánh số dòng kết thúc (mặc định bằng `start_line` nếu thiếu) |
 | `extra.severity` | `severity` | `Severity` | Có | Ánh xạ: `ERROR` → `HIGH`, `WARNING` → `MEDIUM`, `INFO` → `LOW`, khác → `UNKNOWN` |
 | `extra.message` | `message` | `str` | Có | Mô tả lỗi từ Semgrep |
-| `extra.lines` | `snippet` | `str` | Có | Mã nguồn khớp an toàn (đã trim whitespace) |
+| `extra.lines` | *(không lưu)* | — | Không | Raw source fragment bị bỏ tại parser boundary |
 | `extra.metadata` | `metadata` | `dict[str, Any]` | Có | Lọc theo allowlist an toàn bên dưới |
 
 ### 2.2 Semgrep Metadata Allowlist
@@ -61,12 +61,12 @@ Chỉ các key sau trong `extra.metadata` mới được đưa vào `NormalizedF
 | `EndLine` | `end_line` | `int \| None` | Không | Dòng kết thúc bí mật |
 | *(mặc định)* | `severity` | `Severity` | Có | Luôn là `Severity.UNKNOWN` trong Sprint 1 |
 | `Description` | `message` | `str` | Có | Thông báo phát hiện bí mật |
-| `Match` | `snippet` | `str` | Có | **⚠ BẮT BUỘC REDACT:** Thay thế giá trị bí mật trong `Match` bằng `<REDACTED_SECRET>` |
+| `Match` | *(không lưu)* | — | Không | Chỉ kiểm tra redaction consistency trong local scope rồi loại bỏ |
 | `Entropy` | `metadata` | `dict[str, Any]` | Có | Lọc theo allowlist an toàn bên dưới |
 
 ### 3.2 Quy Tắc Bảo Mật Gitleaks (Gitleaks Security Mapping)
 1. **Trường `Secret` thô:** **KHÔNG BAO GIỜ** truyền vào `NormalizedFinding`, `metadata`, hay bất kỳ public domain model nào.
-2. **Trường `Match` thô:** Bắt buộc thay thế chuỗi bí mật thô bằng `<REDACTED_SECRET>` trước khi lưu vào `NormalizedFinding.snippet`.
+2. **Trường `Match` thô:** Chỉ tồn tại trong local scope của parser để kiểm tra consistency, sau đó bị loại bỏ; không có trường snippet trong `NormalizedFinding`.
 3. **Thông tin tác giả & commit:** Các trường `Author`, `Email`, `Commit`, `Date`, `Message` thô từ Gitleaks **Bị LOẠI BỎ (DROPPED)** hoàn toàn, không đưa vào `NormalizedFinding` hay `TriageInput`.
 4. **Không copy nguyên văn:** Không lưu nguyên văn raw Gitleaks JSON record vào `metadata`.
 5. **Raw Test Fixtures:** Các file fixture JSON của Gitleaks chứa canary secret `CANARY_SUPER_SECRET_DO_NOT_LEAK` được coi là **dữ liệu nhạy cảm phục vụ kiểm thử (test-sensitive data)**. Không log hoặc copy nội dung fixture này vào các bản báo cáo public.
@@ -126,6 +126,6 @@ Các trường thô sau từ scanner bị loại bỏ triệt để để bảo 
 |----------|---------|----------|
 | `finding_type` | `SAST` | `SECRET` |
 | Severity | Ánh xạ từ scanner (`ERROR`, `WARNING`, `INFO`) | Mặc định `UNKNOWN` |
-| Yêu cầu Redaction | Snippet mã nguồn qua `ContextSanitizer` ở Iteration 3 | Redact **ngay lập tức** `Secret` và `Match` tại Parser (Iteration 2) |
+| Yêu cầu Redaction | Không giữ `extra.lines`; source được đọc qua Safe Context | Không giữ `Secret`/`Match`; source repository được redact lại qua Safe Context |
 | Metadata allowlist | CWE, OWASP, technology, category, confidence | Entropy, secret_category, rule_description |
 | Cấu trúc JSON thô | Object có key `results: [...]` | Array các đối tượng `[...]` |

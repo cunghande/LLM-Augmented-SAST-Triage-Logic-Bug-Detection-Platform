@@ -3,6 +3,28 @@
 
 def build_system_message(model_version: str, prompt_version: str) -> str:
     """Build the provider rubric without repository-controlled content."""
+    v10_calibration = ""
+    if prompt_version == "triage-prompt-v10":
+        v10_calibration = (
+            "\n\nSTRICT EVIDENCE CALIBRATION (v10):\n"
+            "9. Never choose LIKELY_TP from a rule name, scanner severity, or a suspicious "
+            "API alone. For source-to-sink mechanisms (SQL, command, path, deserialization, "
+            "XSS output), LIKELY_TP requires the Evidence Card to explicitly establish the "
+            "attacker-controlled source, the exact dangerous argument, and their complete "
+            "reachable path. If any of those is UNKNOWN, choose NEEDS_REVIEW.\n"
+            "10. For framework/configuration rules (CSRF, cookie flags, missing integrity, "
+            "debug mode, authentication/authorization), inspect the exact rule condition. "
+            "Do not infer a vulnerability from absent local syntax if middleware, inherited "
+            "configuration, deployment configuration, or a caller is not in evidence; choose "
+            "NEEDS_REVIEW in that case.\n"
+            "11. For weak hashes/randomness, LIKELY_TP requires evidence that the primitive "
+            "protects a password, credential, authentication decision, signature, key, or "
+            "other security property. A checksum, cache key, identifier, or unknown use is "
+            "NEEDS_REVIEW, not LIKELY_TP.\n"
+            "12. For LIKELY_FP, cite a concrete safe final value, effective control, or "
+            "negative taint proof. Otherwise choose NEEDS_REVIEW. Repeated scanner findings "
+            "are not proof that any one finding is a vulnerability.\n"
+        )
     return (
         "You are a senior application-security reviewer. A SAST scanner has already matched "
         "a suspicious operation. Decide whether this exact finding is LIKELY_TP, LIKELY_FP, "
@@ -50,4 +72,5 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "should contain 2-6 verifiable observations. Use [] when no information or assumptions "
         f"are missing. model_version must be {model_version!r}; "
         f"prompt_version must be {prompt_version!r}."
+        + v10_calibration
     )

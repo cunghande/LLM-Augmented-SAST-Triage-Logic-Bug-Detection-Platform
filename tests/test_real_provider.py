@@ -23,7 +23,7 @@ def _input() -> TriageInput:
     finding = NormalizedFinding(
         finding_instance_id="f-1", scanner=ScannerType.SEMGREP, finding_type=FindingType.SAST,
         rule_id="r", file_path="app.py", start_line=1, severity=Severity.LOW,
-        message="message", snippet="RAW_PROVIDER_SNIPPET",
+        message="message",
     )
     context = SanitizedContext(
         finding_id="f-1", sanitized_snippet="safe", context_strategy=ContextStrategy.LINE_WINDOW,

@@ -31,7 +31,7 @@ def test_valid_single_mapping() -> None:
     assert f.start_line == 24
     assert f.end_line == 24
     assert f.message == "Detected call to eval(). Dynamic code execution is unsafe."
-    assert f.snippet == "result = eval(user_input)"
+    assert "snippet" not in f.model_dump()
 
 
 def test_valid_single_severity_mapping() -> None:

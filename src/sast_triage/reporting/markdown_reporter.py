@@ -446,6 +446,8 @@ def _render_report(batch_result: BatchResult) -> str:
                 f"| Severity | {_safe_text(finding.severity.value)} |",
                 f"| Metadata an toàn | {_safe_mapping(finding.metadata)} |",
                 f"| Thời gian xử lý | {_safe_text(result.processing_duration_ms)} ms |",
+                f"| Thời gian provider | {_safe_text(result.provider_duration_ms)} ms |",
+                f"| SHA-256 đầu vào triage | {_safe_text(result.triage_input_digest)} |",
                 "",
                 "**Thông báo của scanner**",
                 "",

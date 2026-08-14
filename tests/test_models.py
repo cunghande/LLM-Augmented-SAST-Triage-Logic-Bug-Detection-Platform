@@ -45,7 +45,6 @@ def semgrep_finding() -> NormalizedFinding:
         end_line=20,
         severity=Severity.HIGH,
         message="Dynamic code execution via eval() detected.",
-        snippet="eval(user_input)",
         metadata={"cwe": "CWE-95"},
     )
 
@@ -63,7 +62,6 @@ def gitleaks_finding() -> NormalizedFinding:
         end_line=5,
         severity=Severity.UNKNOWN,
         message="AWS Access Key ID found",
-        snippet="AWS_KEY = '<REDACTED_SECRET>'",
         metadata={"secret_category": "cloud_credential"},
     )
 
@@ -125,7 +123,7 @@ def test_normalized_finding_semgrep_valid(semgrep_finding: NormalizedFinding) ->
 def test_normalized_finding_gitleaks_valid(gitleaks_finding: NormalizedFinding) -> None:
     assert gitleaks_finding.scanner == ScannerType.GITLEAKS
     assert gitleaks_finding.finding_type == FindingType.SECRET
-    assert "<REDACTED_SECRET>" in gitleaks_finding.snippet
+    assert "snippet" not in gitleaks_finding.model_dump()
 
 
 def test_normalized_finding_rejects_type_mismatch() -> None:
@@ -139,7 +137,6 @@ def test_normalized_finding_rejects_type_mismatch() -> None:
             start_line=1,
             severity=Severity.HIGH,
             message="msg",
-            snippet="snip",
         )
 
     with pytest.raises(ValidationError, match="GITLEAKS scanner findings must have SECRET"):
@@ -152,7 +149,6 @@ def test_normalized_finding_rejects_type_mismatch() -> None:
             start_line=1,
             severity=Severity.HIGH,
             message="msg",
-            snippet="snip",
         )
 
 
@@ -167,7 +163,6 @@ def test_normalized_finding_rejects_absolute_path() -> None:
             start_line=1,
             severity=Severity.HIGH,
             message="msg",
-            snippet="code",
         )
 
 
@@ -182,7 +177,6 @@ def test_normalized_finding_rejects_invalid_lines() -> None:
             start_line=0,
             severity=Severity.HIGH,
             message="msg",
-            snippet="code",
         )
 
     with pytest.raises(ValidationError, match="end_line must be greater than or equal to start_line"):
@@ -196,7 +190,6 @@ def test_normalized_finding_rejects_invalid_lines() -> None:
             end_line=5,
             severity=Severity.HIGH,
             message="msg",
-            snippet="code",
         )
 
 
@@ -209,6 +202,36 @@ def test_normalized_finding_serialization_no_raw_secrets(gitleaks_finding: Norma
     dumped = gitleaks_finding.model_dump_json()
     assert "Secret" not in dumped
     assert "AKIAIOSFODNN7EXAMPLE" not in dumped
+
+
+def test_normalized_finding_rejects_raw_source_snippet() -> None:
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        NormalizedFinding(
+            finding_instance_id="raw-source",
+            scanner=ScannerType.SEMGREP,
+            finding_type=FindingType.SAST,
+            rule_id="rule",
+            file_path="app.py",
+            start_line=1,
+            severity=Severity.HIGH,
+            message="msg",
+            snippet="password = 'must-not-cross-boundary'",  # type: ignore[call-arg]
+        )
+
+
+def test_normalized_finding_rejects_non_json_metadata() -> None:
+    with pytest.raises(ValidationError, match="metadata must contain JSON-safe values"):
+        NormalizedFinding(
+            finding_instance_id="unsafe-metadata",
+            scanner=ScannerType.SEMGREP,
+            finding_type=FindingType.SAST,
+            rule_id="rule",
+            file_path="app.py",
+            start_line=1,
+            severity=Severity.HIGH,
+            message="msg",
+            metadata={"unsafe": object()},
+        )
 
 
 # --- Tests: SanitizedContext ---
@@ -723,7 +746,6 @@ def test_public_models_reject_extra_secret_fields(semgrep_finding: NormalizedFin
             start_line=1,
             severity=Severity.HIGH,
             message="msg",
-            snippet="code",
             Secret="CANARY_SUPER_SECRET",  # type: ignore[call-arg]
         )
 
@@ -737,7 +759,6 @@ def test_public_models_reject_extra_secret_fields(semgrep_finding: NormalizedFin
             start_line=1,
             severity=Severity.HIGH,
             message="msg",
-            snippet="code",
             raw_match="raw_secret_here",  # type: ignore[call-arg]
         )
 

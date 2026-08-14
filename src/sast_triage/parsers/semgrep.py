@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,7 @@ _METADATA_ALLOWLIST: frozenset[str] = frozenset(
         "references",
     }
 )
+_UNSAFE_METADATA = object()
 
 
 # --- Helper ---
@@ -77,11 +79,33 @@ def _map_severity(raw_severity: Any) -> Severity:
     return _SEVERITY_MAP.get(raw_severity.upper(), Severity.UNKNOWN)
 
 
+def _safe_metadata_value(value: Any) -> Any:
+    """Project bounded JSON primitives from one optional metadata value."""
+    if value is None or isinstance(value, (bool, int)):
+        return value
+    if isinstance(value, float):
+        return value if math.isfinite(value) else _UNSAFE_METADATA
+    if isinstance(value, str):
+        return value if len(value) <= 2_000 else _UNSAFE_METADATA
+    if isinstance(value, list) and len(value) <= 50:
+        projected = [_safe_metadata_value(item) for item in value]
+        if all(item is not _UNSAFE_METADATA for item in projected):
+            return projected
+    return _UNSAFE_METADATA
+
+
 def _filter_metadata(raw_metadata: Any) -> dict[str, Any]:
-    """Chỉ trích xuất các key đã allowlist từ Semgrep extra.metadata."""
+    """Chỉ trích xuất các key và giá trị JSON giới hạn từ Semgrep metadata."""
     if not isinstance(raw_metadata, dict):
         return {}
-    return {k: v for k, v in raw_metadata.items() if k in _METADATA_ALLOWLIST}
+    filtered: dict[str, Any] = {}
+    for key, value in raw_metadata.items():
+        if key not in _METADATA_ALLOWLIST:
+            continue
+        projected = _safe_metadata_value(value)
+        if projected is not _UNSAFE_METADATA:
+            filtered[key] = projected
+    return filtered
 
 
 def _make_artifact_error(
@@ -317,10 +341,6 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
         # Tùy chọn: extra.severity
         severity = _map_severity(extra.get("severity"))
 
-        # Tùy chọn: extra.lines → snippet
-        raw_lines = extra.get("lines")
-        snippet = raw_lines if isinstance(raw_lines, str) else ""
-
         # Tùy chọn: extra.metadata → metadata đã allowlist
         metadata = _filter_metadata(extra.get("metadata"))
 
@@ -339,7 +359,6 @@ def parse_semgrep_json(file_path: Path) -> ScannerParseResult:
                 end_line=end_line,
                 severity=severity,
                 message=message,
-                snippet=snippet,
                 metadata=metadata,
             )
             findings.append(finding)

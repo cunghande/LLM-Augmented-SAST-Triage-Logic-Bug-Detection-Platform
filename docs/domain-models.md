@@ -193,7 +193,6 @@ Dữ kiện từ scanner, an toàn để serialize. Được tạo bởi parser.
 | `end_line` | `int \| None` | Không | Dòng kết thúc, đánh số từ 1 |
 | `severity` | `Severity` | Có | Ánh xạ từ scanner |
 | `message` | `str` | Có | Mô tả của scanner |
-| `snippet` | `str` | Có | Mã khớp an toàn. Đã redact cho Gitleaks |
 | `metadata` | `dict[str, Any]` | Có | Dữ liệu scanner-specific an toàn |
 
 **Ràng buộc:**
@@ -207,7 +206,8 @@ Dữ kiện từ scanner, an toàn để serialize. Được tạo bởi parser.
   `commit_sha` (không phải nội dung commit), `secret_category`,
   `rule_description`. KHÔNG ĐƯỢC chứa: `author` email, commit
   message, raw match.
-- `snippet` cho phát hiện Gitleaks chứa `<REDACTED_SECRET>`.
+- Không chứa snippet hoặc source text. Parser chỉ giữ vị trí và metadata an toàn;
+  source được đọc và sanitize riêng bởi `SafeContextService`.
 - `file_path` luôn tương đối. Đường dẫn tuyệt đối bị từ chối.
 
 ### SanitizedContext
@@ -274,7 +274,6 @@ Gói đầu vào duy nhất cho `TriageProvider`. Dùng composition chứa `find
 **Nội dung Semgrep TriageInput:**
 
 - `rule_id`, `message`, `severity`.
-- `snippet` an toàn (matched code).
 - `safe_metadata` với CWE/OWASP.
 - Đường dẫn tương đối, dải dòng phát hiện.
 - `SanitizedContext` với: AST scope hoặc line window đã sanitize,
@@ -284,7 +283,6 @@ Gói đầu vào duy nhất cho `TriageProvider`. Dùng composition chứa `find
 **Nội dung Gitleaks TriageInput:**
 
 - `rule_id`, `rule_description`.
-- `snippet` đã redact.
 - `safe_metadata` với `secret_category` nếu có.
 - Đường dẫn tương đối, `path_category`, dải dòng phát hiện.
 - `SanitizedContext` với: cửa sổ dòng đã redact, tên hàm/class bao
@@ -378,6 +376,8 @@ mà không thay đổi chúng.
 | `processing_errors` | `list[ProcessingError]` | Có | Lỗi trong quá trình xử lý |
 | `processed_at` | `datetime` | Có | Thời điểm xử lý hoàn tất |
 | `processing_duration_ms` | `int \| None` | Không | Thời gian xử lý (mili giây) |
+| `provider_duration_ms` | `int \| None` | Không | Thời gian dành cho provider (mili giây) |
+| `triage_input_digest` | `str \| None` | Không | SHA-256 của `TriageInput` đã sanitize để đối soát, không phải raw prompt |
 
 **Ràng buộc:**
 

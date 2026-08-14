@@ -6,7 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from sast_triage.cli import EXIT_PROVIDER_RESOURCE_EXHAUSTED, EXIT_SUCCESS, main
+from sast_triage.cli import (
+    EXIT_PROVIDER_RESOURCE_EXHAUSTED,
+    EXIT_SUCCESS,
+    build_parser,
+    main,
+)
 from sast_triage.errors import SastTriageError
 from sast_triage.models import ScannerType, TriageInput
 from sast_triage.runners.scanners import ScannerRunResult
@@ -61,6 +66,28 @@ def test_cli_help_is_available() -> None:
     with pytest.raises(SystemExit) as exc_info:
         main(["triage", "--help"])
     assert exc_info.value.code == 0
+
+
+def test_module2_discovery_is_explicitly_opt_in() -> None:
+    parser = build_parser()
+    common = [
+        "triage",
+        "--repository",
+        "repo",
+        "--semgrep-json",
+        "semgrep.json",
+        "--gitleaks-json",
+        "gitleaks.json",
+        "--output-dir",
+        "output",
+    ]
+
+    default_args = parser.parse_args(common)
+    enabled_args = parser.parse_args([*common, "--module2-discovery"])
+
+    assert default_args.module2 is True
+    assert default_args.module2_discovery is False
+    assert enabled_args.module2_discovery is True
 
 
 def test_scan_and_triage_cli_reuses_shared_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

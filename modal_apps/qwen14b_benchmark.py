@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import time
 from collections import Counter, defaultdict
@@ -38,16 +40,21 @@ from sast_triage.triage.prompt_builder import build_triage_prompt
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK_ROOT = PROJECT_ROOT / "benchmarks" / "BenchmarkPython"
-SEMGREP_ARTIFACT = PROJECT_ROOT / "benchmarks" / "BenchmarkRun" / "semgrep-p-python.json"
+SEMGREP_ARTIFACT = Path(
+    os.getenv(
+        "SAST_TRIAGE_BENCHMARK_ARTIFACT",
+        str(PROJECT_ROOT / "benchmarks" / "BenchmarkRun" / "semgrep-p-python.json"),
+    )
+)
 EXPECTED_RESULTS = BENCHMARK_ROOT / "expectedresults-0.1.csv"
 OUTPUT_JSON = (
     PROJECT_ROOT
     / "benchmarks"
     / "BenchmarkOutput"
-    / "qwen3-14b-awq-triage-benchmark-v8-b200.json"
+    / "qwen3-14b-awq-triage-benchmark-v10-native-b200.json"
 )
 JOERN_OUTPUT_JSON = OUTPUT_JSON.with_name(
-    "qwen3-14b-awq-triage-benchmark-v9-joern-b200.json"
+    "qwen3-14b-awq-triage-benchmark-v10-joern-b200.json"
 )
 BASELINE_JSON = (
     PROJECT_ROOT
@@ -55,7 +62,7 @@ BASELINE_JSON = (
     / "BenchmarkOutput"
     / "qwen3-14b-awq-triage-benchmark-v8-b200.json"
 )
-PROMPT_VERSION = "triage-prompt-v9"
+PROMPT_VERSION = "triage-prompt-v10"
 OUTPUT_SCHEMA_VERSION = "triage-decision-v1"
 _TEST_NAME = re.compile(r"BenchmarkTest\d{5}")
 
@@ -423,6 +430,7 @@ def _metrics(
         "mapping_version": OWASP_RULE_MAPPING_VERSION,
         "analysis": analysis_stats,
         "artifact": "benchmarks/BenchmarkRun/semgrep-p-python.json",
+        "artifact_sha256": hashlib.sha256(SEMGREP_ARTIFACT.read_bytes()).hexdigest(),
         "dataset_scope": "OWASP findings with matching test identity and category",
         "parsed_findings": parsed_findings,
         "scoreable_findings": total,
@@ -434,6 +442,7 @@ def _metrics(
         "error_codes": dict(sorted(error_codes.items())),
         "verdicts": dict(sorted(verdicts.items())),
         "policy_actions": dict(sorted(policy_actions.items())),
+        "manual_review_rate": policy_actions["MANUAL_REVIEW"] / total if total else 0.0,
         "decisive": decisive,
         "correct_decisive": correct,
         "coverage": coverage,
@@ -488,8 +497,14 @@ def _metrics(
             "Single deterministic run; no confidence interval.",
             "This measures LLM triage on scoreable scanner findings, not scanner recall.",
             "OWASP ground truth supplies vulnerable/benign labels only for this run.",
+            "This public synthetic benchmark is not a curated held-out repository dataset.",
             "NEEDS_REVIEW and provider errors are counted as unresolved.",
         ],
+        "quality_claim_supported": False,
+        "quality_claim_note": (
+            "OWASP Benchmark Python is a public synthetic benchmark, not the curated "
+            "held-out repository dataset required by the current quality-claim gate."
+        ),
     }
 
 
@@ -636,7 +651,11 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
     assert isinstance(quality_gates, dict)
     assert isinstance(targets, dict)
     lines = [
-        "# Benchmark Joern CPG với Qwen3-14B-AWQ — prompt v9 / B200",
+        (
+            "# Benchmark "
+            f"{metadata['analysis_backend']} với Qwen3-14B-AWQ — "
+            f"{metadata['prompt_version']} / B200"
+        ),
         "",
         "## 1. Cấu hình cố định",
         "",
@@ -675,10 +694,10 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
         f"Confusion matrix: `{metrics['confusion']}`.",
         f"Policy actions: `{metrics['policy_actions']}`.",
         "",
-        "## 3. Evidence và hiệu năng Joern",
+        f"## 3. Evidence và hiệu năng {metadata['analysis_backend']}",
         "",
         (
-            f"- CPG `{metadata['cpg_build_status']}`; build "
+            f"- Analysis build `{metadata['cpg_build_status']}`; "
             f"{metadata['cpg_build_seconds']} giây."
         ),
         f"- Context: `{status_counts}`; path: `{path_counts}`.",
@@ -698,7 +717,7 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
             f"steady-state {latency['steady_state_mean_seconds']} giây/finding."
         ),
         "",
-        "## 4. Quality gate",
+        "## 4. Quality gate tham chiếu (không phải acceptance Sprint 1)",
         "",
     ]
     for name, value in (*required.items(), *quality_gates.items(), *targets.items()):
@@ -712,11 +731,10 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
                 f"Đề xuất: `{quality.get('default_recommendation')}`."
             ),
             "",
-            "## 5. So sánh với baseline native v8",
-            "",
         ]
     )
     if BASELINE_JSON.is_file():
+        lines.extend(["## 5. So sánh với baseline native v8", ""])
         baseline = json.loads(BASELINE_JSON.read_text(encoding="utf-8"))
         baseline_context = baseline["context"]["status_counts"]
         baseline_policy = baseline["policy_safety"]
@@ -772,7 +790,7 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
     )
     lines.extend(
         [
-            "## 6. Nhóm lỗi và giới hạn",
+            f"## {6 if BASELINE_JSON.is_file() else 5}. Nhóm lỗi và giới hạn",
             "",
             f"- Số dự đoán sai theo category: `{category_errors}`.",
             (
@@ -780,7 +798,7 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
                 f"{truth['benign']}; xem category errors để ưu tiên vòng tiếp theo."
             ),
             (
-                f"- {status_counts.get('partial', 0)}/93 evidence partial nên policy "
+                f"- {status_counts.get('partial', 0)}/{metrics['scoreable_findings']} evidence partial nên policy "
                 "giữ MANUAL_REVIEW khi thiếu bằng chứng quan trọng."
             ),
             (
@@ -791,6 +809,12 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
             "- Đây là một run deterministic, chưa có confidence interval.",
             "- Metric đo triage trên finding đã có, không đo recall của scanner.",
             "- Ground truth map ở cấp test case; một case có thể sinh nhiều finding.",
+            "- OWASP Python là benchmark tổng hợp công khai, không phải held-out repository đã review độc lập.",
+            (
+                f"- Manual review: {metrics['policy_actions'].get('MANUAL_REVIEW', 0)}/"
+                f"{metrics['scoreable_findings']} finding "
+                f"({metrics['manual_review_rate']:.2%})."
+            ),
             "",
         ]
     )
@@ -798,7 +822,7 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
 
 
 def _quality_evaluation(metrics: dict[str, object]) -> dict[str, object]:
-    """Evaluate the pinned Joern acceptance gates without changing metrics."""
+    """Evaluate pinned historical comparison gates without changing metrics."""
     context = metrics["context"]
     policy = metrics["policy_safety"]
     assert isinstance(context, dict)
@@ -921,6 +945,9 @@ def run_benchmark(
                 analysis_identity=backend.identity,
                 scanner_versions={"SEMGREP": "1.170.0"},
                 scanner_config_ids={"SEMGREP": "p/python"},
+                input_artifact_hashes={
+                    "SEMGREP": hashlib.sha256(SEMGREP_ARTIFACT.read_bytes()).hexdigest()
+                },
             )
         analysis_stats = (
             backend.safe_stats() if hasattr(backend, "safe_stats") else {}

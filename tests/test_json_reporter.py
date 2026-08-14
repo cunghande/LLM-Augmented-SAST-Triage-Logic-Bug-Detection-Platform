@@ -91,7 +91,6 @@ def _make_semgrep_finding(
         end_line=10,
         severity=severity,
         message="Use of eval is dangerous.",
-        snippet="eval(user_input)",
         metadata={"cwe": "CWE-78"},
     )
 
@@ -1057,7 +1056,6 @@ def test_safe_projection_excludes_snippet_and_preserves_safe_fields(tmp_path: Pa
         end_line=12,
         severity=Severity.HIGH,
         message="Unsafe evaluation.",
-        snippet=canary,
         metadata={"cwe": ["CWE-95"], "category": "security"},
     )
     batch = _make_batch_result(
@@ -1093,7 +1091,6 @@ def test_safe_projection_handles_gitleaks_and_retains_batch_contract(tmp_path: P
         end_line=3,
         severity=Severity.UNKNOWN,
         message="Potential secret.",
-        snippet="<REDACTED_SECRET>",
         metadata={"secret_category": "api_key"},
     )
     first = _make_triage_result(_make_semgrep_finding("first"), context_summary="first context")

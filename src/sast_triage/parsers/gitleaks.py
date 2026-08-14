@@ -7,7 +7,7 @@ containing ``NormalizedFinding`` instances and per-record
 Security notes:
 - Raw Secret and Match values only exist in narrow local scope of record parsing.
 - Raw Secret is NEVER stored in NormalizedFinding, metadata, or errors.
-- Raw Match is ALWAYS redacted with redact_exact_secret() or replaced with placeholder.
+- Raw Match is checked locally for redaction consistency, then discarded.
 - Author, email, commit, date, message, symlink, and fingerprint fields are DROPPED.
 - No logging of artifacts, secrets, or records.
 """
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -28,10 +29,7 @@ from sast_triage.models import (
     ScannerType,
     Severity,
 )
-from sast_triage.redaction import (
-    REDACTED_SECRET_PLACEHOLDER,
-    redact_exact_secret,
-)
+from sast_triage.redaction import redact_exact_secret
 
 
 def _generate_finding_id(
@@ -245,7 +243,11 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
             metadata["rule_description"] = rule_name
 
         entropy_raw = record.get("Entropy")
-        if isinstance(entropy_raw, (int, float)) and not isinstance(entropy_raw, bool):
+        if (
+            isinstance(entropy_raw, (int, float))
+            and not isinstance(entropy_raw, bool)
+            and math.isfinite(entropy_raw)
+        ):
             metadata["entropy"] = float(entropy_raw)
 
         # Finding ID xác định
@@ -258,41 +260,36 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
         if isinstance(raw_secret, str) and raw_secret.strip():
             if isinstance(raw_match, str):
                 redaction_res = redact_exact_secret(raw_match, raw_secret)
-                if redaction_res.replacements > 0:
-                    snippet = redaction_res.redacted_text
-                else:
-                    snippet = REDACTED_SECRET_PLACEHOLDER
+                if redaction_res.replacements == 0:
                     errors.append(
                         ProcessingError(
                             finding_id=finding_id,
                             scanner=ScannerType.GITLEAKS,
                             stage=ProcessingStage.SANITIZE,
                             error_code="SANITIZE_SECRET_REDACTION_NO_MATCH",
-                            safe_message=f"Gitleaks record[{idx}] secret value was not found in Match string; defaulted snippet to placeholder.",
+                            safe_message=f"Gitleaks record[{idx}] secret value was not found in Match string; raw preview was discarded.",
                             retryable=False,
                         )
                     )
             else:
-                snippet = REDACTED_SECRET_PLACEHOLDER
                 errors.append(
                     ProcessingError(
                         finding_id=finding_id,
                         scanner=ScannerType.GITLEAKS,
                         stage=ProcessingStage.SANITIZE,
                         error_code="SANITIZE_SECRET_MATCH_MISSING",
-                        safe_message=f"Gitleaks record[{idx}] Match string missing or invalid; defaulted snippet to placeholder.",
+                        safe_message=f"Gitleaks record[{idx}] Match string missing or invalid; raw preview was discarded.",
                         retryable=False,
                     )
                 )
         else:
-            snippet = REDACTED_SECRET_PLACEHOLDER
             errors.append(
                 ProcessingError(
                     finding_id=finding_id,
                     scanner=ScannerType.GITLEAKS,
                     stage=ProcessingStage.SANITIZE,
                     error_code="SANITIZE_SECRET_VALUE_MISSING",
-                    safe_message=f"Gitleaks record[{idx}] Secret value missing or empty; defaulted snippet to placeholder.",
+                    safe_message=f"Gitleaks record[{idx}] Secret value missing or empty; raw preview was discarded.",
                     retryable=False,
                 )
             )
@@ -309,7 +306,6 @@ def parse_gitleaks_json(file_path: Path) -> ScannerParseResult:
                 end_line=end_line,
                 severity=Severity.UNKNOWN,
                 message=message,
-                snippet=snippet,
                 metadata=metadata,
             )
             findings.append(finding)

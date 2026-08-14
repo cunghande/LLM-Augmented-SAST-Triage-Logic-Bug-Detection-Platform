@@ -50,7 +50,7 @@ def execute_run(args: argparse.Namespace) -> int:
         backend_name,
         repository,
         repository_id,
-        module2_enabled=args.module2,
+        module2_enabled=getattr(args, "module2", True),
     ) as backend:
         args._analysis_backend = backend
         return _execute_run(args)
@@ -77,8 +77,10 @@ def _execute_run(args: argparse.Namespace) -> int:
     analysis_backend: AnalysisBackend = args._analysis_backend
     repository_index = analysis_backend.repository_index
     module2_result = None
-    if args.module2:
+    if getattr(args, "module2", True):
         show_progress("3/7", "Đang lập chỉ mục Python theo component cho Module 2.")
+    if getattr(args, "module2_discovery", False):
+        show_progress("3/7", "Đang chạy discovery thử nghiệm của Module 2.")
         module2_findings = analysis_backend.discover_findings(
             artifacts.semgrep.findings,
         )

@@ -47,7 +47,6 @@ def make_finding(
         end_line=actual_end,
         severity=severity,
         message="Finding message",
-        snippet="snippet",
     )
 
 
@@ -58,7 +57,7 @@ def test_pipeline_semgrep_ast_success_tp(tmp_path: Path) -> None:
     """Requirement Protected: Semgrep AST finding with fake.tp.high yields PolicyAction.LIKELY_TP.
 
     Pipeline Stages: read -> scope -> select -> sanitize -> input -> fake_provider -> policy.
-    Expected Result: policy_decision.action == LIKELY_TP, context_summary present, no errors.
+    Expected Result: policy_decision.action == MANUAL_REVIEW when the fake TP lacks deterministic evidence.
     Test Category: Happy Path
     """
     repo = tmp_path / "repo"
@@ -76,7 +75,7 @@ def test_pipeline_semgrep_ast_success_tp(tmp_path: Path) -> None:
     res = triage_finding(finding, repo, provider, prompt_type="fake.tp.high")
 
     assert isinstance(res, TriageResult)
-    assert res.policy_decision.action == PolicyAction.LIKELY_TP
+    assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
     assert res.triage_decision is not None
     assert res.context_summary is not None
     assert "PYTHON_FUNCTION" in res.context_summary
@@ -263,7 +262,7 @@ def test_pipeline_credential_literal_redacted_before_provider(tmp_path: Path) ->
 
     res = triage_finding(finding, repo, provider, prompt_type="fake.tp.high")
 
-    assert res.policy_decision.action == PolicyAction.LIKELY_TP
+    assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
     assert "super_secret_pass_123" not in res.model_dump_json()
 
 
@@ -500,6 +499,8 @@ def test_triage_result_timing_and_frozen(tmp_path: Path) -> None:
 
     assert res.processed_at.tzinfo == UTC
     assert res.processing_duration_ms is not None and res.processing_duration_ms >= 0
+    assert res.provider_duration_ms is not None and res.provider_duration_ms >= 0
+    assert res.triage_input_digest is not None and len(res.triage_input_digest) == 64
 
     with pytest.raises(ValidationError):
         res.context_summary = "mutated"  # type: ignore[misc]

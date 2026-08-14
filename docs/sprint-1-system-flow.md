@@ -53,8 +53,8 @@ Repository Python cục bộ
 - Mọi finding hợp lệ đều được giữ trong báo cáo, kể cả khi context, LLM hoặc
   scanner có lỗi.
 - Source đọc trực tiếp từ repository chỉ được giữ cục bộ theo từng finding.
-  Secret thô, prompt thô và response thô không được ghi vào báo cáo. Một điểm
-  lệch boundary còn tồn tại với `Semgrep extra.lines` được nêu rõ ở mục 18.
+  Secret thô, scanner source fragment, prompt thô và response thô không được
+  ghi vào public model hoặc báo cáo.
 - Pipeline chạy tuần tự trong Sprint 1.
 
 ## 2. Repository mục tiêu và dữ liệu được lưu ở đâu?
@@ -238,7 +238,7 @@ Mapping chính:
 | `end.line` | `end_line` | Không nhỏ hơn dòng đầu |
 | `extra.severity` | `severity` | ERROR→HIGH, WARNING→MEDIUM, INFO→LOW |
 | `extra.message` | `message` | Bắt buộc |
-| `extra.lines` | `snippet` | Chỉ ở model nội bộ; reporter loại trường này |
+| `extra.lines` | Không lưu | Raw source fragment bị bỏ tại parser boundary |
 | `extra.metadata` | `metadata` | Chỉ giữ allowlist |
 
 Severity mapping ở [`_map_severity()`](../src/sast_triage/parsers/semgrep.py#L73).
@@ -487,6 +487,10 @@ System prompt yêu cầu model:
 
 User message có các nhóm dữ liệu sau:
 
+Các nhóm này được serialize thành một JSON canonical nằm trong
+`<UNTRUSTED_INPUT_JSON>`. Ký tự `<`/`>` do repository kiểm soát được JSON-escape
+để không thể giả đóng delimiter ngoài.
+
 | Nhóm | Trường |
 |---|---|
 | Giao thức | `prompt_version`, `output_schema_version`, `model_version` |
@@ -504,7 +508,7 @@ project. Với Gitleaks, nó là line window đã redact.
 - toàn bộ repository;
 - raw source chưa sanitize;
 - raw `Secret` hoặc `Match` của Gitleaks;
-- `finding.snippet` nguyên từ scanner;
+- mọi snippet/source fragment nguyên từ scanner;
 - email/author/commit metadata không cần thiết;
 - traceback;
 - quyền sửa file/chạy command;
@@ -834,12 +838,8 @@ mẫu quá nhỏ để coi là accuracy tổng quát.
    chối record bằng `PARSE_RECORD_INVALID_FIELD`. Đây là lỗi robustness đã quan
    sát ở DjangoGoat, không làm lộ secret nhưng có thể làm mất khả năng triage
    Gitleaks finding đó.
-4. Semgrep parser hiện copy `extra.lines` vào trường `snippet` của public
-   `NormalizedFinding`. Prompt builder và hai reporter đều loại trường này nên
-   nó không đi tới LLM/report, nhưng việc giữ một code fragment từ scanner trong
-   public model vẫn lệch với quy tắc kiến trúc “raw source không vượt component
-   boundary”. Nên thay bằng chuỗi rỗng/placeholder hoặc bỏ trường ở Sprint kế
-   tiếp, kèm test canary.
+4. Semgrep `extra.lines` và Gitleaks `Secret`/`Match` không được lưu trong
+   `NormalizedFinding`; source context chỉ được tạo qua `SafeContextService`.
 5. Một lần benchmark chưa có repeated seed/confidence interval.
 6. Confidence `LOW/MEDIUM/HIGH` là self-report của model, chưa calibrated.
 7. `FP_CANDIDATE` không đồng nghĩa tự động đóng finding.
