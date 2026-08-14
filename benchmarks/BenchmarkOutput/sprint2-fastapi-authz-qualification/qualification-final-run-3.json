@@ -1,0 +1,1711 @@
+{
+  "benchmark": "fastapi-function-level-authz",
+  "version": "realvuln-v2-fastapi-authz-qualification-v2",
+  "dataset_kind": "realvuln_controlled_unreviewed",
+  "ground_truth_sha256": "sha256:af5901bffc94380b50f31909655c12edfe0762e82162051d8b1238c66698593f",
+  "held_out_frozen": true,
+  "held_out_independently_reviewed": false,
+  "router_dependency_false_positives": 0,
+  "case_count": 80,
+  "repository_count": 64,
+  "positive_count": 40,
+  "negative_count": 40,
+  "overall_metrics": {
+    "total_cases": 80,
+    "binary_cases": 80,
+    "unknown_cases": 0,
+    "predicted_unknown": 1,
+    "tp": 40,
+    "fp": 0,
+    "fn": 0,
+    "tn": 39,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "false_positive_rate": 0.0,
+    "confusion": {
+      "MISSING_AUTHZ_as_MISSING_AUTHZ": 40,
+      "PROTECTED_as_PROTECTED": 39,
+      "PROTECTED_as_UNKNOWN": 1
+    },
+    "case_results": [
+      {
+        "case_id": "realvuln-vfapi:vfapi-008",
+        "repository_identifier": "realvuln-vfapi",
+        "file_path": "main.py",
+        "route_line": 242,
+        "case_type": "missing_authentication",
+        "theme": "human-fastapi",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "realvuln-vfapi:vfapi-009",
+        "repository_identifier": "realvuln-vfapi",
+        "file_path": "main.py",
+        "route_line": 227,
+        "case_type": "missing_authentication",
+        "theme": "human-fastapi",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-441",
+        "repository_identifier": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+        "file_path": "backend/app/loan_operations.py",
+        "route_line": 153,
+        "case_type": "broken_access_control",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-fintech-lending-fastapi:vc-claude-code-seeded-v2-fintech-lending-fastapi-fp-004",
+        "repository_identifier": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+        "file_path": "backend/app/routers/integrations.py",
+        "route_line": 137,
+        "case_type": "broken_access_control_false_positive",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi:seeded-v2-campaign-3-435",
+        "repository_identifier": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+        "file_path": "backend/app/dispatch_operations.py",
+        "route_line": 143,
+        "case_type": "broken_access_control",
+        "theme": "logistics-dispatch",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-1-024",
+        "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/seller_operations.py",
+        "route_line": 38,
+        "case_type": "missing_authentication",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-3-436",
+        "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/seller_operations.py",
+        "route_line": 128,
+        "case_type": "broken_access_control",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:vc-claude-code-seeded-v2-marketplace-commerce-fastapi-fp-003",
+        "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/routers/payouts.py",
+        "route_line": 46,
+        "case_type": "idor_false_positive",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:vc-claude-code-seeded-v2-marketplace-commerce-fastapi-fp-004",
+        "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/routers/categories.py",
+        "route_line": 19,
+        "case_type": "missing_authentication_false_positive",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-property-management-fastapi:seeded-v2-campaign-3-437",
+        "repository_identifier": "vc-claude-code-seeded-v2-property-management-fastapi",
+        "file_path": "backend/app/tenant_operations.py",
+        "route_line": 133,
+        "case_type": "broken_access_control",
+        "theme": "property-management",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-property-management-fastapi:vc-claude-code-seeded-v2-property-management-fastapi-fp-002",
+        "repository_identifier": "vc-claude-code-seeded-v2-property-management-fastapi",
+        "file_path": "backend/app/routes/payments.py",
+        "route_line": 73,
+        "case_type": "idor_false_positive",
+        "theme": "property-management",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-claude-code-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-438",
+        "repository_identifier": "vc-claude-code-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/support_operations.py",
+        "route_line": 130,
+        "case_type": "broken_access_control",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-625",
+        "repository_identifier": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+        "file_path": "app/loan_operations.py",
+        "route_line": 140,
+        "case_type": "broken_access_control",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-fintech-lending-fastapi:vc-codex-high-seeded-v2-fintech-lending-fastapi-fp-002",
+        "repository_identifier": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+        "file_path": "app/main.py",
+        "route_line": 871,
+        "case_type": "idor_false_positive",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi:vc-codex-high-seeded-v2-logistics-dispatch-fastapi-fp-002",
+        "repository_identifier": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 760,
+        "case_type": "idor_false_positive",
+        "theme": "logistics-dispatch",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-1-084",
+        "repository_identifier": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/seller_operations.py",
+        "route_line": 38,
+        "case_type": "missing_authentication",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi:vc-codex-high-seeded-v2-marketplace-commerce-fastapi-fp-004",
+        "repository_identifier": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 1280,
+        "case_type": "idor_false_positive",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-622",
+        "repository_identifier": "vc-codex-high-seeded-v2-support-desk-fastapi",
+        "file_path": "app/support_operations.py",
+        "route_line": 118,
+        "case_type": "broken_access_control",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-high-seeded-v2-support-desk-fastapi:vc-codex-high-seeded-v2-support-desk-fastapi-fp-002",
+        "repository_identifier": "vc-codex-high-seeded-v2-support-desk-fastapi",
+        "file_path": "app/routers/tickets.py",
+        "route_line": 139,
+        "case_type": "idor_false_positive",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-codex-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-528",
+        "repository_identifier": "vc-codex-seeded-v2-fintech-lending-fastapi",
+        "file_path": "backend/app/loan_operations.py",
+        "route_line": 137,
+        "case_type": "broken_access_control",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-seeded-v2-logistics-dispatch-fastapi:vc-codex-seeded-v2-logistics-dispatch-fastapi-fp-003",
+        "repository_identifier": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 655,
+        "case_type": "idor_false_positive",
+        "theme": "logistics-dispatch",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-codex-seeded-v2-property-management-fastapi:vc-codex-seeded-v2-property-management-fastapi-fp-002",
+        "repository_identifier": "vc-codex-seeded-v2-property-management-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 621,
+        "case_type": "idor_false_positive",
+        "theme": "property-management",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-codex-seeded-v2-support-desk-fastapi:seeded-v2-campaign-1-060",
+        "repository_identifier": "vc-codex-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/support_operations.py",
+        "route_line": 38,
+        "case_type": "missing_authentication",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-525",
+        "repository_identifier": "vc-codex-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/support_operations.py",
+        "route_line": 121,
+        "case_type": "broken_access_control",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-codex-seeded-v2-support-desk-fastapi:vc-codex-seeded-v2-support-desk-fastapi-fp-003",
+        "repository_identifier": "vc-codex-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 450,
+        "case_type": "broken_access_control_false_positive",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-692",
+        "repository_identifier": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+        "file_path": "backend/app/loan_operations.py",
+        "route_line": 111,
+        "case_type": "broken_access_control",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-fintech-lending-fastapi:vc-kimi-code-seeded-v2-fintech-lending-fastapi-fp-003",
+        "repository_identifier": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+        "file_path": "backend/app/routers/borrowers.py",
+        "route_line": 65,
+        "case_type": "idor_false_positive",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi:vc-kimi-code-seeded-v2-logistics-dispatch-fastapi-fp-003",
+        "repository_identifier": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+        "file_path": "backend/app/routers/jobs.py",
+        "route_line": 133,
+        "case_type": "idor_false_positive",
+        "theme": "logistics-dispatch",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-3-687",
+        "repository_identifier": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+        "file_path": "backend/app/seller_operations.py",
+        "route_line": 108,
+        "case_type": "broken_access_control",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-property-management-fastapi:seeded-v2-campaign-3-688",
+        "repository_identifier": "vc-kimi-code-seeded-v2-property-management-fastapi",
+        "file_path": "backend/app/tenant_operations.py",
+        "route_line": 114,
+        "case_type": "broken_access_control",
+        "theme": "property-management",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-property-management-fastapi:vc-kimi-code-seeded-v2-property-management-fastapi-fp-003",
+        "repository_identifier": "vc-kimi-code-seeded-v2-property-management-fastapi",
+        "file_path": "backend/app/routers/leases.py",
+        "route_line": 69,
+        "case_type": "idor_false_positive",
+        "theme": "property-management",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:seeded-v2-campaign-1-120",
+        "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/support_operations.py",
+        "route_line": 38,
+        "case_type": "missing_authentication",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-689",
+        "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/support_operations.py",
+        "route_line": 95,
+        "case_type": "broken_access_control",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:vc-kimi-code-seeded-v2-support-desk-fastapi-fp-002",
+        "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 878,
+        "case_type": "idor_false_positive",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "UNKNOWN"
+      },
+      {
+        "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:vc-kimi-code-seeded-v2-support-desk-fastapi-fp-004",
+        "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+        "file_path": "backend/app/main.py",
+        "route_line": 610,
+        "case_type": "broken_access_control_false_positive",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-positive-reformat-01:reset_database_positive_reformat_01",
+        "repository_identifier": "controlled-positive-reformat-01",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_positive_reformat",
+        "theme": "human-fastapi",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-02:delete_user_positive_reformat_02",
+        "repository_identifier": "controlled-positive-reformat-02",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_positive_reformat",
+        "theme": "human-fastapi",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-03:loan_badge_gate_441_positive_reformat_03",
+        "repository_identifier": "controlled-positive-reformat-03",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-04:dispatch_badge_gate_435_positive_reformat_04",
+        "repository_identifier": "controlled-positive-reformat-04",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "logistics-dispatch",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-05:seller_margin_fold_024_positive_reformat_05",
+        "repository_identifier": "controlled-positive-reformat-05",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_positive_reformat",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-06:seller_badge_gate_436_positive_reformat_06",
+        "repository_identifier": "controlled-positive-reformat-06",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-07:tenant_badge_gate_437_positive_reformat_07",
+        "repository_identifier": "controlled-positive-reformat-07",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "property-management",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-08:ticket_badge_gate_438_positive_reformat_08",
+        "repository_identifier": "controlled-positive-reformat-08",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-09:loan_badge_gate_625_positive_reformat_09",
+        "repository_identifier": "controlled-positive-reformat-09",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-10:seller_payout_fold_084_positive_reformat_10",
+        "repository_identifier": "controlled-positive-reformat-10",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_positive_reformat",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-11:ticket_badge_gate_622_positive_reformat_11",
+        "repository_identifier": "controlled-positive-reformat-11",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-12:loan_badge_gate_528_positive_reformat_12",
+        "repository_identifier": "controlled-positive-reformat-12",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-13:ticket_queue_fold_060_positive_reformat_13",
+        "repository_identifier": "controlled-positive-reformat-13",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_positive_reformat",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-14:ticket_badge_gate_525_positive_reformat_14",
+        "repository_identifier": "controlled-positive-reformat-14",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "support-desk",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-15:loan_badge_gate_692_positive_reformat_15",
+        "repository_identifier": "controlled-positive-reformat-15",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-positive-reformat-16:seller_badge_gate_687_positive_reformat_16",
+        "repository_identifier": "controlled-positive-reformat-16",
+        "file_path": "app.py",
+        "route_line": 9,
+        "case_type": "controlled_positive_reformat",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-guard-removed-01:public_application_status_guard_removed_01",
+        "repository_identifier": "controlled-guard-removed-01",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_guard_removed",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-guard-removed-02:get_payout_guard_removed_02",
+        "repository_identifier": "controlled-guard-removed-02",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_guard_removed",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-guard-removed-03:create_category_guard_removed_03",
+        "repository_identifier": "controlled-guard-removed-03",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_guard_removed",
+        "theme": "marketplace-commerce",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-guard-removed-04:get_payment_guard_removed_04",
+        "repository_identifier": "controlled-guard-removed-04",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_guard_removed",
+        "theme": "property-management",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-guard-removed-05:get_application_guard_removed_05",
+        "repository_identifier": "controlled-guard-removed-05",
+        "file_path": "app.py",
+        "route_line": 4,
+        "case_type": "controlled_guard_removed",
+        "theme": "fintech-lending",
+        "expected_state": "MISSING_AUTHZ",
+        "predicted_state": "MISSING_AUTHZ"
+      },
+      {
+        "case_id": "controlled-handler-guard-01:reset_database_handler_guard_01",
+        "repository_identifier": "controlled-handler-guard-01",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_handler_dependency",
+        "theme": "human-fastapi",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-01:reset_database_router_guard_01",
+        "repository_identifier": "controlled-router-guard-01",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_router_dependency",
+        "theme": "human-fastapi",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-02:delete_user_handler_guard_02",
+        "repository_identifier": "controlled-handler-guard-02",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_handler_dependency",
+        "theme": "human-fastapi",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-02:delete_user_router_guard_02",
+        "repository_identifier": "controlled-router-guard-02",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_router_dependency",
+        "theme": "human-fastapi",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-03:loan_badge_gate_441_handler_guard_03",
+        "repository_identifier": "controlled-handler-guard-03",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-03:loan_badge_gate_441_router_guard_03",
+        "repository_identifier": "controlled-router-guard-03",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-04:dispatch_badge_gate_435_handler_guard_04",
+        "repository_identifier": "controlled-handler-guard-04",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "logistics-dispatch",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-04:dispatch_badge_gate_435_router_guard_04",
+        "repository_identifier": "controlled-router-guard-04",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "logistics-dispatch",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-05:seller_margin_fold_024_handler_guard_05",
+        "repository_identifier": "controlled-handler-guard-05",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_handler_dependency",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-05:seller_margin_fold_024_router_guard_05",
+        "repository_identifier": "controlled-router-guard-05",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_router_dependency",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-06:seller_badge_gate_436_handler_guard_06",
+        "repository_identifier": "controlled-handler-guard-06",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-06:seller_badge_gate_436_router_guard_06",
+        "repository_identifier": "controlled-router-guard-06",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-07:tenant_badge_gate_437_handler_guard_07",
+        "repository_identifier": "controlled-handler-guard-07",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "property-management",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-07:tenant_badge_gate_437_router_guard_07",
+        "repository_identifier": "controlled-router-guard-07",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "property-management",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-08:ticket_badge_gate_438_handler_guard_08",
+        "repository_identifier": "controlled-handler-guard-08",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-08:ticket_badge_gate_438_router_guard_08",
+        "repository_identifier": "controlled-router-guard-08",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-09:loan_badge_gate_625_handler_guard_09",
+        "repository_identifier": "controlled-handler-guard-09",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-09:loan_badge_gate_625_router_guard_09",
+        "repository_identifier": "controlled-router-guard-09",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-10:seller_payout_fold_084_handler_guard_10",
+        "repository_identifier": "controlled-handler-guard-10",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_handler_dependency",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-10:seller_payout_fold_084_router_guard_10",
+        "repository_identifier": "controlled-router-guard-10",
+        "file_path": "app.py",
+        "route_line": 7,
+        "case_type": "controlled_router_dependency",
+        "theme": "marketplace-commerce",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-11:ticket_badge_gate_622_handler_guard_11",
+        "repository_identifier": "controlled-handler-guard-11",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-11:ticket_badge_gate_622_router_guard_11",
+        "repository_identifier": "controlled-router-guard-11",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "support-desk",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-handler-guard-12:loan_badge_gate_528_handler_guard_12",
+        "repository_identifier": "controlled-handler-guard-12",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_handler_dependency",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      },
+      {
+        "case_id": "controlled-router-guard-12:loan_badge_gate_528_router_guard_12",
+        "repository_identifier": "controlled-router-guard-12",
+        "file_path": "app.py",
+        "route_line": 12,
+        "case_type": "controlled_router_dependency",
+        "theme": "fintech-lending",
+        "expected_state": "PROTECTED",
+        "predicted_state": "PROTECTED"
+      }
+    ]
+  },
+  "metrics_by_split": {
+    "development": {
+      "total_cases": 26,
+      "binary_cases": 26,
+      "unknown_cases": 0,
+      "predicted_unknown": 1,
+      "tp": 14,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion": {
+        "MISSING_AUTHZ_as_MISSING_AUTHZ": 14,
+        "PROTECTED_as_PROTECTED": 11,
+        "PROTECTED_as_UNKNOWN": 1
+      },
+      "case_results": [
+        {
+          "case_id": "realvuln-vfapi:vfapi-008",
+          "repository_identifier": "realvuln-vfapi",
+          "file_path": "main.py",
+          "route_line": 242,
+          "case_type": "missing_authentication",
+          "theme": "human-fastapi",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "realvuln-vfapi:vfapi-009",
+          "repository_identifier": "realvuln-vfapi",
+          "file_path": "main.py",
+          "route_line": 227,
+          "case_type": "missing_authentication",
+          "theme": "human-fastapi",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-438",
+          "repository_identifier": "vc-claude-code-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/support_operations.py",
+          "route_line": 130,
+          "case_type": "broken_access_control",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-622",
+          "repository_identifier": "vc-codex-high-seeded-v2-support-desk-fastapi",
+          "file_path": "app/support_operations.py",
+          "route_line": 118,
+          "case_type": "broken_access_control",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-support-desk-fastapi:vc-codex-high-seeded-v2-support-desk-fastapi-fp-002",
+          "repository_identifier": "vc-codex-high-seeded-v2-support-desk-fastapi",
+          "file_path": "app/routers/tickets.py",
+          "route_line": 139,
+          "case_type": "idor_false_positive",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-seeded-v2-support-desk-fastapi:seeded-v2-campaign-1-060",
+          "repository_identifier": "vc-codex-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/support_operations.py",
+          "route_line": 38,
+          "case_type": "missing_authentication",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-codex-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-525",
+          "repository_identifier": "vc-codex-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/support_operations.py",
+          "route_line": 121,
+          "case_type": "broken_access_control",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-codex-seeded-v2-support-desk-fastapi:vc-codex-seeded-v2-support-desk-fastapi-fp-003",
+          "repository_identifier": "vc-codex-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 450,
+          "case_type": "broken_access_control_false_positive",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:seeded-v2-campaign-1-120",
+          "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/support_operations.py",
+          "route_line": 38,
+          "case_type": "missing_authentication",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:seeded-v2-campaign-3-689",
+          "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/support_operations.py",
+          "route_line": 95,
+          "case_type": "broken_access_control",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:vc-kimi-code-seeded-v2-support-desk-fastapi-fp-002",
+          "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 878,
+          "case_type": "idor_false_positive",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "UNKNOWN"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi:vc-kimi-code-seeded-v2-support-desk-fastapi-fp-004",
+          "repository_identifier": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 610,
+          "case_type": "broken_access_control_false_positive",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-positive-reformat-01:reset_database_positive_reformat_01",
+          "repository_identifier": "controlled-positive-reformat-01",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_positive_reformat",
+          "theme": "human-fastapi",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-02:delete_user_positive_reformat_02",
+          "repository_identifier": "controlled-positive-reformat-02",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_positive_reformat",
+          "theme": "human-fastapi",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-08:ticket_badge_gate_438_positive_reformat_08",
+          "repository_identifier": "controlled-positive-reformat-08",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-11:ticket_badge_gate_622_positive_reformat_11",
+          "repository_identifier": "controlled-positive-reformat-11",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-13:ticket_queue_fold_060_positive_reformat_13",
+          "repository_identifier": "controlled-positive-reformat-13",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_positive_reformat",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-14:ticket_badge_gate_525_positive_reformat_14",
+          "repository_identifier": "controlled-positive-reformat-14",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "support-desk",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-handler-guard-01:reset_database_handler_guard_01",
+          "repository_identifier": "controlled-handler-guard-01",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_handler_dependency",
+          "theme": "human-fastapi",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-01:reset_database_router_guard_01",
+          "repository_identifier": "controlled-router-guard-01",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_router_dependency",
+          "theme": "human-fastapi",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-02:delete_user_handler_guard_02",
+          "repository_identifier": "controlled-handler-guard-02",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_handler_dependency",
+          "theme": "human-fastapi",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-02:delete_user_router_guard_02",
+          "repository_identifier": "controlled-router-guard-02",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_router_dependency",
+          "theme": "human-fastapi",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-08:ticket_badge_gate_438_handler_guard_08",
+          "repository_identifier": "controlled-handler-guard-08",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-08:ticket_badge_gate_438_router_guard_08",
+          "repository_identifier": "controlled-router-guard-08",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-11:ticket_badge_gate_622_handler_guard_11",
+          "repository_identifier": "controlled-handler-guard-11",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-11:ticket_badge_gate_622_router_guard_11",
+          "repository_identifier": "controlled-router-guard-11",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "support-desk",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        }
+      ]
+    },
+    "calibration": {
+      "total_cases": 16,
+      "binary_cases": 16,
+      "unknown_cases": 0,
+      "predicted_unknown": 0,
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion": {
+        "MISSING_AUTHZ_as_MISSING_AUTHZ": 6,
+        "PROTECTED_as_PROTECTED": 10
+      },
+      "case_results": [
+        {
+          "case_id": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi:seeded-v2-campaign-3-435",
+          "repository_identifier": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+          "file_path": "backend/app/dispatch_operations.py",
+          "route_line": 143,
+          "case_type": "broken_access_control",
+          "theme": "logistics-dispatch",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-property-management-fastapi:seeded-v2-campaign-3-437",
+          "repository_identifier": "vc-claude-code-seeded-v2-property-management-fastapi",
+          "file_path": "backend/app/tenant_operations.py",
+          "route_line": 133,
+          "case_type": "broken_access_control",
+          "theme": "property-management",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-property-management-fastapi:vc-claude-code-seeded-v2-property-management-fastapi-fp-002",
+          "repository_identifier": "vc-claude-code-seeded-v2-property-management-fastapi",
+          "file_path": "backend/app/routes/payments.py",
+          "route_line": 73,
+          "case_type": "idor_false_positive",
+          "theme": "property-management",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi:vc-codex-high-seeded-v2-logistics-dispatch-fastapi-fp-002",
+          "repository_identifier": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 760,
+          "case_type": "idor_false_positive",
+          "theme": "logistics-dispatch",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-seeded-v2-logistics-dispatch-fastapi:vc-codex-seeded-v2-logistics-dispatch-fastapi-fp-003",
+          "repository_identifier": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 655,
+          "case_type": "idor_false_positive",
+          "theme": "logistics-dispatch",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-seeded-v2-property-management-fastapi:vc-codex-seeded-v2-property-management-fastapi-fp-002",
+          "repository_identifier": "vc-codex-seeded-v2-property-management-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 621,
+          "case_type": "idor_false_positive",
+          "theme": "property-management",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi:vc-kimi-code-seeded-v2-logistics-dispatch-fastapi-fp-003",
+          "repository_identifier": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+          "file_path": "backend/app/routers/jobs.py",
+          "route_line": 133,
+          "case_type": "idor_false_positive",
+          "theme": "logistics-dispatch",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-property-management-fastapi:seeded-v2-campaign-3-688",
+          "repository_identifier": "vc-kimi-code-seeded-v2-property-management-fastapi",
+          "file_path": "backend/app/tenant_operations.py",
+          "route_line": 114,
+          "case_type": "broken_access_control",
+          "theme": "property-management",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-property-management-fastapi:vc-kimi-code-seeded-v2-property-management-fastapi-fp-003",
+          "repository_identifier": "vc-kimi-code-seeded-v2-property-management-fastapi",
+          "file_path": "backend/app/routers/leases.py",
+          "route_line": 69,
+          "case_type": "idor_false_positive",
+          "theme": "property-management",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-positive-reformat-04:dispatch_badge_gate_435_positive_reformat_04",
+          "repository_identifier": "controlled-positive-reformat-04",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "logistics-dispatch",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-07:tenant_badge_gate_437_positive_reformat_07",
+          "repository_identifier": "controlled-positive-reformat-07",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "property-management",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-guard-removed-04:get_payment_guard_removed_04",
+          "repository_identifier": "controlled-guard-removed-04",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_guard_removed",
+          "theme": "property-management",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-handler-guard-04:dispatch_badge_gate_435_handler_guard_04",
+          "repository_identifier": "controlled-handler-guard-04",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "logistics-dispatch",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-04:dispatch_badge_gate_435_router_guard_04",
+          "repository_identifier": "controlled-router-guard-04",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "logistics-dispatch",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-07:tenant_badge_gate_437_handler_guard_07",
+          "repository_identifier": "controlled-handler-guard-07",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "property-management",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-07:tenant_badge_gate_437_router_guard_07",
+          "repository_identifier": "controlled-router-guard-07",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "property-management",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        }
+      ]
+    },
+    "held_out": {
+      "total_cases": 38,
+      "binary_cases": 38,
+      "unknown_cases": 0,
+      "predicted_unknown": 0,
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 18,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion": {
+        "MISSING_AUTHZ_as_MISSING_AUTHZ": 20,
+        "PROTECTED_as_PROTECTED": 18
+      },
+      "case_results": [
+        {
+          "case_id": "vc-claude-code-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-441",
+          "repository_identifier": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+          "file_path": "backend/app/loan_operations.py",
+          "route_line": 153,
+          "case_type": "broken_access_control",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-fintech-lending-fastapi:vc-claude-code-seeded-v2-fintech-lending-fastapi-fp-004",
+          "repository_identifier": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+          "file_path": "backend/app/routers/integrations.py",
+          "route_line": 137,
+          "case_type": "broken_access_control_false_positive",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-1-024",
+          "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/seller_operations.py",
+          "route_line": 38,
+          "case_type": "missing_authentication",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-3-436",
+          "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/seller_operations.py",
+          "route_line": 128,
+          "case_type": "broken_access_control",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:vc-claude-code-seeded-v2-marketplace-commerce-fastapi-fp-003",
+          "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/routers/payouts.py",
+          "route_line": 46,
+          "case_type": "idor_false_positive",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi:vc-claude-code-seeded-v2-marketplace-commerce-fastapi-fp-004",
+          "repository_identifier": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/routers/categories.py",
+          "route_line": 19,
+          "case_type": "missing_authentication_false_positive",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-625",
+          "repository_identifier": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+          "file_path": "app/loan_operations.py",
+          "route_line": 140,
+          "case_type": "broken_access_control",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-fintech-lending-fastapi:vc-codex-high-seeded-v2-fintech-lending-fastapi-fp-002",
+          "repository_identifier": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+          "file_path": "app/main.py",
+          "route_line": 871,
+          "case_type": "idor_false_positive",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-1-084",
+          "repository_identifier": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/seller_operations.py",
+          "route_line": 38,
+          "case_type": "missing_authentication",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi:vc-codex-high-seeded-v2-marketplace-commerce-fastapi-fp-004",
+          "repository_identifier": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/main.py",
+          "route_line": 1280,
+          "case_type": "idor_false_positive",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-codex-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-528",
+          "repository_identifier": "vc-codex-seeded-v2-fintech-lending-fastapi",
+          "file_path": "backend/app/loan_operations.py",
+          "route_line": 137,
+          "case_type": "broken_access_control",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-fintech-lending-fastapi:seeded-v2-campaign-3-692",
+          "repository_identifier": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+          "file_path": "backend/app/loan_operations.py",
+          "route_line": 111,
+          "case_type": "broken_access_control",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-fintech-lending-fastapi:vc-kimi-code-seeded-v2-fintech-lending-fastapi-fp-003",
+          "repository_identifier": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+          "file_path": "backend/app/routers/borrowers.py",
+          "route_line": 65,
+          "case_type": "idor_false_positive",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi:seeded-v2-campaign-3-687",
+          "repository_identifier": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+          "file_path": "backend/app/seller_operations.py",
+          "route_line": 108,
+          "case_type": "broken_access_control",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-03:loan_badge_gate_441_positive_reformat_03",
+          "repository_identifier": "controlled-positive-reformat-03",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-05:seller_margin_fold_024_positive_reformat_05",
+          "repository_identifier": "controlled-positive-reformat-05",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_positive_reformat",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-06:seller_badge_gate_436_positive_reformat_06",
+          "repository_identifier": "controlled-positive-reformat-06",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-09:loan_badge_gate_625_positive_reformat_09",
+          "repository_identifier": "controlled-positive-reformat-09",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-10:seller_payout_fold_084_positive_reformat_10",
+          "repository_identifier": "controlled-positive-reformat-10",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_positive_reformat",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-12:loan_badge_gate_528_positive_reformat_12",
+          "repository_identifier": "controlled-positive-reformat-12",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-15:loan_badge_gate_692_positive_reformat_15",
+          "repository_identifier": "controlled-positive-reformat-15",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-positive-reformat-16:seller_badge_gate_687_positive_reformat_16",
+          "repository_identifier": "controlled-positive-reformat-16",
+          "file_path": "app.py",
+          "route_line": 9,
+          "case_type": "controlled_positive_reformat",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-guard-removed-01:public_application_status_guard_removed_01",
+          "repository_identifier": "controlled-guard-removed-01",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_guard_removed",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-guard-removed-02:get_payout_guard_removed_02",
+          "repository_identifier": "controlled-guard-removed-02",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_guard_removed",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-guard-removed-03:create_category_guard_removed_03",
+          "repository_identifier": "controlled-guard-removed-03",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_guard_removed",
+          "theme": "marketplace-commerce",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-guard-removed-05:get_application_guard_removed_05",
+          "repository_identifier": "controlled-guard-removed-05",
+          "file_path": "app.py",
+          "route_line": 4,
+          "case_type": "controlled_guard_removed",
+          "theme": "fintech-lending",
+          "expected_state": "MISSING_AUTHZ",
+          "predicted_state": "MISSING_AUTHZ"
+        },
+        {
+          "case_id": "controlled-handler-guard-03:loan_badge_gate_441_handler_guard_03",
+          "repository_identifier": "controlled-handler-guard-03",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-03:loan_badge_gate_441_router_guard_03",
+          "repository_identifier": "controlled-router-guard-03",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-05:seller_margin_fold_024_handler_guard_05",
+          "repository_identifier": "controlled-handler-guard-05",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_handler_dependency",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-05:seller_margin_fold_024_router_guard_05",
+          "repository_identifier": "controlled-router-guard-05",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_router_dependency",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-06:seller_badge_gate_436_handler_guard_06",
+          "repository_identifier": "controlled-handler-guard-06",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-06:seller_badge_gate_436_router_guard_06",
+          "repository_identifier": "controlled-router-guard-06",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-09:loan_badge_gate_625_handler_guard_09",
+          "repository_identifier": "controlled-handler-guard-09",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-09:loan_badge_gate_625_router_guard_09",
+          "repository_identifier": "controlled-router-guard-09",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-10:seller_payout_fold_084_handler_guard_10",
+          "repository_identifier": "controlled-handler-guard-10",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_handler_dependency",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-10:seller_payout_fold_084_router_guard_10",
+          "repository_identifier": "controlled-router-guard-10",
+          "file_path": "app.py",
+          "route_line": 7,
+          "case_type": "controlled_router_dependency",
+          "theme": "marketplace-commerce",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-handler-guard-12:loan_badge_gate_528_handler_guard_12",
+          "repository_identifier": "controlled-handler-guard-12",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_handler_dependency",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        },
+        {
+          "case_id": "controlled-router-guard-12:loan_badge_gate_528_router_guard_12",
+          "repository_identifier": "controlled-router-guard-12",
+          "file_path": "app.py",
+          "route_line": 12,
+          "case_type": "controlled_router_dependency",
+          "theme": "fintech-lending",
+          "expected_state": "PROTECTED",
+          "predicted_state": "PROTECTED"
+        }
+      ]
+    }
+  },
+  "quality_gate": {
+    "precision_min": 0.85,
+    "recall_min": 0.8,
+    "f1_min": 0.82,
+    "case_count_min": 80,
+    "positive_count_min": 40,
+    "negative_count_min": 40,
+    "repository_count_min": 6,
+    "passed": false
+  },
+  "quality_claim_supported": false,
+  "controlled_mutation_count": 45,
+  "natural_case_count": 35,
+  "mutation_spec_sha256": "2c226e28607a6023825cd9f49a8bc3c876a3400987b6052c4c81183e2747ed59"
+}

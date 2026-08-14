@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "full_test_suite": {
+    "passed": 488,
+    "skipped": 2,
+    "failed": 0
+  },
+  "security_focused_suite": {
+    "passed": 175,
+    "skipped": 2,
+    "failed": 0,
+    "coverage": [
+      "secret canary redaction",
+      "prompt and output schema validation",
+      "path traversal and absolute path rejection",
+      "symlink escape rejection",
+      "malformed scanner JSON",
+      "reporter deep leak prevention"
+    ]
+  },
+  "artifact_deep_leak_scan": {
+    "files_scanned": 12,
+    "absolute_path_or_secret_pattern_matches": 0
+  },
+  "ruff_check": "PASS"
+}

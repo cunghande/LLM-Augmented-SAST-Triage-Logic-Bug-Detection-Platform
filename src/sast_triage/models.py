@@ -436,6 +436,8 @@ class RunMetadata(BaseDomainModel):
     analysis_backend: str = "native"
     analysis_backend_version: str | None = None
     analysis_config_id: str | None = None
+    logic_detector: str = "off"
+    logic_detector_version: str | None = None
     cpg_build_status: str = "not_applicable"
     cpg_build_seconds: float = 0.0
     prompt_version: str | None = None
@@ -484,6 +486,8 @@ class RunMetadata(BaseDomainModel):
             raise ValueError("scanners_succeeded must be a subset of scanners_attempted")
         if self.analysis_backend not in {"native", "joern"}:
             raise ValueError("analysis_backend must be native or joern")
+        if self.logic_detector not in {"off", "fastapi-missing-authz"}:
+            raise ValueError("logic_detector is invalid")
         if self.cpg_build_status not in {"not_applicable", "complete", "partial", "failed"}:
             raise ValueError("cpg_build_status is invalid")
         if self.cpg_build_seconds < 0:

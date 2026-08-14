@@ -699,3 +699,23 @@ class JoernAnalysisBackend:
             )
             occupied.add((sink_file, sink_line))
         return tuple(findings)
+
+    def discover_logic_findings(
+        self,
+        detector: str,
+        existing: tuple[NormalizedFinding, ...],
+    ) -> tuple[NormalizedFinding, ...]:
+        """Fail closed until Joern exposes a route/dependency projection."""
+        if detector == "off":
+            return ()
+        if detector == "fastapi-missing-authz":
+            raise SastTriageError(
+                safe_message="The FastAPI authorization detector requires the native Python route index.",
+                error_code="LOGIC_DETECTOR_BACKEND_UNSUPPORTED",
+                retryable=False,
+            )
+        raise SastTriageError(
+            safe_message="Unsupported logic detector.",
+            error_code="LOGIC_DETECTOR_UNSUPPORTED",
+            retryable=False,
+        )

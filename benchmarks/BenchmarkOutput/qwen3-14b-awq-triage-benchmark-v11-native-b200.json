@@ -1,0 +1,205 @@
+{
+  "model": "Qwen/Qwen3-14B-AWQ",
+  "gpu_requested": "B200",
+  "temperature": 0.0,
+  "seed": 42,
+  "benchmark_version": "0.1",
+  "mapping_version": "semgrep-python-category-map-v1",
+  "analysis": {},
+  "artifact": "benchmarks/BenchmarkRun/semgrep-p-python.json",
+  "artifact_sha256": "4d39e8300eba2a6b7f8abd070f720bed7dbc8bab783b261a4044b43d99d3c43d",
+  "dataset_scope": "OWASP findings with matching test identity and category",
+  "parsed_findings": 184,
+  "scoreable_findings": 93,
+  "unique_scoreable_cases": 88,
+  "ground_truth": {
+    "vulnerable": 77,
+    "benign": 16
+  },
+  "schema_success": 93,
+  "schema_success_rate": 1.0,
+  "errors": 0,
+  "error_codes": {},
+  "verdicts": {
+    "LIKELY_FP": 11,
+    "LIKELY_TP": 50,
+    "NEEDS_REVIEW": 32
+  },
+  "policy_actions": {
+    "FP_CANDIDATE": 1,
+    "LIKELY_TP": 67,
+    "MANUAL_REVIEW": 25
+  },
+  "policy_reason_counts": {
+    "Complete deterministic evidence satisfies an allowlisted usage-based rule.": 26,
+    "Context evidence is incomplete after bounded expansion.": 2,
+    "LLM provider requested manual review.": 4,
+    "Model verdict is LIKELY_TP with HIGH confidence.": 41,
+    "Semgrep finding classified as FP_CANDIDATE.": 1,
+    "Structured evidence does not safely support FP candidate status.": 10,
+    "Structured evidence does not safely support automatic TP classification.": 9
+  },
+  "model_confidence_counts": {
+    "HIGH": 61,
+    "MEDIUM": 32
+  },
+  "verdict_confidence_counts": {
+    "LIKELY_FP/HIGH": 11,
+    "LIKELY_TP/HIGH": 50,
+    "NEEDS_REVIEW/MEDIUM": 32
+  },
+  "manual_review_rate": 0.26881720430107525,
+  "decisive": 61,
+  "correct_decisive": 60,
+  "coverage": 0.6559139784946236,
+  "selective_accuracy": 0.9836065573770492,
+  "accuracy_with_abstentions_unresolved": 0.6451612903225806,
+  "vulnerable_recognition_rate": 0.6363636363636364,
+  "benign_recognition_rate": 0.6875,
+  "balanced_accuracy_with_abstentions_unresolved": 0.6619318181818181,
+  "case_level": {
+    "total": 88,
+    "decisive": 56,
+    "coverage": 0.6363636363636364,
+    "selective_accuracy": 0.9821428571428571,
+    "accuracy_with_abstentions_unresolved": 0.625
+  },
+  "policy_safety": {
+    "unsafe_vulnerable_fp_candidate": 0,
+    "benign_fp_candidate": 1,
+    "tp_retention_rate": 1.0,
+    "automatic_resolution_rate": 0.7311827956989247
+  },
+  "context": {
+    "status_counts": {
+      "complete": 91,
+      "partial": 2
+    },
+    "path_type_counts": {
+      "local": 93
+    },
+    "outcomes": {
+      "complete": {
+        "correct": 60,
+        "incorrect": 1,
+        "unresolved": 30
+      },
+      "partial": {
+        "unresolved": 2
+      }
+    }
+  },
+  "confusion": {
+    "benign_likely_fp": 11,
+    "benign_likely_tp": 1,
+    "benign_needs_review": 4,
+    "vulnerable_likely_tp": 49,
+    "vulnerable_needs_review": 28
+  },
+  "elapsed_seconds_including_cold_start": 319.74,
+  "latency": {
+    "first_request_seconds_including_cold_start": 127.45,
+    "steady_state_mean_seconds": 1.89,
+    "steady_state_requests": 92
+  },
+  "categories": {
+    "cmdi": {
+      "correct": 18,
+      "policy_likely_tp": 2,
+      "policy_manual_review": 16,
+      "total": 18
+    },
+    "deserialization": {
+      "abstain": 6,
+      "correct": 10,
+      "policy_likely_tp": 7,
+      "policy_manual_review": 9,
+      "total": 16
+    },
+    "hash": {
+      "abstain": 26,
+      "correct": 28,
+      "policy_likely_tp": 54,
+      "total": 54
+    },
+    "pathtraver": {
+      "correct": 3,
+      "incorrect": 1,
+      "policy_fp_candidate": 1,
+      "policy_likely_tp": 3,
+      "total": 4
+    },
+    "sqli": {
+      "correct": 1,
+      "policy_likely_tp": 1,
+      "total": 1
+    }
+  },
+  "run_metadata": {
+    "run_id": "8391d789-e534-47a0-bb4b-10842f2f0dea",
+    "repository_name": "BenchmarkPython",
+    "repository_identifier": "BenchmarkPython-Qwen3-14B-AWQ-scoreable",
+    "commit_sha": null,
+    "working_tree_state": null,
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python"
+    },
+    "input_artifact_hashes": {
+      "SEMGREP": "4d39e8300eba2a6b7f8abd070f720bed7dbc8bab783b261a4044b43d99d3c43d"
+    },
+    "analysis_backend": "native",
+    "analysis_backend_version": "0.1.0",
+    "analysis_config_id": "python-cross-file-evidence-v2-python-web-frameworks-v1",
+    "cpg_build_status": "complete",
+    "cpg_build_seconds": 11.954266,
+    "prompt_version": "triage-prompt-v11",
+    "model_version": "Qwen/Qwen3-14B-AWQ",
+    "policy_version": "conservative-policy-v3",
+    "triage_provider": "modal-qwen-structured",
+    "tool_version": "0.1.0",
+    "cli_mode": "benchmark-modal-qwen-native",
+    "started_at": "2026-08-14T03:44:29.278466Z",
+    "completed_at": "2026-08-14T03:49:30.804121Z",
+    "total_findings_parsed": 93,
+    "findings_triaged_ok": 93,
+    "findings_with_errors": 0
+  },
+  "limitations": [
+    "Single deterministic run; no confidence interval.",
+    "This measures LLM triage on scoreable scanner findings, not scanner recall.",
+    "OWASP ground truth supplies vulnerable/benign labels only for this run.",
+    "This public synthetic benchmark is not a curated held-out repository dataset.",
+    "NEEDS_REVIEW and provider errors are counted as unresolved."
+  ],
+  "quality_claim_supported": false,
+  "quality_claim_note": "OWASP Benchmark Python is a public synthetic benchmark, not the curated held-out repository dataset required by the current quality-claim gate.",
+  "quality_evaluation": {
+    "required": {
+      "schema_success_100_percent": true,
+      "provider_errors_zero": true,
+      "unsafe_vulnerable_fp_zero": true
+    },
+    "quality": {
+      "overall_accuracy_above_86_02_percent": false,
+      "selective_accuracy_at_least_90_91_percent": true,
+      "partial_context_below_14": true
+    },
+    "targets": {
+      "benign_recognition_above_62_5_percent": true,
+      "automatic_resolution_above_72_04_percent": true
+    },
+    "quality_win": false,
+    "default_recommendation": "keep_native_default_joern_experimental"
+  },
+  "minimal_schema_recoveries": 0
+}

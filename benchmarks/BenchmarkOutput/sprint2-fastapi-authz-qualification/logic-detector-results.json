@@ -1,0 +1,33 @@
+{
+  "detector_version": "sprint2-v2",
+  "dataset_version": "realvuln-v2-fastapi-authz-qualification-v2",
+  "natural_cases": 35,
+  "controlled_mutations": 45,
+  "total_cases": 80,
+  "positive_count": 40,
+  "negative_count": 40,
+  "tp": 40,
+  "fp": 0,
+  "fn": 0,
+  "tn": 39,
+  "predicted_unknown": 1,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "false_positive_rate": 0.0,
+  "held_out": {
+    "cases": 38,
+    "tp": 20,
+    "fp": 0,
+    "fn": 0,
+    "tn": 18,
+    "predicted_unknown": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "metric_gate_passed": true,
+  "qualification_gate_passed": false,
+  "qualification_blocker": "PENDING_INDEPENDENT_TWO_REVIEWER_AUDIT",
+  "canonical_run": "qualification-final-run-1.json"
+}

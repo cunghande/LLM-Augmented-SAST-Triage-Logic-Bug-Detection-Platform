@@ -29,8 +29,9 @@ from sast_triage.models import (
     Severity,
     TriageDecision,
 )
+from sast_triage.rule_semantics import RuleSemantics, classify_rule_semantics
 
-POLICY_VERSION: str = "conservative-policy-v2"
+POLICY_VERSION: str = "conservative-policy-v3"
 
 
 def _evidence_is_incomplete(context: SanitizedContext) -> bool:
@@ -119,6 +120,34 @@ def _tp_has_deterministic_support(
     # A generic rule-specific projection is not enough to auto-resolve a
     # configuration/framework finding. Keep it visible for manual review.
     return False
+
+
+def _usage_based_intrinsic_tp_support(
+    finding: NormalizedFinding,
+    context: SanitizedContext,
+) -> bool:
+    """Return true only for an allowlisted, completely observed usage-based rule."""
+    if classify_rule_semantics(finding.rule_id) != RuleSemantics.USAGE_BASED:
+        return False
+    snippet = context.sanitized_snippet
+    if not snippet or not snippet.lstrip().startswith("{"):
+        return False
+    try:
+        payload = json.loads(snippet)
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    verification = payload.get("deterministic_verification")
+    if not isinstance(verification, dict):
+        return False
+    return (
+        verification.get("mechanism") == "intrinsic_usage"
+        and verification.get("rule_semantics") == RuleSemantics.USAGE_BASED.value
+        and verification.get("unsafe_primitive_observed") is True
+        and verification.get("evidence_complete") is True
+        and verification.get("has_evidence_conflict") is False
+    )
 
 
 def apply_policy(
@@ -244,6 +273,17 @@ def apply_policy(
 
     # 5. Rule 4 — Model Verdict là NEEDS_REVIEW
     if triage_decision.model_verdict == ModelVerdict.NEEDS_REVIEW:
+        if (
+            finding.finding_type == FindingType.SAST
+            and _usage_based_intrinsic_tp_support(finding, context)
+        ):
+            return PolicyDecision(
+                action=PolicyAction.LIKELY_TP,
+                reasons=["Complete deterministic evidence satisfies an allowlisted usage-based rule."],
+                policy_version=POLICY_VERSION,
+                escalated=False,
+                escalation_reason=None,
+            )
         return PolicyDecision(
             action=PolicyAction.MANUAL_REVIEW,
             reasons=["LLM provider requested manual review."],

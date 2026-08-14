@@ -32,12 +32,13 @@ def make_finding(
     scanner: ScannerType = ScannerType.SEMGREP,
     severity: Severity = Severity.HIGH,
     finding_id: str = "find123456789012",
+    rule_id: str = "rule-01",
 ) -> NormalizedFinding:
     return NormalizedFinding(
         finding_instance_id=finding_id,
         scanner=scanner,
         finding_type=FindingType.SAST if scanner == ScannerType.SEMGREP else FindingType.SECRET,
-        rule_id="rule-01",
+        rule_id=rule_id,
         file_path="src/app.py",
         start_line=1,
         end_line=1,
@@ -86,6 +87,31 @@ def make_complete_taint_context(finding_id: str = "find123456789012") -> Sanitiz
                         "has_evidence_conflict": False,
                         "source_user_controlled": True,
                         "source_reaches_sink": True,
+                    },
+                }
+            )
+        }
+    )
+
+
+def make_complete_usage_based_context(
+    finding_id: str = "find123456789012",
+    *,
+    rule_semantics: str = "USAGE_BASED",
+) -> SanitizedContext:
+    """Create a safe projection proving direct intrinsic primitive usage."""
+    context = make_context(finding_id=finding_id)
+    return context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "intrinsic_usage",
+                        "rule_semantics": rule_semantics,
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "unsafe_primitive_observed": True,
                     },
                 }
             )
@@ -532,6 +558,46 @@ def test_model_needs_review_yields_manual_review() -> None:
 
     assert res.action == PolicyAction.MANUAL_REVIEW
     assert res.escalated is False
+
+
+def test_usage_based_hash_needs_review_is_resolved_by_deterministic_policy() -> None:
+    """An exact usage-based rule may become TP when complete evidence observes the primitive."""
+    finding = make_finding(
+        rule_id="python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1"
+    )
+    context = make_complete_usage_based_context()
+    decision = make_triage_decision(verdict=ModelVerdict.NEEDS_REVIEW)
+
+    result = apply_policy(finding, context, decision)
+
+    assert result.action == PolicyAction.LIKELY_TP
+    assert result.escalated is False
+
+
+def test_unknown_hash_rule_needs_review_remains_manual() -> None:
+    """A fuzzy rule-name match cannot activate the deterministic TP override."""
+    finding = make_finding(rule_id="custom.insecure-hash-experiment")
+    context = make_complete_usage_based_context()
+    decision = make_triage_decision(verdict=ModelVerdict.NEEDS_REVIEW)
+
+    result = apply_policy(finding, context, decision)
+
+    assert result.action == PolicyAction.MANUAL_REVIEW
+
+
+def test_usage_based_hash_with_conflicting_semantics_remains_manual() -> None:
+    """The projection and registry must agree before deterministic resolution."""
+    finding = make_finding(
+        rule_id="python.lang.security.insecure-hash-function.insecure-hash-function"
+    )
+    context = make_complete_usage_based_context(
+        rule_semantics="SECURITY_CONTEXT_REQUIRED"
+    )
+    decision = make_triage_decision(verdict=ModelVerdict.NEEDS_REVIEW)
+
+    result = apply_policy(finding, context, decision)
+
+    assert result.action == PolicyAction.MANUAL_REVIEW
 
 
 # --- 8. Consistency, Immutability & Security Tests ---
