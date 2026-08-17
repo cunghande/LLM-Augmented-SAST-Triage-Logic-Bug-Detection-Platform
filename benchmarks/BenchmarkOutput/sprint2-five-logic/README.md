@@ -16,6 +16,7 @@
 |---|---:|---:|---:|---:|---:|---:|---:|
 | v1, initial five-class implementation | 23 | 6 | 26 | 8 | 0.7931 | 0.4694 | 0.5897 |
 | v3, evidence/propagation + risk-priority refinements | 42 | 2 | 7 | 12 | 0.9545 | 0.8571 | 0.9032 |
+| v4, Strix-inspired counter-evidence verification | 42 | 0 | 7 | 14 | 1.0000 | 0.8571 | 0.9231 |
 
 The improvement comes from bounded request-value propagation, semantic authz
 guard recognition, subject-scoped lookup checks, atomic-control distinctions,
@@ -40,9 +41,13 @@ precision. The race and workflow sample sizes are especially small.
 - `realvuln-full-v1.json`: baseline before refinements.
 - `realvuln-full-v2.json`: refinement run before the final file-priority check.
 - `realvuln-full-v3.json`: final rerun after risk-based file prioritization.
+- `realvuln-full-v4-strix-evidence.json`: counter-evidence rerun that recognizes
+  exact local and authorization-namespace object guards.
 - `realvuln-pilot-v1.json`: early two-repository pilot; not used as final metric.
 - `realvuln-llm-pilot-v1.json`: seven-case pilot using the real Modal
   `Qwen/Qwen3-14B-AWQ` provider and prompt v11.
+- `realvuln-llm-pilot-v2-strix-evidence.json`: five-positive-case rerun using
+  proof-obligation evidence and prompt v12.
 
 ## Real-LLM pilot
 
@@ -66,3 +71,27 @@ detector false positives. Therefore this pilot proves the real provider works
 without `TRIAGE_ERROR`, but it does **not** prove an accuracy improvement over
 the deterministic detector. The selective-accuracy percentage has a denominator
 of one and must not be presented as general model accuracy.
+
+## Strix-inspired evidence comparison
+
+The v4 verifier searches for class-specific counter-evidence before creating a
+candidate. It recognized `require_application_view` and
+`authz.load_job_for_view` as exact object-authorization controls, removing both
+reviewed IDOR false positives without losing a reviewed TP. This raised detector
+F1 from 0.9032 to 0.9231 on the same 63 mapped cases.
+
+Prompt v12 adds explicit proof obligations, counter-evidence results, a bounded
+attack hypothesis, and a safe reproduction plan. On the exact five positive
+cases shared with the v11 pilot:
+
+| Prompt/evidence | Decisive | Correct | Abstained | Coverage |
+|---|---:|---:|---:|---:|
+| v11 baseline | 1/5 | 1 | 4 | 20% |
+| v12 proof obligations | 2/5 | 2 | 3 | 40% |
+
+The newly decisive case is race/TOCTOU. IDOR, business-rule bypass, and insecure
+workflow still abstain because Qwen requests object-scope, domain-invariant, or
+prior-state evidence beyond the bounded static trace. The result is an
+improvement, but the five-case sample is too small for a general model-quality
+claim. The two reviewed negatives are no longer LLM calls because v4 filters
+them at the deterministic counter-evidence gate.

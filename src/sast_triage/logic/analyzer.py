@@ -195,10 +195,19 @@ def _is_authz_call(name: str | None) -> bool:
             "permission",
             "scope",
             "tenant",
+            "view",
             "visible",
         )
     )
-    return semantic_prefix and semantic_target or "visible_to" in last
+    verified_authz_lookup = (
+        lowered.startswith(("authz.", "authorization.", "permissions."))
+        and last.startswith(("fetch_", "get_", "load_", "read_"))
+        and any(
+            token in last
+            for token in ("for_access", "for_manage", "for_update", "for_view")
+        )
+    )
+    return semantic_prefix and semantic_target or "visible_to" in last or verified_authz_lookup
 
 
 def _is_identifier_name(name: str) -> bool:

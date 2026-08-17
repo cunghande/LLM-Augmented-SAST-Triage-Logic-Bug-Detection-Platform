@@ -30,7 +30,7 @@ from sast_triage.context.evidence_models import (
 )
 from sast_triage.context.reader import SourceReadResult
 from sast_triage.context.repository_index import RepositoryEvidenceIndex
-from sast_triage.logic import LogicCandidate
+from sast_triage.logic import LogicBugClass, LogicCandidate
 from sast_triage.models import NormalizedFinding, SanitizedContext
 
 MAX_EVIDENCE_CODE_CHARACTERS = 6_000
@@ -539,12 +539,105 @@ def _logic_evidence_package(
     )
 
 
+def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
+    """Return class-specific proof and counter-evidence facts without raw source."""
+    class_facts: dict[
+        LogicBugClass,
+        tuple[str, tuple[str, ...], tuple[str, ...]],
+    ] = {
+        LogicBugClass.MISSING_AUTHZ_IDOR: (
+            "A caller-controlled object identifier reaches a lookup without object- or tenant-level authorization.",
+            (
+                "caller_controlled_identifier_reaches_lookup",
+                "lookup_is_not_subject_or_tenant_scoped",
+                "no_effective_object_authorization_guard_observed",
+            ),
+            (
+                "Request the same object as its owner and as a different authenticated user.",
+                "The non-owner request must be denied before object data is returned or mutated.",
+            ),
+        ),
+        LogicBugClass.MASS_ASSIGNMENT: (
+            "Caller-controlled request fields are bound to a model without an explicit writable-field allowlist.",
+            (
+                "request_mapping_reaches_model_mutation",
+                "blanket_binding_operation_observed",
+                "no_explicit_field_allowlist_observed",
+            ),
+            (
+                "Submit one allowed field together with a privileged field such as role or owner identifier.",
+                "The privileged field must be rejected or ignored while the allowed field is handled normally.",
+            ),
+        ),
+        LogicBugClass.RACE_CONDITION_TOCTOU: (
+            "Shared state is checked and later mutated without an atomic control.",
+            (
+                "shared_state_check_observed",
+                "related_state_mutation_observed_after_check",
+                "no_lock_or_atomic_transaction_observed",
+            ),
+            (
+                "Issue two authorized concurrent operations against the same bounded test record.",
+                "Verify that the invariant holds and no double-spend or over-allocation occurs.",
+            ),
+        ),
+        LogicBugClass.BUSINESS_RULE_BYPASS: (
+            "A caller-controlled domain value reaches a state change without server-side bounds.",
+            (
+                "caller_controlled_domain_value_observed",
+                "domain_value_reaches_state_change",
+                "no_numeric_or_domain_bound_guard_observed",
+            ),
+            (
+                "Submit boundary, negative, zero, and excessive values in a non-production test environment.",
+                "Every invalid value must be rejected before persistent state changes.",
+            ),
+        ),
+        LogicBugClass.INSECURE_WORKFLOW: (
+            "A sensitive transition is reachable without proof of the required prior state or credential.",
+            (
+                "sensitive_transition_observed",
+                "caller_can_reach_transition",
+                "no_required_prior_state_or_proof_guard_observed",
+            ),
+            (
+                "Attempt the transition from one allowed and one forbidden prior state.",
+                "The forbidden transition must fail without changing persistent state.",
+            ),
+        ),
+    }
+    hypothesis, proof_obligations, reproduction = class_facts[candidate.bug_class]
+    return {
+        "attack_hypothesis": hypothesis,
+        "proof_obligations": [
+            {
+                "fact": fact,
+                "satisfied": candidate.analysis_complete,
+                "provenance": "bounded_python_ast",
+            }
+            for fact in proof_obligations
+        ],
+        "counter_evidence_search": {
+            "searched": candidate.analysis_complete,
+            "observed_guard_symbols": list(candidate.guards),
+            "effective_controls": [],
+            "result": (
+                "no_effective_class_specific_control_observed"
+                if candidate.analysis_complete
+                else "counter_evidence_search_incomplete"
+            ),
+        },
+        "safe_reproduction_plan": list(reproduction),
+    }
+
+
 def _project_logic_evidence(
     evidence: EvidencePackage,
     candidate: LogicCandidate,
 ) -> dict[str, object]:
     """Project the reviewable source-guard-sink trace and plan risk factors."""
     projected = project_evidence(evidence)
+    obligations = _logic_proof_obligations(candidate)
     projected["logic_analysis"] = {
         "logic_class": candidate.bug_class.value,
         "entrypoint": candidate.function,
@@ -559,6 +652,10 @@ def _project_logic_evidence(
         "risk_factors": dict(candidate.risk_factors),
         "remediation": candidate.remediation,
         "validation_checklist": list(candidate.validation_checklist),
+        "attack_hypothesis": obligations["attack_hypothesis"],
+        "proof_obligations": obligations["proof_obligations"],
+        "counter_evidence_search": obligations["counter_evidence_search"],
+        "safe_reproduction_plan": obligations["safe_reproduction_plan"],
     }
     projected["deterministic_verification"] = {
         "mechanism": "logic_pattern",
@@ -568,6 +665,15 @@ def _project_logic_evidence(
         "source_reaches_sink": True,
         "effective_controls": [],
         "has_evidence_conflict": False,
+        "proof_obligations_satisfied": candidate.analysis_complete,
+        "missing_proof_obligations": (
+            [] if candidate.analysis_complete else ["bounded_analysis_incomplete"]
+        ),
+        "assessment": (
+            "supported_by_bounded_static_analysis"
+            if candidate.analysis_complete
+            else "bounded_static_analysis_incomplete"
+        ),
     }
     return projected
 

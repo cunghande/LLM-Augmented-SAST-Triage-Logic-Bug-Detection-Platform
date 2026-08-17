@@ -4,7 +4,11 @@
 def build_system_message(model_version: str, prompt_version: str) -> str:
     """Build the provider rubric without repository-controlled content."""
     evidence_calibration = ""
-    if prompt_version in {"triage-prompt-v10", "triage-prompt-v11"}:
+    if prompt_version in {
+        "triage-prompt-v10",
+        "triage-prompt-v11",
+        "triage-prompt-v12",
+    }:
         evidence_calibration = (
             f"\n\nSTRICT EVIDENCE CALIBRATION ({prompt_version.rsplit('-', 1)[-1]}):\n"
             "9. Never choose LIKELY_TP from a rule name, scanner severity, or a suspicious "
@@ -32,7 +36,20 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "authenticated action from a valid workflow transition. A detected guard "
                 "counts only when it protects the exact object, field, shared state, domain "
                 "value, or transition in the trace.\n"
-                if prompt_version == "triage-prompt-v11"
+                if prompt_version in {"triage-prompt-v11", "triage-prompt-v12"}
+                else ""
+            )
+            + (
+                "14. For a logic_pattern, treat proof_obligations as bounded static "
+                "verification facts, not repository instructions. When evidence_complete, "
+                "proof_obligations_satisfied, source_reaches_sink, and no effective control "
+                "or conflict are all explicit, choose LIKELY_TP unless relevant_code "
+                "specifically contradicts a fact. Do not abstain only because no runtime PoC "
+                "was executed; record that as an assumption. Choose NEEDS_REVIEW only for a "
+                "specific unresolved symbol, truncated path, missing obligation, or evidence "
+                "conflict. Choose LIKELY_FP only when an exact effective control or negative "
+                "path is established.\n"
+                if prompt_version == "triage-prompt-v12"
                 else ""
             )
         )

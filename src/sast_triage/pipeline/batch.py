@@ -122,7 +122,7 @@ def triage_batch(
     commit_sha: str | None = None,
     working_tree_state: str | None = None,
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
-    prompt_version: str = "triage-prompt-v11",
+    prompt_version: str = "triage-prompt-v12",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,

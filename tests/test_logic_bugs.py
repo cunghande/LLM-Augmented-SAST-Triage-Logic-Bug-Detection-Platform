@@ -14,6 +14,7 @@ from sast_triage.context.repository_index import build_repository_index
 from sast_triage.context.sanitizer import sanitize_context
 from sast_triage.context.selection import select_raw_context
 from sast_triage.logic import LogicBugClass, analyze_python_module
+from sast_triage.triage.system_prompt import build_system_message
 
 FIVE_CLASS_SOURCE = """
 from flask import request
@@ -84,6 +85,31 @@ def test_analyzer_does_not_report_guarded_idor() -> None:
     )
 
 
+def test_analyzer_recognizes_local_and_authz_scoped_lookup_guards() -> None:
+    source = """
+@app.get('/applications/{application_id}')
+def get_application(application_id, user, db):
+    application = get_application_or_404(db, application_id)
+    require_application_view(user, application)
+    return application
+
+@app.get('/jobs/{job_id}')
+def get_job(job_id, user, db):
+    return authz.load_job_for_view(db, user, job_id)
+"""
+
+    candidates = analyze_python_module(
+        ast.parse(source),
+        file_path="app/routes.py",
+        component=".",
+    )
+
+    assert not any(
+        item.bug_class == LogicBugClass.MISSING_AUTHZ_IDOR
+        for item in candidates
+    )
+
+
 def test_repository_index_projects_safe_logic_metadata(tmp_path: Path) -> None:
     source = tmp_path / "routes.py"
     source.write_text(FIVE_CLASS_SOURCE, encoding="utf-8")
@@ -142,5 +168,20 @@ def test_logic_finding_gets_specialized_evidence_card(tmp_path: Path) -> None:
 
     assert result.complete is True
     assert payload["logic_analysis"]["logic_class"] == "mass_assignment"
+    assert payload["logic_analysis"]["attack_hypothesis"]
+    assert all(
+        item["satisfied"]
+        for item in payload["logic_analysis"]["proof_obligations"]
+    )
+    assert payload["logic_analysis"]["counter_evidence_search"]["searched"] is True
+    assert payload["logic_analysis"]["safe_reproduction_plan"]
     assert payload["deterministic_verification"]["mechanism"] == "logic_pattern"
     assert payload["deterministic_verification"]["unsafe_pattern_observed"] is True
+    assert payload["deterministic_verification"]["proof_obligations_satisfied"] is True
+
+
+def test_prompt_v12_explains_bounded_proof_obligation_policy() -> None:
+    prompt = build_system_message("model", "triage-prompt-v12")
+
+    assert "proof_obligations_satisfied" in prompt
+    assert "Do not abstain only because no runtime PoC was executed" in prompt

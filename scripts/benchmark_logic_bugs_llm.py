@@ -32,6 +32,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--positive-per-class", type=int, default=1)
     parser.add_argument("--negative-limit", type=int, default=2)
+    parser.add_argument("--prompt-version", default="triage-prompt-v12")
     return parser.parse_args()
 
 
@@ -90,6 +91,7 @@ def run_pilot(
     *,
     positive_per_class: int,
     negative_limit: int,
+    prompt_version: str,
 ) -> dict[str, Any]:
     """Triage a balanced reviewed pilot with the real Modal provider."""
     report = json.loads(detector_report.read_text(encoding="utf-8"))
@@ -138,7 +140,7 @@ def run_pilot(
                     finding,
                     repository,
                     provider,
-                    prompt_version="triage-prompt-v11",
+                    prompt_version=prompt_version,
                     output_schema_version="triage-decision-v1",
                     prompt_type="modal-qwen.logic-benchmark",
                     artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
@@ -163,6 +165,16 @@ def run_pilot(
                         "model_confidence": (
                             decision.model_confidence.value if decision is not None else None
                         ),
+                        "model_summary": decision.summary if decision is not None else None,
+                        "model_evidence": list(decision.evidence) if decision is not None else [],
+                        "missing_information": (
+                            list(decision.missing_information)
+                            if decision is not None
+                            else []
+                        ),
+                        "assumptions": (
+                            list(decision.assumptions) if decision is not None else []
+                        ),
                         "policy_action": result.policy_decision.action.value,
                         "abstained": abstained,
                         "correct": correct,
@@ -180,7 +192,7 @@ def run_pilot(
         "dataset": report.get("dataset"),
         "detector_config_id": report.get("detector_config_id"),
         "model": MODEL_ID,
-        "prompt_version": "triage-prompt-v11",
+        "prompt_version": prompt_version,
         "selection": {
             "positive_per_class": positive_per_class,
             "negative_limit": negative_limit,
@@ -208,6 +220,7 @@ def main() -> int:
         args.repos_root.resolve(),
         positive_per_class=args.positive_per_class,
         negative_limit=args.negative_limit,
+        prompt_version=args.prompt_version,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
