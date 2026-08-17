@@ -115,6 +115,12 @@ def _tp_has_deterministic_support(
         )
     if mechanism == "intrinsic_usage":
         return verification.get("unsafe_primitive_observed") is True
+    if mechanism == "logic_pattern":
+        return (
+            verification.get("unsafe_pattern_observed") is True
+            and verification.get("source_reaches_sink") is True
+            and not verification.get("effective_controls")
+        )
 
     # A generic rule-specific projection is not enough to auto-resolve a
     # configuration/framework finding. Keep it visible for manual review.

@@ -699,3 +699,17 @@ class JoernAnalysisBackend:
             )
             occupied.add((sink_file, sink_line))
         return tuple(findings)
+
+    def discover_logic_findings(
+        self,
+        detector: str,
+        existing: tuple[NormalizedFinding, ...],
+    ) -> tuple[NormalizedFinding, ...]:
+        """Keep the five-class detector on native AST until a CPG gate is defined."""
+        if detector == "off":
+            return ()
+        raise SastTriageError(
+            safe_message="The selected logic detector requires the native analysis backend.",
+            error_code="LOGIC_DETECTOR_NATIVE_REQUIRED",
+            retryable=False,
+        )

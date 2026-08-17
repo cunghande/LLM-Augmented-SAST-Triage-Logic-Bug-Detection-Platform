@@ -170,7 +170,7 @@ def triage_finding(
     repository_root: Path,
     provider: object,
     *,
-    prompt_version: str = "triage-prompt-v10",
+    prompt_version: str = "triage-prompt-v11",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 10,

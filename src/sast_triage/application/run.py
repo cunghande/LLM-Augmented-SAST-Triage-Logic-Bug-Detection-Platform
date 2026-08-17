@@ -17,7 +17,10 @@ from sast_triage.application.console import show_progress
 from sast_triage.application.providers import provider_identity, provider_session
 from sast_triage.application.repository_state import read_repository_state
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, TriageCheckpointStore
-from sast_triage.context.repository_index import MODULE2_CONFIG_ID
+from sast_triage.context.repository_index import (
+    LOGIC_DETECTOR_CONFIG_ID,
+    MODULE2_CONFIG_ID,
+)
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ArtifactRepositoryMatch,
@@ -42,6 +45,19 @@ def execute_run(args: argparse.Namespace) -> int:
     repository = validate_repository(args.repository)
     repository_id = args.repository_identifier or repository.name
     backend_name = getattr(args, "analysis_backend", "native")
+    logic_detector = getattr(args, "logic_detector", "off")
+    if logic_detector != "off" and not getattr(args, "module2", True):
+        raise SastTriageError(
+            safe_message="The logic detector requires Module 2 indexing.",
+            error_code="LOGIC_DETECTOR_MODULE2_REQUIRED",
+            retryable=False,
+        )
+    if logic_detector != "off" and backend_name != "native":
+        raise SastTriageError(
+            safe_message="The selected logic detector requires the native analysis backend.",
+            error_code="LOGIC_DETECTOR_NATIVE_REQUIRED",
+            retryable=False,
+        )
     show_progress(
         "PREFLIGHT",
         f"Đang khởi tạo analysis backend={backend_name}.",
@@ -77,19 +93,34 @@ def _execute_run(args: argparse.Namespace) -> int:
     analysis_backend: AnalysisBackend = args._analysis_backend
     repository_index = analysis_backend.repository_index
     module2_result = None
+    module2_findings: list[NormalizedFinding] = []
     if getattr(args, "module2", True):
         show_progress("3/7", "Đang lập chỉ mục Python theo component cho Module 2.")
     if getattr(args, "module2_discovery", False):
         show_progress("3/7", "Đang chạy discovery thử nghiệm của Module 2.")
-        module2_findings = analysis_backend.discover_findings(
-            artifacts.semgrep.findings,
+        module2_findings.extend(
+            analysis_backend.discover_findings(artifacts.semgrep.findings)
         )
-        module2_result = ScannerParseResult(findings=module2_findings)
+    logic_detector = getattr(args, "logic_detector", "off")
+    if logic_detector != "off":
+        show_progress("3/7", f"Running logic detector={logic_detector}.")
+        module2_findings.extend(
+            analysis_backend.discover_logic_findings(
+                logic_detector,
+                artifacts.semgrep.findings + tuple(module2_findings),
+            )
+        )
+    if getattr(args, "module2_discovery", False) or logic_detector != "off":
+        module2_result = ScannerParseResult(findings=tuple(module2_findings))
     scanner_versions = dict(artifacts.scanner_versions)
     scanner_config_ids = dict(artifacts.scanner_config_ids)
     if module2_result is not None:
         scanner_versions["MODULE2"] = TOOL_VERSION
-        scanner_config_ids["MODULE2"] = MODULE2_CONFIG_ID
+        scanner_config_ids["MODULE2"] = (
+            LOGIC_DETECTOR_CONFIG_ID
+            if logic_detector != "off"
+            else MODULE2_CONFIG_ID
+        )
     findings = (
         artifacts.semgrep.findings
         + artifacts.gitleaks.findings

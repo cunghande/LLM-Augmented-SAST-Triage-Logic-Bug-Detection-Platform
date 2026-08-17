@@ -30,6 +30,7 @@ from sast_triage.context.evidence_models import (
 )
 from sast_triage.context.reader import SourceReadResult
 from sast_triage.context.repository_index import RepositoryEvidenceIndex
+from sast_triage.logic import LogicCandidate
 from sast_triage.models import NormalizedFinding, SanitizedContext
 
 MAX_EVIDENCE_CODE_CHARACTERS = 6_000
@@ -447,6 +448,130 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
     }
 
 
+def _logic_evidence_package(
+    finding: NormalizedFinding,
+    sanitized_context: SanitizedContext,
+    candidate: LogicCandidate,
+) -> EvidencePackage:
+    """Build a complete source-free trace for one bounded logic pattern."""
+    complete = candidate.analysis_complete
+    return EvidencePackage(
+        finding_id=finding.finding_instance_id,
+        finding=FindingEvidence(
+            rule_id=finding.rule_id,
+            category=f"logic_bug:{candidate.bug_class.value}",
+            severity=finding.severity.value,
+            message=finding.message,
+            file_path=finding.file_path,
+            start_line=finding.start_line,
+            end_line=finding.end_line,
+        ),
+        relevant_code=RelevantCodeEvidence(
+            scope_type=sanitized_context.context_strategy.value,
+            function_name=sanitized_context.enclosing_function,
+            class_name=sanitized_context.enclosing_class,
+            start_line=sanitized_context.context_start_line,
+            end_line=sanitized_context.context_end_line,
+            code=sanitized_context.sanitized_snippet
+            or "<SANITIZED_CONTEXT_UNAVAILABLE>",
+        ),
+        source=SourceEvidence(
+            expression="<logic_candidate_source>",
+            source_type=candidate.source_kind,
+            user_controlled=candidate.source_kind.startswith("http_"),
+            file_path=candidate.file_path,
+            line=candidate.line,
+            confidence="high" if complete else "medium",
+        ),
+        sink=SinkEvidence(
+            expression="<logic_candidate_sink>",
+            sink_type=candidate.sink_kind,
+            dangerous_argument="<logic_sensitive_target>",
+            dangerous_conditions=(candidate.bug_class.value,),
+            file_path=candidate.file_path,
+            line=candidate.line,
+        ),
+        taint_path=TaintPathEvidence(
+            path_type="source_guard_sink_logic_trace",
+            steps=tuple(
+                TaintStep(
+                    order=index,
+                    kind=(
+                        "source"
+                        if index == 1
+                        else "sink"
+                        if index == len(candidate.trace)
+                        else "flow"
+                    ),
+                    expression=f"<{step}>",
+                    function_id=candidate.function,
+                    file_path=candidate.file_path,
+                    line=candidate.line,
+                )
+                for index, step in enumerate(candidate.trace, start=1)
+            ),
+            source_reaches_sink=True,
+            complete=complete,
+        ),
+        security_controls=tuple(
+            SecurityControlEvidence(
+                symbol=guard,
+                control_type="observed_guard",
+                on_taint_path=True,
+                protects_target=False,
+                effective=False,
+                confidence="medium",
+            )
+            for guard in candidate.guards
+        ),
+        context_completeness=ContextCompleteness(
+            status=EvidenceStatus.COMPLETE if complete else EvidenceStatus.PARTIAL,
+            source_resolved=True,
+            sink_resolved=True,
+            taint_path_complete=complete,
+            call_chain_complete=complete,
+            reachability_resolved=complete,
+            unresolved_symbols=(),
+            missing_information=() if complete else ("LOGIC_TRACE_INCOMPLETE",),
+            limitations=() if complete else ("BOUNDED_LOGIC_ANALYSIS_PARTIAL",),
+        ),
+        provenance=("python_five_logic_v1", "bounded_ast_pattern"),
+    )
+
+
+def _project_logic_evidence(
+    evidence: EvidencePackage,
+    candidate: LogicCandidate,
+) -> dict[str, object]:
+    """Project the reviewable source-guard-sink trace and plan risk factors."""
+    projected = project_evidence(evidence)
+    projected["logic_analysis"] = {
+        "logic_class": candidate.bug_class.value,
+        "entrypoint": candidate.function,
+        "entrypoint_exposed": candidate.entrypoint,
+        "source_kind": candidate.source_kind,
+        "sink_kind": candidate.sink_kind,
+        "guards": list(candidate.guards),
+        "trace": list(candidate.trace),
+        "cwe": candidate.cwe,
+        "risk_score": candidate.risk_score,
+        "risk_level": candidate.risk_level,
+        "risk_factors": dict(candidate.risk_factors),
+        "remediation": candidate.remediation,
+        "validation_checklist": list(candidate.validation_checklist),
+    }
+    projected["deterministic_verification"] = {
+        "mechanism": "logic_pattern",
+        "evidence_complete": candidate.analysis_complete,
+        "unsafe_pattern_observed": True,
+        "logic_class": candidate.bug_class.value,
+        "source_reaches_sink": True,
+        "effective_controls": [],
+        "has_evidence_conflict": False,
+    }
+    return projected
+
+
 def build_evidence_context(
     finding: NormalizedFinding,
     source: SourceReadResult,
@@ -458,7 +583,20 @@ def build_evidence_context(
     analysis_backend: AnalysisBackend | None = None,
 ) -> EvidenceContextResult:
     """Phân tích mã nguồn và thay snippet gửi provider bằng JSON bằng chứng an toàn."""
-    if analysis_backend is not None and analysis_backend.identity.backend == "joern":
+    logic_candidate = (
+        repository_index.logic_candidate_for(finding)
+        if repository_index is not None
+        else None
+    )
+    if logic_candidate is not None:
+        evidence = _logic_evidence_package(
+            finding,
+            sanitized_context,
+            logic_candidate,
+        )
+        expansion_tool_calls = 0
+        expansion_tool_names = ("logic_candidate_projection",)
+    elif analysis_backend is not None and analysis_backend.identity.backend == "joern":
         initial = analysis_backend.initial_evidence(finding)
         if initial is None:
             initial = GraphEvidence(limitations=("JOERN_INITIAL_EVIDENCE_UNAVAILABLE",))
@@ -598,8 +736,13 @@ def build_evidence_context(
         )
         evidence = replace(evidence, relevant_code=relevant, context_completeness=completeness)
 
+    projection = (
+        _project_logic_evidence(evidence, logic_candidate)
+        if logic_candidate is not None
+        else project_evidence(evidence)
+    )
     rendered = json.dumps(
-        project_evidence(evidence),
+        projection,
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
@@ -617,8 +760,13 @@ def build_evidence_context(
             ),
         )
         evidence = replace(evidence, relevant_code=relevant, context_completeness=completeness)
+        projection = (
+            _project_logic_evidence(evidence, logic_candidate)
+            if logic_candidate is not None
+            else project_evidence(evidence)
+        )
         rendered = json.dumps(
-            project_evidence(evidence),
+            projection,
             ensure_ascii=False,
             sort_keys=True,
             separators=(",", ":"),

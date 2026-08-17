@@ -17,11 +17,32 @@ from sast_triage.context.framework_registry import (
     endpoint_source_type,
     source_type_for_call,
 )
+from sast_triage.logic import LogicCandidate, analyze_python_module
 from sast_triage.models import FindingType, NormalizedFinding, ScannerType, Severity
 
 MODULE2_CONFIG_ID = f"python-cross-file-evidence-v2-{FRAMEWORK_REGISTRY_VERSION}"
+LOGIC_DETECTOR_CONFIG_ID = "python-five-logic-v1"
 _PROJECT_MARKERS = ("pyproject.toml", "setup.cfg", "setup.py")
 _SKIPPED_PARTS = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__", ".tox"})
+_HIGH_RISK_PATH_TOKENS = (
+    "admin",
+    "api",
+    "auth",
+    "billing",
+    "checkout",
+    "finance",
+    "loan",
+    "order",
+    "payment",
+    "permission",
+    "profile",
+    "route",
+    "transfer",
+    "user",
+    "view",
+    "wallet",
+    "workflow",
+)
 _SOURCE_SUFFIXES = (
     "input",
     "request.args.get",
@@ -213,6 +234,7 @@ class RepositoryEvidenceIndex:
     summaries: tuple[FunctionSummary, ...]
     calls: tuple[CallSite, ...]
     sinks: tuple[SinkCandidate, ...]
+    logic_candidates: tuple[LogicCandidate, ...] = ()
     skipped_files: int = 0
 
     def component_for(self, file_path: str) -> str:
@@ -338,6 +360,80 @@ class RepositoryEvidenceIndex:
             occupied.add((sink.file_path, sink.line))
         return tuple(findings)
 
+    def logic_candidate_for(self, finding: NormalizedFinding) -> LogicCandidate | None:
+        """Return the exact source-free logic candidate backing a Module 2 finding."""
+        logic_class = finding.metadata.get("logic_class")
+        matches = [
+            item
+            for item in self.logic_candidates
+            if item.file_path == finding.file_path
+            and item.line == finding.start_line
+            and item.bug_class.value == logic_class
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    def discover_logic_findings(
+        self,
+        existing: tuple[NormalizedFinding, ...] = (),
+    ) -> tuple[NormalizedFinding, ...]:
+        """Project the five Sprint 2 AST candidate classes into domain findings."""
+        occupied = {
+            (item.rule_id, item.file_path, item.start_line)
+            for item in existing
+        }
+        findings: list[NormalizedFinding] = []
+        for candidate in self.logic_candidates:
+            rule_id = f"module2.logic.{candidate.bug_class.value.replace('_', '-')}"
+            identity = (rule_id, candidate.file_path, candidate.line)
+            if identity in occupied:
+                continue
+            digest = hashlib.sha256(
+                (
+                    f"MODULE2:LOGIC:{candidate.bug_class.value}:"
+                    f"{candidate.file_path}:{candidate.line}:{candidate.function}"
+                ).encode()
+            ).hexdigest()
+            findings.append(
+                NormalizedFinding(
+                    finding_instance_id=digest,
+                    scanner=ScannerType.MODULE2,
+                    finding_type=FindingType.SAST,
+                    rule_id=rule_id,
+                    rule_name=(
+                        "Bounded AST candidate for "
+                        + candidate.bug_class.value.replace("_", " ")
+                    ),
+                    file_path=candidate.file_path,
+                    start_line=candidate.line,
+                    end_line=candidate.end_line,
+                    severity=candidate.severity,
+                    message=(
+                        "A bounded source-to-guard-to-sink trace matched a Sprint 2 "
+                        f"{candidate.bug_class.value.replace('_', ' ')} pattern."
+                    ),
+                    metadata={
+                        "analysis_scope": "bounded_python_ast",
+                        "analysis_complete": candidate.analysis_complete,
+                        "component": candidate.component,
+                        "logic_class": candidate.bug_class.value,
+                        "entrypoint": candidate.function,
+                        "entrypoint_exposed": candidate.entrypoint,
+                        "source_kind": candidate.source_kind,
+                        "sink_kind": candidate.sink_kind,
+                        "guards": list(candidate.guards),
+                        "trace": list(candidate.trace),
+                        "cwe": candidate.cwe,
+                        "risk_score": candidate.risk_score,
+                        "risk_level": candidate.risk_level,
+                        "risk_factors": dict(candidate.risk_factors),
+                        "remediation": candidate.remediation,
+                        "validation_checklist": list(candidate.validation_checklist),
+                    },
+                )
+            )
+            occupied.add(identity)
+        return tuple(findings)
+
 
 @dataclass(frozen=True, slots=True)
 class _ParsedFile:
@@ -368,6 +464,15 @@ def _aliases(tree: ast.Module) -> dict[str, str]:
             for alias in node.names:
                 result[alias.asname or alias.name] = f"{node.module}.{alias.name}"
     return result
+
+
+def _analysis_priority(path: Path, root: Path) -> tuple[int, int, str]:
+    """Prioritize security-sensitive application code when the file budget binds."""
+    relative = path.relative_to(root).as_posix().lower()
+    parts = set(Path(relative).parts)
+    is_test_or_example = bool(parts.intersection({"test", "tests", "example", "examples"}))
+    token_hits = sum(token in relative for token in _HIGH_RISK_PATH_TOKENS)
+    return (1 if is_test_or_example else 0, -token_hits, relative)
 
 
 def _resolve_callee(raw: str, parsed: _ParsedFile, functions: tuple[FunctionSymbol, ...]) -> str:
@@ -408,15 +513,21 @@ def build_repository_index(
         for item in sorted(marker_roots, key=lambda value: (value.count("/"), value))
     )
 
+    candidate_paths = [
+        path
+        for path in root.rglob("*.py")
+        if _SKIPPED_PARTS.isdisjoint(path.relative_to(root).parts)
+        and not path.is_symlink()
+    ]
+    candidate_paths.sort(key=lambda path: _analysis_priority(path, root))
+
     parsed_files: list[_ParsedFile] = []
     skipped = 0
-    for number, path in enumerate(sorted(root.rglob("*.py"))):
+    for number, path in enumerate(candidate_paths):
         if number >= max_python_files:
             skipped += 1
             continue
         relative = path.relative_to(root).as_posix()
-        if not _SKIPPED_PARTS.isdisjoint(Path(relative).parts) or path.is_symlink():
-            continue
         try:
             resolved = path.resolve(strict=True)
             if not resolved.is_relative_to(root) or resolved.stat().st_size > max_file_size_bytes:
@@ -438,6 +549,16 @@ def build_repository_index(
         parsed_files.append(
             _ParsedFile(relative, owner, _module_name(relative, owner), tree, _aliases(tree))
         )
+
+    logic_candidates = tuple(
+        candidate
+        for parsed in parsed_files
+        for candidate in analyze_python_module(
+            parsed.tree,
+            file_path=parsed.path,
+            component=parsed.component,
+        )
+    )
 
     functions: list[FunctionSymbol] = []
     function_nodes: dict[str, ast.FunctionDef | ast.AsyncFunctionDef] = {}
@@ -558,5 +679,6 @@ def build_repository_index(
         summaries=tuple(summaries),
         calls=tuple(calls),
         sinks=tuple(sinks),
+        logic_candidates=logic_candidates,
         skipped_files=skipped,
     )

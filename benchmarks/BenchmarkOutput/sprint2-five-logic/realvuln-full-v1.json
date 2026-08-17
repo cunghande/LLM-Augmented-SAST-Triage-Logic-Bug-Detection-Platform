@@ -1,0 +1,4311 @@
+{
+  "schema_version": "logic-benchmark-v1",
+  "generated_at": "2026-08-17T07:00:09.691859+00:00",
+  "detector_config_id": "python-five-logic-v1",
+  "dataset": "Real-Vuln-Benchmark reviewed ground truth",
+  "dataset_kind": "external_repository_ground_truth",
+  "metric_policy": "Only explicitly mapped reviewed positive/negative locations contribute to metrics; unmatched predictions remain unreviewed.",
+  "repositories": [
+    "djangoat",
+    "dvblab",
+    "threatbyte",
+    "vampi",
+    "vulpy",
+    "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+    "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+    "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+    "vc-claude-code-seeded-v2-property-management-fastapi",
+    "vc-claude-code-seeded-v2-support-desk-fastapi",
+    "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+    "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+    "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+    "vc-codex-high-seeded-v2-property-management-fastapi",
+    "vc-codex-high-seeded-v2-support-desk-fastapi",
+    "vc-codex-seeded-v2-fintech-lending-fastapi",
+    "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+    "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+    "vc-codex-seeded-v2-property-management-fastapi",
+    "vc-codex-seeded-v2-support-desk-fastapi",
+    "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+    "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+    "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+    "vc-kimi-code-seeded-v2-property-management-fastapi",
+    "vc-kimi-code-seeded-v2-support-desk-fastapi"
+  ],
+  "overall": {
+    "cases": 63,
+    "positive_cases": 49,
+    "negative_cases": 14,
+    "tp": 23,
+    "fp": 6,
+    "fn": 26,
+    "tn": 8,
+    "precision": 0.7931034482758621,
+    "recall": 0.46938775510204084,
+    "f1": 0.5897435897435898
+  },
+  "by_class": {
+    "missing_authz_idor": {
+      "cases": 24,
+      "positive_cases": 10,
+      "negative_cases": 14,
+      "tp": 8,
+      "fp": 6,
+      "fn": 2,
+      "tn": 8,
+      "precision": 0.5714285714285714,
+      "recall": 0.8,
+      "f1": 0.6666666666666666
+    },
+    "mass_assignment": {
+      "cases": 20,
+      "positive_cases": 20,
+      "negative_cases": 0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 18,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.1,
+      "f1": 0.18181818181818182
+    },
+    "race_condition_toctou": {
+      "cases": 1,
+      "positive_cases": 1,
+      "negative_cases": 0,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "business_rule_bypass": {
+      "cases": 15,
+      "positive_cases": 15,
+      "negative_cases": 0,
+      "tp": 11,
+      "fp": 0,
+      "fn": 4,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.7333333333333333,
+      "f1": 0.846153846153846
+    },
+    "insecure_workflow": {
+      "cases": 3,
+      "positive_cases": 3,
+      "negative_cases": 0,
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1": 0.5
+    }
+  },
+  "cases": [
+    {
+      "case_id": "djangoat-021",
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "app/views/users/messages/views.py",
+      "matched_lines": [
+        51
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "djangoat-022",
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": true,
+      "file_path": "app/views/admin/views.py",
+      "matched_lines": [
+        66
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "djangoat-031",
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "app/views/users/pay/views.py",
+      "matched_lines": [
+        72
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "djangoat-045",
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": true,
+      "file_path": "app/views/users/views.py",
+      "matched_lines": [
+        89,
+        91
+      ],
+      "ground_truth_source": "our-scanner"
+    },
+    {
+      "case_id": "dvblab-018",
+      "repository": "dvblab",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/routes/transaction_routes.py",
+      "matched_lines": [
+        33
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "dvblab-019",
+      "repository": "dvblab",
+      "logic_class": "race_condition_toctou",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/routes/transaction_routes.py",
+      "matched_lines": [
+        30
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "threatbyte-012",
+      "repository": "threatbyte",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "server/routes.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vampi-004",
+      "repository": "vampi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "api_views/users.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vulpy-030",
+      "repository": "vulpy",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": false,
+      "file_path": "bad/mod_api.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vulpy-037",
+      "repository": "vulpy",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": false,
+      "file_path": "bad/mod_api.py",
+      "matched_lines": [],
+      "ground_truth_source": "our-scanner"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-123",
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [
+        46
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-192",
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-126",
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/dispatch_operations.py",
+      "matched_lines": [
+        46
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-023",
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/seller_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-189",
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/seller_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi-fp-003",
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/routers/payouts.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-025",
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/tenant_operations.py",
+      "matched_lines": [
+        25
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-190",
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/tenant_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-claude-code-seeded-v2-property-management-fastapi-fp-002",
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": true,
+      "file_path": "backend/app/routes/payments.py",
+      "matched_lines": [
+        75
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-029",
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/support_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-claude-code-seeded-v2-support-desk-fastapi-fp-004",
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/deps.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-135",
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "app/loan_operations.py",
+      "matched_lines": [
+        46
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-203",
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "app/loan_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-high-seeded-v2-fintech-lending-fastapi-fp-002",
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "app/main.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-138",
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/dispatch_operations.py",
+      "matched_lines": [
+        46
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi-fp-002",
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-083",
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/seller_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-200",
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/seller_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi-fp-004",
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": true,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [
+        1282,
+        1287
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-085",
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/tenant_operations.py",
+      "matched_lines": [
+        25
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-201",
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/tenant_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-089",
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "app/support_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-high-seeded-v2-support-desk-fastapi-fp-002",
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": true,
+      "file_path": "app/routers/tickets.py",
+      "matched_lines": [
+        141
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-037",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [
+        25
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-128",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [
+        49
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-199",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-seeded-v2-fintech-lending-fastapi-fp-003",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-seeded-v2-fintech-lending-fastapi-enrich-016",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "insecure_workflow",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-seeded-v2-fintech-lending-fastapi-enrich-017",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "insecure_workflow",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [
+        660
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-049",
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/dispatch_operations.py",
+      "matched_lines": [
+        25
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-131",
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/dispatch_operations.py",
+      "matched_lines": [
+        49
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-seeded-v2-logistics-dispatch-fastapi-fp-003",
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": true,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [
+        657,
+        665
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-053",
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "app/seller_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-132",
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "app/seller_operations.py",
+      "matched_lines": [
+        45
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-195",
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/tenant_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-codex-seeded-v2-property-management-fastapi-fp-002",
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": true,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [
+        623
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-059",
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/support_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-196",
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/support_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-097",
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [
+        25
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-140",
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [
+        49
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-209",
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/loan_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-kimi-code-seeded-v2-fintech-lending-fastapi-fp-003",
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/routers/borrowers.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-109",
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/dispatch_operations.py",
+      "matched_lines": [
+        25
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-143",
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/dispatch_operations.py",
+      "matched_lines": [
+        49
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi-fp-003",
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/routers/jobs.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-113",
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/seller_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-144",
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": true,
+      "file_path": "backend/app/seller_operations.py",
+      "matched_lines": [
+        45
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-205",
+      "repository": "vc-kimi-code-seeded-v2-property-management-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/tenant_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-kimi-code-seeded-v2-property-management-fastapi-fp-003",
+      "repository": "vc-kimi-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": false,
+      "file_path": "backend/app/routers/leases.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-119",
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/support_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-206",
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/support_operations.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi-fp-002",
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "expected": false,
+      "detected": true,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [
+        880
+      ],
+      "ground_truth_source": "manual_review"
+    },
+    {
+      "case_id": "vc-kimi-code-seeded-v2-support-desk-fastapi-enrich-005",
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "insecure_workflow",
+      "expected": true,
+      "detected": false,
+      "file_path": "backend/app/main.py",
+      "matched_lines": [],
+      "ground_truth_source": "manual_review"
+    }
+  ],
+  "unreviewed_candidates": [
+    {
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "file_path": "app/tests/mixins/auth_route_test_mixin.py",
+      "line": 37,
+      "function": "add_messages_middleware"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "file_path": "app/tests/views/test_users.py",
+      "line": 314,
+      "function": "test_sql_injection_vulnerability"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "file_path": "app/tests/vulnerabilities/test_a2_credential_enumeration.py",
+      "line": 30,
+      "function": "test_bad_password"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "file_path": "app/tests/vulnerabilities/test_a2_credential_enumeration.py",
+      "line": 40,
+      "function": "test_bad_email"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/admin/views.py",
+      "line": 24,
+      "function": "admin_get_user"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/admin/views.py",
+      "line": 42,
+      "function": "admin_delete_user"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/admin/views.py",
+      "line": 56,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/admin/views.py",
+      "line": 66,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/api/mobile/views.py",
+      "line": 28,
+      "function": "api_id"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/api/users/views.py",
+      "line": 17,
+      "function": "api_index"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/api/users/views.py",
+      "line": 22,
+      "function": "api_index"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/api/users/views.py",
+      "line": 35,
+      "function": "api"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "insecure_workflow",
+      "file_path": "app/views/password_resets/views.py",
+      "line": 57,
+      "function": "reset_password_handler"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/password_resets/views.py",
+      "line": 66,
+      "function": "confirm_token"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/users/paid_time_off/views.py",
+      "line": 23,
+      "function": "index"
+    },
+    {
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/views/users/work_info/views.py",
+      "line": 12,
+      "function": "user_work_info_index"
+    },
+    {
+      "repository": "dvblab",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/routes/auth_routes.py",
+      "line": 144,
+      "function": "update_password"
+    },
+    {
+      "repository": "dvblab",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/routes/auth_routes.py",
+      "line": 146,
+      "function": "update_password"
+    },
+    {
+      "repository": "dvblab",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/routes/transaction_routes.py",
+      "line": 17,
+      "function": "transfer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/dependencies.py",
+      "line": 65,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit_log.py",
+      "line": 33,
+      "function": "list_audit"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit_log.py",
+      "line": 39,
+      "function": "list_audit"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 131,
+      "function": "logout"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 274,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 277,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/borrowers.py",
+      "line": 83,
+      "function": "get_borrower"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/borrowers.py",
+      "line": 98,
+      "function": "update_borrower"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/borrowers.py",
+      "line": 131,
+      "function": "list_payment_accounts"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/borrowers.py",
+      "line": 146,
+      "function": "add_payment_account"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/borrowers.py",
+      "line": 182,
+      "function": "remove_payment_account"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/borrowers.py",
+      "line": 186,
+      "function": "remove_payment_account"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "race_condition_toctou",
+      "file_path": "backend/app/routers/imports_exports.py",
+      "line": 271,
+      "function": "import_borrower_leads"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/integrations.py",
+      "line": 33,
+      "function": "list_keys"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/integrations.py",
+      "line": 121,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 23,
+      "function": "list_notifications"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 53,
+      "function": "mark_all_read"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 65,
+      "function": "update_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 88,
+      "function": "delete_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 144,
+      "function": "update_doc_type"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 93,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 107,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 118,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 126,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 134,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin_misc.py",
+      "line": 66,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin_misc.py",
+      "line": 82,
+      "function": "trigger_test_webhook"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin_misc.py",
+      "line": 99,
+      "function": "list_deliveries"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin_misc.py",
+      "line": 150,
+      "function": "revoke_api_key"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 144,
+      "function": "logout"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 195,
+      "function": "request_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 225,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 233,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 236,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 239,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 50,
+      "function": "create_customer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 72,
+      "function": "get_customer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 87,
+      "function": "update_customer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 102,
+      "function": "update_customer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 120,
+      "function": "delete_customer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 123,
+      "function": "delete_customer"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 134,
+      "function": "list_locations"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 138,
+      "function": "list_locations"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 149,
+      "function": "create_location"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 152,
+      "function": "create_location"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 78,
+      "function": "list_incidents"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 129,
+      "function": "get_incident"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 137,
+      "function": "get_incident"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 148,
+      "function": "get_incident"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 162,
+      "function": "update_incident"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 169,
+      "function": "update_incident"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 191,
+      "function": "update_incident"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 80,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 82,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 88,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 268,
+      "function": "change_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 288,
+      "function": "change_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 35,
+      "function": "mark_read"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/proofs.py",
+      "line": 52,
+      "function": "upload_proof"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/public_api.py",
+      "line": 47,
+      "function": "api_list_jobs"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/public_api.py",
+      "line": 60,
+      "function": "api_update_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/public_api.py",
+      "line": 70,
+      "function": "api_update_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/regions.py",
+      "line": 50,
+      "function": "update_region"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/regions.py",
+      "line": 71,
+      "function": "delete_region"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/regions.py",
+      "line": 75,
+      "function": "delete_region"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/regions.py",
+      "line": 76,
+      "function": "delete_region"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 57,
+      "function": "list_routes"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 59,
+      "function": "list_routes"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 101,
+      "function": "get_route"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/service_types.py",
+      "line": 46,
+      "function": "update_service_type"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 80,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 94,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 115,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 121,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 159,
+      "function": "enable_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 179,
+      "function": "set_dispatcher_regions"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 184,
+      "function": "set_dispatcher_regions"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 187,
+      "function": "set_dispatcher_regions"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 28,
+      "function": "list_workers"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 46,
+      "function": "create_worker"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 53,
+      "function": "create_worker"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 78,
+      "function": "get_worker"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 94,
+      "function": "update_worker"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 100,
+      "function": "update_worker"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/deps.py",
+      "line": 36,
+      "function": "_user_from_session"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 207,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 218,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 221,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 111,
+      "function": "get_dispute"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 124,
+      "function": "list_messages"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 130,
+      "function": "list_messages"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 191,
+      "function": "upload_evidence"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 236,
+      "function": "list_evidence"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 240,
+      "function": "list_evidence"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 252,
+      "function": "update_dispute"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 258,
+      "function": "update_dispute"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/disputes.py",
+      "line": 264,
+      "function": "update_dispute"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/imports_exports.py",
+      "line": 164,
+      "function": "export_orders"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/imports_exports.py",
+      "line": 227,
+      "function": "export_inventory"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "race_condition_toctou",
+      "file_path": "backend/app/routers/orders.py",
+      "line": 97,
+      "function": "place_order"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/orders.py",
+      "line": 205,
+      "function": "update_order_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/orders.py",
+      "line": 253,
+      "function": "buyer_cancel"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/payouts.py",
+      "line": 41,
+      "function": "admin_list"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/payouts.py",
+      "line": 71,
+      "function": "update_payout"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/payouts.py",
+      "line": 89,
+      "function": "update_payout"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 70,
+      "function": "list_storefront_products"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 72,
+      "function": "list_storefront_products"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 83,
+      "function": "public_product_detail"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 123,
+      "function": "create_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 173,
+      "function": "update_my_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 266,
+      "function": "upload_product_image"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 296,
+      "function": "delete_product_image"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 299,
+      "function": "delete_product_image"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 342,
+      "function": "moderate_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/products.py",
+      "line": 371,
+      "function": "flag_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 22,
+      "function": "reviews_for_product"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 38,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 45,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 48,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 79,
+      "function": "vendor_respond"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 82,
+      "function": "vendor_respond"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 116,
+      "function": "moderate_review"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reviews.py",
+      "line": 134,
+      "function": "flag_review"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/vendors.py",
+      "line": 108,
+      "function": "get_public_vendor"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/vendors.py",
+      "line": 141,
+      "function": "admin_update_vendor"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/webhooks.py",
+      "line": 63,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/audit.py",
+      "line": 34,
+      "function": "list_audit"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/auth.py",
+      "line": 170,
+      "function": "reset_complete"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/auth.py",
+      "line": 174,
+      "function": "reset_complete"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 80,
+      "function": "list_documents"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 82,
+      "function": "list_documents"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 84,
+      "function": "list_documents"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 86,
+      "function": "list_documents"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 112,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 120,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 127,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 132,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 137,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 184,
+      "function": "get_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/documents.py",
+      "line": 194,
+      "function": "download_document"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/imports_exports.py",
+      "line": 208,
+      "function": "export_rent_roll"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/inspections.py",
+      "line": 55,
+      "function": "list_inspections"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/inspections.py",
+      "line": 59,
+      "function": "list_inspections"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/inspections.py",
+      "line": 84,
+      "function": "get_inspection"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/integrations.py",
+      "line": 46,
+      "function": "revoke_key"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/leases.py",
+      "line": 59,
+      "function": "list_leases"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/leases.py",
+      "line": 61,
+      "function": "list_leases"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/leases.py",
+      "line": 90,
+      "function": "get_lease"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/messages.py",
+      "line": 64,
+      "function": "send_message"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/messages.py",
+      "line": 99,
+      "function": "get_thread"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/messages.py",
+      "line": 105,
+      "function": "get_thread"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/messages.py",
+      "line": 112,
+      "function": "get_thread"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/payments.py",
+      "line": 49,
+      "function": "list_payments"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/properties.py",
+      "line": 84,
+      "function": "update_property"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/properties.py",
+      "line": 97,
+      "function": "delete_property"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/properties.py",
+      "line": 130,
+      "function": "list_units"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/properties.py",
+      "line": 170,
+      "function": "delete_unit"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tenants.py",
+      "line": 76,
+      "function": "get_tenant"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tenants.py",
+      "line": 89,
+      "function": "get_tenant"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tenants.py",
+      "line": 101,
+      "function": "update_tenant"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 90,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 92,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 147,
+      "function": "get_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 158,
+      "function": "get_ticket_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 168,
+      "function": "update_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 190,
+      "function": "change_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 215,
+      "function": "assign_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 220,
+      "function": "assign_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 237,
+      "function": "list_comments"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/tickets.py",
+      "line": 252,
+      "function": "add_comment"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/users.py",
+      "line": 71,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/users.py",
+      "line": 83,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/users.py",
+      "line": 116,
+      "function": "assign_manager_properties"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/users.py",
+      "line": 119,
+      "function": "assign_manager_properties"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/users.py",
+      "line": 129,
+      "function": "deactivate_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 83,
+      "function": "create_queue"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 179,
+      "function": "toggle_webhook"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 195,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 209,
+      "function": "webhook_deliveries"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 213,
+      "function": "webhook_deliveries"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 259,
+      "function": "revoke_api_key"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit.py",
+      "line": 31,
+      "function": "list_audit_entries"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit.py",
+      "line": 37,
+      "function": "list_audit_entries"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 187,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 191,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 194,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 76,
+      "function": "create_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 88,
+      "function": "create_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 129,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 132,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 155,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 174,
+      "function": "delete_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/escalations.py",
+      "line": 177,
+      "function": "delete_escalation"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/kb.py",
+      "line": 55,
+      "function": "get_public_article"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/kb.py",
+      "line": 95,
+      "function": "get_article"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/kb.py",
+      "line": 114,
+      "function": "create_article"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/kb.py",
+      "line": 143,
+      "function": "update_article"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/kb.py",
+      "line": 176,
+      "function": "update_article_status"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/kb.py",
+      "line": 204,
+      "function": "delete_article"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 24,
+      "function": "list_notifications"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 33,
+      "function": "mark_read"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 46,
+      "function": "mark_all_read"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/organizations.py",
+      "line": 33,
+      "function": "list_organizations"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/organizations.py",
+      "line": 43,
+      "function": "get_organization"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/public_api.py",
+      "line": 80,
+      "function": "api_create_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/public_api.py",
+      "line": 87,
+      "function": "api_create_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reports.py",
+      "line": 167,
+      "function": "escalations_export_csv"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/tickets.py",
+      "line": 145,
+      "function": "create_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/tickets.py",
+      "line": 158,
+      "function": "create_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/tickets.py",
+      "line": 167,
+      "function": "create_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/tickets.py",
+      "line": 171,
+      "function": "create_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/tickets.py",
+      "line": 313,
+      "function": "update_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/tickets.py",
+      "line": 321,
+      "function": "update_ticket"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 39,
+      "function": "list_users"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 41,
+      "function": "list_users"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 85,
+      "function": "create_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 88,
+      "function": "create_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 109,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 123,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 128,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 142,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 150,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 174,
+      "function": "disable_user"
+    },
+    {
+      "repository": "vc-claude-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 190,
+      "function": "enable_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "app/main.py",
+      "line": 703,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 915,
+      "function": "update_application"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 1237,
+      "function": "mark_notification_read"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 1247,
+      "function": "get_borrower"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 1268,
+      "function": "update_borrower"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/security.py",
+      "line": 85,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 128,
+      "function": "get_current_session"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 520,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/main.py",
+      "line": 523,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 527,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 642,
+      "function": "list_locations"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 684,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 686,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 688,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 701,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 778,
+      "function": "update_job"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 802,
+      "function": "delete_job"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 830,
+      "function": "assign_job"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 911,
+      "function": "list_messages"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1047,
+      "function": "list_incidents"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1050,
+      "function": "list_incidents"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1142,
+      "function": "list_routes"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1144,
+      "function": "list_routes"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1257,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1296,
+      "function": "admin_audit"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1369,
+      "function": "mark_notification_read"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1403,
+      "function": "export_routes"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1441,
+      "function": "export_completions"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1618,
+      "function": "test_webhook"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1672,
+      "function": "integration_status_update"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1675,
+      "function": "integration_status_update"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/deps.py",
+      "line": 25,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 509,
+      "function": "optional_user_from_request"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/main.py",
+      "line": 719,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "file_path": "backend/app/main.py",
+      "line": 732,
+      "function": "update_profile"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 807,
+      "function": "update_category"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 845,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 856,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 876,
+      "function": "admin_support_note"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "file_path": "backend/app/main.py",
+      "line": 918,
+      "function": "update_vendor_profile"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 974,
+      "function": "admin_verify_vendor"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1025,
+      "function": "list_products"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1058,
+      "function": "product_detail"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1106,
+      "function": "vendor_create_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1133,
+      "function": "vendor_update_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "mass_assignment",
+      "file_path": "backend/app/main.py",
+      "line": 1142,
+      "function": "vendor_update_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1161,
+      "function": "vendor_submit_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1188,
+      "function": "vendor_archive_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1232,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1247,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1254,
+      "function": "upload_document"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "race_condition_toctou",
+      "file_path": "backend/app/main.py",
+      "line": 1399,
+      "function": "checkout"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1568,
+      "function": "vendor_review_response"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1585,
+      "function": "create_dispute"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1605,
+      "function": "create_dispute"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1680,
+      "function": "update_dispute_status"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1696,
+      "function": "update_dispute_status"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1742,
+      "function": "moderate_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1750,
+      "function": "moderate_product"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1766,
+      "function": "moderate_review"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 1834,
+      "function": "admin_update_payout"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 2023,
+      "function": "mark_notification_read"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 2077,
+      "function": "revoke_vendor_api_key"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 2148,
+      "function": "create_webhook"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 2178,
+      "function": "test_webhook"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/auth.py",
+      "line": 141,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/routes/auth.py",
+      "line": 144,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "mass_assignment",
+      "file_path": "backend/app/routes/inspections.py",
+      "line": 97,
+      "function": "update_inspection"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/properties.py",
+      "line": 88,
+      "function": "update_property"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/properties.py",
+      "line": 118,
+      "function": "create_building"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routes/users.py",
+      "line": 72,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/security.py",
+      "line": 84,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/deps.py",
+      "line": 54,
+      "function": "api_key_auth"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/admin.py",
+      "line": 81,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/admin.py",
+      "line": 142,
+      "function": "create_queue"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/admin.py",
+      "line": 332,
+      "function": "revoke_api_key"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/admin.py",
+      "line": 360,
+      "function": "toggle_webhook"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/core.py",
+      "line": 79,
+      "function": "mark_notification_read"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/escalations.py",
+      "line": 37,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/escalations.py",
+      "line": 46,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/escalations.py",
+      "line": 57,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/integrations.py",
+      "line": 72,
+      "function": "update_ticket_status_from_api"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/kb.py",
+      "line": 70,
+      "function": "update_article"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/kb.py",
+      "line": 96,
+      "function": "delete_article"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 70,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 72,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 74,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 152,
+      "function": "update_ticket"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 180,
+      "function": "update_ticket"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 191,
+      "function": "update_ticket"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 213,
+      "function": "claim_ticket"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 228,
+      "function": "add_reply"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 253,
+      "function": "add_internal_note"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 274,
+      "function": "upload_attachment"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 295,
+      "function": "download_attachment"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 320,
+      "function": "request_escalation"
+    },
+    {
+      "repository": "vc-codex-high-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/routers/tickets.py",
+      "line": 345,
+      "function": "delete_ticket"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 552,
+      "function": "create_application"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 735,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 815,
+      "function": "integration_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 286,
+      "function": "register"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 333,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/main.py",
+      "line": 334,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 413,
+      "function": "create_job"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 418,
+      "function": "create_job"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 518,
+      "function": "delete_job"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 585,
+      "function": "download_proof"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 635,
+      "function": "update_incident"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 758,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 910,
+      "function": "test_webhook"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 154,
+      "function": "update_product"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 171,
+      "function": "product_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 190,
+      "function": "upload_product_image"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "race_condition_toctou",
+      "file_path": "app/main.py",
+      "line": 204,
+      "function": "checkout"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 253,
+      "function": "update_order_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 269,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 273,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 301,
+      "function": "moderate_review"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 312,
+      "function": "open_dispute"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 345,
+      "function": "dispute_detail"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 355,
+      "function": "dispute_message"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 370,
+      "function": "dispute_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 385,
+      "function": "upload_evidence"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 396,
+      "function": "download_file"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 400,
+      "function": "download_file"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 403,
+      "function": "download_file"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 429,
+      "function": "admin_update_user"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 447,
+      "function": "admin_vendor_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "app/main.py",
+      "line": 561,
+      "function": "integration_order_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 274,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "insecure_workflow",
+      "file_path": "backend/app/main.py",
+      "line": 275,
+      "function": "confirm_password_reset"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 348,
+      "function": "create_unit"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 389,
+      "function": "get_lease"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 400,
+      "function": "update_lease_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 433,
+      "function": "payment_receipt"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 505,
+      "function": "assign_ticket"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 530,
+      "function": "update_ticket_status"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 649,
+      "function": "create_inspection"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 663,
+      "function": "update_inspection"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 729,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 739,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 851,
+      "function": "ticket_status_json"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 251,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 253,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 255,
+      "function": "list_tickets"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 307,
+      "function": "ticket_detail"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 338,
+      "function": "ticket_detail"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 383,
+      "function": "add_message"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 415,
+      "function": "upload_attachment"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 452,
+      "function": "create_escalation"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 666,
+      "function": "integration_create_ticket"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/security.py",
+      "line": 38,
+      "function": "clear_session"
+    },
+    {
+      "repository": "vc-codex-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/security.py",
+      "line": 46,
+      "function": "user_from_request"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/core/security.py",
+      "line": 54,
+      "function": "get_current_user_from_request"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/api_keys.py",
+      "line": 42,
+      "function": "revoke_api_key"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/api_keys.py",
+      "line": 66,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/api_keys.py",
+      "line": 84,
+      "function": "get_application_status_api"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 76,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 22,
+      "function": "mark_notification_read"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/auth.py",
+      "line": 94,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 73,
+      "function": "assign_dispatcher_region"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 94,
+      "function": "remove_dispatcher_region"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 136,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/admin.py",
+      "line": 161,
+      "function": "mark_notification_read"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit_log.py",
+      "line": 31,
+      "function": "list_audit_logs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit_log.py",
+      "line": 33,
+      "function": "list_audit_logs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/audit_log.py",
+      "line": 43,
+      "function": "list_job_audit_logs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 112,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 48,
+      "function": "get_customer"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 64,
+      "function": "list_customer_locations"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/customers.py",
+      "line": 77,
+      "function": "create_location"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 72,
+      "function": "list_incidents"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 120,
+      "function": "get_incident"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 129,
+      "function": "get_incident"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 138,
+      "function": "get_incident"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/incidents.py",
+      "line": 163,
+      "function": "update_incident"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 75,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 77,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 79,
+      "function": "list_jobs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 103,
+      "function": "create_job"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 155,
+      "function": "update_job"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 188,
+      "function": "update_job_status"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 202,
+      "function": "update_job_status"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 204,
+      "function": "update_job_status"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/jobs.py",
+      "line": 237,
+      "function": "delete_job"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/messages.py",
+      "line": 49,
+      "function": "list_messages"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/proofs.py",
+      "line": 123,
+      "function": "delete_proof"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reports.py",
+      "line": 42,
+      "function": "export_jobs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/reports.py",
+      "line": 79,
+      "function": "export_routes"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 44,
+      "function": "list_routes"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 46,
+      "function": "list_routes"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 58,
+      "function": "create_route"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 79,
+      "function": "get_route"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 101,
+      "function": "add_stop"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 105,
+      "function": "add_stop"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 113,
+      "function": "add_stop"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 135,
+      "function": "reorder_stops"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 139,
+      "function": "reorder_stops"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 147,
+      "function": "reorder_stops"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 166,
+      "function": "delete_route"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 170,
+      "function": "delete_route"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/routes.py",
+      "line": 176,
+      "function": "delete_route"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 42,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 92,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 116,
+      "function": "disable_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/users.py",
+      "line": 132,
+      "function": "enable_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 24,
+      "function": "list_workers"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 47,
+      "function": "get_worker"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 64,
+      "function": "list_worker_jobs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-logistics-dispatch-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/workers.py",
+      "line": 77,
+      "function": "update_worker"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/api_keys.py",
+      "line": 49,
+      "function": "delete_api_key"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/audit_logs.py",
+      "line": 27,
+      "function": "list_audit_logs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/disputes.py",
+      "line": 20,
+      "function": "create_dispute"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/disputes.py",
+      "line": 26,
+      "function": "create_dispute"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/disputes.py",
+      "line": 159,
+      "function": "add_internal_note"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/disputes.py",
+      "line": 183,
+      "function": "resolve_dispute"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/disputes.py",
+      "line": 196,
+      "function": "resolve_dispute"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/disputes.py",
+      "line": 213,
+      "function": "update_dispute_status"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/files.py",
+      "line": 84,
+      "function": "get_file"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/notifications.py",
+      "line": 33,
+      "function": "mark_read"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "race_condition_toctou",
+      "file_path": "backend/app/api/orders.py",
+      "line": 35,
+      "function": "create_order"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/payouts.py",
+      "line": 20,
+      "function": "create_payout"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/payouts.py",
+      "line": 75,
+      "function": "list_all_payouts"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/payouts.py",
+      "line": 95,
+      "function": "update_payout_status"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/products.py",
+      "line": 23,
+      "function": "create_product"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/products.py",
+      "line": 91,
+      "function": "list_storefront"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/products.py",
+      "line": 104,
+      "function": "get_product"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/products.py",
+      "line": 132,
+      "function": "moderate_product"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 16,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 23,
+      "function": "create_review"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 78,
+      "function": "list_product_reviews"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 107,
+      "function": "get_review"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 114,
+      "function": "moderate_review"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 135,
+      "function": "respond_to_review"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/reviews.py",
+      "line": 139,
+      "function": "respond_to_review"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/users.py",
+      "line": 55,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/users.py",
+      "line": 68,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/vendors.py",
+      "line": 22,
+      "function": "create_vendor"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/vendors.py",
+      "line": 101,
+      "function": "get_vendor"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/api/vendors.py",
+      "line": 114,
+      "function": "update_vendor"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-marketplace-commerce-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/dependencies.py",
+      "line": 37,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/auth.py",
+      "line": 80,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 80,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/auth.py",
+      "line": 82,
+      "function": "password_reset_confirm"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-property-management-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/routers/notifications.py",
+      "line": 42,
+      "function": "mark_read"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/auth.py",
+      "line": 92,
+      "function": "get_current_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 112,
+      "function": "list_users"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 139,
+      "function": "get_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 147,
+      "function": "update_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 163,
+      "function": "disable_user"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 189,
+      "function": "get_organization"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 212,
+      "function": "update_team"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 224,
+      "function": "add_team_member"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 225,
+      "function": "add_team_member"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 679,
+      "function": "update_escalation"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 852,
+      "function": "list_audit_logs"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 904,
+      "function": "delete_webhook"
+    },
+    {
+      "repository": "vc-kimi-code-seeded-v2-support-desk-fastapi",
+      "logic_class": "missing_authz_idor",
+      "file_path": "backend/app/main.py",
+      "line": 949,
+      "function": "delete_api_key"
+    }
+  ]
+}

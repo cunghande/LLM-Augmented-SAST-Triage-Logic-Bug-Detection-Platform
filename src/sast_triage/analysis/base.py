@@ -124,6 +124,13 @@ class AnalysisBackend(Protocol):
     ) -> tuple[NormalizedFinding, ...]:
         """Return additional bounded cross-file findings."""
 
+    def discover_logic_findings(
+        self,
+        detector: str,
+        existing: tuple[NormalizedFinding, ...],
+    ) -> tuple[NormalizedFinding, ...]:
+        """Return findings from an explicitly selected logic detector."""
+
     def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence | None:
         """Return local evidence, or None when the native context engine owns analysis."""
 

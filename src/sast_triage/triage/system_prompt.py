@@ -3,10 +3,10 @@
 
 def build_system_message(model_version: str, prompt_version: str) -> str:
     """Build the provider rubric without repository-controlled content."""
-    v10_calibration = ""
-    if prompt_version == "triage-prompt-v10":
-        v10_calibration = (
-            "\n\nSTRICT EVIDENCE CALIBRATION (v10):\n"
+    evidence_calibration = ""
+    if prompt_version in {"triage-prompt-v10", "triage-prompt-v11"}:
+        evidence_calibration = (
+            f"\n\nSTRICT EVIDENCE CALIBRATION ({prompt_version.rsplit('-', 1)[-1]}):\n"
             "9. Never choose LIKELY_TP from a rule name, scanner severity, or a suspicious "
             "API alone. For source-to-sink mechanisms (SQL, command, path, deserialization, "
             "XSS output), LIKELY_TP requires the Evidence Card to explicitly establish the "
@@ -24,6 +24,17 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
             "12. For LIKELY_FP, cite a concrete safe final value, effective control, or "
             "negative taint proof. Otherwise choose NEEDS_REVIEW. Repeated scanner findings "
             "are not proof that any one finding is a vulnerability.\n"
+            + (
+                "13. For logic_analysis, evaluate the named logic class only. Require a "
+                "complete source-guard-sink trace. Distinguish authentication from object "
+                "authorization; explicit field allowlists from blanket binding; ordinary "
+                "validation from atomicity; numeric parsing from domain bounds; and an "
+                "authenticated action from a valid workflow transition. A detected guard "
+                "counts only when it protects the exact object, field, shared state, domain "
+                "value, or transition in the trace.\n"
+                if prompt_version == "triage-prompt-v11"
+                else ""
+            )
         )
     return (
         "You are a senior application-security reviewer. A SAST scanner has already matched "
@@ -72,5 +83,5 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "should contain 2-6 verifiable observations. Use [] when no information or assumptions "
         f"are missing. model_version must be {model_version!r}; "
         f"prompt_version must be {prompt_version!r}."
-        + v10_calibration
+        + evidence_calibration
     )

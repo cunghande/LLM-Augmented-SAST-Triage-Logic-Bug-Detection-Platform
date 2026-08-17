@@ -90,6 +90,30 @@ def test_module2_discovery_is_explicitly_opt_in() -> None:
     assert enabled_args.module2_discovery is True
 
 
+def test_five_logic_detector_is_explicit_and_uses_prompt_v11() -> None:
+    parser = build_parser()
+    common = [
+        "triage",
+        "--repository",
+        "repo",
+        "--semgrep-json",
+        "semgrep.json",
+        "--gitleaks-json",
+        "gitleaks.json",
+        "--output-dir",
+        "output",
+    ]
+
+    default_args = parser.parse_args(common)
+    enabled_args = parser.parse_args(
+        [*common, "--logic-detector", "python-five-logic"]
+    )
+
+    assert default_args.logic_detector == "off"
+    assert default_args.prompt_version == "triage-prompt-v11"
+    assert enabled_args.logic_detector == "python-five-logic"
+
+
 def test_scan_and_triage_cli_reuses_shared_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -113,6 +137,94 @@ def test_scan_and_triage_cli_reuses_shared_pipeline(tmp_path: Path, monkeypatch:
     metadata = json.loads((output / "run-metadata.json").read_text(encoding="utf-8"))
     assert metadata["cli_mode"] == "scan-and-triage"
     assert json.loads((output / "report.json").read_text(encoding="utf-8"))["results"] == []
+
+
+def test_scan_and_triage_emits_five_logic_classes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "routes.py").write_text(
+        """
+@app.get('/objects/<object_id>')
+def object_detail(object_id, current_user, db):
+    return db.query(Object).get(object_id)
+
+@app.post('/profile')
+def profile_update(request, user):
+    payload = request.get_json()
+    user.update(**payload)
+
+@app.post('/transfer')
+def transfer(amount, current_user, receiver, db):
+    if current_user.balance < amount:
+        raise ValueError()
+    current_user.balance -= amount
+    receiver.balance += amount
+    db.commit()
+
+@app.post('/purchase')
+def purchase(quantity, db):
+    db.create(quantity=quantity)
+    db.commit()
+
+@app.post('/password')
+def change_password(request, user):
+    payload = request.get_json()
+    user.set_password(payload.get('new_password'))
+    user.save()
+""",
+        encoding="utf-8",
+    )
+    output = tmp_path / "output"
+    semgrep = tmp_path / "semgrep.json"
+    semgrep.write_text(json.dumps({"results": []}), encoding="utf-8")
+    gitleaks = tmp_path / "gitleaks.json"
+    gitleaks.write_text("[]", encoding="utf-8")
+    monkeypatch.setattr(
+        "sast_triage.application.artifacts.SemgrepRunner.run",
+        lambda self, repository_root, output_dir: ScannerRunResult(
+            ScannerType.SEMGREP, semgrep, (), True, 0
+        ),
+    )
+    monkeypatch.setattr(
+        "sast_triage.application.artifacts.GitleaksRunner.run",
+        lambda self, repository_root, output_dir: ScannerRunResult(
+            ScannerType.GITLEAKS, gitleaks, (), True, 0
+        ),
+    )
+
+    exit_code = main(
+        [
+            "scan-and-triage",
+            "--repository",
+            str(repo),
+            "--output-dir",
+            str(output),
+            "--analysis-backend",
+            "native",
+            "--module2",
+            "--logic-detector",
+            "python-five-logic",
+            "--provider",
+            "fake",
+        ]
+    )
+
+    assert exit_code == EXIT_SUCCESS
+    report = json.loads((output / "report.json").read_text(encoding="utf-8"))
+    classes = {
+        item["finding"]["metadata"]["logic_class"] for item in report["results"]
+    }
+    assert classes == {
+        "missing_authz_idor",
+        "mass_assignment",
+        "race_condition_toctou",
+        "business_rule_bypass",
+        "insecure_workflow",
+    }
+    assert all(not item["processing_errors"] for item in report["results"])
 
 
 def test_cli_checkpoints_modal_exhaustion_and_resumes_with_ollama(

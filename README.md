@@ -17,6 +17,9 @@ Markdown.
 - Module 2: index Python theo component, symbol, call-site và `FunctionSummary`
   source-free (parameter→sink, parameter→return, control); trace source-to-sink
   cross-file có giới hạn và nhận diện entrypoint Flask/FastAPI/Django thông dụng.
+- Sprint 2: detector `python-five-logic` tạo candidate cho missing authz/IDOR,
+  mass assignment, race/TOCTOU, business-rule bypass và insecure workflow; mỗi
+  candidate có trace, risk factors và remediation an toàn.
 - Xử lý tuần tự trong Sprint 1; không chạy finding song song.
 - Notebook `.ipynb` chưa được phân tích trực tiếp; cần chuyển sang `.py` trước.
 
@@ -211,9 +214,9 @@ python -m pytest -p no:cacheprovider -q --basetemp=.pytest-tmp-local
 python -m ruff check src tests modal_apps
 ```
 
-Trạng thái kiểm tra gần nhất: `446 passed, 2 skipped`; Ruff đạt. Validation thật
-với Sequential-Recommender xử lý thành công 4/4 finding, 0 triage error, binding
-`VERIFIED`, exit code `0`.
+Trạng thái test và benchmark gần nhất được ghi tại
+[`docs/sprint-2-scope.md`](docs/sprint-2-scope.md) để tránh giữ số liệu cũ ở nhiều
+nơi.
 
 ## Nguyên tắc bảo mật
 
@@ -228,6 +231,7 @@ với Sequential-Recommender xử lý thành công 4/4 finding, 0 triage error, 
 ## Tài liệu
 
 - [Hướng dẫn CLI đầy đủ](docs/cli-usage.md)
+- [Phạm vi và benchmark Sprint 2](docs/sprint-2-scope.md)
 - [Kế hoạch triển khai hiện tại](docs/current-project-plan.md)
 - [Threat model](docs/threat-model.md)
 - [Thiết lập và chạy Joern CPG](docs/joern-analysis.md)
