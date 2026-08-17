@@ -20,7 +20,6 @@ from sast_triage.context.framework_registry import (
 from sast_triage.models import FindingType, NormalizedFinding, ScannerType, Severity
 
 MODULE2_CONFIG_ID = f"python-cross-file-evidence-v2-{FRAMEWORK_REGISTRY_VERSION}"
-FASTAPI_AUTHZ_CONFIG_ID = "module2-fastapi-missing-function-authz-v2"
 _PROJECT_MARKERS = ("pyproject.toml", "setup.cfg", "setup.py")
 _SKIPPED_PARTS = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__", ".tox"})
 _SOURCE_SUFFIXES = (
@@ -106,450 +105,6 @@ def _walk_function(function: ast.FunctionDef | ast.AsyncFunctionDef) -> tuple[as
             continue
         stack.extend(reversed(list(ast.iter_child_nodes(node))))
     return tuple(collected)
-
-
-_FASTAPI_ROUTE_METHODS = frozenset({"get", "post", "put", "patch", "delete", "options", "head", "trace", "api_route"})
-_FASTAPI_DEPENDENCY_CALLS = frozenset({"depends", "security"})
-_AUTHN_TOKENS = frozenset({
-    "authenticate", "authentication", "authn", "current_user", "current_active_user",
-    "get_current_user", "get_current_active_user", "verified_user", "get_verified_user",
-    "jwt", "oauth", "session", "token",
-})
-_AUTHZ_TOKENS = frozenset({
-    "authorize", "authorization", "authz", "admin", "role", "permission", "permissions",
-    "scope", "scopes", "ownership", "owner", "tenant", "policy", "access", "allowed",
-    "user_id", "owner_id", "tenant_id", "is_allowed", "can_", "require_admin", "require_role", "require_permission",
-    "check_access", "check_permission", "enforce",
-})
-_SENSITIVE_ROUTE_TOKENS = frozenset({
-    "admin", "internal", "private", "user", "users", "profile", "profiles", "resource",
-    "resources", "order", "orders", "account", "accounts", "payment", "payments", "invoice",
-    "invoices", "credential", "credentials", "secret", "secrets", "settings", "permission",
-    "permissions", "role", "roles",
-})
-_PUBLIC_ROUTE_TOKENS = frozenset({"health", "healthz", "ready", "readiness", "live", "liveness", "login", "signup", "register", "docs", "openapi", "redoc", "ping", "status", "metrics", "public"})
-_SENSITIVE_OPERATION_TOKENS = frozenset({
-    "delete", "remove", "update", "modify", "create", "insert", "save", "transfer", "refund",
-    "approve", "promote", "grant", "revoke", "reset", "password", "credential", "account",
-    "payment", "invoice", "admin", "internal", "private", "secret",
-})
-_SENSITIVE_DATA_TOKENS = frozenset({
-    "address", "balance", "casework", "contact", "credential", "credit", "email",
-    "financial", "health", "medical", "owner", "payment", "payroll", "permission",
-    "phone", "private", "role", "salary", "scope", "secret", "ssn", "tax", "tenant",
-    "token",
-})
-
-
-def _safe_route_path(value: str | None) -> str:
-    """Return a bounded route label without arbitrary repository-controlled text."""
-    if not value:
-        return "<dynamic-route>"
-    allowed = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_{}:-/.[]")
-    cleaned = "".join(character if character in allowed else "?" for character in value.strip())
-    if not cleaned:
-        return "<dynamic-route>"
-    safe_segments: list[str] = []
-    known = _SENSITIVE_ROUTE_TOKENS | _PUBLIC_ROUTE_TOKENS
-    for segment in cleaned.split("/"):
-        if not segment:
-            continue
-        if segment.startswith("{") and segment.endswith("}"):
-            parameter = segment[1:-1].lower()
-            safe_segments.append(
-                "{" + parameter[:32] + "}"
-                if parameter.replace("_", "").isalnum()
-                else "{param}"
-            )
-            continue
-        segment_tokens = set(segment.lower().replace("-", "_").split("_"))
-        if segment.lower() in known or segment_tokens & known:
-            safe_segments.append(segment[:64])
-        else:
-            safe_segments.append("<segment>")
-    return "/" + "/".join(safe_segments) if safe_segments else "<dynamic-route>"
-
-
-def _constant_string(node: ast.AST | None) -> str | None:
-    """Read one short literal string while keeping it local to analysis."""
-    if isinstance(node, ast.Constant) and isinstance(node.value, str):
-        return node.value
-    return None
-
-
-def _name_leaf(name: str | None) -> str:
-    """Return a normalized identifier leaf for analyst-maintained token checks."""
-    return (name or "").rsplit(".", 1)[-1].lower()
-
-
-def _dependency_name(node: ast.AST) -> str | None:
-    """Extract a dependency callable name without retaining arguments or literals."""
-    if not isinstance(node, ast.Call) or _name_leaf(_qualified_name(node.func)) not in _FASTAPI_DEPENDENCY_CALLS:
-        return None
-    if node.args:
-        return _qualified_name(node.args[0])
-    return None
-
-
-def _dependency_names(node: ast.AST | None) -> tuple[str, ...]:
-    """Extract dependency callables from a Depends/Security expression or list."""
-    if node is None:
-        return ()
-    values: list[str] = []
-    candidates = (node, *ast.walk(node))
-    for candidate in candidates:
-        if (
-            isinstance(candidate, ast.Call)
-            and _name_leaf(_qualified_name(candidate.func)) in _FASTAPI_DEPENDENCY_CALLS
-            and (not candidate.args or _qualified_name(candidate.args[0]) is None)
-        ):
-            values.append("<dynamic-dependency>")
-            continue
-        name = _dependency_name(candidate)
-        if name:
-            values.append(name)
-    return tuple(dict.fromkeys(values))
-
-
-def _dependency_from_default(node: ast.AST | None) -> tuple[str, ...]:
-    """Return dependencies declared in a function parameter default."""
-    return _dependency_names(node)
-
-
-def _classify_control(name: str | None) -> tuple[str | None, str | None]:
-    """Classify one maintained authentication/authorization identifier."""
-    lowered = (name or "").lower()
-    leaf = _name_leaf(name)
-    if not lowered:
-        return None, None
-    authz_specific_tokens = _AUTHZ_TOKENS - {"access"}
-    if any(token in lowered or token in leaf for token in authz_specific_tokens):
-        return "authorization", name
-    if "access" in lowered and "token" not in lowered:
-        return "authorization", name
-    if any(token in lowered or token in leaf for token in _AUTHN_TOKENS):
-        return "authentication", name
-    return None, None
-
-
-def _iter_call_names(node: ast.AST) -> tuple[str, ...]:
-    """Project call and attribute names from a function AST without literals."""
-    names: list[str] = []
-    for item in _walk_function(node) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else ast.walk(node):
-        if isinstance(item, ast.Call):
-            name = _qualified_name(item.func)
-            if name:
-                names.append(name)
-        elif isinstance(item, ast.Attribute) and item.attr.lower() in {"role", "roles", "permission", "permissions", "scope", "scopes", "tenant_id", "owner_id", "user_id", "is_admin"}:
-            name = _qualified_name(item)
-            if name:
-                names.append(name)
-    return tuple(dict.fromkeys(names))
-
-
-def _iter_control_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> tuple[str, ...]:
-    """Project only calls and attributes used in enforcement expressions."""
-    names: list[str] = []
-    for item in _walk_function(node):
-        if isinstance(item, ast.Call):
-            name = _qualified_name(item.func)
-            if name:
-                names.append(name)
-        if not isinstance(item, (ast.If, ast.Assert, ast.Compare)):
-            continue
-        expression = item.test if isinstance(item, (ast.If, ast.Assert)) else item
-        for candidate in ast.walk(expression):
-            if not isinstance(candidate, ast.Attribute):
-                continue
-            if candidate.attr.lower() not in {
-                "role", "roles", "permission", "permissions", "scope", "scopes",
-                "tenant_id", "owner_id", "user_id", "is_admin",
-            }:
-                continue
-            name = _qualified_name(candidate)
-            if name:
-                names.append(name)
-    return tuple(dict.fromkeys(names))
-
-
-def _extract_routes(
-    node: ast.FunctionDef | ast.AsyncFunctionDef,
-) -> tuple[tuple[tuple[str, ...], str | None, int, tuple[str, ...]], ...]:
-    """Extract every FastAPI route decorator attached to one handler."""
-    routes: list[tuple[tuple[str, ...], str | None, int, tuple[str, ...]]] = []
-    for decorator in node.decorator_list:
-        if not isinstance(decorator, ast.Call):
-            continue
-        decorator_name = _qualified_name(decorator.func)
-        method_name = _name_leaf(decorator_name)
-        if method_name not in _FASTAPI_ROUTE_METHODS:
-            continue
-        path = _constant_string(decorator.args[0]) if decorator.args else None
-        if method_name == "api_route":
-            methods: list[str] = []
-            for keyword in decorator.keywords:
-                if keyword.arg == "methods" and isinstance(keyword.value, (ast.List, ast.Tuple, ast.Set)):
-                    for item in keyword.value.elts:
-                        literal = _constant_string(item)
-                        if literal:
-                            methods.append(literal.upper()[:16])
-            methods = methods or ["GET"]
-        else:
-            methods = [method_name.upper()]
-        dependencies: list[str] = []
-        for keyword in decorator.keywords:
-            if keyword.arg == "dependencies":
-                dependencies.extend(_dependency_names(keyword.value))
-        for argument in (*node.args.defaults, *node.args.kw_defaults):
-            dependencies.extend(_dependency_from_default(argument))
-        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs):
-            dependencies.extend(_dependency_names(argument.annotation))
-        routes.append(
-            (tuple(dict.fromkeys(methods)), path, decorator.lineno, tuple(dict.fromkeys(dependencies)))
-        )
-    return tuple(routes)
-
-
-def _literal_tokens(node: ast.FunctionDef | ast.AsyncFunctionDef) -> frozenset[str]:
-    """Return bounded identifier-like tokens from local string literals."""
-    tokens: set[str] = set()
-    for item in _walk_function(node):
-        if not isinstance(item, ast.Constant) or not isinstance(item.value, str):
-            continue
-        normalized = "".join(character.lower() if character.isalnum() else " " for character in item.value)
-        tokens.update(part for part in normalized.split() if 2 <= len(part) <= 32)
-    return frozenset(tokens)
-
-
-def _route_sensitivity(
-    raw_route_path: str | None,
-    methods: tuple[str, ...],
-    handler: str,
-    node: ast.FunctionDef | ast.AsyncFunctionDef,
-) -> tuple[str, ...]:
-    """Return deterministic reasons why a route needs authorization analysis."""
-    lowered_path = (raw_route_path or "").lower()
-    path_tokens = {part for part in lowered_path.replace("{", "/").replace("}", "/").replace("-", "_").split("/") if part}
-    handler_tokens = set(handler.lower().replace(".", "_").split("_"))
-    reasons: list[str] = []
-    if any(method in {"POST", "PUT", "PATCH", "DELETE"} for method in methods):
-        reasons.append("mutating_method")
-    if "{" in lowered_path and "}" in lowered_path:
-        reasons.append("resource_identifier")
-    if path_tokens & _SENSITIVE_ROUTE_TOKENS or handler_tokens & _SENSITIVE_ROUTE_TOKENS:
-        reasons.append("sensitive_route")
-    operation_names = {_name_leaf(name) for name in _iter_call_names(node)}
-    if operation_names & _SENSITIVE_OPERATION_TOKENS:
-        reasons.append("sensitive_operation")
-    if _literal_tokens(node) & _SENSITIVE_DATA_TOKENS:
-        reasons.append("sensitive_response_or_branch")
-    if path_tokens & _PUBLIC_ROUTE_TOKENS:
-        return ()
-    if not reasons and all(method == "GET" for method in methods):
-        return ()
-    return tuple(dict.fromkeys(reasons))
-
-
-def _build_fastapi_authorization_endpoints(
-    parsed_files: list[_ParsedFile],
-    functions: tuple[FunctionSymbol, ...],
-    function_nodes: dict[str, ast.FunctionDef | ast.AsyncFunctionDef],
-    *,
-    repository_identifier: str,
-    skipped_files: int,
-) -> tuple[FastAPIAuthorizationEndpoint, ...]:
-    """Build bounded FastAPI route authorization facts from already parsed files."""
-    function_by_simple: dict[str, tuple[str, ...]] = {}
-    for function in functions:
-        function_by_simple.setdefault(function.simple_name, ())
-        function_by_simple[function.simple_name] = (*function_by_simple[function.simple_name], function.qualified_name)
-
-    controls_by_function: dict[str, tuple[tuple[str, str], ...]] = {}
-    for _ in range(max(1, len(functions))):
-        changed = False
-        for function in functions:
-            controls: list[tuple[str, str]] = []
-            for name in _iter_control_names(function_nodes[function.qualified_name]):
-                control_type, symbol = _classify_control(name)
-                if control_type and symbol:
-                    controls.append((control_type, symbol))
-                for candidate in function_by_simple.get(_name_leaf(name), ()):
-                    controls.extend(controls_by_function.get(candidate, ()))
-            projected = tuple(dict.fromkeys(controls))
-            if controls_by_function.get(function.qualified_name) != projected:
-                controls_by_function[function.qualified_name] = projected
-                changed = True
-        if not changed:
-            break
-
-    route_objects: dict[tuple[str, str], tuple[str, ...]] = {}
-    include_dependencies: dict[tuple[str, str], tuple[str, ...]] = {}
-    global_route_dependencies: dict[str, tuple[str, ...]] = {}
-    global_include_dependencies: dict[str, tuple[str, ...]] = {}
-    route_prefixes: dict[tuple[str, str], str | None] = {}
-    include_prefixes: dict[tuple[str, str], str | None] = {}
-    global_route_prefixes: dict[str, str | None] = {}
-    global_include_prefixes: dict[str, str | None] = {}
-    dynamic_auth_boundary: dict[str, bool] = {}
-    for parsed in parsed_files:
-        for statement in parsed.tree.body:
-            if isinstance(statement, (ast.Assign, ast.AnnAssign)):
-                value = statement.value
-                if isinstance(value, ast.Call):
-                    constructor = _name_leaf(_qualified_name(value.func))
-                    if constructor in {"fastapi", "apirouter"}:
-                        dependencies: list[str] = []
-                        for keyword in value.keywords:
-                            if keyword.arg == "dependencies":
-                                dependencies.extend(_dependency_names(keyword.value))
-                        targets = statement.targets if isinstance(statement, ast.Assign) else (statement.target,)
-                        for target in targets:
-                            if isinstance(target, ast.Name):
-                                projected = tuple(dict.fromkeys(dependencies))
-                                route_objects[(parsed.path, target.id)] = projected
-                                previous = global_route_dependencies.get(target.id)
-                                if previous is None:
-                                    global_route_dependencies[target.id] = projected
-                                elif previous != projected:
-                                    global_route_dependencies[target.id] = ("<dynamic-router-dependencies>",)
-                                prefix = next(
-                                    (_constant_string(keyword.value) for keyword in value.keywords if keyword.arg == "prefix"),
-                                    "",
-                                )
-                                route_prefixes[(parsed.path, target.id)] = prefix
-                                previous_prefix = global_route_prefixes.get(target.id)
-                                if target.id not in global_route_prefixes:
-                                    global_route_prefixes[target.id] = prefix
-                                elif previous_prefix != prefix:
-                                    global_route_prefixes[target.id] = None
-            for node in ast.walk(statement):
-                if not isinstance(node, ast.Call):
-                    continue
-                call_name = _qualified_name(node.func)
-                if call_name and _name_leaf(call_name) in {"add_middleware", "middleware"}:
-                    dynamic_auth_boundary[parsed.path] = True
-                if not call_name or _name_leaf(call_name) != "include_router" or not node.args:
-                    continue
-                router_name = _qualified_name(node.args[0])
-                if router_name:
-                    dependencies: list[str] = []
-                    for keyword in node.keywords:
-                        if keyword.arg == "dependencies":
-                            dependencies.extend(_dependency_names(keyword.value))
-                    key = (parsed.path, router_name.rsplit(".", 1)[-1])
-                    projected = tuple(dict.fromkeys(dependencies))
-                    include_dependencies[key] = projected
-                    simple_router_name = router_name.rsplit(".", 1)[-1]
-                    include_prefix = next(
-                        (_constant_string(keyword.value) for keyword in node.keywords if keyword.arg == "prefix"),
-                        "",
-                    )
-                    include_prefixes[key] = include_prefix
-                    previous = global_include_dependencies.get(simple_router_name)
-                    if previous is None:
-                        global_include_dependencies[simple_router_name] = projected
-                    elif previous != projected:
-                        global_include_dependencies[simple_router_name] = ("<dynamic-router-dependencies>",)
-                    previous_prefix = global_include_prefixes.get(simple_router_name)
-                    if simple_router_name not in global_include_prefixes:
-                        global_include_prefixes[simple_router_name] = include_prefix
-                    elif previous_prefix != include_prefix:
-                        global_include_prefixes[simple_router_name] = None
-
-    endpoints: list[FastAPIAuthorizationEndpoint] = []
-    for function in functions:
-        node = function_nodes[function.qualified_name]
-        routes = _extract_routes(node)
-        if not routes:
-            continue
-        for methods, local_route_path, route_line, direct_dependencies in routes:
-            decorator_base = None
-            for decorator in node.decorator_list:
-                if getattr(decorator, "lineno", -1) != route_line or not isinstance(decorator, ast.Call):
-                    continue
-                raw = _qualified_name(decorator.func)
-                decorator_base = raw.rsplit(".", 1)[0] if raw and "." in raw else None
-                break
-            dependencies = list(direct_dependencies)
-            prefix_parts: list[str] = []
-            if decorator_base:
-                object_name = decorator_base.rsplit(".", 1)[-1]
-                dependencies.extend(
-                    route_objects.get((function.file_path, object_name), global_route_dependencies.get(object_name, ()))
-                )
-                dependencies.extend(
-                    include_dependencies.get((function.file_path, object_name), global_include_dependencies.get(object_name, ()))
-                )
-                router_prefix = route_prefixes.get(
-                    (function.file_path, object_name), global_route_prefixes.get(object_name, "")
-                )
-                include_prefix = include_prefixes.get(
-                    (function.file_path, object_name), global_include_prefixes.get(object_name, "")
-                )
-                if include_prefix:
-                    prefix_parts.append(include_prefix)
-                if router_prefix:
-                    prefix_parts.append(router_prefix)
-            raw_route_path = "".join(prefix_parts) + (local_route_path or "") if local_route_path is not None else None
-            route_path = _safe_route_path(raw_route_path)
-            dependencies = list(dict.fromkeys(dependencies))
-            authentication: list[str] = []
-            authorization: list[str] = []
-            unknown_dependency = False
-            for dependency in dependencies:
-                control_type, symbol = _classify_control(dependency)
-                if control_type == "authentication" and symbol:
-                    authentication.append(symbol)
-                elif control_type == "authorization" and symbol:
-                    authorization.append(symbol)
-                else:
-                    candidates = function_by_simple.get(_name_leaf(dependency), ())
-                    if not candidates:
-                        unknown_dependency = True
-                    for candidate in candidates:
-                        for nested_type, nested_symbol in controls_by_function.get(candidate, ()):
-                            if nested_type == "authentication":
-                                authentication.append(nested_symbol)
-                            elif nested_type == "authorization":
-                                authorization.append(nested_symbol)
-            for control_type, symbol in controls_by_function.get(function.qualified_name, ()):
-                if control_type == "authentication":
-                    authentication.append(symbol)
-                else:
-                    authorization.append(symbol)
-            sensitivity = _route_sensitivity(raw_route_path, methods, function.qualified_name, node)
-            if not sensitivity and authorization:
-                sensitivity = ("authorization_control_present",)
-            if not sensitivity:
-                continue
-            dynamic = unknown_dependency or dynamic_auth_boundary.get(function.file_path, False)
-            completeness = "PARTIAL" if skipped_files or raw_route_path is None else "COMPLETE"
-            if authorization:
-                state = "PROTECTED"
-            elif dynamic:
-                state = "UNKNOWN"
-                completeness = "PARTIAL"
-            else:
-                state = "MISSING_AUTHZ_CANDIDATE"
-            endpoints.append(
-                FastAPIAuthorizationEndpoint(
-                    repository_identifier=repository_identifier,
-                    file_path=function.file_path,
-                    handler=function.qualified_name,
-                    handler_line=function.line,
-                    route_line=route_line,
-                    methods=methods,
-                    route_path=route_path,
-                    dependencies=tuple(dependencies),
-                    authentication_controls=tuple(dict.fromkeys(authentication)),
-                    authorization_controls=tuple(dict.fromkeys(authorization)),
-                    sensitivity_reasons=sensitivity,
-                    analysis_state=state,
-                    completeness=completeness,
-                    provenance=("fastapi_route_index", "fastapi_dependency_index"),
-                )
-            )
-    return tuple(endpoints)
 
 
 def _argument_origin(
@@ -649,35 +204,6 @@ class CrossFileTrace:
 
 
 @dataclass(frozen=True, slots=True)
-class FastAPIAuthorizationEndpoint:
-    """Source-free authorization facts for one FastAPI route handler.
-
-    The analyzer deliberately stores names, locations, and bounded
-    classifications only.  It never exposes source text or literal values.
-    """
-
-    repository_identifier: str
-    file_path: str
-    handler: str
-    handler_line: int
-    route_line: int
-    methods: tuple[str, ...]
-    route_path: str
-    dependencies: tuple[str, ...]
-    authentication_controls: tuple[str, ...]
-    authorization_controls: tuple[str, ...]
-    sensitivity_reasons: tuple[str, ...]
-    analysis_state: str
-    completeness: str
-    provenance: tuple[str, ...]
-
-    @property
-    def is_candidate(self) -> bool:
-        """Return whether the endpoint is a complete missing-authorization candidate."""
-        return self.analysis_state == "MISSING_AUTHZ_CANDIDATE"
-
-
-@dataclass(frozen=True, slots=True)
 class RepositoryEvidenceIndex:
     """Immutable structured index shared by sequential Module 1/Module 2 work."""
 
@@ -688,7 +214,6 @@ class RepositoryEvidenceIndex:
     calls: tuple[CallSite, ...]
     sinks: tuple[SinkCandidate, ...]
     skipped_files: int = 0
-    fastapi_endpoints: tuple[FastAPIAuthorizationEndpoint, ...] = ()
 
     def component_for(self, file_path: str) -> str:
         """Return the longest owning monorepo component for a relative path."""
@@ -813,63 +338,6 @@ class RepositoryEvidenceIndex:
             occupied.add((sink.file_path, sink.line))
         return tuple(findings)
 
-    def analyze_fastapi_authorization(self) -> tuple[FastAPIAuthorizationEndpoint, ...]:
-        """Return all bounded FastAPI authorization facts, including protected/unknown routes."""
-        return self.fastapi_endpoints
-
-    def discover_fastapi_authorization_findings(
-        self,
-        existing: tuple[NormalizedFinding, ...] = (),
-    ) -> tuple[NormalizedFinding, ...]:
-        """Discover complete missing function-level authorization candidates."""
-        occupied = {(item.file_path, item.start_line) for item in existing}
-        findings: list[NormalizedFinding] = []
-        for endpoint in self.fastapi_endpoints:
-            location = (endpoint.file_path, endpoint.route_line)
-            if not endpoint.is_candidate or endpoint.completeness != "COMPLETE" or location in occupied:
-                continue
-            digest = hashlib.sha256(
-                f"FASTAPI_AUTHZ:{endpoint.file_path}:{endpoint.route_line}:{','.join(endpoint.methods)}:{endpoint.route_path}".encode()
-            ).hexdigest()
-            severity = Severity.HIGH if any(
-                reason in endpoint.sensitivity_reasons
-                for reason in ("mutating_method", "sensitive_route", "sensitive_operation")
-            ) else Severity.MEDIUM
-            findings.append(
-                NormalizedFinding(
-                    finding_instance_id=digest,
-                    scanner=ScannerType.MODULE2,
-                    finding_type=FindingType.SAST,
-                    rule_id="module2.fastapi.missing-function-authz",
-                    rule_name="FastAPI missing function-level authorization",
-                    file_path=endpoint.file_path,
-                    start_line=endpoint.route_line,
-                    end_line=endpoint.handler_line,
-                    severity=severity,
-                    message="A sensitive FastAPI endpoint has no verifiable function-level authorization control.",
-                    metadata={
-                        "analysis_scope": "fastapi_authorization",
-                        "detector_version": "sprint2-v2",
-                        "framework": "fastapi",
-                        "cwe": "CWE-862",
-                        "endpoint": {
-                            "handler": endpoint.handler,
-                            "methods": list(endpoint.methods),
-                            "route_path": endpoint.route_path,
-                            "route_line": endpoint.route_line,
-                        },
-                        "sensitivity_reasons": list(endpoint.sensitivity_reasons),
-                        "authentication_controls": list(endpoint.authentication_controls),
-                        "authorization_controls": list(endpoint.authorization_controls),
-                        "dependencies": list(endpoint.dependencies),
-                        "context_completeness": endpoint.completeness,
-                        "provenance": list(endpoint.provenance),
-                    },
-                )
-            )
-            occupied.add(location)
-        return tuple(findings)
-
 
 @dataclass(frozen=True, slots=True)
 class _ParsedFile:
@@ -926,21 +394,15 @@ def build_repository_index(
     *,
     max_python_files: int = 20_000,
     max_file_size_bytes: int = 1_048_576,
-    include_file_paths: frozenset[str] | None = None,
 ) -> RepositoryEvidenceIndex:
-    """Build a bounded monorepo-aware index without retaining raw source text.
-
-    ``include_file_paths`` is intended for pinned endpoint-level benchmark
-    manifests. Production analysis leaves it unset and indexes the repository.
-    """
+    """Build a bounded monorepo-aware index without retaining raw source text."""
     root = repository_root.resolve()
     marker_roots = {"."}
-    if include_file_paths is None:
-        for marker in _PROJECT_MARKERS:
-            for path in root.rglob(marker):
-                if not _SKIPPED_PARTS.isdisjoint(path.relative_to(root).parts):
-                    continue
-                marker_roots.add(path.parent.relative_to(root).as_posix() or ".")
+    for marker in _PROJECT_MARKERS:
+        for path in root.rglob(marker):
+            if not _SKIPPED_PARTS.isdisjoint(path.relative_to(root).parts):
+                continue
+            marker_roots.add(path.parent.relative_to(root).as_posix() or ".")
     components = tuple(
         RepositoryComponent(identifier=item, root=item)
         for item in sorted(marker_roots, key=lambda value: (value.count("/"), value))
@@ -948,12 +410,7 @@ def build_repository_index(
 
     parsed_files: list[_ParsedFile] = []
     skipped = 0
-    candidate_paths = (
-        sorted(root / Path(value) for value in include_file_paths)
-        if include_file_paths is not None
-        else sorted(root.rglob("*.py"))
-    )
-    for number, path in enumerate(candidate_paths):
+    for number, path in enumerate(sorted(root.rglob("*.py"))):
         if number >= max_python_files:
             skipped += 1
             continue
@@ -1094,13 +551,6 @@ def build_repository_index(
                 security_controls=tuple(dict.fromkeys(controls)),
             )
         )
-    fastapi_endpoints = _build_fastapi_authorization_endpoints(
-        parsed_files,
-        frozen_functions,
-        function_nodes,
-        repository_identifier=repository_identifier,
-        skipped_files=skipped,
-    )
     return RepositoryEvidenceIndex(
         repository_identifier=repository_identifier,
         components=components,
@@ -1109,5 +559,4 @@ def build_repository_index(
         calls=tuple(calls),
         sinks=tuple(sinks),
         skipped_files=skipped,
-        fastapi_endpoints=fastapi_endpoints,
     )

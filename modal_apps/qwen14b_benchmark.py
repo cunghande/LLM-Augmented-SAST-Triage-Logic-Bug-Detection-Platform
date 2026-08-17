@@ -51,10 +51,10 @@ OUTPUT_JSON = (
     PROJECT_ROOT
     / "benchmarks"
     / "BenchmarkOutput"
-    / "qwen3-14b-awq-triage-benchmark-v11-native-b200.json"
+    / "qwen3-14b-awq-triage-benchmark-v10-native-b200.json"
 )
 JOERN_OUTPUT_JSON = OUTPUT_JSON.with_name(
-    "qwen3-14b-awq-triage-benchmark-v11-joern-b200.json"
+    "qwen3-14b-awq-triage-benchmark-v10-joern-b200.json"
 )
 BASELINE_JSON = (
     PROJECT_ROOT
@@ -62,7 +62,7 @@ BASELINE_JSON = (
     / "BenchmarkOutput"
     / "qwen3-14b-awq-triage-benchmark-v8-b200.json"
 )
-PROMPT_VERSION = "triage-prompt-v11"
+PROMPT_VERSION = "triage-prompt-v10"
 OUTPUT_SCHEMA_VERSION = "triage-decision-v1"
 _TEST_NAME = re.compile(r"BenchmarkTest\d{5}")
 
@@ -333,9 +333,6 @@ def _metrics(
     benign_total = total - vulnerable_total
     verdicts: Counter[str] = Counter()
     policy_actions: Counter[str] = Counter()
-    policy_reason_counts: Counter[str] = Counter()
-    model_confidence_counts: Counter[str] = Counter()
-    verdict_confidence_counts: Counter[str] = Counter()
     error_codes: Counter[str] = Counter()
     confusion: Counter[str] = Counter()
     category_stats: dict[str, Counter[str]] = defaultdict(Counter)
@@ -356,8 +353,6 @@ def _metrics(
         category_stats[category]["total"] += 1
         action = result.policy_decision.action.value
         policy_actions[action] += 1
-        policy_reason_counts.update(result.policy_decision.reasons)
-        category_stats[category][f"policy_{action.lower()}"] += 1
         if action in {"LIKELY_TP", "FP_CANDIDATE"}:
             automatic_policy_decisions += 1
         if action == "FP_CANDIDATE":
@@ -382,10 +377,6 @@ def _metrics(
 
         schema_success += 1
         verdicts[decision.model_verdict.value] += 1
-        model_confidence_counts[decision.model_confidence.value] += 1
-        verdict_confidence_counts[
-            f"{decision.model_verdict.value}/{decision.model_confidence.value}"
-        ] += 1
         if decision.model_verdict == ModelVerdict.NEEDS_REVIEW:
             confusion[
                 "vulnerable_needs_review" if is_vulnerable else "benign_needs_review"
@@ -451,9 +442,6 @@ def _metrics(
         "error_codes": dict(sorted(error_codes.items())),
         "verdicts": dict(sorted(verdicts.items())),
         "policy_actions": dict(sorted(policy_actions.items())),
-        "policy_reason_counts": dict(sorted(policy_reason_counts.items())),
-        "model_confidence_counts": dict(sorted(model_confidence_counts.items())),
-        "verdict_confidence_counts": dict(sorted(verdict_confidence_counts.items())),
         "manual_review_rate": policy_actions["MANUAL_REVIEW"] / total if total else 0.0,
         "decisive": decisive,
         "correct_decisive": correct,

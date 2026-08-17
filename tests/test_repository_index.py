@@ -153,10 +153,7 @@ def test_intrinsic_usage_rule_is_not_fp_candidate_from_non_tainted_source(tmp_pa
         finding_instance_id="hash-finding",
         scanner=ScannerType.SEMGREP,
         finding_type=FindingType.SAST,
-        rule_id=(
-            "python.lang.security.insecure-hash-algorithms-md5."
-            "insecure-hash-algorithm-md5"
-        ),
+        rule_id="python.lang.security.insecure-hash-algorithms-md5",
         file_path="app.py",
         start_line=4,
         end_line=4,
@@ -183,7 +180,6 @@ def test_intrinsic_usage_rule_is_not_fp_candidate_from_non_tainted_source(tmp_pa
     assert provider.captured is not None
     evidence = json.loads(provider.captured.context.sanitized_snippet or "{}")
     verification = evidence["deterministic_verification"]
-    assert verification["rule_semantics"] == "USAGE_BASED"
     assert verification["unsafe_primitive_observed"] is True
     assert verification["source_user_controlled"] is None
     assert verification["source_reaches_sink"] is None

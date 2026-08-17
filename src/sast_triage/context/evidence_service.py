@@ -31,7 +31,6 @@ from sast_triage.context.evidence_models import (
 from sast_triage.context.reader import SourceReadResult
 from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.models import NormalizedFinding, SanitizedContext
-from sast_triage.rule_semantics import classify_rule_semantics
 
 MAX_EVIDENCE_CODE_CHARACTERS = 6_000
 MAX_EVIDENCE_JSON_CHARACTERS = 12_000
@@ -328,7 +327,6 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
         if control.effective is True and control.protects_target is not False
     ]
     rule_id = evidence.finding.rule_id.lower()
-    rule_semantics = classify_rule_semantics(rule_id)
     intrinsic_usage = any(
         token in rule_id
         for token in ("insecure-hash", "weak-random", "secure-cookie")
@@ -415,7 +413,6 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
                 if intrinsic_usage
                 else "taint_flow" if taint_mechanism else "rule_specific"
             ),
-            "rule_semantics": rule_semantics.value,
             "attacker_control_required": False if intrinsic_usage else True if taint_mechanism else None,
             "evidence_complete": completeness.status == EvidenceStatus.COMPLETE,
             "source_user_controlled": (

@@ -17,10 +17,7 @@ from sast_triage.application.console import show_progress
 from sast_triage.application.providers import provider_identity, provider_session
 from sast_triage.application.repository_state import read_repository_state
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, TriageCheckpointStore
-from sast_triage.context.repository_index import (
-    FASTAPI_AUTHZ_CONFIG_ID,
-    MODULE2_CONFIG_ID,
-)
+from sast_triage.context.repository_index import MODULE2_CONFIG_ID
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ArtifactRepositoryMatch,
@@ -42,18 +39,6 @@ EXIT_PROVIDER_RESOURCE_EXHAUSTED = 5
 
 def execute_run(args: argparse.Namespace) -> int:
     """Run the pipeline with exactly one analysis backend session."""
-    if getattr(args, "logic_detector", "off") != "off" and not getattr(args, "module2", True):
-        raise SastTriageError(
-            safe_message="The selected logic detector requires the Module 2 repository index.",
-            error_code="LOGIC_DETECTOR_REQUIRES_MODULE2",
-            retryable=False,
-        )
-    if getattr(args, "logic_detector", "off") != "off" and getattr(args, "analysis_backend", "native") != "native":
-        raise SastTriageError(
-            safe_message="The selected logic detector currently requires the native analysis backend.",
-            error_code="LOGIC_DETECTOR_BACKEND_UNSUPPORTED",
-            retryable=False,
-        )
     repository = validate_repository(args.repository)
     repository_id = args.repository_identifier or repository.name
     backend_name = getattr(args, "analysis_backend", "native")
@@ -92,32 +77,19 @@ def _execute_run(args: argparse.Namespace) -> int:
     analysis_backend: AnalysisBackend = args._analysis_backend
     repository_index = analysis_backend.repository_index
     module2_result = None
-    module2_findings: list[NormalizedFinding] = []
     if getattr(args, "module2", True):
         show_progress("3/7", "Đang lập chỉ mục Python theo component cho Module 2.")
     if getattr(args, "module2_discovery", False):
         show_progress("3/7", "Đang chạy discovery thử nghiệm của Module 2.")
-        module2_findings.extend(analysis_backend.discover_findings(artifacts.semgrep.findings))
-    logic_detector = getattr(args, "logic_detector", "off")
-    if logic_detector != "off":
-        show_progress("3/7", f"Äang cháº¡y logic detector={logic_detector}.")
-        module2_findings.extend(
-            analysis_backend.discover_logic_findings(
-                logic_detector,
-                artifacts.semgrep.findings + tuple(module2_findings),
-            )
+        module2_findings = analysis_backend.discover_findings(
+            artifacts.semgrep.findings,
         )
-    if getattr(args, "module2_discovery", False) or logic_detector != "off":
-        module2_result = ScannerParseResult(findings=tuple(module2_findings))
+        module2_result = ScannerParseResult(findings=module2_findings)
     scanner_versions = dict(artifacts.scanner_versions)
     scanner_config_ids = dict(artifacts.scanner_config_ids)
     if module2_result is not None:
         scanner_versions["MODULE2"] = TOOL_VERSION
-        scanner_config_ids["MODULE2"] = (
-            f"{MODULE2_CONFIG_ID}+{FASTAPI_AUTHZ_CONFIG_ID}"
-            if logic_detector != "off"
-            else MODULE2_CONFIG_ID
-        )
+        scanner_config_ids["MODULE2"] = MODULE2_CONFIG_ID
     findings = (
         artifacts.semgrep.findings
         + artifacts.gitleaks.findings
@@ -181,8 +153,6 @@ def _execute_run(args: argparse.Namespace) -> int:
                 repository_index=repository_index,
                 analysis_backend=analysis_backend,
                 analysis_identity=analysis_backend.identity,
-                logic_detector=logic_detector,
-                logic_detector_version=("sprint2-v2" if logic_detector != "off" else None),
                 repository_identifier=repository_id,
                 commit_sha=commit_sha,
                 working_tree_state=working_tree_state,

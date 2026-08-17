@@ -38,9 +38,7 @@ Repository
 không phải hai pipeline cạnh tranh: Module 2 bổ sung evidence cross-file cho
 finding của scanner trước khi mọi finding đi qua cùng provider và policy. Việc
 tự tạo finding Module 2 là chế độ thử nghiệm Sprint 3, chỉ bật khi truyền
-`--module2-discovery`. Detector authorization lÃ  cÃ´ng táº¯c riÃªng, máº·c Ä‘á»‹nh
-táº¯t vÃ  cÃ³ quality benchmark riÃªng qua
-`--logic-detector fastapi-missing-authz`.
+`--module2-discovery`.
 
 `FunctionSummary` là nền cho Sprint 2/3: Sprint 2 dùng nó để chứng minh flow
 cross-file tốt hơn; Sprint 3 có thể dùng lại cùng index để mở rộng discovery.
@@ -233,8 +231,7 @@ với Sequential-Recommender xử lý thành công 4/4 finding, 0 triage error, 
 - [Kế hoạch triển khai hiện tại](docs/current-project-plan.md)
 - [Threat model](docs/threat-model.md)
 - [Thiết lập và chạy Joern CPG](docs/joern-analysis.md)
-- [Benchmark native prompt v11 trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v11-native-b200.md)
-- [Baseline native prompt v10 trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v10-native-b200.md)
+- [Benchmark native prompt v10 trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v10-native-b200.md)
 - [Báo cáo Joern v9 lịch sử trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v9-joern-b200.md)
 - [Bản đồ mã nguồn](docs/code-map.md)
 - [Luồng hệ thống Sprint 1](docs/sprint-1-system-flow.md)

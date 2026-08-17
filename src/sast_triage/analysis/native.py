@@ -12,7 +12,6 @@ from sast_triage.context.repository_index import (
     RepositoryEvidenceIndex,
     build_repository_index,
 )
-from sast_triage.errors import SastTriageError
 from sast_triage.models import NormalizedFinding
 
 
@@ -48,24 +47,6 @@ class NativeAnalysisBackend:
         if self.repository_index is None:
             return ()
         return self.repository_index.discover_findings(existing)
-
-    def discover_logic_findings(
-        self,
-        detector: str,
-        existing: tuple[NormalizedFinding, ...],
-    ) -> tuple[NormalizedFinding, ...]:
-        """Run one explicitly selected bounded native logic detector."""
-        if self.repository_index is None:
-            return ()
-        if detector == "fastapi-missing-authz":
-            return self.repository_index.discover_fastapi_authorization_findings(existing)
-        if detector == "off":
-            return ()
-        raise SastTriageError(
-            safe_message="Unsupported logic detector.",
-            error_code="LOGIC_DETECTOR_UNSUPPORTED",
-            retryable=False,
-        )
 
     def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence | None:
         """Signal that the existing local AST engine owns native evidence."""

@@ -88,36 +88,6 @@ def test_module2_discovery_is_explicitly_opt_in() -> None:
     assert default_args.module2 is True
     assert default_args.module2_discovery is False
     assert enabled_args.module2_discovery is True
-    logic_args = parser.parse_args([*common, "--logic-detector", "fastapi-missing-authz"])
-    assert logic_args.logic_detector == "fastapi-missing-authz"
-
-
-def test_cli_fastapi_logic_detector_uses_shared_pipeline(tmp_path: Path, capsys) -> None:
-    output = tmp_path / "logic-output"
-    assert main(
-        [
-            "triage",
-            "--repository",
-            "tests/fixtures/fastapi_authz",
-            "--semgrep-json",
-            "tests/fixtures/semgrep/empty.json",
-            "--gitleaks-json",
-            "tests/fixtures/gitleaks/empty.json",
-            "--output-dir",
-            str(output),
-            "--provider",
-            "fake",
-            "--logic-detector",
-            "fastapi-missing-authz",
-        ]
-    ) == EXIT_SUCCESS
-    metadata = json.loads((output / "run-metadata.json").read_text(encoding="utf-8"))
-    report = json.loads((output / "report.json").read_text(encoding="utf-8"))
-    assert metadata["logic_detector"] == "fastapi-missing-authz"
-    assert metadata["logic_detector_version"] == "sprint2-v2"
-    assert len(report["results"]) == 1
-    assert report["results"][0]["finding"]["rule_id"] == "module2.fastapi.missing-function-authz"
-    assert "Traceback" not in capsys.readouterr().out
 
 
 def test_scan_and_triage_cli_reuses_shared_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

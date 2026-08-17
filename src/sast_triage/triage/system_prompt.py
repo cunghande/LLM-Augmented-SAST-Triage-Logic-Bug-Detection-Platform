@@ -3,25 +3,10 @@
 
 def build_system_message(model_version: str, prompt_version: str) -> str:
     """Build the provider rubric without repository-controlled content."""
-    evidence_calibration = ""
-    if prompt_version in {"triage-prompt-v10", "triage-prompt-v11"}:
-        calibration_version = "v11" if prompt_version == "triage-prompt-v11" else "v10"
-        hash_guidance = (
-            "11. Read deterministic_verification.rule_semantics for intrinsic rules. "
-            "For USAGE_BASED rules, direct observation of the unsafe primitive with complete, "
-            "non-conflicting evidence satisfies the rule without attacker input or proof of a "
-            "security purpose; choose LIKELY_TP with HIGH confidence. For "
-            "SECURITY_CONTEXT_REQUIRED rules, LIKELY_TP requires evidence that the primitive "
-            "protects a password, credential, authentication decision, signature, key, or "
-            "other security property; unknown purpose is NEEDS_REVIEW.\n"
-            if prompt_version == "triage-prompt-v11"
-            else "11. For weak hashes/randomness, LIKELY_TP requires evidence that the primitive "
-            "protects a password, credential, authentication decision, signature, key, or "
-            "other security property. A checksum, cache key, identifier, or unknown use is "
-            "NEEDS_REVIEW, not LIKELY_TP.\n"
-        )
-        evidence_calibration = (
-            f"\n\nSTRICT EVIDENCE CALIBRATION ({calibration_version}):\n"
+    v10_calibration = ""
+    if prompt_version == "triage-prompt-v10":
+        v10_calibration = (
+            "\n\nSTRICT EVIDENCE CALIBRATION (v10):\n"
             "9. Never choose LIKELY_TP from a rule name, scanner severity, or a suspicious "
             "API alone. For source-to-sink mechanisms (SQL, command, path, deserialization, "
             "XSS output), LIKELY_TP requires the Evidence Card to explicitly establish the "
@@ -32,8 +17,11 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
             "Do not infer a vulnerability from absent local syntax if middleware, inherited "
             "configuration, deployment configuration, or a caller is not in evidence; choose "
             "NEEDS_REVIEW in that case.\n"
-            + hash_guidance
-            + "12. For LIKELY_FP, cite a concrete safe final value, effective control, or "
+            "11. For weak hashes/randomness, LIKELY_TP requires evidence that the primitive "
+            "protects a password, credential, authentication decision, signature, key, or "
+            "other security property. A checksum, cache key, identifier, or unknown use is "
+            "NEEDS_REVIEW, not LIKELY_TP.\n"
+            "12. For LIKELY_FP, cite a concrete safe final value, effective control, or "
             "negative taint proof. Otherwise choose NEEDS_REVIEW. Repeated scanner findings "
             "are not proof that any one finding is a vulnerability.\n"
         )
@@ -84,5 +72,5 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "should contain 2-6 verifiable observations. Use [] when no information or assumptions "
         f"are missing. model_version must be {model_version!r}; "
         f"prompt_version must be {prompt_version!r}."
-        + evidence_calibration
+        + v10_calibration
     )
