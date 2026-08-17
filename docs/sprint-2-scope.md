@@ -96,6 +96,12 @@ Validation ngày 2026-08-17:
 - CLI integration với fake provider: sinh đủ năm lớp và không có processing error;
 - benchmark v3 tái lập đúng TP/FP/FN/TN `42/2/7/12`.
 
+Pilot LLM thật trên Modal/Qwen3-14B-AWQ cũng đã chạy 7 case có ground truth
+(mỗi lớp một positive và hai detector false positive): 7/7 hoàn thành, không có
+`TRIAGE_ERROR`, nhưng model abstain 6/7 case. Verdict dứt khoát duy nhất là một
+mass-assignment TP đúng; coverage chỉ 14,29%. Vì mẫu decisive chỉ có một case,
+không được dùng selective accuracy 100% để tuyên bố chất lượng model.
+
 Nghiệm thu tổ chức theo S2-04 chưa thể tự động hóa: cần AppSec/service owner
 review ít nhất ba service thật, xác nhận TP/FP và chỉ chạy PoC trong môi trường
 được phép. Vì vậy trạng thái nên báo là **engineering complete / formal

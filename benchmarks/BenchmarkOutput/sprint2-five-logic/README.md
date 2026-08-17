@@ -41,3 +41,28 @@ precision. The race and workflow sample sizes are especially small.
 - `realvuln-full-v2.json`: refinement run before the final file-priority check.
 - `realvuln-full-v3.json`: final rerun after risk-based file prioritization.
 - `realvuln-pilot-v1.json`: early two-repository pilot; not used as final metric.
+- `realvuln-llm-pilot-v1.json`: seven-case pilot using the real Modal
+  `Qwen/Qwen3-14B-AWQ` provider and prompt v11.
+
+## Real-LLM pilot
+
+The real-provider pilot selected one reviewed positive candidate from each of
+the five classes and both reviewed negative candidates that the detector had
+flagged. Results:
+
+| Metric | Result |
+|---|---:|
+| Cases completed | 7 / 7 |
+| Triage errors | 0 |
+| Decisive verdicts | 1 |
+| Correct decisive verdicts | 1 |
+| Abstentions (`NEEDS_REVIEW`) | 6 |
+| Selective accuracy | 100% (1/1) |
+| Decisive coverage | 14.29% |
+
+The one decisive result was a correct high-confidence `LIKELY_TP` for mass
+assignment. Qwen abstained on the other four positive classes and both reviewed
+detector false positives. Therefore this pilot proves the real provider works
+without `TRIAGE_ERROR`, but it does **not** prove an accuracy improvement over
+the deterministic detector. The selective-accuracy percentage has a denominator
+of one and must not be presented as general model accuracy.
