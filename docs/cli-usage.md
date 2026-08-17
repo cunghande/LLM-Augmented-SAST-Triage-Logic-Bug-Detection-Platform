@@ -279,7 +279,7 @@ Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây l�
 | `--repository` | Đường dẫn target repository. |
 | `--output-dir` | Thư mục riêng của một run đầy đủ. |
 | `--provider` | `fake`, `ollama` hoặc `real`. |
-| `--prompt-version` | Mặc định `triage-prompt-v12`; v12 thêm proof obligations và counter-evidence gate cho năm lớp logic bug. Dùng v11/v10/v9 chỉ để tái lập baseline cũ. |
+| `--prompt-version` | Mặc định `triage-prompt-v13`; v13 thêm retrieval-resolution, rubric riêng theo lớp và một verifier pass có giới hạn cho logic finding còn abstain. Dùng v12/v11/v10/v9 chỉ để tái lập baseline cũ. |
 | `--repository-identifier` | ID tương đối ghi vào metadata; mặc định là tên repo. |
 | `--analysis-backend` | `native` (mặc định) hoặc `joern` (Docker, thử nghiệm). |
 | `--semgrep-config` | Có thể lặp nhiều lần để thêm ruleset/YAML. |

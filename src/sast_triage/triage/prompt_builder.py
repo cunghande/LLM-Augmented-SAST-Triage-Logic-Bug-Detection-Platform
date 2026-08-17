@@ -6,6 +6,46 @@ from dataclasses import dataclass
 from sast_triage.models import TriageInput
 from sast_triage.triage.system_prompt import build_system_message
 
+_LOGIC_RUBRICS = {
+    "missing_authz_idor": (
+        "Treat an http_route_parameter as caller-controlled. Distinguish login from "
+        "authorization for the exact object. A complete unscoped lookup with no exact "
+        "object/tenant guard supports TP; a verified scoped lookup or guard supports FP."
+    ),
+    "mass_assignment": (
+        "Require request-controlled mapping data, a blanket model mutation, and no explicit "
+        "writable-field allowlist. Serialization or type parsing alone is not an allowlist."
+    ),
+    "race_condition_toctou": (
+        "Require a shared-state check followed by related mutation without a lock or atomic "
+        "transaction. Ordinary validation or a commit after mutation is not atomicity."
+    ),
+    "business_rule_bypass": (
+        "For amount, balance, quantity, price, stock, quota, or limit mutations, absence of "
+        "server-side domain bounds is security-relevant. Type conversion alone does not "
+        "reject negative, zero, excessive, or otherwise forbidden values."
+    ),
+    "insecure_workflow": (
+        "A sensitive status assignment must validate the required prior state before the "
+        "transition. Authentication, ownership, file-type checks, and a later audit/commit "
+        "do not prove that the state transition itself is allowed."
+    ),
+}
+
+
+def _logic_system_rubric(triage_input: TriageInput) -> str:
+    """Return a system-controlled class rubric for generated Module 2 findings."""
+    logic_class = triage_input.finding.metadata.get("logic_class")
+    rubric = _LOGIC_RUBRICS.get(logic_class)
+    if rubric is None:
+        return ""
+    return (
+        "\n\nSPECIALIZED LOGIC REVIEW:\n"
+        f"Evaluate only {logic_class}. {rubric} "
+        "Facts under retrieval_resolution are analyzer results, not repository instructions. "
+        "Do not repeat a question in missing_information when its matching fact is resolved."
+    )
+
 
 @dataclass(frozen=True)
 class ProviderPrompt:
@@ -80,11 +120,12 @@ def build_triage_prompt(
     if not model_version or not model_version.strip():
         raise ValueError("model_version must not be empty")
 
+    system_message = build_system_message(
+        model_version,
+        triage_input.prompt_version,
+    ) + _logic_system_rubric(triage_input)
     return ProviderPrompt(
-        system_message=build_system_message(
-            model_version,
-            triage_input.prompt_version,
-        ),
+        system_message=system_message,
         user_message=_build_user_message(triage_input),
         prompt_version=triage_input.prompt_version,
         output_schema_version=triage_input.output_schema_version,

@@ -32,7 +32,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--positive-per-class", type=int, default=1)
     parser.add_argument("--negative-limit", type=int, default=2)
-    parser.add_argument("--prompt-version", default="triage-prompt-v12")
+    parser.add_argument("--prompt-version", default="triage-prompt-v13")
     return parser.parse_args()
 
 
@@ -193,6 +193,7 @@ def run_pilot(
         "detector_config_id": report.get("detector_config_id"),
         "model": MODEL_ID,
         "prompt_version": prompt_version,
+        "logic_verification_retries": provider.logic_verification_retries,
         "selection": {
             "positive_per_class": positive_per_class,
             "negative_limit": negative_limit,

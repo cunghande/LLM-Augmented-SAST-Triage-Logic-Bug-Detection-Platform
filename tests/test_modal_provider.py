@@ -85,6 +85,56 @@ def _input() -> TriageInput:
     )
 
 
+def _logic_input(prompt_version: str = "triage-prompt-v13") -> TriageInput:
+    base = _input()
+    finding = base.finding.model_copy(
+        update={
+            "scanner": ScannerType.MODULE2,
+            "metadata": {"logic_class": "missing_authz_idor"},
+        }
+    )
+    context = base.context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "logic_analysis": {
+                        "logic_class": "missing_authz_idor",
+                        "retrieval_resolution": {
+                            "status": "resolved_by_bounded_static_retrieval",
+                            "facts": {
+                                "caller_controlled_source": True,
+                                "exact_object_authorization_guard_observed": False,
+                            },
+                        },
+                    }
+                }
+            )
+        }
+    )
+    return base.model_copy(
+        update={
+            "finding": finding,
+            "context": context,
+            "prompt_version": prompt_version,
+        }
+    )
+
+
+def _modal_response(verdict: str, prompt_version: str) -> str:
+    return json.dumps(
+        {
+            "model_verdict": verdict,
+            "model_confidence": "HIGH",
+            "summary": "summary",
+            "evidence": ["evidence"],
+            "missing_information": [] if verdict != "NEEDS_REVIEW" else ["missing"],
+            "assumptions": [],
+            "model_version": MODEL_ID,
+            "prompt_version": prompt_version,
+        }
+    )
+
+
 class _RemoteMethod:
     def __init__(self, response: str | BaseException | list[str | BaseException]) -> None:
         self.response = response
@@ -152,6 +202,55 @@ def test_modal_provider_retries_truncated_json_with_larger_budget() -> None:
 
     assert decision.model_verdict.value == "LIKELY_FP"
     assert [call["max_tokens"] for call in remote.chat.calls] == [512, 1536]
+
+
+def test_modal_provider_runs_one_v13_logic_verifier_pass() -> None:
+    remote = _RemoteModel(
+        [
+            _modal_response("NEEDS_REVIEW", "triage-prompt-v13"),
+            _modal_response("LIKELY_TP", "triage-prompt-v13"),
+        ]
+    )
+
+    provider = ModalQwenProvider(remote)
+    decision = provider.triage(_logic_input())
+
+    assert decision.model_verdict.value == "LIKELY_TP"
+    assert provider.logic_verification_retries == 1
+    assert [call["max_tokens"] for call in remote.chat.calls] == [512, 768]
+    retry_messages = remote.chat.calls[1]["messages"]
+    assert isinstance(retry_messages, list)
+    assert "LOGIC VERIFIER PASS" in retry_messages[0]["content"]
+    assert "retrieval_resolution" in retry_messages[1]["content"]
+
+
+def test_modal_provider_does_not_retry_logic_before_v13() -> None:
+    remote = _RemoteModel(_modal_response("NEEDS_REVIEW", "triage-prompt-v12"))
+
+    decision = ModalQwenProvider(remote).triage(
+        _logic_input(prompt_version="triage-prompt-v12")
+    )
+
+    assert decision.model_verdict.value == "NEEDS_REVIEW"
+    assert len(remote.chat.calls) == 1
+
+
+def test_modal_provider_does_not_retry_unknown_logic_class() -> None:
+    triage_input = _logic_input().model_copy(
+        update={
+            "finding": _logic_input().finding.model_copy(
+                update={"metadata": {"logic_class": "untrusted-new-class"}}
+            )
+        }
+    )
+    remote = _RemoteModel(_modal_response("NEEDS_REVIEW", "triage-prompt-v13"))
+
+    provider = ModalQwenProvider(remote)
+    decision = provider.triage(triage_input)
+
+    assert decision.model_verdict.value == "NEEDS_REVIEW"
+    assert provider.logic_verification_retries == 0
+    assert len(remote.chat.calls) == 1
 
 
 def test_benchmark_modal_provider_retries_truncated_json() -> None:

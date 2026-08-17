@@ -607,6 +607,38 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
         ),
     }
     hypothesis, proof_obligations, reproduction = class_facts[candidate.bug_class]
+    common_resolutions: dict[str, object] = {
+        "caller_controlled_source": candidate.source_kind.startswith("http_"),
+        "sensitive_sink_observed": True,
+        "containing_function_search_complete": candidate.analysis_complete,
+        "effective_control_for_exact_target_observed": False,
+        "runtime_poc_executed": False,
+    }
+    class_resolutions: dict[LogicBugClass, dict[str, object]] = {
+        LogicBugClass.MISSING_AUTHZ_IDOR: {
+            "caller_identifier_reaches_object_lookup": True,
+            "lookup_subject_or_tenant_scoped": False,
+            "exact_object_authorization_guard_observed": False,
+        },
+        LogicBugClass.MASS_ASSIGNMENT: {
+            "unfiltered_mapping_reaches_model_mutation": True,
+            "explicit_writable_field_allowlist_observed": False,
+        },
+        LogicBugClass.RACE_CONDITION_TOCTOU: {
+            "shared_state_check_then_mutation_observed": True,
+            "atomic_transaction_or_lock_observed": False,
+        },
+        LogicBugClass.BUSINESS_RULE_BYPASS: {
+            "caller_domain_value_reaches_persistent_mutation": True,
+            "numeric_or_domain_bound_guard_observed": False,
+            "boundary_tests_required": True,
+        },
+        LogicBugClass.INSECURE_WORKFLOW: {
+            "sensitive_state_transition_observed": True,
+            "required_prior_state_guard_observed": False,
+            "forbidden_transition_test_required": True,
+        },
+    }
     return {
         "attack_hypothesis": hypothesis,
         "proof_obligations": [
@@ -628,6 +660,18 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
             ),
         },
         "safe_reproduction_plan": list(reproduction),
+        "retrieval_resolution": {
+            "status": (
+                "resolved_by_bounded_static_retrieval"
+                if candidate.analysis_complete
+                else "partially_resolved"
+            ),
+            "facts": {
+                **common_resolutions,
+                **class_resolutions[candidate.bug_class],
+            },
+            "remaining_limitation": "runtime_behavior_not_executed",
+        },
     }
 
 
@@ -656,6 +700,7 @@ def _project_logic_evidence(
         "proof_obligations": obligations["proof_obligations"],
         "counter_evidence_search": obligations["counter_evidence_search"],
         "safe_reproduction_plan": obligations["safe_reproduction_plan"],
+        "retrieval_resolution": obligations["retrieval_resolution"],
     }
     projected["deterministic_verification"] = {
         "mechanism": "logic_pattern",

@@ -119,6 +119,24 @@ def test_prompt_builder_is_deterministic() -> None:
     assert first == second
 
 
+def test_prompt_builder_adds_system_controlled_logic_rubric() -> None:
+    base = _input()
+    triage_input = base.model_copy(
+        update={
+            "finding": base.finding.model_copy(
+                update={"metadata": {"logic_class": "insecure_workflow"}}
+            ),
+            "prompt_version": "triage-prompt-v13",
+        }
+    )
+
+    prompt = build_triage_prompt(triage_input)
+
+    assert "SPECIALIZED LOGIC REVIEW" in prompt.system_message
+    assert "required prior state" in prompt.system_message
+    assert "Do not repeat a question" in prompt.system_message
+
+
 def test_output_validator_accepts_valid_json_and_rejects_policy_injection() -> None:
     decision = parse_triage_decision(json.dumps(_decision()), prompt_version="prompt-v1")
     assert decision.model_verdict.value == "LIKELY_TP"

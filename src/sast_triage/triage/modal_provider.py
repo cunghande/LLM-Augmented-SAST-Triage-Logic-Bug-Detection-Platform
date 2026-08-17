@@ -9,6 +9,7 @@ from contextlib import contextmanager
 import modal
 
 from sast_triage.errors import SastTriageError
+from sast_triage.logic import LogicBugClass
 from sast_triage.models import (
     ModelConfidence,
     ModelVerdict,
@@ -147,6 +148,70 @@ class ModalQwenProvider:
     def __init__(self, remote_model: object) -> None:
         self._remote_model = remote_model
         self._completed = 0
+        self._logic_verification_retries = 0
+
+    @property
+    def logic_verification_retries(self) -> int:
+        """Return the number of bounded logic verifier calls attempted."""
+        return self._logic_verification_retries
+
+    def _should_retry_logic_verification(
+        self,
+        triage_input: TriageInput,
+        decision: TriageDecision,
+    ) -> bool:
+        """Retry only bounded v13 logic abstentions with generated metadata."""
+        return (
+            triage_input.prompt_version == "triage-prompt-v13"
+            and decision.model_verdict == ModelVerdict.NEEDS_REVIEW
+            and triage_input.finding.metadata.get("logic_class")
+            in {bug_class.value for bug_class in LogicBugClass}
+        )
+
+    def _retry_logic_verification(
+        self,
+        triage_input: TriageInput,
+        messages: list[dict[str, str]],
+        first_decision: TriageDecision,
+    ) -> TriageDecision:
+        """Run one bounded verifier pass and fail safely back to the first decision."""
+        verifier_messages = [
+            {
+                "role": "system",
+                "content": (
+                    messages[0]["content"]
+                    + "\n\nLOGIC VERIFIER PASS: The first pass abstained. Re-evaluate "
+                    "the same sanitized Evidence Card using retrieval_resolution and the "
+                    "specialized rubric. Do not request facts already marked resolved. "
+                    "Return NEEDS_REVIEW only if a specific unresolved limitation could "
+                    "change the verdict. Never invent runtime execution or a PoC."
+                ),
+            },
+            messages[1],
+        ]
+        self._logic_verification_retries += 1
+        try:
+            response = self._remote_model.chat.remote(
+                messages=verifier_messages,
+                thinking=False,
+                max_tokens=768,
+                json_schema=_decision_schema(triage_input.prompt_version),
+                temperature=0.0,
+                seed=42,
+            )
+            verified = parse_triage_decision(
+                response,
+                prompt_version=triage_input.prompt_version,
+            )
+        except (
+            SastTriageError,
+            modal.exception.Error,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ):
+            return first_decision
+        return verified
 
     def triage(self, triage_input: TriageInput) -> TriageDecision:
         """Gửi prompt đã sanitize, yêu cầu JSON schema và validate response."""
@@ -229,6 +294,12 @@ class ModalQwenProvider:
                 raise _translate_modal_exception(exc) from None
             except (modal.exception.Error, RuntimeError, TypeError, ValueError) as exc:
                 raise _translate_modal_exception(exc) from None
+        if self._should_retry_logic_verification(triage_input, decision):
+            decision = self._retry_logic_verification(
+                triage_input,
+                messages,
+                decision,
+            )
         self._completed += 1
         if self._completed == 1 or self._completed % 10 == 0:
             print(

@@ -25,7 +25,7 @@ này.
 |---|---|
 | S2-01 | AST Python, entrypoint Flask/FastAPI/Django, source–guard–sink trace và repository index source-free. |
 | S2-02 | Khi chạm giới hạn file, ưu tiên đường dẫn auth, admin, payment, user, workflow và application route trước test/example. |
-| S2-03 | Năm detector độc lập; prompt v12 dùng proof obligations, counter-evidence và phân biệt authentication/authorization, validation/atomicity, state transition hợp lệ. |
+| S2-03 | Năm detector độc lập; prompt v13 dùng proof obligations, counter-evidence, retrieval-resolution, rubric riêng theo lớp và verifier pass có giới hạn. |
 | S2-04 | Benchmark trên repository thật có ground truth; PoC trên service nội bộ vẫn cần AppSec/service owner phê duyệt. |
 | S2-05 | Điểm rủi ro lưu cả tổng và năm thành phần theo công thức của plan. |
 | S2-06 | Mỗi finding có remediation và validation checklist theo lớp lỗi. Patch vẫn là đề xuất cần developer review. |
@@ -91,10 +91,10 @@ finding không bị mất khi provider lỗi, và artifact benchmark tái lập 
 
 Validation ngày 2026-08-17:
 
-- full regression: `475 passed, 2 skipped`;
+- full regression: `479 passed, 2 skipped`;
 - Ruff: đạt trên `src`, `tests`, `modal_apps`, `scripts`;
 - CLI integration với fake provider: sinh đủ năm lớp và không có processing error;
-- benchmark v4 tái lập đúng TP/FP/FN/TN `42/0/7/14`.
+- benchmark v5 tái lập đúng TP/FP/FN/TN `42/0/7/14`.
 
 Pilot LLM thật trên Modal/Qwen3-14B-AWQ cũng đã chạy 7 case có ground truth
 (mỗi lớp một positive và hai detector false positive): 7/7 hoàn thành, không có
@@ -106,6 +106,14 @@ Sau khi thêm proof obligations và counter-evidence theo hướng evidence-firs
 prompt v12 được chạy lại trên đúng năm positive case: verdict dứt khoát tăng từ
 1/5 lên 2/5, cả hai đúng, coverage tăng 20% lên 40%, không có `TRIAGE_ERROR`.
 Hai negative cũ được verifier loại trước LLM vì tìm thấy authorization guard thật.
+
+Prompt v13 bổ sung các fact đã được bounded static retrieval giải quyết, rubric
+riêng cho từng lớp và tối đa một verifier pass khi kết quả đầu là `NEEDS_REVIEW`.
+Trên đúng năm positive case đó, verdict dứt khoát tăng tiếp lên 3/5, cả ba đúng,
+coverage 60%, không có `TRIAGE_ERROR`; verifier được gọi hai lần. Business-rule
+bypass trở thành case dứt khoát mới, còn IDOR và insecure workflow vẫn abstain.
+Mẫu năm case quá nhỏ nên không dùng selective accuracy 100% để suy rộng chất
+lượng model.
 
 Nghiệm thu tổ chức theo S2-04 chưa thể tự động hóa: cần AppSec/service owner
 review ít nhất ba service thật, xác nhận TP/FP và chỉ chạy PoC trong môi trường

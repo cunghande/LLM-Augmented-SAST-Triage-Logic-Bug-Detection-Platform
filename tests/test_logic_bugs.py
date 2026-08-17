@@ -175,13 +175,18 @@ def test_logic_finding_gets_specialized_evidence_card(tmp_path: Path) -> None:
     )
     assert payload["logic_analysis"]["counter_evidence_search"]["searched"] is True
     assert payload["logic_analysis"]["safe_reproduction_plan"]
+    resolution = payload["logic_analysis"]["retrieval_resolution"]
+    assert resolution["status"] == "resolved_by_bounded_static_retrieval"
+    assert resolution["facts"]["caller_controlled_source"] is True
+    assert resolution["facts"]["explicit_writable_field_allowlist_observed"] is False
     assert payload["deterministic_verification"]["mechanism"] == "logic_pattern"
     assert payload["deterministic_verification"]["unsafe_pattern_observed"] is True
     assert payload["deterministic_verification"]["proof_obligations_satisfied"] is True
 
 
-def test_prompt_v12_explains_bounded_proof_obligation_policy() -> None:
-    prompt = build_system_message("model", "triage-prompt-v12")
+def test_prompt_v13_explains_bounded_proof_obligation_policy() -> None:
+    prompt = build_system_message("model", "triage-prompt-v13")
 
     assert "proof_obligations_satisfied" in prompt
     assert "Do not abstain only because no runtime PoC was executed" in prompt
+    assert "reconcile the first-pass abstention" in prompt

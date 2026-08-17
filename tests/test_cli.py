@@ -90,7 +90,7 @@ def test_module2_discovery_is_explicitly_opt_in() -> None:
     assert enabled_args.module2_discovery is True
 
 
-def test_five_logic_detector_is_explicit_and_uses_prompt_v12() -> None:
+def test_five_logic_detector_is_explicit_and_uses_prompt_v13() -> None:
     parser = build_parser()
     common = [
         "triage",
@@ -110,7 +110,7 @@ def test_five_logic_detector_is_explicit_and_uses_prompt_v12() -> None:
     )
 
     assert default_args.logic_detector == "off"
-    assert default_args.prompt_version == "triage-prompt-v12"
+    assert default_args.prompt_version == "triage-prompt-v13"
     assert enabled_args.logic_detector == "python-five-logic"
 
 

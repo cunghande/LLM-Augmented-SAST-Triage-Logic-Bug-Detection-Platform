@@ -1,0 +1,169 @@
+{
+  "schema_version": "logic-llm-pilot-v1",
+  "generated_at": "2026-08-17T08:33:12.551139+00:00",
+  "dataset": "Real-Vuln-Benchmark reviewed ground truth",
+  "detector_config_id": "python-five-logic-v1",
+  "model": "Qwen/Qwen3-14B-AWQ",
+  "prompt_version": "triage-prompt-v13",
+  "logic_verification_retries": 2,
+  "selection": {
+    "positive_per_class": 1,
+    "negative_limit": 0,
+    "policy": "Detected candidates only: one reviewed positive per class plus reviewed detector false positives. NEEDS_REVIEW is abstention."
+  },
+  "metrics": {
+    "cases": 5,
+    "positive_cases": 5,
+    "negative_cases": 0,
+    "completed": 5,
+    "triage_errors": 0,
+    "decisive": 3,
+    "abstentions": 2,
+    "correct_decisive": 3,
+    "wrong_decisive": 0,
+    "selective_accuracy": 1.0,
+    "coverage": 0.6,
+    "provider_duration_total_ms": 142238,
+    "provider_duration_max_ms": 130136,
+    "warm_provider_duration_median_ms": 1969.5
+  },
+  "cases": [
+    {
+      "case_id": "djangoat-021",
+      "repository": "djangoat",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "app/views/users/messages/views.py",
+      "line": 51,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "Tồn tại một lỗ hổng xác thực thiếu (missing authz idor) khi một tham số đường dẫn HTTP được sử dụng để truy vấn đối tượng mà không có kiểm tra xác thực chủ thể hoặc thuê bao. Tuy nhiên, không có thông tin đầy đủ về việc liệu đối tượng được truy vấn có bị ràng buộc với chủ thể xác thực hay không.",
+      "model_evidence": [
+        "Tham số đường dẫn HTTP (http_route_parameter) được sử dụng để truy vấn đối tượng (object_lookup_without_subject_scope).",
+        "Không có kiểm soát xác thực (authorization guard) được phát hiện trong đoạn mã.",
+        "Đoạn mã không ràng buộc đối tượng được truy vấn với chủ thể xác thực hoặc thuê bao.",
+        "Không có thông tin về việc liệu đối tượng được truy vấn có bị ràng buộc với chủ thể xác thực hay không."
+      ],
+      "missing_information": [
+        "Thông tin về việc liệu đối tượng được truy vấn có bị ràng buộc với chủ thể xác thực hay không.",
+        "Thông tin về việc liệu có kiểm soát xác thực nào được áp dụng cho đối tượng được truy vấn hay không."
+      ],
+      "assumptions": [
+        "Tham số đường dẫn HTTP là do người gọi kiểm soát.",
+        "Không có kiểm soát xác thực nào được áp dụng cho đối tượng được truy vấn."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 130136
+    },
+    {
+      "case_id": "djangoat-022",
+      "repository": "djangoat",
+      "logic_class": "mass_assignment",
+      "expected": true,
+      "file_path": "app/views/admin/views.py",
+      "line": 66,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Tìm thấy mô hình phân bổ khối lượng (mass assignment) có thể dẫn đến lỗ hổng bảo mật. Dữ liệu từ request.POST được sao chép và cập nhật trực tiếp vào cơ sở dữ liệu mà không có danh sách trắng các trường có thể ghi. Điều này cho phép người tấn công gửi các trường nhạy cảm như 'role' hoặc 'owner' để thay đổi trạng thái người dùng một cách không mong muốn.",
+      "model_evidence": [
+        "Dữ liệu từ request.POST được sao chép và lưu trữ vào biến 'data' mà không có kiểm tra hoặc lọc.",
+        "Các trường 'password' và 'password_confirmation' được loại bỏ khỏi 'data', nhưng không có kiểm soát nào đối với các trường khác.",
+        "Dữ liệu được cập nhật trực tiếp vào cơ sở dữ liệu bằng 'User.objects.filter(...).update(**data)', cho phép ghi đè các trường nhạy cảm.",
+        "Không có danh sách trắng các trường có thể ghi, dẫn đến rủi ro phân bổ khối lượng."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát nào được áp dụng để ngăn chặn việc ghi đè các trường nhạy cảm.",
+        "Không có cơ chế xác thực hoặc kiểm tra bất biến nào được thực hiện trước khi cập nhật dữ liệu."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 2079
+    },
+    {
+      "case_id": "dvblab-019",
+      "repository": "dvblab",
+      "logic_class": "race_condition_toctou",
+      "expected": true,
+      "file_path": "backend/routes/transaction_routes.py",
+      "line": 30,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một lỗ hổng tiềm năng về điều kiện cạnh tranh (race condition) được phát hiện trong hàm 'transfer'. Trạng thái chia sẻ được kiểm tra trước khi thay đổi mà không có giao dịch nguyên tử hoặc khóa, dẫn đến khả năng thay đổi trạng thái không an toàn.",
+      "model_evidence": [
+        "Trạng thái chia sẻ (shared_mutable_state) được kiểm tra trước khi thay đổi mà không có giao dịch nguyên tử hoặc khóa.",
+        "Không có khóa hoặc giao dịch nguyên tử được quan sát trong mã.",
+        "Các kiểm tra được thực hiện trên 'current_user' và 'current_user.balance' nhưng không ngăn chặn được điều kiện cạnh tranh.",
+        "Mã nguồn cho thấy 'current_user.balance' và 'receiver.balance' được thay đổi trực tiếp mà không có kiểm soát đồng bộ."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có khóa hoặc giao dịch nguyên tử được sử dụng trong mã."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1788
+    },
+    {
+      "case_id": "dvblab-018",
+      "repository": "dvblab",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "backend/routes/transaction_routes.py",
+      "line": 33,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một giá trị miền do người gọi kiểm soát (amount) từ yêu cầu HTTP được sử dụng trực tiếp để thay đổi trạng thái (current_user.balance và receiver.balance) mà không có kiểm tra miền nào. Điều này có thể cho phép người tấn công vượt qua các quy tắc kinh doanh bằng cách gửi các giá trị âm, không hợp lệ hoặc quá mức.",
+      "model_evidence": [
+        "Giá trị 'amount' được lấy từ http_request_body và được chuyển đổi thành Decimal nhưng không có kiểm tra miền nào được thực hiện.",
+        "Giá trị 'amount' được sử dụng trực tiếp để thay đổi 'current_user.balance' và 'receiver.balance' mà không có kiểm tra ràng buộc miền.",
+        "Không có kiểm tra số học hoặc ràng buộc miền nào được quan sát trong mã.",
+        "Mã có thể cho phép người tấn công gửi các giá trị âm hoặc quá mức để thay đổi trạng thái tài khoản."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm tra miền nào được thực hiện trước khi thay đổi trạng thái tài khoản."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1860
+    },
+    {
+      "case_id": "vc-codex-seeded-v2-fintech-lending-fastapi-enrich-016",
+      "repository": "vc-codex-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "insecure_workflow",
+      "expected": true,
+      "file_path": "backend/app/main.py",
+      "line": 685,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "LLM đã trả về verdict hợp lệ qua schema phục hồi tối giản.",
+      "model_evidence": [
+        "Policy sử dụng Evidence Card đã được kiểm tra và làm sạch."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Phần giải thích đầy đủ không được dùng do lỗi serialization."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 6375
+    }
+  ]
+}

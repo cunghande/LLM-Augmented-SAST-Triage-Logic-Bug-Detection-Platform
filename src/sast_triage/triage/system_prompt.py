@@ -8,6 +8,7 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "triage-prompt-v10",
         "triage-prompt-v11",
         "triage-prompt-v12",
+        "triage-prompt-v13",
     }:
         evidence_calibration = (
             f"\n\nSTRICT EVIDENCE CALIBRATION ({prompt_version.rsplit('-', 1)[-1]}):\n"
@@ -36,7 +37,8 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "authenticated action from a valid workflow transition. A detected guard "
                 "counts only when it protects the exact object, field, shared state, domain "
                 "value, or transition in the trace.\n"
-                if prompt_version in {"triage-prompt-v11", "triage-prompt-v12"}
+                if prompt_version
+                in {"triage-prompt-v11", "triage-prompt-v12", "triage-prompt-v13"}
                 else ""
             )
             + (
@@ -49,7 +51,16 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "specific unresolved symbol, truncated path, missing obligation, or evidence "
                 "conflict. Choose LIKELY_FP only when an exact effective control or negative "
                 "path is established.\n"
-                if prompt_version == "triage-prompt-v12"
+                if prompt_version in {"triage-prompt-v12", "triage-prompt-v13"}
+                else ""
+            )
+            + (
+                "15. In the verifier pass, reconcile the first-pass abstention with "
+                "retrieval_resolution. A runtime PoC is optional validation, not missing "
+                "static evidence. Do not repeat a missing-information claim that an explicit "
+                "resolved fact answers. Preserve NEEDS_REVIEW when a genuinely unresolved "
+                "dynamic dispatch, external policy, or truncated path could change the result.\n"
+                if prompt_version == "triage-prompt-v13"
                 else ""
             )
         )
