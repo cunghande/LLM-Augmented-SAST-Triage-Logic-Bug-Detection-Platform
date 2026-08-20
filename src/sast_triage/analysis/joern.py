@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import os
 import re
 import secrets
 import socket
@@ -22,6 +23,7 @@ from sast_triage.analysis.base import (
     GraphStep,
 )
 from sast_triage.errors import SastTriageError
+from sast_triage.logic.index import LogicFindingIndex, build_logic_index
 from sast_triage.models import (
     FindingType,
     NormalizedFinding,
@@ -198,33 +200,49 @@ class _CpgqlClient:
 class JoernAnalysisBackend:
     """Own one Joern container and one imported CPG for a complete CLI run."""
 
-    repository_index = None
-
     def __init__(
         self,
         repository: Path,
         repository_identifier: str,
         *,
         module2_enabled: bool,
+        logic_detector: str = "off",
         image: str = JOERN_IMAGE,
         query_timeout_seconds: float = 30.0,
         build_timeout_seconds: float = 600.0,
     ) -> None:
         self._repository = repository.resolve()
         self._module2_enabled = module2_enabled
+        self.logic_index: LogicFindingIndex | None = (
+            build_logic_index(repository)
+            if module2_enabled and logic_detector != "off"
+            else None
+        )
         self._image = image
         self._container_name = f"sast-triage-joern-{uuid.uuid4().hex[:12]}"
+        self._docker_network = os.getenv("SAST_TRIAGE_DOCKER_NETWORK", "").strip()
+        if self._docker_network and not re.fullmatch(r"[A-Za-z0-9_.-]+", self._docker_network):
+            raise SastTriageError(
+                safe_message="The configured Docker network name is invalid.",
+                error_code="ANALYSIS_JOERN_INVALID_CONFIGURATION",
+                retryable=False,
+            )
         self._username = "sast-triage"
         self._password = secrets.token_urlsafe(24)
         self._port = _free_loopback_port()
+        query_endpoint = (
+            f"{self._container_name}:8080"
+            if self._docker_network
+            else f"127.0.0.1:{self._port}"
+        )
         self._client = _CpgqlClient(
-            f"127.0.0.1:{self._port}",
+            query_endpoint,
             self._username,
             self._password,
             timeout_seconds=query_timeout_seconds,
         )
         self._build_client = _CpgqlClient(
-            f"127.0.0.1:{self._port}",
+            query_endpoint,
             self._username,
             self._password,
             timeout_seconds=build_timeout_seconds,
@@ -306,27 +324,63 @@ class JoernAnalysisBackend:
             ) from None
 
     def _start_container(self) -> None:
-        mount = f"type=bind,source={self._repository},target={_CONTAINER_REPOSITORY},readonly"
-        self._docker(
+        mount = (
+            "type=bind,source="
+            f"{self._docker_repository_source()},target={_CONTAINER_REPOSITORY},readonly"
+        )
+        command = [
             "run",
             "--detach",
             "--rm",
             "--name",
             self._container_name,
-            "--publish",
-            f"127.0.0.1:{self._port}:8080",
-            "--mount",
-            mount,
-            self._image,
-            "--server",
-            "--server-host",
-            "0.0.0.0",
-            "--server-port",
-            "8080",
-            "--server-auth-username",
-            self._username,
-            "--server-auth-password",
-            self._password,
+        ]
+        if self._docker_network:
+            command.extend(("--network", self._docker_network))
+        else:
+            command.extend(("--publish", f"127.0.0.1:{self._port}:8080"))
+        command.extend(
+            (
+                "--mount",
+                mount,
+                self._image,
+                "--server",
+                "--server-host",
+                "0.0.0.0",
+                "--server-port",
+                "8080",
+                "--server-auth-username",
+                self._username,
+                "--server-auth-password",
+                self._password,
+            )
+        )
+        self._docker(*command)
+
+    def _docker_repository_source(self) -> str:
+        """Resolve the daemon-visible bind source for local or containerized runs."""
+        if not self._docker_network:
+            return str(self._repository)
+
+        container_id = socket.gethostname()
+        try:
+            inspected = self._docker("inspect", container_id, timeout=20)
+            payload = json.loads(inspected.stdout)
+            mounts = payload[0]["Mounts"]
+        except (json.JSONDecodeError, IndexError, KeyError, TypeError):
+            mounts = []
+        expected_destination = self._repository.as_posix()
+        for mount_info in mounts:
+            if not isinstance(mount_info, dict):
+                continue
+            destination = str(mount_info.get("Destination", ""))
+            source = str(mount_info.get("Source", ""))
+            if destination == expected_destination and source:
+                return source
+        raise SastTriageError(
+            safe_message="The containerized repository mount could not be resolved for Joern.",
+            error_code="ANALYSIS_JOERN_REPOSITORY_MOUNT_UNAVAILABLE",
+            retryable=False,
         )
 
     def _wait_until_ready(self) -> None:
@@ -560,7 +614,7 @@ class JoernAnalysisBackend:
         )
 
     def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence:
-        """Query the target and same-file dataflow without using native analysis."""
+        """Query the target and same-file dataflow from the repository CPG."""
         try:
             evidence = self._sink_evidence(finding)
             if _intrinsic_usage(finding) and evidence.sink_symbol is not None:
@@ -705,11 +759,13 @@ class JoernAnalysisBackend:
         detector: str,
         existing: tuple[NormalizedFinding, ...],
     ) -> tuple[NormalizedFinding, ...]:
-        """Keep the five-class detector on native AST until a CPG gate is defined."""
+        """Run the focused business-logic detector beside Joern graph analysis."""
         if detector == "off":
             return ()
+        if detector == "python-idor-business-logic" and self.logic_index is not None:
+            return self.logic_index.discover_findings(existing)
         raise SastTriageError(
-            safe_message="The selected logic detector requires the native analysis backend.",
-            error_code="LOGIC_DETECTOR_NATIVE_REQUIRED",
+            safe_message="Unsupported logic detector.",
+            error_code="LOGIC_DETECTOR_UNSUPPORTED",
             retryable=False,
         )

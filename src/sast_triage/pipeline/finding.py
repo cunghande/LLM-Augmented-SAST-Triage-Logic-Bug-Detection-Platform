@@ -17,15 +17,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from sast_triage.analysis.base import AnalysisBackend
-from sast_triage.context.python_scope import select_python_scope
+from sast_triage.context.evidence_service import build_evidence_context
 from sast_triage.context.reader import read_repository_source
-from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.context.sanitizer import (
     KNOWN_PLACEHOLDERS,
     sanitize_context,
 )
 from sast_triage.context.selection import select_raw_context
 from sast_triage.errors import SastTriageError
+from sast_triage.logic.index import LogicFindingIndex
 from sast_triage.models import (
     ArtifactRepositoryMatch,
     ContextStrategy,
@@ -173,16 +173,14 @@ def triage_finding(
     prompt_version: str = "triage-prompt-v13",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
-    line_window_before: int = 10,
-    line_window_after: int = 10,
+    line_window_before: int = 60,
+    line_window_after: int = 60,
     max_file_size_bytes: int = 1_048_576,
-    max_scope_lines: int = 120,
     max_context_characters: int = 12_000,
-    max_import_lines: int = 20,
     forbidden_values: tuple[str, ...] = (),
     initial_processing_errors: tuple[ProcessingError, ...] = (),
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
-    repository_index: RepositoryEvidenceIndex | None = None,
+    logic_index: LogicFindingIndex | None = None,
     analysis_backend: AnalysisBackend | None = None,
 ) -> TriageResult:
     """Triage một NormalizedFinding qua trích xuất context, LLM triage và policy.
@@ -197,9 +195,7 @@ def triage_finding(
         line_window_before: Lines to include before finding line.
         line_window_after: Lines to include after finding line.
         max_file_size_bytes: Maximum allowed source file size in bytes.
-        max_scope_lines: Maximum scope lines for AST analysis.
         max_context_characters: Maximum context snippet characters.
-        max_import_lines: Maximum import lines.
         forbidden_values: Optional secret strings that must be redacted.
         initial_processing_errors: Optional tuple of parser diagnostics linked to this finding.
 
@@ -237,21 +233,9 @@ def triage_finding(
             error_code="PIPELINE_INVALID_CONFIGURATION",
             retryable=False,
         )
-    if max_scope_lines <= 0:
-        raise SastTriageError(
-            safe_message="max_scope_lines must be greater than 0.",
-            error_code="PIPELINE_INVALID_CONFIGURATION",
-            retryable=False,
-        )
     if max_context_characters <= 0:
         raise SastTriageError(
             safe_message="max_context_characters must be greater than 0.",
-            error_code="PIPELINE_INVALID_CONFIGURATION",
-            retryable=False,
-        )
-    if max_import_lines < 0:
-        raise SastTriageError(
-            safe_message="max_import_lines must be non-negative.",
             error_code="PIPELINE_INVALID_CONFIGURATION",
             retryable=False,
         )
@@ -296,50 +280,28 @@ def triage_finding(
             max_file_size_bytes=max_file_size_bytes,
         )
 
-        # Bước 2b: Phân tích AST Scope
-        uses_joern_cpg = (
-            analysis_backend is not None
-            and analysis_backend.identity.backend == "joern"
-            and finding.finding_type == FindingType.SAST
-        )
-        scope_res = None
-        if not uses_joern_cpg:
-            scope_res = select_python_scope(
-                src_res,
-                finding.start_line,
-                finding.end_line,
-                max_scope_lines=max_scope_lines,
-                max_import_lines=max_import_lines,
-            )
-
-        effective_window_before = line_window_before
-        effective_window_after = line_window_after
-        if uses_joern_cpg:
-            # Match the native function-scope evidence budget without invoking
-            # the native AST. SafeContextService still sanitizes the bounded
-            # source window before it is placed in Evidence Card v8.
-            half_scope = max_scope_lines // 2
-            effective_window_before = max(line_window_before, half_scope)
-            effective_window_after = max(line_window_after, half_scope)
-
-        # Bước 2c: Chọn Raw Context
+        # Bước 2b: Chọn bounded raw context; Joern owns structural analysis.
         raw_ctx = select_raw_context(
             finding,
             src_res,
-            scope=scope_res,
-            line_window_before=effective_window_before,
-            line_window_after=effective_window_after,
+            line_window_before=line_window_before,
+            line_window_after=line_window_after,
             max_context_characters=max_context_characters,
         )
 
-        # Bước 2d: Sanitize Context
+        # Bước 2c: Sanitize Context
         sanitized = sanitize_context(
             finding,
             raw_ctx,
             forbidden_values=forbidden_values,
-            repository_index=repository_index,
-            analysis_backend=analysis_backend,
         )
+        if finding.finding_type == FindingType.SAST and sanitized.context_available:
+            sanitized = build_evidence_context(
+                finding,
+                sanitized,
+                logic_index=logic_index,
+                analysis_backend=analysis_backend,
+            ).context
 
         # Kiểm tra sanitizer có tạo context không khả dụng với CONTEXT_SANITIZATION_FAILED không
         if (

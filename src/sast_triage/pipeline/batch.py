@@ -18,9 +18,9 @@ from pathlib import Path
 
 from sast_triage import __version__ as TOOL_VERSION
 from sast_triage.analysis.base import AnalysisBackend, AnalysisIdentity
-from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.context.sanitizer import KNOWN_PLACEHOLDERS
 from sast_triage.errors import SastTriageError
+from sast_triage.logic.index import LogicFindingIndex
 from sast_triage.models import (
     ArtifactRepositoryMatch,
     BatchResult,
@@ -115,7 +115,7 @@ def triage_batch(
     semgrep_result: ScannerParseResult | None = None,
     gitleaks_result: ScannerParseResult | None = None,
     module2_result: ScannerParseResult | None = None,
-    repository_index: RepositoryEvidenceIndex | None = None,
+    logic_index: LogicFindingIndex | None = None,
     analysis_backend: AnalysisBackend | None = None,
     analysis_identity: AnalysisIdentity | None = None,
     repository_identifier: str,
@@ -125,12 +125,10 @@ def triage_batch(
     prompt_version: str = "triage-prompt-v13",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
-    line_window_before: int = 10,
-    line_window_after: int = 10,
+    line_window_before: int = 60,
+    line_window_after: int = 60,
     max_file_size_bytes: int = 1_048_576,
-    max_scope_lines: int = 120,
     max_context_characters: int = 12_000,
-    max_import_lines: int = 20,
     forbidden_values: tuple[str, ...] = (),
     scanner_versions: dict[str, str | None] | None = None,
     scanner_config_ids: dict[str, str | None] | None = None,
@@ -158,9 +156,7 @@ def triage_batch(
         line_window_before: Lines to include before finding line.
         line_window_after: Lines to include after finding line.
         max_file_size_bytes: Maximum allowed source file size in bytes.
-        max_scope_lines: Maximum scope lines for AST analysis.
         max_context_characters: Maximum context snippet characters.
-        max_import_lines: Maximum import lines.
         forbidden_values: Optional secret strings that must be redacted.
         scanner_versions: Optional mapping of scanner name to version.
         scanner_config_ids: Optional mapping of scanner name to config ID.
@@ -218,21 +214,9 @@ def triage_batch(
             error_code="PIPELINE_INVALID_CONFIGURATION",
             retryable=False,
         )
-    if max_scope_lines <= 0:
-        raise SastTriageError(
-            safe_message="max_scope_lines must be greater than 0.",
-            error_code="PIPELINE_INVALID_CONFIGURATION",
-            retryable=False,
-        )
     if max_context_characters <= 0:
         raise SastTriageError(
             safe_message="max_context_characters must be greater than 0.",
-            error_code="PIPELINE_INVALID_CONFIGURATION",
-            retryable=False,
-        )
-    if max_import_lines < 0:
-        raise SastTriageError(
-            safe_message="max_import_lines must be non-negative.",
             error_code="PIPELINE_INVALID_CONFIGURATION",
             retryable=False,
         )
@@ -321,13 +305,11 @@ def triage_batch(
             line_window_before=line_window_before,
             line_window_after=line_window_after,
             max_file_size_bytes=max_file_size_bytes,
-            max_scope_lines=max_scope_lines,
             max_context_characters=max_context_characters,
-            max_import_lines=max_import_lines,
             forbidden_values=forbidden_values,
             initial_processing_errors=initial_errors,
             artifact_repository_match=artifact_repository_match,
-            repository_index=repository_index,
+            logic_index=logic_index,
             analysis_backend=analysis_backend,
         )
         result_by_id[finding.finding_instance_id] = result
@@ -383,9 +365,9 @@ def triage_batch(
         scanner_versions=sc_versions,
         scanner_config_ids=sc_config_ids,
         input_artifact_hashes=artifact_hashes,
-        analysis_backend=(analysis_identity.backend if analysis_identity else "native"),
+        analysis_backend=(analysis_identity.backend if analysis_identity else "joern"),
         analysis_backend_version=(analysis_identity.version if analysis_identity else TOOL_VERSION),
-        analysis_config_id=(analysis_identity.config_id if analysis_identity else "native-evidence-v1"),
+        analysis_config_id=(analysis_identity.config_id if analysis_identity else "joern-evidence-v2"),
         cpg_build_status=(analysis_identity.build_status if analysis_identity else "not_applicable"),
         cpg_build_seconds=(analysis_identity.build_seconds if analysis_identity else 0.0),
         prompt_version=prompt_version,

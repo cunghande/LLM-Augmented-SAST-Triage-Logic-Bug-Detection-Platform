@@ -1,0 +1,314 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "generic.html-templates.security.var-in-script-tag.var-in-script-tag",
+      "path": "badguys/templates/vulnerable/csrf/image.html",
+      "start": {
+        "line": 48,
+        "col": 1
+      },
+      "end": {
+        "line": 48,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a template variable used in a script tag. Although template variables are HTML escaped, HTML escaping does not always prevent cross-site scripting (XSS) attacks when used directly in JavaScript. If you need this data on the rendered page, consider placing it in the HTML portion (outside of a script tag). Alternatively, use a JavaScript-specific encoder, such as the one available in OWASP ESAPI. For Django, you may also consider using the 'json_script' template tag and retrieving the data in your script by using the element ID (e.g., `document.getElementById`).",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "badguys/templates/vulnerable/csrf/image.html",
+      "start": {
+        "line": 48,
+        "col": 1
+      },
+      "end": {
+        "line": 48,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "badguys/templates/vulnerable/xss/form.html",
+      "start": {
+        "line": 28,
+        "col": 1
+      },
+      "end": {
+        "line": 28,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic.html-templates.security.var-in-script-tag.var-in-script-tag",
+      "path": "badguys/templates/vulnerable/xss/path.html",
+      "start": {
+        "line": 49,
+        "col": 1
+      },
+      "end": {
+        "line": 49,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a template variable used in a script tag. Although template variables are HTML escaped, HTML escaping does not always prevent cross-site scripting (XSS) attacks when used directly in JavaScript. If you need this data on the rendered page, consider placing it in the HTML portion (outside of a script tag). Alternatively, use a JavaScript-specific encoder, such as the one available in OWASP ESAPI. For Django, you may also consider using the 'json_script' template tag and retrieving the data in your script by using the element ID (e.g., `document.getElementById`).",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "badguys/templates/vulnerable/xss/path.html",
+      "start": {
+        "line": 49,
+        "col": 1
+      },
+      "end": {
+        "line": 49,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic.html-templates.security.var-in-script-tag.var-in-script-tag",
+      "path": "badguys/templates/vulnerable/xss/query.html",
+      "start": {
+        "line": 37,
+        "col": 1
+      },
+      "end": {
+        "line": 37,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a template variable used in a script tag. Although template variables are HTML escaped, HTML escaping does not always prevent cross-site scripting (XSS) attacks when used directly in JavaScript. If you need this data on the rendered page, consider placing it in the HTML portion (outside of a script tag). Alternatively, use a JavaScript-specific encoder, such as the one available in OWASP ESAPI. For Django, you may also consider using the 'json_script' template tag and retrieving the data in your script by using the element ID (e.g., `document.getElementById`).",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "badguys/templates/vulnerable/xss/query.html",
+      "start": {
+        "line": 37,
+        "col": 1
+      },
+      "end": {
+        "line": 37,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.code.user-exec-format-string.user-exec-format-string",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 68,
+        "col": 1
+      },
+      "end": {
+        "line": 80,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user data in a call to 'exec'. This is extremely dangerous because it can enable an attacker to execute arbitrary remote code on the system. Instead, refactor your code to not use 'eval' and instead use a safe library for the specific functionality you need.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.exec-detected.exec-detected",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 72,
+        "col": 1
+      },
+      "end": {
+        "line": 72,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.exec-detected.exec-detected",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 76,
+        "col": 1
+      },
+      "end": {
+        "line": 76,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.audit.secure-cookies.django-secure-set-cookie",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 100,
+        "col": 1
+      },
+      "end": {
+        "line": 100,
+        "col": 1
+      },
+      "extra": {
+        "message": "Django cookies should be handled securely by setting secure=True, httponly=True, and samesite='Lax' in response.set_cookie(...). If your situation calls for different settings, explicitly disable the setting. If you want to send the cookie over http, set secure=False. If you want to let client-side JavaScript read the cookie, set httponly=False. If you want to attach cookies to requests for external sites, set samesite=None.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-614"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.audit.csrf-exempt.no-csrf-exempt",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 164,
+        "col": 1
+      },
+      "end": {
+        "line": 167,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected usage of @csrf_exempt, which indicates that there is no CSRF token set for this route. This could lead to an attacker manipulating the user's account and exfiltration of private data. Instead, create a function without this decorator.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-352"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.open-redirect.open-redirect",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 177,
+        "col": 1
+      },
+      "end": {
+        "line": 178,
+        "col": 1
+      },
+      "extra": {
+        "message": "Data from request (url) is passed to redirect(). This is an open redirect and could be exploited. Ensure you are redirecting to safe URLs by using django.utils.http.is_safe_url(). See https://cwe.mitre.org/data/definitions/601.html for more information.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-601"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.code.globals-misuse-code-execution.globals-misuse-code-execution",
+      "path": "badguys/vulnerable/views.py",
+      "start": {
+        "line": 182,
+        "col": 1
+      },
+      "end": {
+        "line": 186,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found request data as an index to 'globals()'. This is extremely dangerous because it allows an attacker to execute arbitrary code on the system. Refactor your code not to use 'globals()'.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-96"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

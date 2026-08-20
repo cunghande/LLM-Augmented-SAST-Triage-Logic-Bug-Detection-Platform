@@ -1,0 +1,48 @@
+{
+  "run_id": "73c78732-a7a4-4db9-8ae7-87dc479d0f57",
+  "repository_name": "vc-claude-code-seeded-v2-support-desk-fastapi",
+  "repository_identifier": "vc-claude-code-seeded-v2-support-desk-fastapi",
+  "commit_sha": "837945410ef4cbd1651e4d6d41f30bf61442e174",
+  "working_tree_state": "clean",
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.170.0",
+    "GITLEAKS": "8.30.1",
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "p/python+p/security-audit",
+    "GITLEAKS": "gitleaks-built-in",
+    "MODULE2": "python-idor-business-logic-v1"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "5e10e72a1084b633642793e14406b18caf0bb4ee4b608a71a6acf1eeb48d088a",
+    "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 23.566269,
+  "prompt_version": "triage-prompt-v13",
+  "model_version": "fake-triage-v1",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "fake",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-20T14:57:41.469513Z",
+  "completed_at": "2026-08-20T14:57:48.062195Z",
+  "total_findings_parsed": 46,
+  "findings_triaged_ok": 46,
+  "findings_with_errors": 0
+}

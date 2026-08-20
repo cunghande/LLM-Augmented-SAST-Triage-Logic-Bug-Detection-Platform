@@ -1,9 +1,8 @@
-# Joern CPG backend (thử nghiệm)
+# Joern CPG backend
 
-Joern `v4.0.600` là backend phân tích tùy chọn. `native` vẫn là mặc định cho tới
-khi benchmark A/B chứng minh Joern cải thiện chất lượng và demo Docker ổn định.
-Trong một run, hệ thống chỉ dùng đúng một backend; không trộn evidence native và
-Joern.
+Joern `v4.0.600` là backend phân tích duy nhất cho AST/CFG/call graph/dataflow.
+Detector IDOR/business-rule vẫn là detector semantic riêng vì CPG query tương
+đương chưa được triển khai và kiểm chứng.
 
 ## 1. Cài đặt
 
@@ -13,7 +12,7 @@ trống. Cài dependency tùy chọn:
 ```powershell
 cd "D:\Code\AI security"
 .\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev,joern]"
+python -m pip install -e ".[dev]"
 ```
 
 Build image đã pin. Dockerfile tải release Linux x86_64 chính thức và kiểm tra
@@ -27,15 +26,40 @@ docker build `
 docker image inspect sast-triage-joern:4.0.600
 ```
 
-Lần build đầu tải khoảng 1,83 GB. CLI không tự tải image và không tự fallback
-sang native; thiếu Docker/image sẽ trả lỗi cấu hình an toàn.
+Lần build đầu tải khoảng 1,83 GB. CLI không tự tải image và không có fallback;
+thiếu Docker/image sẽ trả lỗi cấu hình an toàn.
 
 ## 2. Chạy
+
+### Docker Compose trên máy mới
+
+Từ root dự án, cách ngắn nhất là dùng script wrapper:
+
+```powershell
+.\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo"
+```
+
+App container mount Docker socket và tạo Joern dưới dạng sibling container. Backend
+tự inspect bind mount để lấy đúng đường dẫn mà Docker daemon nhìn thấy, kể cả khi
+host là Windows, rồi kết nối Joern qua network riêng `sast-triage-runtime`. Target
+được mount read-only vào cả hai container. Chế độ Python chạy trực tiếp trên host
+vẫn chỉ publish Joern trên `127.0.0.1` như trước.
+
+Nếu gọi Compose trực tiếp, tạo `.env` từ `.env.example`, bảo đảm `TARGET_REPO` và
+`OUTPUT_DIR` là đường dẫn tuyệt đối đã tồn tại, sau đó chạy:
+
+```powershell
+docker compose build joern-image sast-triage
+docker compose run --rm doctor
+docker compose run --rm sast-triage
+```
+
+### Chạy Python trực tiếp trên host
 
 Lệnh rút gọn từ thư mục `target-repos`:
 
 ```powershell
-python -m sast_triage Sequential-Recommender --analysis-backend joern
+python -m sast_triage Sequential-Recommender
 ```
 
 Lệnh đầy đủ với fake provider để smoke test không tốn GPU:
@@ -45,11 +69,8 @@ python -m sast_triage scan-and-triage `
   --repository "D:\Code\target-repos\Sequential-Recommender" `
   --output-dir "D:\Code\triage-runs\joern-smoke" `
   --provider fake `
-  --analysis-backend joern `
   --module2
 ```
-
-Để chạy backend cũ, bỏ option hoặc dùng `--analysis-backend native`.
 
 ## 3. Luồng và ranh giới an toàn
 
@@ -78,4 +99,3 @@ hoặc version khác sẽ bị từ chối.
   Docker còn đủ RAM/disk.
 - Evidence `PARTIAL`: Agent đã timeout, không tiến triển hoặc hết budget; policy
   giữ finding ở `MANUAL_REVIEW` nếu thiếu evidence quan trọng.
-

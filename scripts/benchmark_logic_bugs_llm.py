@@ -1,4 +1,4 @@
-"""Run a small real-LLM pilot over reviewed five-class detector candidates."""
+"""Run a real-LLM pilot over reviewed IDOR/business-rule candidates."""
 
 from __future__ import annotations
 
@@ -11,17 +11,14 @@ from pathlib import Path
 from statistics import median
 from typing import Any
 
-from sast_triage.analysis.native import NativeAnalysisBackend
+from sast_triage.logic.index import build_logic_index
 from sast_triage.models import ArtifactRepositoryMatch, ModelVerdict
 from sast_triage.pipeline.finding import triage_finding
 from sast_triage.triage.modal_provider import MODEL_ID, modal_qwen_provider_session
 
 _CLASS_ORDER = (
     "missing_authz_idor",
-    "mass_assignment",
-    "race_condition_toctou",
     "business_rule_bypass",
-    "insecure_workflow",
 )
 
 
@@ -99,7 +96,7 @@ def run_pilot(
     if {item["logic_class"] for item in selected if item["expected"]} != set(
         _CLASS_ORDER
     ):
-        raise ValueError("The selected detector report does not cover all five classes.")
+        raise ValueError("The selected detector report does not cover both focused classes.")
 
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for case in selected:
@@ -117,12 +114,8 @@ def run_pilot(
             )
             if not repository.is_dir():
                 raise FileNotFoundError(f"Repository checkout unavailable: {repository_id}")
-            backend = NativeAnalysisBackend(
-                repository,
-                repository_id,
-                module2_enabled=True,
-            )
-            findings = backend.discover_logic_findings("python-five-logic", ())
+            logic_index = build_logic_index(repository)
+            findings = logic_index.discover_findings(())
             for case in cases:
                 matched_lines = set(case.get("matched_lines", []))
                 candidates = [
@@ -144,8 +137,7 @@ def run_pilot(
                     output_schema_version="triage-decision-v1",
                     prompt_type="modal-qwen.logic-benchmark",
                     artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
-                    repository_index=backend.repository_index,
-                    analysis_backend=backend,
+                    logic_index=logic_index,
                 )
                 decision = result.triage_decision
                 triage_error = decision is None

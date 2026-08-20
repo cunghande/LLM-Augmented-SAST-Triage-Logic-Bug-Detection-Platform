@@ -1,9 +1,10 @@
-"""Tests for bounded native/Joern analysis backend contracts."""
+"""Tests for bounded Joern analysis backend contracts."""
 
 from __future__ import annotations
 
 from dataclasses import asdict
 from pathlib import Path
+from subprocess import CompletedProcess
 
 import pytest
 
@@ -46,7 +47,7 @@ def _finding() -> NormalizedFinding:
 
 class _SequenceBackend:
     identity = AnalysisIdentity("joern", "test", "test", "complete", 0.0)
-    repository_index = None
+    logic_index = None
 
     def __init__(self) -> None:
         self.calls: list[str] = []
@@ -204,6 +205,62 @@ def test_joern_fails_fast_when_docker_is_unavailable(
     with pytest.raises(SastTriageError) as captured:
         JoernAnalysisBackend(tmp_path, "example/repo", module2_enabled=False)
     assert captured.value.error_code == "ANALYSIS_JOERN_DOCKER_UNAVAILABLE"
+
+
+def test_containerized_joern_reuses_daemon_mount_and_network(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    backend = object.__new__(JoernAnalysisBackend)
+    backend._repository = Path("/workspace/repository")  # type: ignore[attr-defined]
+    backend._docker_network = "sast-triage-runtime"  # type: ignore[attr-defined]
+    backend._container_name = "sast-triage-joern-test"  # type: ignore[attr-defined]
+    backend._port = 54321  # type: ignore[attr-defined]
+    backend._image = "sast-triage-joern:4.0.600"  # type: ignore[attr-defined]
+    backend._username = "user"  # type: ignore[attr-defined]
+    backend._password = "password"  # type: ignore[attr-defined]
+    calls: list[tuple[str, ...]] = []
+
+    def docker(*arguments: str, timeout: float = 120.0) -> CompletedProcess[str]:
+        del timeout
+        calls.append(arguments)
+        if arguments[0] == "inspect":
+            return CompletedProcess(
+                arguments,
+                0,
+                stdout=(
+                    '[{"Mounts":[{"Destination":"/workspace/repository",'
+                    '"Source":"/daemon/target-repo"}]}]'
+                ),
+                stderr="",
+            )
+        return CompletedProcess(arguments, 0, stdout="container-id", stderr="")
+
+    monkeypatch.setattr("sast_triage.analysis.joern.socket.gethostname", lambda: "app-id")
+    backend._docker = docker  # type: ignore[method-assign]
+
+    backend._start_container()
+
+    run = calls[-1]
+    assert ("--network", "sast-triage-runtime") == run[5:7]
+    assert "--publish" not in run
+    assert (
+        "type=bind,source=/daemon/target-repo,"
+        "target=/workspace/repository,readonly"
+    ) in run
+
+
+def test_containerized_joern_rejects_missing_repository_mount() -> None:
+    backend = object.__new__(JoernAnalysisBackend)
+    backend._repository = Path("/workspace/repository")  # type: ignore[attr-defined]
+    backend._docker_network = "sast-triage-runtime"  # type: ignore[attr-defined]
+    backend._docker = lambda *args, **kwargs: CompletedProcess(  # type: ignore[method-assign]
+        args, 0, stdout='[{"Mounts":[]}]', stderr=""
+    )
+
+    with pytest.raises(SastTriageError) as captured:
+        backend._docker_repository_source()
+
+    assert captured.value.error_code == "ANALYSIS_JOERN_REPOSITORY_MOUNT_UNAVAILABLE"
 
 
 def test_graph_projection_does_not_retain_source_canary() -> None:

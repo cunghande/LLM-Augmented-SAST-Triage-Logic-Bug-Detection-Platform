@@ -14,7 +14,7 @@ from typing import Any
 
 import modal
 
-from modal_apps.qwen14b_modal import GPU, MODEL_ID, Qwen14B, app
+from modal_apps.qwen14b_modal import APP_NAME, GPU, MODEL_ID
 from sast_triage.analysis.factory import analysis_backend_session
 from sast_triage.errors import SastTriageError
 from sast_triage.evaluation.owasp_benchmark import (
@@ -51,18 +51,9 @@ OUTPUT_JSON = (
     PROJECT_ROOT
     / "benchmarks"
     / "BenchmarkOutput"
-    / "qwen3-14b-awq-triage-benchmark-v10-native-b200.json"
+    / "qwen3-14b-awq-triage-benchmark-v13-joern-b200.json"
 )
-JOERN_OUTPUT_JSON = OUTPUT_JSON.with_name(
-    "qwen3-14b-awq-triage-benchmark-v10-joern-b200.json"
-)
-BASELINE_JSON = (
-    PROJECT_ROOT
-    / "benchmarks"
-    / "BenchmarkOutput"
-    / "qwen3-14b-awq-triage-benchmark-v8-b200.json"
-)
-PROMPT_VERSION = "triage-prompt-v10"
+PROMPT_VERSION = "triage-prompt-v13"
 OUTPUT_SCHEMA_VERSION = "triage-decision-v1"
 _TEST_NAME = re.compile(r"BenchmarkTest\d{5}")
 
@@ -111,7 +102,7 @@ class ModalQwenProvider:
     provider_name = "modal-qwen-structured"
     model_version = MODEL_ID
 
-    def __init__(self, remote_model: Qwen14B) -> None:
+    def __init__(self, remote_model: Any) -> None:
         self._remote_model = remote_model
         self._schema = _decision_schema()
         self._completed = 0
@@ -564,47 +555,7 @@ def _write_report(
             f"{latency['first_request_seconds_including_cold_start']} s"
         ),
         f"- Steady-state mean: {latency['steady_state_mean_seconds']} s/finding",
-        "",
-        "## So sánh với artifact cũ",
-        "",
     ]
-    if BASELINE_JSON.is_file():
-        baseline = json.loads(BASELINE_JSON.read_text(encoding="utf-8"))
-        accuracy_improved = (
-            metrics["accuracy_with_abstentions_unresolved"]
-            > baseline["accuracy_with_abstentions_unresolved"]
-        )
-        comparison_summary = (
-            "Coverage, selective accuracy, overall accuracy và tốc độ đều tăng; policy không "
-            "đưa finding mang nhãn vulnerable nào vào FP_CANDIDATE trong lần chạy này."
-            if accuracy_improved
-            else (
-                "Coverage và tốc độ tăng, nhưng accuracy model giảm; đây không phải một "
-                "quality win tổng thể."
-            )
-        )
-        lines.extend(
-            [
-                f"- Coverage: {baseline['coverage']:.2%} → {metrics['coverage']:.2%}",
-                (
-                    "- Selective accuracy: "
-                    f"{baseline['selective_accuracy']:.2%} → {metrics['selective_accuracy']:.2%}"
-                ),
-                (
-                    "- Accuracy khi review/error là unresolved: "
-                    f"{baseline['accuracy_with_abstentions_unresolved']:.2%} → "
-                    f"{metrics['accuracy_with_abstentions_unresolved']:.2%}"
-                ),
-                (
-                    "- Tổng thời gian: "
-                    f"{baseline['elapsed_seconds_including_cold_start']} s → "
-                    f"{metrics['elapsed_seconds_including_cold_start']} s"
-                ),
-                "",
-                comparison_summary,
-                "",
-            ]
-        )
     lines.extend(
         [
             "## Giới hạn",
@@ -733,49 +684,6 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
             "",
         ]
     )
-    if BASELINE_JSON.is_file():
-        lines.extend(["## 5. So sánh với baseline native v8", ""])
-        baseline = json.loads(BASELINE_JSON.read_text(encoding="utf-8"))
-        baseline_context = baseline["context"]["status_counts"]
-        baseline_policy = baseline["policy_safety"]
-        lines.extend(
-            [
-                "| Chỉ số | Native v8 | Joern v9 |",
-                "|---|---:|---:|",
-                (
-                    "| Accuracy tổng thể | "
-                    f"{baseline['accuracy_with_abstentions_unresolved']:.2%} | "
-                    f"{metrics['accuracy_with_abstentions_unresolved']:.2%} |"
-                ),
-                (
-                    f"| Selective accuracy | {baseline['selective_accuracy']:.2%} | "
-                    f"{metrics['selective_accuracy']:.2%} |"
-                ),
-                (
-                    f"| Nhận diện benign | {baseline['benign_recognition_rate']:.2%} | "
-                    f"{metrics['benign_recognition_rate']:.2%} |"
-                ),
-                (
-                    "| Automatic resolution | "
-                    f"{baseline_policy['automatic_resolution_rate']:.2%} | "
-                    f"{policy['automatic_resolution_rate']:.2%} |"
-                ),
-                (
-                    f"| Context partial | {baseline_context.get('partial', 0)} | "
-                    f"{status_counts.get('partial', 0)} |"
-                ),
-                (
-                    f"| Tổng thời gian | {baseline['elapsed_seconds_including_cold_start']} s | "
-                    f"{metrics['elapsed_seconds_including_cold_start']} s |"
-                ),
-                "",
-                (
-                    "Kết luận mặc định được quyết định bởi quality gate ở trên; "
-                    "không suy diễn từ một metric đơn lẻ."
-                ),
-                "",
-            ]
-        )
     category_errors = {
         name: values.get("incorrect", 0)
         for name, values in categories.items()
@@ -790,7 +698,7 @@ def _write_report_vi(metrics: dict[str, object], output_json: Path) -> None:
     )
     lines.extend(
         [
-            f"## {6 if BASELINE_JSON.is_file() else 5}. Nhóm lỗi và giới hạn",
+            "## 5. Nhóm lỗi và giới hạn",
             "",
             f"- Số dự đoán sai theo category: `{category_errors}`.",
             (
@@ -858,7 +766,7 @@ def _quality_evaluation(metrics: dict[str, object]) -> dict[str, object]:
         "quality_win": all(required.values()) and all(quality.values()),
         "default_recommendation": (
             "consider_sprint_2_default" if all(required.values()) and all(quality.values())
-            else "keep_native_default_joern_experimental"
+            else "review_joern_quality_gates"
         ),
     }
 
@@ -867,7 +775,6 @@ def run_benchmark(
     *,
     limit: int | None,
     write_report: bool,
-    analysis_backend: str = "native",
     category_filter: str | None = None,
 ) -> dict[str, object]:
     """Chạy benchmark đầy đủ hoặc giới hạn bằng một ứng dụng Modal tạm thời."""
@@ -921,34 +828,33 @@ def run_benchmark(
 
     started = time.perf_counter()
     with analysis_backend_session(
-        analysis_backend,
         BENCHMARK_ROOT,
         "BenchmarkPython-Qwen3-14B-AWQ-scoreable",
         # Build cross-file evidence but do not add Module 2 findings to the
         # fixed 93-finding comparison set.
         module2_enabled=True,
     ) as backend:
-        with app.run():
-            provider = ModalQwenProvider(Qwen14B())
-            batch_result = triage_batch(
-                BENCHMARK_ROOT,
-                provider,
-                semgrep_result=scanner_result,
-                repository_identifier="BenchmarkPython-Qwen3-14B-AWQ-scoreable",
-                artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
-                prompt_version=PROMPT_VERSION,
-                output_schema_version=OUTPUT_SCHEMA_VERSION,
-                prompt_type="modal-qwen.structured",
-                cli_mode=f"benchmark-modal-qwen-{analysis_backend}",
-                repository_index=backend.repository_index,
-                analysis_backend=backend,
-                analysis_identity=backend.identity,
-                scanner_versions={"SEMGREP": "1.170.0"},
-                scanner_config_ids={"SEMGREP": "p/python"},
-                input_artifact_hashes={
-                    "SEMGREP": hashlib.sha256(SEMGREP_ARTIFACT.read_bytes()).hexdigest()
-                },
-            )
+        deployed_model = modal.Cls.from_name(APP_NAME, "Qwen14B")()
+        provider = ModalQwenProvider(deployed_model)
+        batch_result = triage_batch(
+            BENCHMARK_ROOT,
+            provider,
+            semgrep_result=scanner_result,
+            repository_identifier="BenchmarkPython-Qwen3-14B-AWQ-scoreable",
+            artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
+            prompt_version=PROMPT_VERSION,
+            output_schema_version=OUTPUT_SCHEMA_VERSION,
+            prompt_type="modal-qwen.structured",
+            cli_mode="benchmark-modal-qwen-joern-deployed",
+            logic_index=backend.logic_index,
+            analysis_backend=backend,
+            analysis_identity=backend.identity,
+            scanner_versions={"SEMGREP": "1.170.0"},
+            scanner_config_ids={"SEMGREP": "p/python"},
+            input_artifact_hashes={
+                "SEMGREP": hashlib.sha256(SEMGREP_ARTIFACT.read_bytes()).hexdigest()
+            },
+        )
         analysis_stats = (
             backend.safe_stats() if hasattr(backend, "safe_stats") else {}
         )
@@ -967,8 +873,7 @@ def run_benchmark(
     metrics["quality_evaluation"] = _quality_evaluation(metrics)
     metrics["minimal_schema_recoveries"] = provider.minimal_schema_recoveries
     if write_report:
-        output_json = JOERN_OUTPUT_JSON if analysis_backend == "joern" else OUTPUT_JSON
-        _write_report_vi(metrics, output_json)
+        _write_report_vi(metrics, OUTPUT_JSON)
     return metrics
 
 
@@ -978,18 +883,12 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--no-write", action="store_true")
     parser.add_argument("--category", default=None)
-    parser.add_argument(
-        "--analysis-backend",
-        choices=("native", "joern"),
-        default="native",
-    )
     args = parser.parse_args()
     if args.limit is not None and args.limit <= 0:
         parser.error("--limit must be greater than zero")
     metrics = run_benchmark(
         limit=args.limit,
         write_report=not args.no_write,
-        analysis_backend=args.analysis_backend,
         category_filter=args.category,
     )
     print(json.dumps(metrics, ensure_ascii=False, indent=2))

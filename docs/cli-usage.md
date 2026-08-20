@@ -281,12 +281,11 @@ Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây l�
 | `--provider` | `fake`, `ollama` hoặc `real`. |
 | `--prompt-version` | Mặc định `triage-prompt-v13`; v13 thêm retrieval-resolution, rubric riêng theo lớp và một verifier pass có giới hạn cho logic finding còn abstain. Dùng v12/v11/v10/v9 chỉ để tái lập baseline cũ. |
 | `--repository-identifier` | ID tương đối ghi vào metadata; mặc định là tên repo. |
-| `--analysis-backend` | `native` (mặc định) hoặc `joern` (Docker, thử nghiệm). |
 | `--semgrep-config` | Có thể lặp nhiều lần để thêm ruleset/YAML. |
 | `--gitleaks-config` | Config Gitleaks tùy chọn. |
 | `--module2` / `--no-module2` | Bật/tắt cross-file index và evidence Python. Mặc định bật. |
 | `--module2-discovery` | Thử nghiệm Sprint 3: cho phép Module 2 thêm finding mới; mặc định tắt để benchmark chỉ đo finding của scanner. |
-| `--logic-detector` | `off` (mặc định) hoặc `python-five-logic` để phát hiện năm lớp lỗi logic Sprint 2. |
+| `--logic-detector` | `off` (mặc định) hoặc `python-idor-business-logic` để phát hiện IDOR và business-rule bypass. |
 | `--overwrite` / `--no-overwrite` | Cho phép/chặn ghi đè file report. |
 | `--resume` | Dùng lại scanner artifact và checkpoint của cùng output dir. |
 
@@ -297,8 +296,8 @@ python -m sast_triage scan-and-triage --help
 python -m sast_triage triage --help
 ```
 
-Thiết lập image, smoke test và troubleshooting của `--analysis-backend joern`
-được mô tả tại [joern-analysis.md](joern-analysis.md).
+Thiết lập image, smoke test và troubleshooting của Joern được mô tả tại
+[joern-analysis.md](joern-analysis.md).
 
 ## 7. Module 2 và monorepo
 
@@ -319,9 +318,8 @@ repository index. Giới hạn mặc định:
 - trace tối đa 5 tầng;
 - Evidence Agent tối đa 5 tool call.
 
-Module 2 chưa phải taint engine toàn diện như Semgrep Pro/CodeQL. Dynamic
-dispatch, reflection, monkey patching hoặc framework wiring phức tạp có thể cần
-review thủ công.
+Joern đảm nhiệm taint/dataflow. Dynamic dispatch, reflection, monkey patching
+hoặc framework wiring phức tạp vẫn có thể cần review thủ công.
 
 Mặc định, Module 2 chỉ tạo index/evidence cho finding Semgrep và Gitleaks. Nó
 không làm thay đổi tập finding của scanner. Chỉ dùng `--module2-discovery` khi
@@ -541,25 +539,24 @@ làm bằng chứng nghiệm thu.
 Đọc kiến trúc tại [`code-map.md`](code-map.md) và
 [`sprint-1-system-flow.md`](sprint-1-system-flow.md).
 
-## 14. Demo Sprint 2 — năm lớp logic bug
+## 14. Demo Sprint 2 — IDOR và business-rule bypass
 
 Khi `.venv` đã kích hoạt và PowerShell đang ở `D:\Code\target-repos`, chạy một
 dòng dưới đây. Chỉ thay cả hai chỗ `<TEN_REPO>` bằng đúng tên thư mục repo:
 
 ```powershell
-python -m sast_triage scan-and-triage --repository .\<TEN_REPO> --output-dir ..\triage-runs\<TEN_REPO>-sprint2 --analysis-backend native --module2 --logic-detector python-five-logic --provider fake
+python -m sast_triage scan-and-triage --repository .\<TEN_REPO> --output-dir ..\triage-runs\<TEN_REPO>-sprint2 --module2 --logic-detector python-idor-business-logic --provider fake
 ```
 
 Ví dụ với `FastAPI-App`:
 
 ```powershell
-python -m sast_triage scan-and-triage --repository .\FastAPI-App --output-dir ..\triage-runs\FastAPI-App-sprint2 --analysis-backend native --module2 --logic-detector python-five-logic --provider fake
+python -m sast_triage scan-and-triage --repository .\FastAPI-App --output-dir ..\triage-runs\FastAPI-App-sprint2 --module2 --logic-detector python-idor-business-logic --provider fake
 ```
 
 `--output-dir` không cần tồn tại trước; CLI tự tạo. Để dùng LLM thật trên Modal,
 đổi duy nhất `--provider fake` thành `--provider real` sau khi
-`python -m modal token info` chạy thành công. Detector Sprint 2 hiện yêu cầu
-backend `native` và Module 2 bật.
+`python -m modal token info` chạy thành công. Detector Sprint 2 yêu cầu Module 2 bật.
 
-Xem phạm vi, năm lớp lỗi và cách đọc benchmark tại
+Xem phạm vi hai lớp lỗi và cách đọc benchmark tại
 [`sprint-2-scope.md`](sprint-2-scope.md).

@@ -17,9 +17,11 @@ Markdown cùng HTML độc lập.
 - Module 2: index Python theo component, symbol, call-site và `FunctionSummary`
   source-free (parameter→sink, parameter→return, control); trace source-to-sink
   cross-file có giới hạn và nhận diện entrypoint Flask/FastAPI/Django thông dụng.
-- Sprint 2: detector `python-five-logic` tạo candidate cho missing authz/IDOR,
-  mass assignment, race/TOCTOU, business-rule bypass và insecure workflow; mỗi
-  candidate có trace, risk factors và remediation an toàn.
+- Sprint 2: detector `python-idor-business-logic` tập trung vào missing
+  authorization/IDOR và business-rule bypass. Các pattern ưu tiên là truy cập
+  tài liệu khác chủ sở hữu, giá/số lượng giỏ hàng không đáng tin cậy và truy vấn
+  danh sách thiếu giới hạn phân trang; mỗi candidate có trace, risk factors và
+  remediation an toàn.
 - Xử lý tuần tự trong Sprint 1; không chạy finding song song.
 - Notebook `.ipynb` chưa được phân tích trực tiếp; cần chuyển sang `.py` trước.
 
@@ -48,7 +50,54 @@ cross-file tốt hơn; Sprint 3 có thể dùng lại cùng index để mở r�
 Summary chỉ chứa identifier, đường dẫn tương đối, dòng và loại flow/control;
 không chứa source code hoặc literal bí mật.
 
-## Bắt đầu nhanh trên Windows
+## Chạy bằng Docker sau khi clone (khuyến nghị)
+
+Máy mới chỉ cần Git, Docker Desktop/Engine đang chạy Linux containers và khoảng
+8 GB RAM dành cho Docker. Image ứng dụng đã chứa Python 3.12, Semgrep 1.170.0,
+Gitleaks 8.30.1 và Docker CLI; Compose build riêng Joern 4.0.600 đã pin checksum.
+
+Windows PowerShell:
+
+```powershell
+git clone <URL_REPOSITORY_CUA_DU_AN> sast-triage
+cd sast-triage
+.\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo"
+```
+
+Linux/macOS:
+
+```bash
+git clone <URL_REPOSITORY_CUA_DU_AN> sast-triage
+cd sast-triage
+chmod +x scripts/run-docker.sh
+./scripts/run-docker.sh /absolute/path/to/target-repo
+```
+
+Script tự động:
+
+1. build image ứng dụng và image Joern;
+2. kiểm tra Docker, Joern, Semgrep và Gitleaks;
+3. mount target read-only;
+4. tạo output mới có timestamp trong `triage-runs/`;
+5. chạy Joern source-to-sink, Semgrep, Gitleaks và logic detector.
+
+Mặc định dùng `provider=fake` để kiểm tra end-to-end mà không cần tài khoản ngoài.
+Để dùng Qwen trên Modal, đặt `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` trong environment
+rồi chạy:
+
+```powershell
+.\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo" -Provider real
+```
+
+```bash
+./scripts/run-docker.sh /absolute/path/to/target-repo "" real
+```
+
+Không commit Modal credential. Có thể copy `.env.example` thành `.env` khi muốn gọi
+Compose trực tiếp. Compose mount Docker socket để app tạo container Joern sibling;
+chỉ chạy cấu hình này với source dự án mà bạn tin cậy.
+
+## Bắt đầu nhanh trên Windows không dùng app container
 
 ### 1. Yêu cầu
 
@@ -86,8 +135,8 @@ python -m pip install --upgrade pip setuptools wheel
 python -m pip install -e ".[dev]"
 ```
 
-Backend mặc định là `native`. Muốn thử Joern CPG, cần Docker Desktop và cài thêm
-`python -m pip install -e ".[dev,joern]"`; xem [hướng dẫn Joern](docs/joern-analysis.md).
+Joern CPG là backend phân tích duy nhất và cần Docker Desktop; dependency client
+đã nằm trong cài đặt chuẩn. Xem [hướng dẫn Joern](docs/joern-analysis.md).
 
 ### 3. Xác thực Modal một lần
 
@@ -179,7 +228,7 @@ cuối của hệ thống.
 .
 ├── src/sast_triage/
 │   ├── application/          điều phối một CLI run và provider session
-│   ├── analysis/             backend native/Joern CPG và projection an toàn
+│   ├── analysis/             backend Joern CPG và projection an toàn
 │   ├── runners/              chạy Semgrep/Gitleaks
 │   ├── parsers/              scanner JSON → NormalizedFinding
 │   ├── context/              safe read, AST, sanitize, evidence, Module 2
@@ -237,8 +286,6 @@ nơi.
 - [Kế hoạch triển khai hiện tại](docs/current-project-plan.md)
 - [Threat model](docs/threat-model.md)
 - [Thiết lập và chạy Joern CPG](docs/joern-analysis.md)
-- [Benchmark native prompt v10 trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v10-native-b200.md)
-- [Báo cáo Joern v9 lịch sử trên B200](benchmarks/BenchmarkOutput/qwen3-14b-awq-triage-benchmark-v9-joern-b200.md)
 - [Bản đồ mã nguồn](docs/code-map.md)
 - [Luồng hệ thống Sprint 1](docs/sprint-1-system-flow.md)
 - [Kiến trúc](docs/architecture.md)

@@ -1,0 +1,886 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "bad/api_list.py",
+      "start": {
+        "line": 10,
+        "col": 1
+      },
+      "end": {
+        "line": 10,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "severity": "LOW",
+        "metadata": {
+          "cwe": [
+            "CWE-319"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "bad/api_post.py",
+      "start": {
+        "line": 16,
+        "col": 1
+      },
+      "end": {
+        "line": 16,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "severity": "LOW",
+        "metadata": {
+          "cwe": [
+            "CWE-319"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "bad/api_post.py",
+      "start": {
+        "line": 30,
+        "col": 1
+      },
+      "end": {
+        "line": 30,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "severity": "LOW",
+        "metadata": {
+          "cwe": [
+            "CWE-319"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dangerous-subprocess-use-tainted-env-args.dangerous-subprocess-use-tainted-env-args",
+      "path": "bad/brute.py",
+      "start": {
+        "line": 21,
+        "col": 1
+      },
+      "end": {
+        "line": 21,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected subprocess function 'run' with user controlled data. A malicious actor could leverage this to perform command injection. You may consider using 'shlex.quote()'.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-78"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "bad/templates/messages.html",
+      "start": {
+        "line": 8,
+        "col": 1
+      },
+      "end": {
+        "line": 8,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "bad/templates/posts.view.html",
+      "start": {
+        "line": 23,
+        "col": 1
+      },
+      "end": {
+        "line": 23,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "bad/vulpy-ssl.py",
+      "start": {
+        "line": 13,
+        "col": 1
+      },
+      "end": {
+        "line": 13,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.app-run-security-config.avoid_using_app_run_directly",
+      "path": "bad/vulpy-ssl.py",
+      "start": {
+        "line": 29,
+        "col": 1
+      },
+      "end": {
+        "line": 29,
+        "col": 1
+      },
+      "extra": {
+        "message": "top-level app.run(...) is ignored by flask. Consider putting app.run(...) behind a guard, like inside a function",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-668"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.debug-enabled.debug-enabled",
+      "path": "bad/vulpy-ssl.py",
+      "start": {
+        "line": 29,
+        "col": 1
+      },
+      "end": {
+        "line": 29,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected Flask app with debug=True. Do not deploy to production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "bad/vulpy.py",
+      "start": {
+        "line": 16,
+        "col": 1
+      },
+      "end": {
+        "line": 16,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.app-run-security-config.avoid_using_app_run_directly",
+      "path": "bad/vulpy.py",
+      "start": {
+        "line": 55,
+        "col": 1
+      },
+      "end": {
+        "line": 55,
+        "col": 1
+      },
+      "extra": {
+        "message": "top-level app.run(...) is ignored by flask. Consider putting app.run(...) behind a guard, like inside a function",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-668"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.debug-enabled.debug-enabled",
+      "path": "bad/vulpy.py",
+      "start": {
+        "line": 55,
+        "col": 1
+      },
+      "end": {
+        "line": 55,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected Flask app with debug=True. Do not deploy to production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "good/httpbrute.py",
+      "start": {
+        "line": 22,
+        "col": 1
+      },
+      "end": {
+        "line": 22,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "severity": "LOW",
+        "metadata": {
+          "cwe": [
+            "CWE-319"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret",
+      "path": "good/libapi.py",
+      "start": {
+        "line": 20,
+        "col": 1
+      },
+      "end": {
+        "line": 24,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded JWT secret or private key is used. This is a Insufficiently Protected Credentials weakness: https://cwe.mitre.org/data/definitions/522.html Consider using an appropriate security mechanism to protect the credentials (e.g. keeping secrets in environment variables)",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-522"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "good/templates/messages.html",
+      "start": {
+        "line": 8,
+        "col": 1
+      },
+      "end": {
+        "line": 8,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "good/templates/posts.view.html",
+      "start": {
+        "line": 23,
+        "col": 1
+      },
+      "end": {
+        "line": 23,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "good/vulpy-ssl.py",
+      "start": {
+        "line": 13,
+        "col": 1
+      },
+      "end": {
+        "line": 13,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.app-run-security-config.avoid_using_app_run_directly",
+      "path": "good/vulpy-ssl.py",
+      "start": {
+        "line": 29,
+        "col": 1
+      },
+      "end": {
+        "line": 29,
+        "col": 1
+      },
+      "extra": {
+        "message": "top-level app.run(...) is ignored by flask. Consider putting app.run(...) behind a guard, like inside a function",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-668"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.debug-enabled.debug-enabled",
+      "path": "good/vulpy-ssl.py",
+      "start": {
+        "line": 29,
+        "col": 1
+      },
+      "end": {
+        "line": 29,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected Flask app with debug=True. Do not deploy to production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "good/vulpy.py",
+      "start": {
+        "line": 17,
+        "col": 1
+      },
+      "end": {
+        "line": 17,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.app-run-security-config.avoid_using_app_run_directly",
+      "path": "good/vulpy.py",
+      "start": {
+        "line": 53,
+        "col": 1
+      },
+      "end": {
+        "line": 53,
+        "col": 1
+      },
+      "extra": {
+        "message": "top-level app.run(...) is ignored by flask. Consider putting app.run(...) behind a guard, like inside a function",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-668"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.debug-enabled.debug-enabled",
+      "path": "good/vulpy.py",
+      "start": {
+        "line": 53,
+        "col": 1
+      },
+      "end": {
+        "line": 53,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected Flask app with debug=True. Do not deploy to production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.cryptography.security.mode-without-authentication.crypto-mode-without-authentication",
+      "path": "utils/aes-decrypt.py",
+      "start": {
+        "line": 24,
+        "col": 1
+      },
+      "end": {
+        "line": 24,
+        "col": 1
+      },
+      "extra": {
+        "message": "An encryption mode of operation is being used without proper message authentication. This can potentially result in the encrypted content to be decrypted by an attacker. Consider instead use an AEAD mode of operation like GCM. ",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.cryptography.security.mode-without-authentication.crypto-mode-without-authentication",
+      "path": "utils/aes-encrypt.py",
+      "start": {
+        "line": 28,
+        "col": 1
+      },
+      "end": {
+        "line": 28,
+        "col": 1
+      },
+      "extra": {
+        "message": "An encryption mode of operation is being used without proper message authentication. This can potentially result in the encrypted content to be decrypted by an attacker. Consider instead use an AEAD mode of operation like GCM. ",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic-api-key",
+      "path": "good/libsession.py",
+      "start": {
+        "line": 9,
+        "col": 1
+      },
+      "end": {
+        "line": 9,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+        "severity": "UNKNOWN",
+        "metadata": {
+          "cwe": [
+            "CWE-798"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "bad/libuser.py",
+      "start": {
+        "line": 12,
+        "col": 1
+      },
+      "end": {
+        "line": 12,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "bad/libposts.py",
+      "start": {
+        "line": 28,
+        "col": 1
+      },
+      "end": {
+        "line": 28,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "bad/libuser.py",
+      "start": {
+        "line": 53,
+        "col": 1
+      },
+      "end": {
+        "line": 53,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "bad/libmfa.py",
+      "start": {
+        "line": 12,
+        "col": 1
+      },
+      "end": {
+        "line": 12,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "good/libuser.py",
+      "start": {
+        "line": 92,
+        "col": 1
+      },
+      "end": {
+        "line": 92,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "bad/libmfa.py",
+      "start": {
+        "line": 59,
+        "col": 1
+      },
+      "end": {
+        "line": 59,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "good/libuser.py",
+      "start": {
+        "line": 22,
+        "col": 1
+      },
+      "end": {
+        "line": 22,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "bad/libuser.py",
+      "start": {
+        "line": 25,
+        "col": 1
+      },
+      "end": {
+        "line": 25,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "good/libmfa.py",
+      "start": {
+        "line": 59,
+        "col": 1
+      },
+      "end": {
+        "line": 59,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "good/libposts.py",
+      "start": {
+        "line": 28,
+        "col": 1
+      },
+      "end": {
+        "line": 28,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.load",
+      "path": "bad/vulpy-ssl.py",
+      "start": {
+        "line": 27,
+        "col": 1
+      },
+      "end": {
+        "line": 27,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.load",
+      "path": "good/vulpy.py",
+      "start": {
+        "line": 45,
+        "col": 1
+      },
+      "end": {
+        "line": 45,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "good/libmfa.py",
+      "start": {
+        "line": 12,
+        "col": 1
+      },
+      "end": {
+        "line": 12,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.load",
+      "path": "good/vulpy-ssl.py",
+      "start": {
+        "line": 27,
+        "col": 1
+      },
+      "end": {
+        "line": 27,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.load",
+      "path": "bad/vulpy.py",
+      "start": {
+        "line": 46,
+        "col": 1
+      },
+      "end": {
+        "line": 46,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,4 +1,4 @@
-"""Typed internal contract shared by native and Joern analysis backends."""
+"""Typed internal contract for the Joern repository analysis backend."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Protocol
 from sast_triage.models import NormalizedFinding
 
 if TYPE_CHECKING:
-    from sast_triage.context.repository_index import RepositoryEvidenceIndex
+    from sast_triage.logic.index import LogicFindingIndex
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,10 +113,10 @@ class GraphEvidence:
 
 
 class AnalysisBackend(Protocol):
-    """Internal interface implemented by exactly one backend in a run."""
+    """Internal interface implemented by the run's Joern backend."""
 
     identity: AnalysisIdentity
-    repository_index: RepositoryEvidenceIndex | None
+    logic_index: LogicFindingIndex | None
 
     def discover_findings(
         self,
@@ -131,8 +131,8 @@ class AnalysisBackend(Protocol):
     ) -> tuple[NormalizedFinding, ...]:
         """Return findings from an explicitly selected logic detector."""
 
-    def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence | None:
-        """Return local evidence, or None when the native context engine owns analysis."""
+    def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence:
+        """Return source-free initial CPG evidence for one finding."""
 
     def run_tool(
         self,

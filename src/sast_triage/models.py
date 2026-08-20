@@ -433,7 +433,7 @@ class RunMetadata(BaseDomainModel):
     scanner_versions: dict[str, str | None] = Field(default_factory=dict)
     scanner_config_ids: dict[str, str | None] = Field(default_factory=dict)
     input_artifact_hashes: dict[str, str | None] = Field(default_factory=dict)
-    analysis_backend: str = "native"
+    analysis_backend: str = "joern"
     analysis_backend_version: str | None = None
     analysis_config_id: str | None = None
     cpg_build_status: str = "not_applicable"
@@ -482,8 +482,8 @@ class RunMetadata(BaseDomainModel):
             raise ValueError("Finding counts cannot be negative")
         if not set(self.scanners_succeeded).issubset(set(self.scanners_attempted)):
             raise ValueError("scanners_succeeded must be a subset of scanners_attempted")
-        if self.analysis_backend not in {"native", "joern"}:
-            raise ValueError("analysis_backend must be native or joern")
+        if self.analysis_backend != "joern":
+            raise ValueError("analysis_backend must be joern")
         if self.cpg_build_status not in {"not_applicable", "complete", "partial", "failed"}:
             raise ValueError("cpg_build_status is invalid")
         if self.cpg_build_seconds < 0:

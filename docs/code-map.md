@@ -10,7 +10,8 @@ CLI
  └─ application/run.py
      ├─ runners/scanners.py       chạy Semgrep và Gitleaks
      ├─ parsers/                  tạo NormalizedFinding
-     ├─ context/repository_index  bổ sung evidence/finding cross-file
+     ├─ analysis/joern.py         tạo CPG và source-to-sink evidence
+     ├─ logic/index.py            index riêng cho detector logic nghiệp vụ
      └─ pipeline/batch.py         xử lý tuần tự mọi finding
          └─ pipeline/finding.py
              ├─ context/          đọc, chọn scope, sanitize, tạo evidence
@@ -50,7 +51,8 @@ recall hoặc F1.
 | `application` | Điều phối một CLI run, provider session, artifact binding | Dataflow hoặc policy rule |
 | `runners` | Lệnh scanner, version và config ID | Parse finding |
 | `parsers` | Scanner JSON → domain model | Đọc source repository |
-| `context` | Safe source access, AST/dataflow, same-file và cross-file evidence | Gọi LLM hoặc quyết định policy |
+| `analysis` | Joern CPG, source/sink dataflow và call graph | Raw source projection hoặc policy rule |
+| `context` | Safe source access, sanitize và evidence projection | Gọi LLM hoặc quyết định policy |
 | `triage` | Prompt/provider/output validation | Raw source hoặc scanner artifact |
 | `policy` | Chuyển model opinion thành system action | Gọi provider |
 | `pipeline` | Thứ tự xử lý và error recovery | Logic scanner riêng lẻ |
@@ -62,13 +64,13 @@ recall hoặc F1.
 `context` lớn nhất vì đây là security boundary. Đọc theo thứ tự:
 
 1. `reader.py` — resolve path và chỉ đọc file nằm trong repository.
-2. `selection.py` / `python_scope.py` — chọn phần source cần thiết.
+2. `selection.py` — chọn line window có giới hạn; không tự phân tích dataflow.
 3. `sanitizer.py` — redact và tạo `SanitizedContext`.
-4. `ast_utils.py` — helper AST thuần và bảng source/sink/sanitizer.
-5. `evidence_engine.py` — dataflow same-file có trạng thái.
-6. `evidence_agent.py` / `evidence_tools.py` — mở rộng evidence có ngân sách.
-7. `evidence_service.py` — projection allowlist duy nhất gửi provider.
-8. `repository_index.py` — index cross-file/monorepo không giữ raw source.
+4. `evidence_agent.py` — mở rộng Joern evidence bằng ba query có ngân sách.
+5. `evidence_service.py` — projection allowlist duy nhất gửi provider.
+
+Phân tích cấu trúc, call graph và source-to-sink thuộc duy nhất về `analysis/joern.py`.
+Index trong `logic/index.py` chỉ phục vụ detector logic nghiệp vụ và không thay Joern.
 
 Module 1 và Module 2 không chạy thành hai agent cạnh tranh. Module 2 chỉ bổ sung
 evidence hoặc finding đã chứng minh được; mọi kết quả vẫn đi qua cùng pipeline,
@@ -81,9 +83,10 @@ provider và policy theo thứ tự.
 | Thêm option CLI | `cli.py`, sau đó `application/run.py` |
 | Thêm Semgrep ruleset/config | `runners/scanners.py` |
 | Map field scanner mới | `parsers/semgrep.py` hoặc `parsers/gitleaks.py` |
-| Thêm source/sink Python | `context/ast_utils.py` |
-| Cải thiện assignment/dataflow | `context/evidence_engine.py` |
-| Cải thiện cross-file/monorepo | `context/repository_index.py` |
+| Thêm source/sink Python | `analysis/joern.py` |
+| Cải thiện assignment/dataflow | `analysis/joern.py` |
+| Cải thiện cross-file/call graph | `analysis/joern.py` |
+| Cải thiện detector logic nghiệp vụ | `logic/analyzer.py`, `logic/index.py` |
 | Đổi rubric cho LLM | `triage/system_prompt.py` |
 | Đổi payload gửi LLM | `triage/prompt_builder.py` |
 | Đổi JSON Schema Qwen | `triage/modal_provider.py` |

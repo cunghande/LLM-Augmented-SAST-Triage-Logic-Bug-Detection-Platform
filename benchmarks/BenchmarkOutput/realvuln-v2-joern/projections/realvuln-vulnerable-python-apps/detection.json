@@ -1,0 +1,270 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "path": "Insecure_Deserialization/exploitApickle.py",
+      "start": {
+        "line": 17,
+        "col": 1
+      },
+      "end": {
+        "line": 17,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.ssrf.ssrf-injection-urllib.ssrf-injection-urllib",
+      "path": "Other/url_fetch.py",
+      "start": {
+        "line": 13,
+        "col": 1
+      },
+      "end": {
+        "line": 17,
+        "col": 1
+      },
+      "extra": {
+        "message": "Data from request object is passed to a new server-side request. This could lead to a server-side request forgery (SSRF), which could result in attackers gaining access to private organization data. To mitigate, ensure that schemes and hosts are validated against an allowlist, do not forward the response to the user, and ensure proper authentication and transport-layer security in the proxied request.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-918"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "Other/url_fetch.py",
+      "start": {
+        "line": 15,
+        "col": 1
+      },
+      "end": {
+        "line": 15,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-cPickle",
+      "path": "RCE/sentry_rce.py",
+      "start": {
+        "line": 56,
+        "col": 1
+      },
+      "end": {
+        "line": 56,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using `cPickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-session-with-http.request-session-with-http",
+      "path": "RCE/sentry_rce.py",
+      "start": {
+        "line": 137,
+        "col": 1
+      },
+      "end": {
+        "line": 137,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted. Use 'https://' instead.",
+        "severity": "LOW",
+        "metadata": {
+          "cwe": [
+            "CWE-319"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "SQLI/main.py",
+      "start": {
+        "line": 52,
+        "col": 1
+      },
+      "end": {
+        "line": 52,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "SQLI/main_safe.py",
+      "start": {
+        "line": 26,
+        "col": 1
+      },
+      "end": {
+        "line": 26,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-cPickle",
+      "path": "SSRF/sentry_rce.py",
+      "start": {
+        "line": 57,
+        "col": 1
+      },
+      "end": {
+        "line": 57,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using `cPickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-session-with-http.request-session-with-http",
+      "path": "SSRF/sentry_rce.py",
+      "start": {
+        "line": 138,
+        "col": 1
+      },
+      "end": {
+        "line": 138,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted. Use 'https://' instead.",
+        "severity": "LOW",
+        "metadata": {
+          "cwe": [
+            "CWE-319"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "SQLI/main_safe.py",
+      "start": {
+        "line": 39,
+        "col": 1
+      },
+      "end": {
+        "line": 39,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "SQLI/main_safe.py",
+      "start": {
+        "line": 64,
+        "col": 1
+      },
+      "end": {
+        "line": 64,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "SQLI/main_safe.py",
+      "start": {
+        "line": 86,
+        "col": 1
+      },
+      "end": {
+        "line": 86,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

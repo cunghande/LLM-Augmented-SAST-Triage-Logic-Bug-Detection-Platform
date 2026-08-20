@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Security Assessment Report — realvuln-lets-be-bad-guys</title>
+  <style>
+    :root { --blue:#2474e5; --ink:#1f2937; --muted:#667085; --line:#d9e2ef; --paper:#fff; --bg:#f2f6fb; --critical:#b42318; --high:#d92d20; --medium:#dc6803; --low:#027a48; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:14px/1.55 Inter,Segoe UI,Arial,sans-serif; }
+    main { max-width:1040px; margin:32px auto; padding:0 20px 48px; }
+    .cover,.summary,.finding,.footer { background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:0 5px 18px rgba(31,41,55,.06); }
+    .cover { padding:48px; border-top:6px solid var(--blue); }
+    .eyebrow { margin:0 0 5px; color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:0; font-size:34px; } h2 { margin:0; font-size:22px; color:#175fb8; } h3 { margin:30px 0 10px; color:var(--blue); font-size:19px; } h4 { margin:18px 0 8px; }
+    .muted,.provenance { color:var(--muted); } .provenance { font-size:12px; }
+    .summary { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; margin:18px 0; overflow:hidden; background:var(--line); }
+    .metric { padding:18px; background:#fff; } .metric strong { display:block; font-size:25px; color:#175fb8; }
+    .finding { margin:26px 0; padding:32px 38px; page-break-before:always; }
+    .finding-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+    .severity { color:#fff; border-radius:999px; padding:5px 11px; font-weight:700; font-size:12px; }
+    .severity-critical { background:var(--critical); } .severity-high { background:var(--high); } .severity-medium { background:var(--medium); } .severity-low { background:var(--low); } .severity-unknown { background:#667085; }
+    table { width:100%; border-collapse:collapse; margin:18px 0; } th,td { padding:8px 10px; border:1px solid var(--line); text-align:left; vertical-align:top; } th { width:170px; color:#175fb8; background:#edf4ff; }
+    .callout { margin:12px 0; padding:13px 15px; border-left:4px solid var(--blue); background:#f5f9ff; }
+    code { padding:2px 6px; border-radius:4px; background:#eef2f6; overflow-wrap:anywhere; }
+    .flow { display:flex; align-items:stretch; gap:8px; overflow-x:auto; padding:10px 0; }
+    .flow-step { min-width:150px; padding:12px; border:1px solid #9cbce6; border-radius:7px; background:#eef6ff; }
+    .flow-step span { display:block; color:var(--muted); font-size:11px; } .flow-step.source { border-color:#12b76a; background:#ecfdf3; } .flow-step.guard { border-color:#f79009; background:#fffaeb; } .flow-step.sink { border-color:#f04438; background:#fef3f2; }
+    .arrow { align-self:center; color:var(--blue); font-size:20px; }
+    .empty,.footer { padding:24px; } .footer { color:var(--muted); margin-top:24px; font-size:12px; }
+    @media(max-width:720px) { .summary { grid-template-columns:1fr 1fr; } .cover,.finding { padding:24px; } .flow { flex-direction:column; } .arrow { transform:rotate(90deg); } }
+    @media print { body { background:#fff; } main { max-width:none; margin:0; padding:0; } .cover,.summary,.finding,.footer { box-shadow:none; } .finding { border:none; padding:20mm 12mm; } }
+  </style>
+</head>
+<body><main>
+  <header class="cover">
+    <p class="eyebrow">SAST Triage Platform</p>
+    <h1>Security Assessment Report</h1>
+    <p>Repository: <strong>realvuln-lets-be-bad-guys</strong></p>
+    <p class="muted">Run 3c94ddc0-43f9-4005-923b-47fc8e3f9eb9 · 2026-08-20T14:39:29.759914+00:00 · Analysis backend: joern</p>
+  </header>
+  <section class="summary" aria-label="Executive summary">
+    <div class="metric"><strong>14</strong>Total findings</div>
+    <div class="metric"><strong>0</strong>Likely true positives</div>
+    <div class="metric"><strong>14</strong>Manual review</div>
+    <div class="metric"><strong>0</strong>Triage errors</div>
+  </section>
+  <section aria-labelledby="details-heading"><p class="eyebrow">Details of Vulnerabilities Found</p><h2 id="details-heading">Findings</h2>
+    <article class="finding" id="finding-1">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 1</p>
+          <h2>generic.html-templates.security.var-in-script-tag.var-in-script-tag</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, generic.html-templates.security.var-in-script-tag.var-in-script-tag</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a template variable used in a script tag. Although template variables are HTML escaped, HTML escaping does not always prevent cross-site scripting (XSS) attacks when used directly in JavaScript. If you need this data on the rendered page, consider placing it in the HTML portion (outside of a script tag). Alternatively, use a JavaScript-specific encoder, such as the one available in OWASP ESAPI. For Django, you may also consider using the &#x27;json_script&#x27; template tag and retrieving the data in your script by using the element ID (e.g., `document.getElementById`).</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/xss/path.html:49</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-2">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 2</p>
+          <h2>python.django.security.audit.secure-cookies.django-secure-set-cookie</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-614: Sensitive Cookie in HTTPS Session Without &#x27;Secure&#x27; Attribute&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.django.security.audit.secure-cookies.django-secure-set-cookie</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Django cookies should be handled securely by setting secure=True, httponly=True, and samesite=&#x27;Lax&#x27; in response.set_cookie(...). If your situation calls for different settings, explicitly disable the setting. If you want to send the cookie over http, set secure=False. If you want to let client-side JavaScript read the cookie, set httponly=False. If you want to attach cookies to requests for external sites, set samesite=None.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:100</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-3">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 3</p>
+          <h2>python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a segment of a Flask template where autoescaping is explicitly disabled with &#x27;| safe&#x27; filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/xss/path.html:49</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-4">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 4</p>
+          <h2>python.lang.security.audit.exec-detected.exec-detected</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code (&#x27;Eval Injection&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.lang.security.audit.exec-detected.exec-detected</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.</p>
+        <div class="callout">Joern CPG evidence complete; source badguys/vulnerable/views.py:68; sink badguys/vulnerable/views.py:72; đường source–sink badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:72</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step source"><span>1</span><strong>Source: badguys/vulnerable/views.py:68</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>2</span><strong>Sink: badguys/vulnerable/views.py:72</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-5">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 5</p>
+          <h2>python.lang.security.audit.exec-detected.exec-detected</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code (&#x27;Eval Injection&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.lang.security.audit.exec-detected.exec-detected</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.</p>
+        <div class="callout">Joern CPG evidence complete; source badguys/vulnerable/views.py:68; sink badguys/vulnerable/views.py:76; đường source–sink badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:76 → badguys/vulnerable/views.py:76; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:76</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step source"><span>1</span><strong>Source: badguys/vulnerable/views.py:68</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>2</span><strong>Flow: badguys/vulnerable/views.py:72</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>3</span><strong>Flow: badguys/vulnerable/views.py:72</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>4</span><strong>Flow: badguys/vulnerable/views.py:72</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>5</span><strong>Sink: badguys/vulnerable/views.py:76</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-6">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 6</p>
+          <h2>python.django.security.injection.open-redirect.open-redirect</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-601: URL Redirection to Untrusted Site (&#x27;Open Redirect&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.django.security.injection.open-redirect.open-redirect</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Data from request (url) is passed to redirect(). This is an open redirect and could be exploited. Ensure you are redirecting to safe URLs by using django.utils.http.is_safe_url(). See https://cwe.mitre.org/data/definitions/601.html for more information.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:177-178</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-7">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 7</p>
+          <h2>python.django.security.injection.code.user-exec-format-string.user-exec-format-string</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code (&#x27;Eval Injection&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.django.security.injection.code.user-exec-format-string.user-exec-format-string</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Found user data in a call to &#x27;exec&#x27;. This is extremely dangerous because it can enable an attacker to execute arbitrary remote code on the system. Instead, refactor your code to not use &#x27;eval&#x27; and instead use a safe library for the specific functionality you need.</p>
+        <div class="callout">Joern CPG evidence complete; source badguys/vulnerable/views.py:68; sink badguys/vulnerable/views.py:72; đường source–sink badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:68 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72 → badguys/vulnerable/views.py:72; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:68-80</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step source"><span>1</span><strong>Source: badguys/vulnerable/views.py:68</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>2</span><strong>Sink: badguys/vulnerable/views.py:72</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-8">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 8</p>
+          <h2>python.django.security.injection.code.globals-misuse-code-execution.globals-misuse-code-execution</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-96: Improper Neutralization of Directives in Statically Saved Code (&#x27;Static Code Injection&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.django.security.injection.code.globals-misuse-code-execution.globals-misuse-code-execution</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Found request data as an index to &#x27;globals()&#x27;. This is extremely dangerous because it allows an attacker to execute arbitrary code on the system. Refactor your code not to use &#x27;globals()&#x27;.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:182-186</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-9">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 9</p>
+          <h2>python.django.security.audit.csrf-exempt.no-csrf-exempt</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-352: Cross-Site Request Forgery (CSRF)&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.django.security.audit.csrf-exempt.no-csrf-exempt</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected usage of @csrf_exempt, which indicates that there is no CSRF token set for this route. This could lead to an attacker manipulating the user&#x27;s account and exfiltration of private data. Instead, create a function without this decorator.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/vulnerable/views.py:164-167</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-10">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 10</p>
+          <h2>generic.html-templates.security.var-in-script-tag.var-in-script-tag</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, generic.html-templates.security.var-in-script-tag.var-in-script-tag</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a template variable used in a script tag. Although template variables are HTML escaped, HTML escaping does not always prevent cross-site scripting (XSS) attacks when used directly in JavaScript. If you need this data on the rendered page, consider placing it in the HTML portion (outside of a script tag). Alternatively, use a JavaScript-specific encoder, such as the one available in OWASP ESAPI. For Django, you may also consider using the &#x27;json_script&#x27; template tag and retrieving the data in your script by using the element ID (e.g., `document.getElementById`).</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/xss/query.html:37</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-11">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 11</p>
+          <h2>python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a segment of a Flask template where autoescaping is explicitly disabled with &#x27;| safe&#x27; filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/csrf/image.html:48</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-12">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 12</p>
+          <h2>python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a segment of a Flask template where autoescaping is explicitly disabled with &#x27;| safe&#x27; filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/xss/query.html:37</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-13">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 13</p>
+          <h2>python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a segment of a Flask template where autoescaping is explicitly disabled with &#x27;| safe&#x27; filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/xss/form.html:28</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-14">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 14</p>
+          <h2>generic.html-templates.security.var-in-script-tag.var-in-script-tag</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-79: Improper Neutralization of Input During Web Page Generation (&#x27;Cross-site Scripting&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, generic.html-templates.security.var-in-script-tag.var-in-script-tag</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a template variable used in a script tag. Although template variables are HTML escaped, HTML escaping does not always prevent cross-site scripting (XSS) attacks when used directly in JavaScript. If you need this data on the rendered page, consider placing it in the HTML portion (outside of a script tag). Alternatively, use a JavaScript-specific encoder, such as the one available in OWASP ESAPI. For Django, you may also consider using the &#x27;json_script&#x27; template tag and retrieving the data in your script by using the element ID (e.g., `document.getElementById`).</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>badguys/templates/vulnerable/csrf/image.html:48</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    </section>
+  <section class="footer"><strong>Scanner errors</strong><p class="muted">No scanner errors.</p>
+    <p>This report contains no raw source, raw prompts, raw model responses, tracebacks, or absolute repository paths. Findings are never automatically discarded.</p>
+  </section>
+</main></body></html>

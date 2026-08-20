@@ -16,14 +16,10 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
-from sast_triage.analysis.base import AnalysisBackend
-from sast_triage.context.evidence_service import build_evidence_context
-from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.context.selection import RawContextSelection
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
     ContextStrategy,
-    FindingType,
     MissingContextReason,
     NormalizedFinding,
     PathCategory,
@@ -238,8 +234,6 @@ def sanitize_context(
     raw_context: RawContextSelection,
     *,
     forbidden_values: tuple[str, ...] = (),
-    repository_index: RepositoryEvidenceIndex | None = None,
-    analysis_backend: AnalysisBackend | None = None,
 ) -> SanitizedContext:
     """Sanitize raw context đã chọn để tạo ``SanitizedContext`` an toàn cho LLM sử dụng.
 
@@ -464,22 +458,4 @@ def sanitize_context(
         truncated=raw_context.truncated,
     )
 
-    if finding.finding_type != FindingType.SAST or raw_context.analysis_source is None:
-        return sanitized_context
-
-    try:
-        return build_evidence_context(
-            finding,
-            raw_context.analysis_source,
-            sanitized_context,
-            repository_index=repository_index,
-            analysis_backend=analysis_backend,
-        ).context
-    except SyntaxError:
-        # Syntax details can include raw source; expose only a typed, safe reason.
-        return sanitized_context.model_copy(
-            update={
-                "missing_context_reasons": [MissingContextReason.PYTHON_AST_PARSE_FAILED],
-                "truncated": True,
-            }
-        )
+    return sanitized_context

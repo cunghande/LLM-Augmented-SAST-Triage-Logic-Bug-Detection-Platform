@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.jinja2.security.audit.missing-autoescape-disabled.missing-autoescape-disabled",
+      "path": "main.py",
+      "start": {
+        "line": 11,
+        "col": 1
+      },
+      "end": {
+        "line": 11,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a Jinja2 environment without autoescaping. Jinja2 does not autoescape by default. This is dangerous if you are rendering to a browser because this allows for cross-site scripting (XSS) attacks. If you are in a web context, enable autoescaping by setting 'autoescape=True.' You may also consider using 'jinja2.select_autoescape()' to only enable automatic escaping for certain file extensions.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-116"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

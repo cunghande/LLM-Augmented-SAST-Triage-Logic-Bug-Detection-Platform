@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+      "path": "config.py",
+      "start": {
+        "line": 13,
+        "col": 1
+      },
+      "end": {
+        "line": 13,
+        "col": 1
+      },
+      "extra": {
+        "message": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-489"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "jwt",
+      "path": "openapi_specs/openapi3.yml",
+      "start": {
+        "line": 193,
+        "col": 1
+      },
+      "end": {
+        "line": 193,
+        "col": 1
+      },
+      "extra": {
+        "message": "Uncovered a JSON Web Token, which may lead to unauthorized access to web applications and sensitive user data.",
+        "severity": "UNKNOWN",
+        "metadata": {
+          "cwe": [
+            "CWE-798"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

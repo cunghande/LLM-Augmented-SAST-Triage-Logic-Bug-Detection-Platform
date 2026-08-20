@@ -1,0 +1,2169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Security Assessment Report — vc-claude-code-seeded-v2-support-desk-fastapi</title>
+  <style>
+    :root { --blue:#2474e5; --ink:#1f2937; --muted:#667085; --line:#d9e2ef; --paper:#fff; --bg:#f2f6fb; --critical:#b42318; --high:#d92d20; --medium:#dc6803; --low:#027a48; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:14px/1.55 Inter,Segoe UI,Arial,sans-serif; }
+    main { max-width:1040px; margin:32px auto; padding:0 20px 48px; }
+    .cover,.summary,.finding,.footer { background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:0 5px 18px rgba(31,41,55,.06); }
+    .cover { padding:48px; border-top:6px solid var(--blue); }
+    .eyebrow { margin:0 0 5px; color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:0; font-size:34px; } h2 { margin:0; font-size:22px; color:#175fb8; } h3 { margin:30px 0 10px; color:var(--blue); font-size:19px; } h4 { margin:18px 0 8px; }
+    .muted,.provenance { color:var(--muted); } .provenance { font-size:12px; }
+    .summary { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; margin:18px 0; overflow:hidden; background:var(--line); }
+    .metric { padding:18px; background:#fff; } .metric strong { display:block; font-size:25px; color:#175fb8; }
+    .finding { margin:26px 0; padding:32px 38px; page-break-before:always; }
+    .finding-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+    .severity { color:#fff; border-radius:999px; padding:5px 11px; font-weight:700; font-size:12px; }
+    .severity-critical { background:var(--critical); } .severity-high { background:var(--high); } .severity-medium { background:var(--medium); } .severity-low { background:var(--low); } .severity-unknown { background:#667085; }
+    table { width:100%; border-collapse:collapse; margin:18px 0; } th,td { padding:8px 10px; border:1px solid var(--line); text-align:left; vertical-align:top; } th { width:170px; color:#175fb8; background:#edf4ff; }
+    .callout { margin:12px 0; padding:13px 15px; border-left:4px solid var(--blue); background:#f5f9ff; }
+    code { padding:2px 6px; border-radius:4px; background:#eef2f6; overflow-wrap:anywhere; }
+    .flow { display:flex; align-items:stretch; gap:8px; overflow-x:auto; padding:10px 0; }
+    .flow-step { min-width:150px; padding:12px; border:1px solid #9cbce6; border-radius:7px; background:#eef6ff; }
+    .flow-step span { display:block; color:var(--muted); font-size:11px; } .flow-step.source { border-color:#12b76a; background:#ecfdf3; } .flow-step.guard { border-color:#f79009; background:#fffaeb; } .flow-step.sink { border-color:#f04438; background:#fef3f2; }
+    .arrow { align-self:center; color:var(--blue); font-size:20px; }
+    .empty,.footer { padding:24px; } .footer { color:var(--muted); margin-top:24px; font-size:12px; }
+    @media(max-width:720px) { .summary { grid-template-columns:1fr 1fr; } .cover,.finding { padding:24px; } .flow { flex-direction:column; } .arrow { transform:rotate(90deg); } }
+    @media print { body { background:#fff; } main { max-width:none; margin:0; padding:0; } .cover,.summary,.finding,.footer { box-shadow:none; } .finding { border:none; padding:20mm 12mm; } }
+  </style>
+</head>
+<body><main>
+  <header class="cover">
+    <p class="eyebrow">SAST Triage Platform</p>
+    <h1>Security Assessment Report</h1>
+    <p>Repository: <strong>vc-claude-code-seeded-v2-support-desk-fastapi</strong></p>
+    <p class="muted">Run 73c78732-a7a4-4db9-8ae7-87dc479d0f57 · 2026-08-20T14:57:48.062195+00:00 · Analysis backend: joern</p>
+  </header>
+  <section class="summary" aria-label="Executive summary">
+    <div class="metric"><strong>46</strong>Total findings</div>
+    <div class="metric"><strong>0</strong>Likely true positives</div>
+    <div class="metric"><strong>46</strong>Manual review</div>
+    <div class="metric"><strong>0</strong>Triage errors</div>
+  </section>
+  <section aria-labelledby="details-heading"><p class="eyebrow">Details of Vulnerabilities Found</p><h2 id="details-heading">Findings</h2>
+    <article class="finding" id="finding-1">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 1</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-111.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:51</code></p>
+        <p>Component: .; entrypoint: list_teams</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_teams@47</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@51</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-2">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 2</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 83-203.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:143</code></p>
+        <p>Component: .; entrypoint: update_article</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_article@136</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@143</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-3">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 3</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 166-267.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:226</code></p>
+        <p>Component: .; entrypoint: list_api_keys</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_api_keys@225</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@226</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-4">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 4</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 95-184.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/escalations.py:155</code></p>
+        <p>Component: .; entrypoint: update_escalation</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_escalation@122</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@155</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-5">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 5</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 68-188.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/tickets.py:128</code></p>
+        <p>Component: .; entrypoint: list_tickets</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_tickets@90</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_pagination_parameter@128</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-6">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 6</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 119-239.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:179</code></p>
+        <p>Component: .; entrypoint: toggle_webhook</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:toggle_webhook@177</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@179</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-7">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 7</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 90-210.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:150</code></p>
+        <p>Component: .; entrypoint: list_webhooks</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_webhooks@149</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@150</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-8">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 8</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 72-184.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/escalations.py:132</code></p>
+        <p>Component: .; entrypoint: update_escalation</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_escalation@122</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@132</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-9">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 9</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 7-127.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/users.py:67</code></p>
+        <p>Component: .; entrypoint: list_staff_directory</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_staff_directory@54</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@67</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-10">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 10</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 127-202.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/auth.py:187</code></p>
+        <p>Component: .; entrypoint: confirm_password_reset</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:confirm_password_reset@184</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@187</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-11">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 11</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 54-174.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:114</code></p>
+        <p>Component: .; entrypoint: create_article</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:create_article@105</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@114</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-12">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 12</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 117-184.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/escalations.py:177</code></p>
+        <p>Component: .; entrypoint: delete_escalation</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:delete_escalation@171</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@177</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-13">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 13</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 20-140.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/public_api.py:80</code></p>
+        <p>Component: .; entrypoint: api_create_ticket</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:api_create_ticket@64</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@80</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-14">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 14</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 253-373.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/tickets.py:313</code></p>
+        <p>Component: .; entrypoint: update_ticket</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_ticket@290</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@313</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-15">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 15</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:89</code></p>
+        <p>Component: .; entrypoint: list_articles</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_articles@62</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unvalidated_domain_value_operation@89</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-16">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 16</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 27-150.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/public_api.py:87-90</code></p>
+        <p>Component: .; entrypoint: api_create_ticket</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:api_create_ticket@64</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@87</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-17">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 17</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 149-267.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:209</code></p>
+        <p>Component: .; entrypoint: webhook_deliveries</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:webhook_deliveries@206</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@209</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-18">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 18</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 135-255.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:195</code></p>
+        <p>Component: .; entrypoint: delete_webhook</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:delete_webhook@193</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@195</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-19">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 19</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-120.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/escalations.py:60</code></p>
+        <p>Component: .; entrypoint: list_escalations</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_escalations@41</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_pagination_parameter@60</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-20">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 20</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 199-267.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:259</code></p>
+        <p>Component: .; entrypoint: revoke_api_key</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:revoke_api_key@257</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@259</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-21">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 21</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:50</code></p>
+        <p>Component: .; entrypoint: list_public_articles</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_public_articles@37</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unvalidated_domain_value_operation@50</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-22">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 22</p>
+          <h2>python.lang.security.unverified-ssl-context.unverified-ssl-context</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>HIGH</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-295: Improper Certificate Validation&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.lang.security.unverified-ssl-context.unverified-ssl-context</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use &#x27;ssl.create_default_context&#x27; instead.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/support_operations.py:126</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-23">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 23</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-101.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/users.py:41</code></p>
+        <p>Component: .; entrypoint: list_users</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_users@24</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@41</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-24">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 24</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 69-184.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/escalations.py:129</code></p>
+        <p>Component: .; entrypoint: update_escalation</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_escalation@122</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@129</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-25">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 25</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 261-381.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/tickets.py:321</code></p>
+        <p>Component: .; entrypoint: update_ticket</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_ticket@290</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@321</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-26">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 26</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 15-135.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:75</code></p>
+        <p>Component: .; entrypoint: list_queues</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_queues@72</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@75</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-27">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 27</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 153-267.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:213-214</code></p>
+        <p>Component: .; entrypoint: webhook_deliveries</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:webhook_deliveries@206</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@213</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-28">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 28</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 144-213.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:204</code></p>
+        <p>Component: .; entrypoint: delete_article</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:delete_article@201</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@204</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-29">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 29</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/notifications.py:27</code></p>
+        <p>Component: .; entrypoint: list_notifications</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_notifications@18</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unvalidated_domain_value_operation@27</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-30">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 30</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 39-159.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:99</code></p>
+        <p>Component: .; entrypoint: list_categories</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_categories@98</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@99</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-31">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 31</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 116-213.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:176</code></p>
+        <p>Component: .; entrypoint: update_article_status</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:update_article_status@169</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@176</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-32">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 32</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-109.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/users.py:49</code></p>
+        <p>Component: .; entrypoint: list_users</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_users@24</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_pagination_parameter@49</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-33">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 33</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 23-143.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:83</code></p>
+        <p>Component: .; entrypoint: create_queue</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:create_queue@79</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@83</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-34">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 34</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 114-184.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/escalations.py:174</code></p>
+        <p>Component: .; entrypoint: delete_escalation</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:delete_escalation@171</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@174</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-35">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 35</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/organizations.py:37</code></p>
+        <p>Component: .; entrypoint: list_organizations</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_organizations@22</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unvalidated_domain_value_operation@37</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-36">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 36</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-57.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/audit.py:37</code></p>
+        <p>Component: .; entrypoint: list_audit_entries</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_audit_entries@17</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@37</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-37">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 37</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-57.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/audit.py:42</code></p>
+        <p>Component: .; entrypoint: list_audit_entries</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_audit_entries@17</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_pagination_parameter@42</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-38">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 38</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-115.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/kb.py:55</code></p>
+        <p>Component: .; entrypoint: get_public_article</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:get_public_article@54</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@55</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-39">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 39</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 63-183.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/admin.py:123</code></p>
+        <p>Component: .; entrypoint: list_sla</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_sla@120</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_collection_query@123</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-40">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 40</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-57.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/audit.py:31</code></p>
+        <p>Component: .; entrypoint: list_audit_entries</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_audit_entries@17</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@31</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-41">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 41</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-99.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/users.py:39</code></p>
+        <p>Component: .; entrypoint: list_users</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_users@24</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@39</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-42">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 42</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.5/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 107-228.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/reports.py:167-168</code></p>
+        <p>Component: .; entrypoint: escalations_export_csv</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:escalations_export_csv@154</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:object_lookup_without_subject_scope@167</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-43">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 43</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">HIGH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>4.3/5.0</td></tr>
+        <tr><th>Risk level</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 350-474.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>exploitability: 4.0</li><li>exposure: 4.5</li><li>reachability: 5.0</li><li>severity: 4.0</li></ul>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/routers/tickets.py:410-414</code></p>
+        <p>Component: .; entrypoint: ticket_audit_history</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:ticket_audit_history@394</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>source:http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>sink:unbounded_pagination_parameter@410</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-44">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 44</p>
+          <h2>python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-939: Improper Authorization in Handler for Custom URL Scheme&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a dynamic value being used with urllib. urllib supports &#x27;file://&#x27; schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the &#x27;requests&#x27; library instead.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/support_operations.py:127</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-45">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 45</p>
+          <h2>python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-939: Improper Authorization in Handler for Custom URL Scheme&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected a dynamic value being used with urllib. urllib supports &#x27;file://&#x27; schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the &#x27;requests&#x27; library instead.</p>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/support_operations.py:75</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <p class="muted">No source-to-sink path was exported for this finding. Analysis backend: joern.</p>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-46">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Finding 46</p>
+          <h2>python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5</h2>
+        </div>
+        <span class="severity severity-medium">MEDIUM</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Status</th><td>MANUAL_REVIEW</td></tr>
+        <tr><th>Risk score</th><td>Not calculated</td></tr>
+        <tr><th>Risk level</th><td>MEDIUM</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-327: Use of a Broken or Risky Cryptographic Algorithm&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Not calculated</td></tr>
+        <tr><th>Labels</th><td>SEMGREP, SAST, python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5</td></tr>
+      </tbody></table>
+
+      <section><h3>Description</h3><p>Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.</p>
+        <div class="callout">Joern CPG evidence complete; source chưa xác định; sink backend/app/support_operations.py:65; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.</div>
+      </section>
+      <section><h3>Impact</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">No structured risk factors are available.</p>
+      </section>
+      <section><h3>Affected Components</h3>
+        <p><code>backend/app/support_operations.py:65</code></p>
+        <p>Component: Not identified; entrypoint: Not identified</p>
+      </section>
+      <section><h3>Source-to-Sink Evidence</h3>
+        <p class="provenance">Backend: joern. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+        <div class="flow"><div class="flow-step sink"><span>1</span><strong>Sink: backend/app/support_operations.py:65</strong></div></div>
+        <h4>Validated evidence</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Safe Reproduction and Validation</h3>
+        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
+        <ul><li>Confirm the source, trust boundary, guard, and sink with a security reviewer.</li><li>Add a regression test for the vulnerable and expected-safe behavior.</li><li>Retest after the fix without exposing production data or secrets.</li></ul>
+        <h4>Information still required</h4><p class="muted">No additional information was requested.</p>
+      </section>
+      <section><h3>Suggested Fix</h3><p>Review the complete data flow, confirm the trust boundary, and apply the scanner rule&#x27;s recommended control before retesting.</p></section>
+      <section><h3>Policy Decision</h3>
+        <p><strong>MANUAL_REVIEW</strong> — policy conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Processing Errors</h3><p class="muted">No processing errors for this finding.</p></section>
+    </article>
+    </section>
+  <section class="footer"><strong>Scanner errors</strong><p class="muted">No scanner errors.</p>
+    <p>This report contains no raw source, raw prompts, raw model responses, tracebacks, or absolute repository paths. Findings are never automatically discarded.</p>
+  </section>
+</main></body></html>

@@ -1,5 +1,6 @@
 """Unit and integration tests for per-finding triage pipeline."""
 
+import json
 from datetime import UTC
 from pathlib import Path
 
@@ -15,6 +16,8 @@ from sast_triage.models import (
     ProcessingStage,
     ScannerType,
     Severity,
+    TriageDecision,
+    TriageInput,
     TriageResult,
 )
 from sast_triage.pipeline.finding import (
@@ -78,7 +81,7 @@ def test_pipeline_semgrep_ast_success_tp(tmp_path: Path) -> None:
     assert res.policy_decision.action == PolicyAction.MANUAL_REVIEW
     assert res.triage_decision is not None
     assert res.context_summary is not None
-    assert "PYTHON_FUNCTION" in res.context_summary
+    assert "LINE_WINDOW" in res.context_summary
     assert res.processing_errors == []
 
 
@@ -589,7 +592,7 @@ def test_pipeline_truncated_context_escalated(tmp_path: Path) -> None:
 
 
 def test_config_invalid_limits_rejected(tmp_path: Path) -> None:
-    """Requirement Protected: Invalid scope, context chars, or import lines limits raise PIPELINE_INVALID_CONFIGURATION.
+    """Invalid context character or line-window limits are rejected.
 
     Expected Result: SastTriageError raised with PIPELINE_INVALID_CONFIGURATION.
     Test Category: Configuration Validation
@@ -599,15 +602,11 @@ def test_config_invalid_limits_rejected(tmp_path: Path) -> None:
     provider = FakeTriageProvider()
 
     with pytest.raises(SastTriageError) as exc:
-        triage_finding(finding, repo, provider, max_scope_lines=0)
-    assert exc.value.error_code == "PIPELINE_INVALID_CONFIGURATION"
-
-    with pytest.raises(SastTriageError) as exc:
         triage_finding(finding, repo, provider, max_context_characters=-10)
     assert exc.value.error_code == "PIPELINE_INVALID_CONFIGURATION"
 
     with pytest.raises(SastTriageError) as exc:
-        triage_finding(finding, repo, provider, max_import_lines=-1)
+        triage_finding(finding, repo, provider, line_window_before=-1)
     assert exc.value.error_code == "PIPELINE_INVALID_CONFIGURATION"
 
 
@@ -804,3 +803,46 @@ def test_pipeline_provider_timeout_preserves_both_sanitize_and_triage_errors(tmp
     assert len(res.processing_errors) == 2
     assert any(err.stage == ProcessingStage.SANITIZE for err in res.processing_errors)
     assert any(err.stage == ProcessingStage.TRIAGE for err in res.processing_errors)
+
+
+def test_intrinsic_usage_requires_review_without_joern_evidence(tmp_path: Path) -> None:
+    """Keep intrinsic unsafe primitives conservative when Joern is unavailable."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "app.py").write_text(
+        "import hashlib\n\ndef digest(value):\n    return hashlib.md5(value).hexdigest()\n",
+        encoding="utf-8",
+    )
+    finding = NormalizedFinding(
+        finding_instance_id="hash-finding",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.lang.security.insecure-hash-algorithms-md5",
+        file_path="app.py",
+        start_line=4,
+        end_line=4,
+        severity=Severity.MEDIUM,
+        message="Insecure hash usage requires review.",
+    )
+
+    class CapturingProvider(FakeTriageProvider):
+        captured: TriageInput | None = None
+
+        def triage(self, triage_input: TriageInput) -> TriageDecision:
+            self.captured = triage_input
+            return super().triage(triage_input)
+
+    provider = CapturingProvider()
+    result = triage_finding(
+        finding,
+        repo,
+        provider,
+        prompt_type="fake.fp.high",
+    )
+
+    assert result.policy_decision.action == PolicyAction.MANUAL_REVIEW
+    assert provider.captured is not None
+    evidence = json.loads(provider.captured.context.sanitized_snippet or "{}")
+    verification = evidence["deterministic_verification"]
+    assert verification["unsafe_primitive_observed"] is True
+    assert verification["source_reaches_sink"] is None

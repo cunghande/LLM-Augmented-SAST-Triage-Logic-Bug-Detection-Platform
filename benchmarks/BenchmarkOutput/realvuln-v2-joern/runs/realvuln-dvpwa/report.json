@@ -1,0 +1,1274 @@
+{
+  "run_metadata": {
+    "run_id": "a803376a-83c0-4742-befb-2a4dbb4ba71f",
+    "repository_name": "realvuln-dvpwa",
+    "repository_identifier": "realvuln-dvpwa",
+    "commit_sha": "a1d8f89fac2e57093189853c6527c2b01fc1d9c1",
+    "working_tree_state": "clean",
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0",
+      "GITLEAKS": "8.30.1",
+      "MODULE2": "0.1.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python+p/security-audit",
+      "GITLEAKS": "gitleaks-built-in",
+      "MODULE2": "python-idor-business-logic-v1"
+    },
+    "input_artifact_hashes": {
+      "semgrep": "a1043346cdbe56ba7e764cf0746b76534e913898b91c1978655dfc8d9f1eac99",
+      "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "analysis_backend": "joern",
+    "analysis_backend_version": "4.0.600",
+    "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+    "cpg_build_status": "complete",
+    "cpg_build_seconds": 16.207522,
+    "prompt_version": "triage-prompt-v13",
+    "model_version": "fake-triage-v1",
+    "policy_version": "conservative-policy-v2",
+    "triage_provider": "fake",
+    "tool_version": "0.1.0",
+    "cli_mode": "scan-and-triage",
+    "started_at": "2026-08-20T14:36:26.718148Z",
+    "completed_at": "2026-08-20T14:36:34.828826Z",
+    "total_findings_parsed": 21,
+    "findings_triaged_ok": 21,
+    "findings_with_errors": 0
+  },
+  "results": [
+    {
+      "finding": {
+        "finding_instance_id": "49c19bac3f981f8a",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+        "rule_name": null,
+        "file_path": "sqli/dao/user.py",
+        "start_line": 41,
+        "end_line": 41,
+        "severity": "MEDIUM",
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "metadata": {
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "references": [
+            "https://www.schneier.com/blog/archives/2012/10/when_will_we_se.html",
+            "https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/sha-1-collision-signals-the-end-of-the-algorithm-s-viability",
+            "http://2012.sharcs.org/slides/stevens.pdf",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source chưa xác định; sink sqli/dao/user.py:41; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:26.718148+00:00",
+      "processing_duration_ms": 306,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "372ae8379f9db2c6d88a0f40feeda2b07d21ee12b86967719fd422bed096438d"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "3d3754dcb61d560c",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+        "rule_name": null,
+        "file_path": "sqli/dao/user.py",
+        "start_line": 41,
+        "end_line": 41,
+        "severity": "MEDIUM",
+        "message": "It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.",
+        "metadata": {
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "references": [
+            "https://tools.ietf.org/html/rfc6151",
+            "https://crypto.stackexchange.com/questions/44151/how-does-the-flame-malware-take-advantage-of-md5-collision",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html",
+            "https://security.stackexchange.com/questions/211/how-to-securely-hash-passwords",
+            "https://github.com/returntocorp/semgrep-rules/issues/1609",
+            "https://docs.python.org/3/library/hashlib.html#hashlib.scrypt"
+          ],
+          "category": "security",
+          "technology": [
+            "pycryptodome",
+            "hashlib",
+            "md5"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink sqli/dao/user.py:41; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:27.029311+00:00",
+      "processing_duration_ms": 982,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "d54976b4dc641a5abd75aad49a443d05addb96a563f952249b77051f9c84dd6f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "0045b982a361892d6f91446bdb61b7f6fce9d7bbfffc0c1e8fb39a1f53e4fe63",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/user.py",
+        "start_line": 33,
+        "end_line": 33,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:28.015967+00:00",
+      "processing_duration_ms": 785,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5c18da08de3fbc814b791607a2c42c9a5ddc2cb35e327c23fd2a301abfd68f7d"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "368aa08907d00fa861597d9ab19fa55a38df4cb21ae4abbf9392ac065c53a493",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/student.py",
+        "start_line": 45,
+        "end_line": 45,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:28.808837+00:00",
+      "processing_duration_ms": 708,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "74ab24d14735fcb982c95b154558915a61bf5cc5746c9a39f6aa76ef5ffaa370"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "079ef7c35bae043a1b0bb31ab3d6fb03a408cffe7968d62018b6a49db7757e11",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/review.py",
+        "start_line": 24,
+        "end_line": 24,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:29.524773+00:00",
+      "processing_duration_ms": 680,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "97568b4a0ccb4ae413594efc8266850cd847ec5fd53bb3b79bf6aed5c3bb7b7a"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "b77dd764957e54d8a4b7786daf167d2032fa62e3ecc66536ba4c8944b195af56",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/course.py",
+        "start_line": 37,
+        "end_line": 37,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:30.212521+00:00",
+      "processing_duration_ms": 571,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "49d41694e5482be5e92031560f55c9f8b0f1a03929b50b4f00f6d5ba0b85721c"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "a05253c91a0bdebca2711e6f0c48a9144bdae5d2338c9beedb931c0eea08cb53",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/course.py",
+        "start_line": 47,
+        "end_line": 47,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:30.791212+00:00",
+      "processing_duration_ms": 587,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "482a717089f0b9fa10ee2be5a03fce70eb6eb84eb682415e91c18a94f9206b27"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "c0df1723e1c13ca9114e805c133879d38ccf1fc6e53d638e8acd6bcfa8fbf62e",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/mark.py",
+        "start_line": 37,
+        "end_line": 37,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:31.386057+00:00",
+      "processing_duration_ms": 671,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "bb57a28d9e01bed16d0382a3415d60b6908715baa880587ea7b58030836b61ec"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "ed0eaf5354c174d9ea29ca0df144939682baa3a572998b3976836b277fed97d7",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/review.py",
+        "start_line": 36,
+        "end_line": 36,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:32.062035+00:00",
+      "processing_duration_ms": 532,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "d5344e00fb1cc7766615fe480d4f20f6d467993391c8bc0446bde701d8347794"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "839e4e58584d4d805b6010e4fd4169b6a3daaedfceca3519535f21407c74fb98",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/user.py",
+        "start_line": 23,
+        "end_line": 23,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:32.598606+00:00",
+      "processing_duration_ms": 438,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "59e3628fa9d9127f09526dc49a8db672a4a7eb7e96bdcf3cd706dc6fec8f11a1"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "b098cb7f7113ed678a8b063fb63a6740256abb16b47346c7d356456e15c0d179",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/student.py",
+        "start_line": 17,
+        "end_line": 17,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:33.043743+00:00",
+      "processing_duration_ms": 406,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "8c1de834dcfaeb44608bd3f141e9396462079a3852f51c711d3bda8b4b9d9cc7"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "4564a4a2f2e30f7294652c0e4b56b6fd233669e80ab8a27af817e281c6e112dd",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/course.py",
+        "start_line": 18,
+        "end_line": 18,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:33.457674+00:00",
+      "processing_duration_ms": 403,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "face35596cd71151a9ef0fa700015919c6c1eab9b9bd6cf6754f83eae1fdb6e3"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "d725db80307969938f392d7f91810bf213d4091738c626a397b8294566c2d4f4",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/student.py",
+        "start_line": 36,
+        "end_line": 36,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:33.865217+00:00",
+      "processing_duration_ms": 445,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "7156034aef05757c52f4634d49dda97e238f40435b3f39f7f20c63f5a1ced81c"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "2ecedf17f9845d1078954ec5d524c790df0f7815391a3b92e849bfb4fa619c6c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "sqli/dao/mark.py",
+        "start_line": 25,
+        "end_line": 25,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.317586+00:00",
+      "processing_duration_ms": 446,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "13468600b928d37c014bba079c5850f407e3d16af0fb7d1d01950413644857ec"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "6bff42dc753e11326c61f16c45eec76cc7dde900c081bd3395db64cadd47fbad",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 68,
+        "end_line": 68,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "student",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:student@64",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@68"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 8-128.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.773244+00:00",
+      "processing_duration_ms": 3,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "773b639ff80a15653090abfc5b214eb92f4f84f033d64e68b91e90079253e5d1"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "87955ec1c607d6c6f2d1386636ea36e46be547222a59c40d7b5826dda7d0d549",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 71,
+        "end_line": 71,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "student",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:student@64",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@71"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 11-131.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.779775+00:00",
+      "processing_duration_ms": 4,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5dc1469ce362fe1ecb46707dad793021dd2e87a790b66eb6a6b418950e509d48"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "fdc7a6275b6dbbf616805b4ddf1927a4ddfa5fdd51a2f8d611334a8c22f9fd43",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 101,
+        "end_line": 101,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "course",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:course@97",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@101"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 41-160.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.790372+00:00",
+      "processing_duration_ms": 4,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "c15feee1fe72b59fe762eb7cba0aed45123b9f13a4385543e61cab6d35137d24"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "8784fb997bbd09d385b69af6f5c5fb6641ad0abc94d2d2494c1d5a745fedc9d1",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 104,
+        "end_line": 104,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "course",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:course@97",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@104"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 44-160.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.799971+00:00",
+      "processing_duration_ms": 2,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "b4cbb062d6371dd48f00dc00b77fce4ce37b2c16ab146ddb43e5c4c21ef888bf"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "cd433b8258d57bf0645db5733daec590144a48864aac01d8f82ee6cf06f8acfd",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 116,
+        "end_line": 116,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "review",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:review@112",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@116"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 56-160.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.804763+00:00",
+      "processing_duration_ms": 4,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "0e4598b18ecccb3c3aa504add99b73a4cec44501e2e95e9ca1d6d7fd5d2b30b8"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "6a3dbd02266ace79d77dd28467c46c88803be44b113fd5656e8f3dee5574f806",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 141,
+        "end_line": 141,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "evaluate",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:evaluate@135",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@141"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 81-160.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.816600+00:00",
+      "processing_duration_ms": 2,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "dea26372be64c1e01eaa0976d679fea1eeba7360ddc30e0d24bcd327d105188b"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "0ef37857c6c94fe4230cc319aa895133b212d600e07250ba9a203236666a3e93",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "sqli/views.py",
+        "start_line": 142,
+        "end_line": 142,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "evaluate",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:evaluate@135",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@142"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 82-160.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:36:34.824090+00:00",
+      "processing_duration_ms": 3,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "15b95c45460101e400ae6a66051ef35ac7fc38bebd90c44edb337a74671ebec2"
+    }
+  ],
+  "scanner_errors": []
+}

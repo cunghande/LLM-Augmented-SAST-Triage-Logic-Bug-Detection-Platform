@@ -1,0 +1,64 @@
+name: sast-triage
+
+x-app-service: &app-service
+  image: sast-triage-app:0.1.0
+  build:
+    context: .
+    dockerfile: docker/app/Dockerfile
+  platform: linux/amd64
+  environment:
+    SAST_TRIAGE_DOCKER_NETWORK: sast-triage-runtime
+    SAST_TRIAGE_REPOSITORY: /workspace/repository
+    MODAL_TOKEN_ID: ${MODAL_TOKEN_ID:-}
+    MODAL_TOKEN_SECRET: ${MODAL_TOKEN_SECRET:-}
+  volumes:
+    - type: bind
+      source: ${TARGET_REPO:?Set TARGET_REPO to the repository that should be scanned}
+      target: /workspace/repository
+      read_only: true
+    - type: bind
+      source: ${OUTPUT_DIR:?Set OUTPUT_DIR to an existing output directory}
+      target: /workspace/output
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+
+services:
+  joern-image:
+    image: sast-triage-joern:4.0.600
+    build:
+      context: .
+      dockerfile: docker/joern/Dockerfile
+    platform: linux/amd64
+    entrypoint: ["/bin/true"]
+    profiles: ["build-only"]
+
+  sast-triage:
+    <<: *app-service
+    command:
+      - scan-and-triage
+      - --repository
+      - /workspace/repository
+      - --output-dir
+      - /workspace/output
+      - --repository-identifier
+      - ${REPOSITORY_ID:-docker-target}
+      - --provider
+      - ${TRIAGE_PROVIDER:-fake}
+      - --semgrep-config
+      - p/python
+      - --semgrep-config
+      - p/security-audit
+      - --module2
+      - --module2-discovery
+      - --logic-detector
+      - python-idor-business-logic
+
+  doctor:
+    <<: *app-service
+    entrypoint: ["sast-triage-doctor"]
+    command: []
+
+networks:
+  default:
+    name: sast-triage-runtime

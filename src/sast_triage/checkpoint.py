@@ -78,7 +78,7 @@ class TriageCheckpointStore:
         finding_ids: tuple[str, ...],
         prompt_version: str,
         output_schema_version: str,
-        analysis_backend: str = "native",
+        analysis_backend: str = "joern",
         analysis_backend_version: str | None = None,
         analysis_config_id: str | None = None,
     ) -> None:

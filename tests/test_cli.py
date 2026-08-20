@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from sast_triage.analysis.base import AnalysisIdentity, GraphEvidence
 from sast_triage.cli import (
     EXIT_PROVIDER_RESOURCE_EXHAUSTED,
     EXIT_SUCCESS,
@@ -13,9 +14,76 @@ from sast_triage.cli import (
     main,
 )
 from sast_triage.errors import SastTriageError
-from sast_triage.models import ScannerType, TriageInput
+from sast_triage.logic.index import build_logic_index
+from sast_triage.models import NormalizedFinding, ScannerType, TriageInput
 from sast_triage.runners.scanners import ScannerRunResult
 from sast_triage.triage.fake_provider import FakeTriageProvider
+
+
+@pytest.fixture(autouse=True)
+def offline_joern_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Replace Docker startup with a source-free Joern contract test double."""
+
+    class OfflineJoernBackend:
+        def __init__(
+            self,
+            repository: Path,
+            repository_identifier: str,
+            logic_detector: str,
+        ) -> None:
+            self.identity = AnalysisIdentity(
+                "joern", "test", "joern-offline-test", "complete", 0.0
+            )
+            self.logic_index = (
+                build_logic_index(repository)
+                if logic_detector != "off"
+                else None
+            )
+
+        def discover_findings(
+            self, existing: tuple[NormalizedFinding, ...]
+        ) -> tuple[NormalizedFinding, ...]:
+            return ()
+
+        def discover_logic_findings(
+            self,
+            detector: str,
+            existing: tuple[NormalizedFinding, ...],
+        ) -> tuple[NormalizedFinding, ...]:
+            if detector == "off" or self.logic_index is None:
+                return ()
+            return self.logic_index.discover_findings(existing)
+
+        def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence:
+            return GraphEvidence(
+                limitations=("JOERN_OFFLINE_TEST_DOUBLE",),
+                provenance=("JOERN_CPG",),
+            )
+
+        def run_tool(
+            self,
+            tool_name: str,
+            finding: NormalizedFinding,
+            evidence: GraphEvidence,
+            *,
+            max_depth: int,
+            max_paths: int,
+            max_nodes: int,
+        ) -> GraphEvidence:
+            return evidence
+
+    @contextmanager
+    def session(
+        repository: Path,
+        repository_identifier: str,
+        *,
+        module2_enabled: bool,
+        logic_detector: str = "off",
+    ):
+        del module2_enabled
+        yield OfflineJoernBackend(repository, repository_identifier, logic_detector)
+
+    monkeypatch.setattr("sast_triage.application.run.analysis_backend_session", session)
 
 
 def test_triage_cli_writes_all_reports_and_metadata(tmp_path: Path, capsys) -> None:
@@ -91,7 +159,7 @@ def test_module2_discovery_is_explicitly_opt_in() -> None:
     assert enabled_args.module2_discovery is True
 
 
-def test_five_logic_detector_is_explicit_and_uses_prompt_v13() -> None:
+def test_focused_logic_detector_is_explicit_and_uses_prompt_v13() -> None:
     parser = build_parser()
     common = [
         "triage",
@@ -107,12 +175,12 @@ def test_five_logic_detector_is_explicit_and_uses_prompt_v13() -> None:
 
     default_args = parser.parse_args(common)
     enabled_args = parser.parse_args(
-        [*common, "--logic-detector", "python-five-logic"]
+        [*common, "--logic-detector", "python-idor-business-logic"]
     )
 
     assert default_args.logic_detector == "off"
     assert default_args.prompt_version == "triage-prompt-v13"
-    assert enabled_args.logic_detector == "python-five-logic"
+    assert enabled_args.logic_detector == "python-idor-business-logic"
 
 
 def test_scan_and_triage_cli_reuses_shared_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -140,7 +208,7 @@ def test_scan_and_triage_cli_reuses_shared_pipeline(tmp_path: Path, monkeypatch:
     assert json.loads((output / "report.json").read_text(encoding="utf-8"))["results"] == []
 
 
-def test_scan_and_triage_emits_five_logic_classes(
+def test_scan_and_triage_emits_only_focused_logic_classes(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -152,29 +220,16 @@ def test_scan_and_triage_emits_five_logic_classes(
 def object_detail(object_id, current_user, db):
     return db.query(Object).get(object_id)
 
-@app.post('/profile')
-def profile_update(request, user):
+@app.post('/cart')
+def calculate_cart(request, db):
     payload = request.get_json()
-    user.update(**payload)
+    price = payload.get('price')
+    quantity = payload.get('quantity')
+    return db.create(total=price * quantity)
 
-@app.post('/transfer')
-def transfer(amount, current_user, receiver, db):
-    if current_user.balance < amount:
-        raise ValueError()
-    current_user.balance -= amount
-    receiver.balance += amount
-    db.commit()
-
-@app.post('/purchase')
-def purchase(quantity, db):
-    db.create(quantity=quantity)
-    db.commit()
-
-@app.post('/password')
-def change_password(request, user):
-    payload = request.get_json()
-    user.set_password(payload.get('new_password'))
-    user.save()
+@app.get('/admin/users')
+def list_users(db):
+    return db.query(User).all()
 """,
         encoding="utf-8",
     )
@@ -203,11 +258,9 @@ def change_password(request, user):
             str(repo),
             "--output-dir",
             str(output),
-            "--analysis-backend",
-            "native",
             "--module2",
             "--logic-detector",
-            "python-five-logic",
+            "python-idor-business-logic",
             "--provider",
             "fake",
         ]
@@ -220,10 +273,7 @@ def change_password(request, user):
     }
     assert classes == {
         "missing_authz_idor",
-        "mass_assignment",
-        "race_condition_toctou",
         "business_rule_bypass",
-        "insecure_workflow",
     }
     assert all(not item["processing_errors"] for item in report["results"])
 

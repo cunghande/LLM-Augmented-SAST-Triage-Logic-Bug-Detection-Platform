@@ -38,7 +38,7 @@ def test_checkpoint_replace_retries_temporary_windows_lock(
     assert not source.exists()
 
 
-def test_checkpoint_rejects_resume_with_different_analysis_backend(
+def test_checkpoint_rejects_resume_with_different_joern_identity(
     tmp_path: Path,
 ) -> None:
     path = tmp_path / "triage-checkpoint.json"
@@ -54,18 +54,18 @@ def test_checkpoint_rejects_resume_with_different_analysis_backend(
         analysis_config_id="joern-config",
     )
     joern.save((), provider_history=(("fake", None),))
-    native = TriageCheckpointStore(
+    changed_joern = TriageCheckpointStore(
         path,
         repository_identifier="example/repo",
         artifact_hashes={"semgrep": "abc"},
         finding_ids=(),
         prompt_version="triage-prompt-v8",
         output_schema_version="triage-decision-v1",
-        analysis_backend="native",
-        analysis_backend_version="0.1.0",
-        analysis_config_id="native-config",
+        analysis_backend="joern",
+        analysis_backend_version="4.0.601",
+        analysis_config_id="joern-config-next",
     )
 
     with pytest.raises(SastTriageError) as captured:
-        native.load(())
+        changed_joern.load(())
     assert captured.value.error_code == "CHECKPOINT_BINDING_MISMATCH"

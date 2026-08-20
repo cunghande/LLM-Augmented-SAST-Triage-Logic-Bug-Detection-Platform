@@ -31,12 +31,12 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
             "are not proof that any one finding is a vulnerability.\n"
             + (
                 "13. For logic_analysis, evaluate the named logic class only. Require a "
-                "complete source-guard-sink trace. Distinguish authentication from object "
-                "authorization; explicit field allowlists from blanket binding; ordinary "
-                "validation from atomicity; numeric parsing from domain bounds; and an "
-                "authenticated action from a valid workflow transition. A detected guard "
-                "counts only when it protects the exact object, field, shared state, domain "
-                "value, or transition in the trace.\n"
+                "complete source-guard-sink trace. For IDOR, distinguish authentication "
+                "from authorization on the exact object and recognize owner/tenant-scoped "
+                "queries. For business-rule bypass, distinguish parsing from enforced "
+                "domain bounds, reject client-controlled cart prices, and require bounded "
+                "pagination for collection queries. A detected guard counts only when it "
+                "protects the exact object or business value in the trace.\n"
                 if prompt_version
                 in {"triage-prompt-v11", "triage-prompt-v12", "triage-prompt-v13"}
                 else ""

@@ -9,18 +9,15 @@ from sast_triage.models import Severity
 
 
 class LogicBugClass(str, Enum):
-    """The five logic-bug classes required by the archived Sprint 2 plan."""
+    """The two reviewed logic-bug classes in the focused Sprint 2 scope."""
 
     MISSING_AUTHZ_IDOR = "missing_authz_idor"
-    MASS_ASSIGNMENT = "mass_assignment"
-    RACE_CONDITION_TOCTOU = "race_condition_toctou"
     BUSINESS_RULE_BYPASS = "business_rule_bypass"
-    INSECURE_WORKFLOW = "insecure_workflow"
 
 
 @dataclass(frozen=True, slots=True)
 class LogicCandidate:
-    """A source-free, reviewable AST candidate produced by the native index."""
+    """A source-free, reviewable AST candidate for focused business logic."""
 
     bug_class: LogicBugClass
     file_path: str

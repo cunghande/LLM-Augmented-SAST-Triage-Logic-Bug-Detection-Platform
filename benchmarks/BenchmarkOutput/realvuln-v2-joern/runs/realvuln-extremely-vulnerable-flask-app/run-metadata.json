@@ -1,0 +1,48 @@
+{
+  "run_id": "f542607a-d203-45c1-b128-8e64b0fa1713",
+  "repository_name": "realvuln-extremely-vulnerable-flask-app",
+  "repository_identifier": "realvuln-extremely-vulnerable-flask-app",
+  "commit_sha": "d5d8875559e21222bbbaadb7b9f0af592c6eb7fa",
+  "working_tree_state": "clean",
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.170.0",
+    "GITLEAKS": "8.30.1",
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "p/python+p/security-audit",
+    "GITLEAKS": "gitleaks-built-in",
+    "MODULE2": "python-idor-business-logic-v1"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "1373d2a665c47ceac38ad97a105b95769d0e3b6ead86bd5179887067d44246ca",
+    "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 15.749872,
+  "prompt_version": "triage-prompt-v13",
+  "model_version": "fake-triage-v1",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "fake",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-20T14:37:03.861347Z",
+  "completed_at": "2026-08-20T14:37:10.517966Z",
+  "total_findings_parsed": 11,
+  "findings_triaged_ok": 11,
+  "findings_with_errors": 0
+}

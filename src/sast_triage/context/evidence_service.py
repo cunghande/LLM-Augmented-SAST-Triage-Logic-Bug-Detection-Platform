@@ -5,17 +5,8 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, replace
 
-from sast_triage.analysis.base import (
-    AnalysisBackend,
-    GraphControl,
-    GraphEvidence,
-    GraphStep,
-)
-from sast_triage.context.evidence_agent import (
-    EvidenceExpansionAgent,
-    GraphEvidenceExpansionAgent,
-)
-from sast_triage.context.evidence_engine import CoreAnalysisEngine
+from sast_triage.analysis.base import AnalysisBackend, GraphEvidence
+from sast_triage.context.evidence_agent import GraphEvidenceExpansionAgent
 from sast_triage.context.evidence_models import (
     ContextCompleteness,
     EvidencePackage,
@@ -28,9 +19,8 @@ from sast_triage.context.evidence_models import (
     TaintPathEvidence,
     TaintStep,
 )
-from sast_triage.context.reader import SourceReadResult
-from sast_triage.context.repository_index import RepositoryEvidenceIndex
 from sast_triage.logic import LogicBugClass, LogicCandidate
+from sast_triage.logic.index import LogicFindingIndex
 from sast_triage.models import NormalizedFinding, SanitizedContext
 
 MAX_EVIDENCE_CODE_CHARACTERS = 6_000
@@ -46,89 +36,6 @@ class EvidenceContextResult:
     complete: bool
     tool_calls: int
     tool_names: tuple[str, ...]
-
-
-def _merge_bounded_local_verification(
-    finding: NormalizedFinding,
-    graph: GraphEvidence,
-    local: EvidencePackage,
-) -> GraphEvidence:
-    """Add source-free same-file proof while giving Joern positive flow precedence."""
-    controls = tuple(
-        GraphControl(
-            symbol=control.symbol,
-            control_type=control.control_type,
-            on_path=control.on_taint_path,
-            effective=control.effective,
-        )
-        for control in local.security_controls
-    )
-    merged_controls = tuple(dict.fromkeys((*graph.controls, *controls)))
-    local_complete = local.context_completeness.status == EvidenceStatus.COMPLETE
-    local_flow = local.taint_path.source_reaches_sink if local_complete else None
-    intrinsic = any(
-        token in finding.rule_id.lower()
-        for token in ("insecure-hash", "weak-random", "secure-cookie")
-    )
-
-    if intrinsic or local_flow is None or (
-        graph.source_reaches_sink is True and local_flow is True
-    ):
-        return replace(
-            graph,
-            controls=merged_controls,
-            provenance=tuple(
-                dict.fromkeys((*graph.provenance, "BOUNDED_LOCAL_AST_VERIFIER"))
-            ),
-        )
-
-    local_steps = tuple(
-        GraphStep(
-            kind=step.kind,
-            symbol=step.expression,
-            file_path=step.file_path,
-            line=step.line,
-        )
-        for step in local.taint_path.steps
-    )
-    source = local.source
-    limitations = tuple(
-        item
-        for item in graph.limitations
-        if item
-        not in {"JOERN_LOCAL_FLOW_NOT_FOUND", "JOERN_CROSS_FILE_FLOW_NOT_FOUND"}
-    )
-    provenance_label = (
-        "BOUNDED_LOCAL_POSITIVE_PROOF"
-        if local_flow is True
-        else "BOUNDED_LOCAL_NEGATIVE_PROOF"
-    )
-    refinement = (
-        ("JOERN_MAY_FLOW_REFINED_BY_LOCAL_PROOF",)
-        if graph.source_reaches_sink is True and local_flow is False
-        else ()
-    )
-    return replace(
-        graph,
-        source_type=(source.source_type if source is not None else graph.source_type),
-        source_file=(source.file_path if source is not None else graph.source_file),
-        source_line=(source.line if source is not None else graph.source_line),
-        source_user_controlled=(
-            source.user_controlled if source is not None else graph.source_user_controlled
-        ),
-        paths=((local_steps,) if local_steps else graph.paths),
-        controls=merged_controls,
-        source_reaches_sink=local_flow,
-        path_complete=True,
-        reachability_resolved=True,
-        limitations=limitations,
-        provenance=tuple(
-            dict.fromkeys(
-                (*graph.provenance, "BOUNDED_LOCAL_AST_VERIFIER", provenance_label)
-                + refinement
-            )
-        ),
-    )
 
 
 def _graph_evidence_package(
@@ -535,109 +442,91 @@ def _logic_evidence_package(
             missing_information=() if complete else ("LOGIC_TRACE_INCOMPLETE",),
             limitations=() if complete else ("BOUNDED_LOGIC_ANALYSIS_PARTIAL",),
         ),
-        provenance=("python_five_logic_v1", "bounded_ast_pattern"),
+        provenance=("python_idor_business_logic_v1", "bounded_ast_pattern"),
     )
 
 
 def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
     """Return class-specific proof and counter-evidence facts without raw source."""
-    class_facts: dict[
-        LogicBugClass,
-        tuple[str, tuple[str, ...], tuple[str, ...]],
-    ] = {
-        LogicBugClass.MISSING_AUTHZ_IDOR: (
-            "A caller-controlled object identifier reaches a lookup without object- or tenant-level authorization.",
-            (
-                "caller_controlled_identifier_reaches_lookup",
-                "lookup_is_not_subject_or_tenant_scoped",
-                "no_effective_object_authorization_guard_observed",
-            ),
-            (
-                "Request the same object as its owner and as a different authenticated user.",
-                "The non-owner request must be denied before object data is returned or mutated.",
-            ),
-        ),
-        LogicBugClass.MASS_ASSIGNMENT: (
-            "Caller-controlled request fields are bound to a model without an explicit writable-field allowlist.",
-            (
-                "request_mapping_reaches_model_mutation",
-                "blanket_binding_operation_observed",
-                "no_explicit_field_allowlist_observed",
-            ),
-            (
-                "Submit one allowed field together with a privileged field such as role or owner identifier.",
-                "The privileged field must be rejected or ignored while the allowed field is handled normally.",
-            ),
-        ),
-        LogicBugClass.RACE_CONDITION_TOCTOU: (
-            "Shared state is checked and later mutated without an atomic control.",
-            (
-                "shared_state_check_observed",
-                "related_state_mutation_observed_after_check",
-                "no_lock_or_atomic_transaction_observed",
-            ),
-            (
-                "Issue two authorized concurrent operations against the same bounded test record.",
-                "Verify that the invariant holds and no double-spend or over-allocation occurs.",
-            ),
-        ),
-        LogicBugClass.BUSINESS_RULE_BYPASS: (
-            "A caller-controlled domain value reaches a state change without server-side bounds.",
-            (
-                "caller_controlled_domain_value_observed",
-                "domain_value_reaches_state_change",
-                "no_numeric_or_domain_bound_guard_observed",
-            ),
-            (
-                "Submit boundary, negative, zero, and excessive values in a non-production test environment.",
-                "Every invalid value must be rejected before persistent state changes.",
-            ),
-        ),
-        LogicBugClass.INSECURE_WORKFLOW: (
-            "A sensitive transition is reachable without proof of the required prior state or credential.",
-            (
-                "sensitive_transition_observed",
-                "caller_can_reach_transition",
-                "no_required_prior_state_or_proof_guard_observed",
-            ),
-            (
-                "Attempt the transition from one allowed and one forbidden prior state.",
-                "The forbidden transition must fail without changing persistent state.",
-            ),
-        ),
-    }
-    hypothesis, proof_obligations, reproduction = class_facts[candidate.bug_class]
+    if candidate.bug_class == LogicBugClass.MISSING_AUTHZ_IDOR:
+        hypothesis = (
+            "A caller-controlled object identifier reaches a lookup without "
+            "object- or tenant-level authorization."
+        )
+        proof_obligations = (
+            "caller_controlled_identifier_reaches_lookup",
+            "lookup_is_not_subject_or_tenant_scoped",
+            "no_effective_object_authorization_guard_observed",
+        )
+        reproduction = (
+            "Request the same object as its owner and as a different authenticated user.",
+            "The non-owner request must be denied before object data is returned or mutated.",
+        )
+        class_resolution = {
+            "caller_identifier_reaches_object_lookup": True,
+            "lookup_subject_or_tenant_scoped": False,
+            "exact_object_authorization_guard_observed": False,
+        }
+    elif "pagination" in candidate.sink_kind or "collection_query" in candidate.sink_kind:
+        hypothesis = (
+            "An endpoint can request or return an unbounded collection without enforced server-side pagination limits."
+        )
+        proof_obligations = (
+            "collection_query_or_pagination_input_observed",
+            "resource_consuming_query_is_reachable",
+            "no_effective_server_side_page_size_cap_observed",
+        )
+        reproduction = (
+            "Request negative, zero, and excessive page or limit values in a bounded test environment.",
+            "Verify that the server rejects invalid values and caps each response to the configured maximum.",
+        )
+        class_resolution = {
+            "resource_consuming_collection_query_observed": True,
+            "server_side_pagination_cap_observed": False,
+            "resource_exhaustion_test_required": True,
+        }
+    elif candidate.sink_kind == "client_controlled_price_or_total":
+        hypothesis = (
+            "A caller-controlled price, discount, subtotal, or total influences a cart operation instead of a server-trusted value."
+        )
+        proof_obligations = (
+            "caller_controlled_price_component_observed",
+            "price_component_reaches_cart_result_or_state_change",
+            "server_side_price_recomputation_not_observed",
+        )
+        reproduction = (
+            "Submit negative, zero, and excessive quantities plus a modified client-side price in a test cart.",
+            "Verify that the server ignores client prices, loads trusted prices, and rejects invalid quantities.",
+        )
+        class_resolution = {
+            "caller_price_component_reaches_business_operation": True,
+            "server_trusted_price_recomputation_observed": False,
+            "boundary_tests_required": True,
+        }
+    else:
+        hypothesis = (
+            "A caller-controlled domain value reaches a business operation without server-side bounds."
+        )
+        proof_obligations = (
+            "caller_controlled_domain_value_observed",
+            "domain_value_reaches_business_operation",
+            "no_numeric_or_domain_bound_guard_observed",
+        )
+        reproduction = (
+            "Submit boundary, negative, zero, and excessive values in a non-production test environment.",
+            "Every invalid value must be rejected before a result is returned or persistent state changes.",
+        )
+        class_resolution = {
+            "caller_domain_value_reaches_business_operation": True,
+            "numeric_or_domain_bound_guard_observed": False,
+            "boundary_tests_required": True,
+        }
     common_resolutions: dict[str, object] = {
         "caller_controlled_source": candidate.source_kind.startswith("http_"),
         "sensitive_sink_observed": True,
         "containing_function_search_complete": candidate.analysis_complete,
         "effective_control_for_exact_target_observed": False,
         "runtime_poc_executed": False,
-    }
-    class_resolutions: dict[LogicBugClass, dict[str, object]] = {
-        LogicBugClass.MISSING_AUTHZ_IDOR: {
-            "caller_identifier_reaches_object_lookup": True,
-            "lookup_subject_or_tenant_scoped": False,
-            "exact_object_authorization_guard_observed": False,
-        },
-        LogicBugClass.MASS_ASSIGNMENT: {
-            "unfiltered_mapping_reaches_model_mutation": True,
-            "explicit_writable_field_allowlist_observed": False,
-        },
-        LogicBugClass.RACE_CONDITION_TOCTOU: {
-            "shared_state_check_then_mutation_observed": True,
-            "atomic_transaction_or_lock_observed": False,
-        },
-        LogicBugClass.BUSINESS_RULE_BYPASS: {
-            "caller_domain_value_reaches_persistent_mutation": True,
-            "numeric_or_domain_bound_guard_observed": False,
-            "boundary_tests_required": True,
-        },
-        LogicBugClass.INSECURE_WORKFLOW: {
-            "sensitive_state_transition_observed": True,
-            "required_prior_state_guard_observed": False,
-            "forbidden_transition_test_required": True,
-        },
     }
     return {
         "attack_hypothesis": hypothesis,
@@ -668,7 +557,7 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
             ),
             "facts": {
                 **common_resolutions,
-                **class_resolutions[candidate.bug_class],
+                **class_resolution,
             },
             "remaining_limitation": "runtime_behavior_not_executed",
         },
@@ -725,18 +614,17 @@ def _project_logic_evidence(
 
 def build_evidence_context(
     finding: NormalizedFinding,
-    source: SourceReadResult,
     sanitized_context: SanitizedContext,
     *,
     max_tool_calls: int = 5,
     max_depth: int = 5,
-    repository_index: RepositoryEvidenceIndex | None = None,
+    logic_index: LogicFindingIndex | None = None,
     analysis_backend: AnalysisBackend | None = None,
 ) -> EvidenceContextResult:
     """Phân tích mã nguồn và thay snippet gửi provider bằng JSON bằng chứng an toàn."""
     logic_candidate = (
-        repository_index.logic_candidate_for(finding)
-        if repository_index is not None
+        logic_index.candidate_for(finding)
+        if logic_index is not None
         else None
     )
     if logic_candidate is not None:
@@ -747,30 +635,8 @@ def build_evidence_context(
         )
         expansion_tool_calls = 0
         expansion_tool_names = ("logic_candidate_projection",)
-    elif analysis_backend is not None and analysis_backend.identity.backend == "joern":
+    elif analysis_backend is not None:
         initial = analysis_backend.initial_evidence(finding)
-        if initial is None:
-            initial = GraphEvidence(limitations=("JOERN_INITIAL_EVIDENCE_UNAVAILABLE",))
-        try:
-            local_evidence = CoreAnalysisEngine(
-                finding,
-                source,
-                sanitized_context,
-            ).build_evidence()
-            initial = _merge_bounded_local_verification(
-                finding,
-                initial,
-                local_evidence,
-            )
-        except (SyntaxError, ValueError):
-            initial = replace(
-                initial,
-                limitations=tuple(
-                    dict.fromkeys(
-                        (*initial.limitations, "BOUNDED_LOCAL_VERIFIER_UNAVAILABLE")
-                    )
-                ),
-            )
         graph_expansion = GraphEvidenceExpansionAgent(
             analysis_backend,
             finding,
@@ -786,88 +652,27 @@ def build_evidence_context(
         expansion_tool_calls = graph_expansion.tool_calls
         expansion_tool_names = graph_expansion.tool_names
     else:
-        engine = CoreAnalysisEngine(finding, source, sanitized_context)
-        expansion = EvidenceExpansionAgent(
-            engine,
-            max_tool_calls=max_tool_calls,
-            max_depth=max_depth,
-        ).expand()
-        evidence = expansion.evidence
-        expansion_tool_calls = expansion.tool_calls
-        expansion_tool_names = expansion.tool_names
-
-    if (
-        repository_index is not None
-        and evidence.context_completeness.status != EvidenceStatus.COMPLETE
-    ):
-        trace = repository_index.trace_for_finding(finding, max_depth=max_depth)
-        if trace is not None:
-            source = SourceEvidence(
-                expression="<cross_file_user_controlled_input>",
-                source_type=trace.source_type,
-                user_controlled=True,
-                file_path=trace.source_file,
-                line=trace.source_line,
-                confidence="high",
-            )
-            cross_steps = [
-                TaintStep(
-                    order=1,
-                    kind="source",
-                    expression="<cross_file_user_controlled_input>",
-                    function_id=trace.function_path[0] if trace.function_path else None,
-                    file_path=trace.source_file,
-                    line=trace.source_line,
-                )
-            ]
-            for function_id in trace.function_path:
-                cross_steps.append(
-                    TaintStep(
-                        order=len(cross_steps) + 1,
-                        kind="call_boundary",
-                        expression="<cross_file_call_boundary>",
-                        function_id=function_id,
-                        file_path=(trace.sink_file if function_id == trace.function_path[-1] else trace.source_file),
-                        line=None,
+        evidence = _graph_evidence_package(
+            finding,
+            sanitized_context,
+            GraphEvidence(
+                sink_type="rule_specific_sink",
+                sink_symbol=(
+                    "<scanner_reported_intrinsic>"
+                    if any(
+                        token in finding.rule_id.lower()
+                        for token in ("insecure-hash", "weak-random", "secure-cookie")
                     )
-                )
-            for step in evidence.taint_path.steps:
-                cross_steps.append(
-                    TaintStep(
-                        order=len(cross_steps) + 1,
-                        kind=step.kind,
-                        expression=step.expression,
-                        function_id=step.function_id,
-                        file_path=step.file_path,
-                        line=step.line,
-                    )
-                )
-            evidence = replace(
-                evidence,
-                source=source,
-                taint_path=TaintPathEvidence(
-                    path_type="cross_file",
-                    steps=tuple(cross_steps),
-                    source_reaches_sink=True,
-                    complete=True,
+                    else None
                 ),
-                context_completeness=ContextCompleteness(
-                    status=EvidenceStatus.COMPLETE,
-                    source_resolved=True,
-                    sink_resolved=evidence.sink is not None,
-                    taint_path_complete=True,
-                    call_chain_complete=True,
-                    reachability_resolved=True,
-                    unresolved_symbols=(),
-                    missing_information=(),
-                    limitations=(),
-                ),
-                provenance=tuple(
-                    dict.fromkeys(
-                        (*evidence.provenance, f"module2_index:{trace.source_file}", f"module2_index:{trace.sink_file}")
-                    )
-                ),
-            )
+                sink_file=finding.file_path,
+                sink_line=finding.start_line,
+                limitations=("JOERN_BACKEND_UNAVAILABLE",),
+                provenance=("JOERN_REQUIRED",),
+            ),
+        )
+        expansion_tool_calls = 0
+        expansion_tool_names = ()
 
     if len(evidence.relevant_code.code) > MAX_EVIDENCE_CODE_CHARACTERS:
         relevant = replace(

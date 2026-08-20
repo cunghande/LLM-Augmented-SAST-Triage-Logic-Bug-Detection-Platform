@@ -2,7 +2,6 @@
 
 Pipeline flow tested:
 read_repository_source
-  -> select_python_scope
   -> select_raw_context
   -> sanitize_context
   -> SanitizedContext
@@ -10,14 +9,9 @@ read_repository_source
 
 from pathlib import Path
 
-from sast_triage.context import (
-    PythonScopeResult,
-    SourceReadResult,
-    read_repository_source,
-    sanitize_context,
-    select_python_scope,
-    select_raw_context,
-)
+from sast_triage.context.reader import SourceReadResult, read_repository_source
+from sast_triage.context.sanitizer import sanitize_context
+from sast_triage.context.selection import select_raw_context
 from sast_triage.models import (
     ContextStrategy,
     FindingType,
@@ -52,16 +46,11 @@ def make_finding(
     )
 
 
-# --- 1. Semgrep AST Success End-to-End ---
+# --- 1. Semgrep line-window End-to-End ---
 
 
-def test_pipeline_semgrep_ast_success(tmp_path: Path) -> None:
-    """Requirement Protected: Semgrep finding in valid Python function uses PYTHON_FUNCTION end-to-end.
-
-    Pipeline Stages: read_repository_source -> select_python_scope -> select_raw_context -> sanitize_context.
-    Expected Output: strategy PYTHON_FUNCTION, password redacted, canary absent from serialization.
-    Test Category: End-to-End Happy Path
-    """
+def test_pipeline_semgrep_line_window_success(tmp_path: Path) -> None:
+    """Semgrep context uses a sanitized line window without local AST analysis."""
     repo_root = tmp_path / "repo"
     repo_root.mkdir()
     source_file = repo_root / "app" / "service.py"
@@ -81,25 +70,14 @@ class PaymentService:
     src_res = read_repository_source(repo_root, "app/service.py")
     assert isinstance(src_res, SourceReadResult)
 
-    # Step 2: Python Scope AST Analysis (finding on line 6: password = ...)
     finding = make_finding(scanner=ScannerType.SEMGREP, file_path="app/service.py", start_line=6, end_line=6)
-    scope_res = select_python_scope(src_res, finding.start_line, finding.end_line)
-    assert isinstance(scope_res, PythonScopeResult)
-    assert scope_res.strategy == ContextStrategy.PYTHON_FUNCTION
-    assert scope_res.enclosing_function == "process_payment"
-    assert scope_res.enclosing_class == "PaymentService"
+    raw_res = select_raw_context(finding, src_res)
+    assert raw_res.strategy == ContextStrategy.LINE_WINDOW
 
-    # Step 3: Raw Context Selection
-    raw_res = select_raw_context(finding, src_res, scope_res)
-    assert raw_res.strategy == ContextStrategy.PYTHON_FUNCTION
-
-    # Step 4: Context Sanitization
     sanitized = sanitize_context(finding, raw_res)
     assert isinstance(sanitized, SanitizedContext)
-    assert sanitized.context_strategy == ContextStrategy.PYTHON_FUNCTION
+    assert sanitized.context_strategy == ContextStrategy.LINE_WINDOW
     assert sanitized.context_available is True
-    assert sanitized.enclosing_function == "process_payment"
-    assert sanitized.enclosing_class == "PaymentService"
     assert CANARY_SECRET not in sanitized.sanitized_snippet
     assert "<REDACTED_SECRET>" in sanitized.sanitized_snippet
 
@@ -108,16 +86,11 @@ class PaymentService:
     assert CANARY_SECRET not in dump_json
 
 
-# --- 2. Semgrep AST Fallback End-to-End ---
+# --- 2. Broken syntax remains safe ---
 
 
-def test_pipeline_semgrep_ast_fallback(tmp_path: Path) -> None:
-    """Requirement Protected: Semgrep finding in broken Python source falls back to LINE_WINDOW strategy.
-
-    Pipeline Stages: read_repository_source -> select_python_scope -> select_raw_context -> sanitize_context.
-    Expected Output: strategy LINE_WINDOW, diagnostic semantics preserved, credential sanitized.
-    Test Category: End-to-End Fallback
-    """
+def test_pipeline_broken_python_still_uses_line_window(tmp_path: Path) -> None:
+    """Broken Python syntax does not affect bounded context selection."""
     repo_root = tmp_path / "repo"
     repo_root.mkdir()
     source_file = repo_root / "app" / "broken.py"
@@ -131,10 +104,7 @@ def test_pipeline_semgrep_ast_fallback(tmp_path: Path) -> None:
     src_res = read_repository_source(repo_root, "app/broken.py")
     finding = make_finding(scanner=ScannerType.SEMGREP, file_path="app/broken.py", start_line=2)
 
-    scope_res = select_python_scope(src_res, finding.start_line)
-    assert scope_res.strategy == ContextStrategy.UNAVAILABLE
-
-    raw_res = select_raw_context(finding, src_res, scope_res)
+    raw_res = select_raw_context(finding, src_res)
     assert raw_res.strategy == ContextStrategy.LINE_WINDOW
 
     sanitized = sanitize_context(finding, raw_res)
@@ -150,7 +120,7 @@ def test_pipeline_semgrep_ast_fallback(tmp_path: Path) -> None:
 def test_pipeline_gitleaks_masking(tmp_path: Path) -> None:
     """Requirement Protected: Gitleaks finding line is masked line-by-line while preserving line count and safe surrounding lines.
 
-    Pipeline Stages: read_repository_source -> select_python_scope -> select_raw_context -> sanitize_context.
+    Pipeline Stages: read_repository_source -> select_raw_context -> sanitize_context.
     Expected Output: strategy REDACTED_LINE_WINDOW, finding line masked with '# <REDACTED_GITLEAKS_FINDING_LINE>', raw secret absent from json/dump/repr/str.
     Test Category: End-to-End Security
     """
@@ -169,8 +139,7 @@ def test_pipeline_gitleaks_masking(tmp_path: Path) -> None:
     src_res = read_repository_source(repo_root, "app/config.py")
     finding = make_finding(scanner=ScannerType.GITLEAKS, file_path="app/config.py", start_line=3)
 
-    scope_res = select_python_scope(src_res, finding.start_line)
-    raw_res = select_raw_context(finding, src_res, scope_res)
+    raw_res = select_raw_context(finding, src_res)
     assert raw_res.strategy == ContextStrategy.LINE_WINDOW
 
     sanitized = sanitize_context(finding, raw_res)

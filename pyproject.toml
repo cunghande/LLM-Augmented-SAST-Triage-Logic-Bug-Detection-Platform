@@ -13,17 +13,16 @@ dependencies = [
     # The standard library cannot authenticate, package, or invoke Modal GPU functions.
     "modal>=1.5.3,<2.0.0",
     "pydantic>=2.0.0,<3.0.0",
+    # Joern's query server requires HTTP and WebSocket clients. The standard
+    # library does not provide a WebSocket implementation.
+    "requests>=2.32.0,<3.0.0",
+    "websockets>=15.0,<18.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
     "ruff",
-]
-joern = [
-    # Joern's query server uses a WebSocket protocol; the standard library
-    # does not provide a compatible client.
-    "cpgqls-client==0.0.9",
 ]
 
 [project.scripts]

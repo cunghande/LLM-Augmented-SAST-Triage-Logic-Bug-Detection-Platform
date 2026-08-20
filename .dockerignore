@@ -1,0 +1,7 @@
+*
+!pyproject.toml
+!README.md
+!src/**
+!scripts/docker-doctor.sh
+!docker/app/Dockerfile
+!docker/joern/Dockerfile

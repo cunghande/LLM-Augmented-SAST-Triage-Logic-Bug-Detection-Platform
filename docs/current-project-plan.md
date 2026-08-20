@@ -10,10 +10,10 @@ Pipeline không tự động xóa hoặc suppress finding. Khi context thiếu, 
 lỗi hoặc output không hợp lệ, finding vẫn được giữ và chuyển sang
 `MANUAL_REVIEW` hoặc `TRIAGE_ERROR`.
 
-Theo quyết định triển khai mới, nhánh `main` tiếp tục Sprint 2 của kế hoạch gốc:
-phát hiện năm lớp logic bug Python, gắn source–guard–sink evidence, risk score
-và remediation. Detector FastAPI missing-authz chuyên biệt được bảo tồn ở nhánh
-riêng và không còn là phạm vi Sprint 2 trên `main`.
+Theo quyết định phạm vi hiện tại, nhánh `main` tập trung Sprint 2 vào hai lớp
+logic bug Python: missing authorization/IDOR và business-rule bypass. Detector
+gắn source–guard–sink evidence, risk score và remediation cho ba use case ưu
+tiên: tài liệu khác chủ sở hữu, tính giá giỏ hàng và giới hạn pagination.
 
 ## Deliverable được chấp nhận
 
@@ -24,18 +24,18 @@ riêng và không còn là phạm vi Sprint 2 trên `main`.
 5. Báo cáo không chứa raw prompt, raw response, traceback, secret hay absolute path.
 6. Benchmark có nhãn review, split `development`/`calibration`/`held_out` và metric riêng theo split.
 7. Audit lưu version/hash/timing an toàn, không lưu nội dung source hoặc prompt.
-8. Detector Sprint 2 hỗ trợ missing authz/IDOR, mass assignment, race/TOCTOU,
-   business-rule bypass và insecure workflow.
+8. Detector Sprint 2 hỗ trợ missing authz/IDOR và business-rule bypass.
 9. Logic finding đi qua đúng pipeline triage chung và có evidence, risk factors,
    remediation cùng validation checklist.
 
 ## Stage gate
 
-- `native` là analysis backend mặc định.
-- Joern vẫn là thử nghiệm. Detector năm lớp dùng backend `native` và phải bật
-  tường minh bằng `--logic-detector python-five-logic`.
-- Chỉ nâng backend thử nghiệm thành mặc định khi A/B benchmark trên held-out data cho thấy cải thiện ổn định và test Docker tái lập được.
-- Chỉ công bố chất lượng model khi dùng provider thật, dataset không tổng hợp và có kết quả held-out.
+- Joern là analysis backend duy nhất cho source/sink, dataflow và call graph.
+- Detector hai lớp phải bật tường minh bằng
+  `--logic-detector python-idor-business-logic`; detector này không thay thế
+  dataflow Joern.
+- Chỉ công bố chất lượng model khi dùng provider thật, dataset không tổng hợp
+  và có kết quả held-out mới.
 
 ## Không làm trong phạm vi hiện tại
 
@@ -54,6 +54,6 @@ riêng và không còn là phạm vi Sprint 2 trên `main`.
 3. Thêm adversarial/metamorphic prompt-injection evaluation.
 4. Review candidate ngoài vùng ground truth và xác thực trên ba service được phép.
 5. Đo độ ổn định, failure rate và calibration của provider thật.
-6. Đánh giá A/B native với Joern; giữ Joern thử nghiệm nếu chưa có bằng chứng.
+6. Chạy lại benchmark Joern trên repository và ground truth mới.
 
 Chi tiết phạm vi, lệnh demo và benchmark: [`sprint-2-scope.md`](sprint-2-scope.md).

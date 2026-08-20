@@ -1,0 +1,2380 @@
+{
+  "run_metadata": {
+    "run_id": "26d7ff5d-0a8b-4a54-844c-c5736e6568e7",
+    "repository_name": "realvuln-threatbyte",
+    "repository_identifier": "realvuln-threatbyte",
+    "commit_sha": "c4db46f72586c4ecb65859051ea037018dbf0e5e",
+    "working_tree_state": "clean",
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0",
+      "GITLEAKS": "8.30.1",
+      "MODULE2": "0.1.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python+p/security-audit",
+      "GITLEAKS": "gitleaks-built-in",
+      "MODULE2": "python-idor-business-logic-v1"
+    },
+    "input_artifact_hashes": {
+      "semgrep": "2a28e3507e614ac34c6cb60aece5c24dd0c66def5531ca261304bd28502f8035",
+      "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "analysis_backend": "joern",
+    "analysis_backend_version": "4.0.600",
+    "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+    "cpg_build_status": "complete",
+    "cpg_build_seconds": 15.204461,
+    "prompt_version": "triage-prompt-v13",
+    "model_version": "fake-triage-v1",
+    "policy_version": "conservative-policy-v2",
+    "triage_provider": "fake",
+    "tool_version": "0.1.0",
+    "cli_mode": "scan-and-triage",
+    "started_at": "2026-08-20T14:44:10.478627Z",
+    "completed_at": "2026-08-20T14:44:35.528595Z",
+    "total_findings_parsed": 46,
+    "findings_triaged_ok": 46,
+    "findings_with_errors": 0
+  },
+  "results": [
+    {
+      "finding": {
+        "finding_instance_id": "80824eb0115e6081",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+        "rule_name": null,
+        "file_path": "client/templates/dashboard.html",
+        "start_line": 64,
+        "end_line": 64,
+        "severity": "MEDIUM",
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "metadata": {
+          "cwe": [
+            "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          ],
+          "owasp": [
+            "A07:2017 - Cross-Site Scripting (XSS)",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://flask.palletsprojects.com/en/1.1.x/security/#cross-site-scripting-xss"
+          ],
+          "category": "security",
+          "technology": [
+            "flask"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:10.478627+00:00",
+      "processing_duration_ms": 1107,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "1271df72490954d2cca0477cf5968de757618887e49c2d03b1cffe6f53801e39"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "163f85718d0e7180",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+        "rule_name": null,
+        "file_path": "client/templates/profile.html",
+        "start_line": 41,
+        "end_line": 41,
+        "severity": "MEDIUM",
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "metadata": {
+          "cwe": [
+            "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          ],
+          "owasp": [
+            "A07:2017 - Cross-Site Scripting (XSS)",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://flask.palletsprojects.com/en/1.1.x/security/#cross-site-scripting-xss"
+          ],
+          "category": "security",
+          "technology": [
+            "flask"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:11.591759+00:00",
+      "processing_duration_ms": 944,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "3662b170eea114cb6333160ddc101c3927c624556c621dca64cbf102c345532b"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "32a750ac4cdac871",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+        "rule_name": null,
+        "file_path": "db/create_dummy_data.py",
+        "start_line": 8,
+        "end_line": 8,
+        "severity": "MEDIUM",
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "metadata": {
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "references": [
+            "https://www.schneier.com/blog/archives/2012/10/when_will_we_se.html",
+            "https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/sha-1-collision-signals-the-end-of-the-algorithm-s-viability",
+            "http://2012.sharcs.org/slides/stevens.pdf",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source chưa xác định; sink db/create_dummy_data.py:8; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:12.542931+00:00",
+      "processing_duration_ms": 224,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5e7aa946c2c7a2d62c525326fee083629d6ec29ede283f8d42dc4bc126bf2b96"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "c88794c1a775b48a",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+        "rule_name": null,
+        "file_path": "db/create_dummy_data.py",
+        "start_line": 8,
+        "end_line": 8,
+        "severity": "MEDIUM",
+        "message": "It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.",
+        "metadata": {
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "references": [
+            "https://tools.ietf.org/html/rfc6151",
+            "https://crypto.stackexchange.com/questions/44151/how-does-the-flame-malware-take-advantage-of-md5-collision",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html",
+            "https://security.stackexchange.com/questions/211/how-to-securely-hash-passwords",
+            "https://github.com/returntocorp/semgrep-rules/issues/1609",
+            "https://docs.python.org/3/library/hashlib.html#hashlib.scrypt"
+          ],
+          "category": "security",
+          "technology": [
+            "pycryptodome",
+            "hashlib",
+            "md5"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink db/create_dummy_data.py:8; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:12.772682+00:00",
+      "processing_duration_ms": 850,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "afd986493e27d5d214130ebea068b79d774f5ee8e386c7620432a0f3bb83e96f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "9306258b6caa770b",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.injection.sql.sql-injection-using-db-cursor-execute.sql-injection-db-cursor-execute",
+        "rule_name": null,
+        "file_path": "server/routes.py",
+        "start_line": 126,
+        "end_line": 140,
+        "severity": "MEDIUM",
+        "message": "User-controlled data from a request is passed to 'execute()'. This could lead to a SQL injection and therefore protected information could be leaked. Instead, use django's QuerySets, which are built with query parameterization and therefore not vulnerable to sql injection. For example, you could use `Entry.objects.filter(date=2006)`.",
+        "metadata": {
+          "cwe": [
+            "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+          ],
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://docs.djangoproject.com/en/3.0/topics/security/#sql-injection-protection"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source server/routes.py:126; sink server/routes.py:132; đường source–sink server/routes.py:126 → server/routes.py:126 → server/routes.py:126 → server/routes.py:126 → server/routes.py:126 → server/routes.py:137 → server/routes.py:137 → server/routes.py:137 → server/routes.py:137 → server/routes.py:138; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:13.630932+00:00",
+      "processing_duration_ms": 1021,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "3d278a56502936d4ce018cba61a4b297f4c95384288859e150a1767fe8911fc3"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "370a085c0317c5a1",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "rule_name": null,
+        "file_path": "server/routes.py",
+        "start_line": 137,
+        "end_line": 137,
+        "severity": "HIGH",
+        "message": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.",
+        "metadata": {
+          "cwe": [
+            "CWE-704: Incorrect Type Conversion or Cast"
+          ],
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-textual-sql",
+            "https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_quick_guide.htm",
+            "https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-more-specific-text-with-table-expression-literal-column-and-expression-column"
+          ],
+          "category": "security",
+          "technology": [
+            "sqlalchemy",
+            "flask"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:14.657445+00:00",
+      "processing_duration_ms": 1371,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "347679b67a80967455f4f1ea5ae1d3464205759054ae451ca79ccdc00d4a106d"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "4c23054158e00d72",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.flask.security.open-redirect.open-redirect",
+        "rule_name": null,
+        "file_path": "server/routes.py",
+        "start_line": 256,
+        "end_line": 256,
+        "severity": "HIGH",
+        "message": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.",
+        "metadata": {
+          "cwe": [
+            "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+          ],
+          "owasp": [
+            "A01:2021 - Broken Access Control",
+            "A01:2025 - Broken Access Control"
+          ],
+          "references": [
+            "https://flask-login.readthedocs.io/en/latest/#login-example",
+            "https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html#dangerous-url-redirect-example-1",
+            "https://docs.python.org/3/library/urllib.parse.html#url-parsing"
+          ],
+          "category": "security",
+          "technology": [
+            "flask"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:16.033887+00:00",
+      "processing_duration_ms": 1273,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "0aa63f00d6adcb4d043ebf8cf79429e308add09fefc43e78f11250d6b11eb4e3"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "d29f44b4ca57a040",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.flask.security.open-redirect.open-redirect",
+        "rule_name": null,
+        "file_path": "server/routes.py",
+        "start_line": 260,
+        "end_line": 260,
+        "severity": "HIGH",
+        "message": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.",
+        "metadata": {
+          "cwe": [
+            "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+          ],
+          "owasp": [
+            "A01:2021 - Broken Access Control",
+            "A01:2025 - Broken Access Control"
+          ],
+          "references": [
+            "https://flask-login.readthedocs.io/en/latest/#login-example",
+            "https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html#dangerous-url-redirect-example-1",
+            "https://docs.python.org/3/library/urllib.parse.html#url-parsing"
+          ],
+          "category": "security",
+          "technology": [
+            "flask"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:17.311713+00:00",
+      "processing_duration_ms": 1285,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "8d16c08427e38f6694a184e4408dd3d09e7ce6c61da8f5ccebb24ba652069dbe"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "024b0079e071e635",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+        "rule_name": null,
+        "file_path": "server/routes.py",
+        "start_line": 403,
+        "end_line": 403,
+        "severity": "MEDIUM",
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "metadata": {
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "references": [
+            "https://www.schneier.com/blog/archives/2012/10/when_will_we_se.html",
+            "https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/sha-1-collision-signals-the-end-of-the-algorithm-s-viability",
+            "http://2012.sharcs.org/slides/stevens.pdf",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source chưa xác định; sink server/routes.py:403; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:18.604879+00:00",
+      "processing_duration_ms": 207,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "f4d5e5a68d313ffa65a33a8350664ac7c2996e000618d46c8ff06023961a6f2c"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "5a76f9b0f1f820a6",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+        "rule_name": null,
+        "file_path": "server/routes.py",
+        "start_line": 403,
+        "end_line": 403,
+        "severity": "MEDIUM",
+        "message": "It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.",
+        "metadata": {
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "references": [
+            "https://tools.ietf.org/html/rfc6151",
+            "https://crypto.stackexchange.com/questions/44151/how-does-the-flame-malware-take-advantage-of-md5-collision",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html",
+            "https://security.stackexchange.com/questions/211/how-to-securely-hash-passwords",
+            "https://github.com/returntocorp/semgrep-rules/issues/1609",
+            "https://docs.python.org/3/library/hashlib.html#hashlib.scrypt"
+          ],
+          "category": "security",
+          "technology": [
+            "pycryptodome",
+            "hashlib",
+            "md5"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source server/routes.py:82; sink server/routes.py:403; đường source–sink server/routes.py:82 → server/routes.py:83 → server/routes.py:84 → server/routes.py:85 → server/routes.py:85 → server/routes.py:85 → server/routes.py:85 → server/routes.py:85 → server/routes.py:89 → server/routes.py:89; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:18.816906+00:00",
+      "processing_duration_ms": 1343,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "02ab8cdae85fcf11c9da234e1f560051a1214ca9d8d9fed79d77cf1fb0efd007"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "41856fca100d8bad2495b7c004fbd25908ddc15068bfd5a29c988b0d4c57541b",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 229,
+        "end_line": 229,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:20.163765+00:00",
+      "processing_duration_ms": 576,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "63be015371feb9ba43210e215f8852cb3a36753f0da5b4a3c2ddf4b6f4ea3efe"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "2bace3f57980caf1c7dc4e9f20ee31834013349fd6e46ae2ea231096c98924e3",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 275,
+        "end_line": 275,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:20.745371+00:00",
+      "processing_duration_ms": 509,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "d8207d6c2a2dc5c3ce2615c120d0645dc76035aacefeff16016a3ba600ac76c4"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "08d027f9634008a668261852ce96125f3229ef2753aad7ce676e41ffb18ac729",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 198,
+        "end_line": 198,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:21.259124+00:00",
+      "processing_duration_ms": 425,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "4af2dabec7511a1cbe0a399c96b544239a1e9489055450c6ef2a299eecb4c8dc"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "b56142a40e8351172da59bf6b0eae78eb029c2be003cbf75cfd1f6dafd128591",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.open",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 284,
+        "end_line": 284,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source server/api/v1/api_v1.py:283; sink server/api/v1/api_v1.py:284; đường source–sink server/api/v1/api_v1.py:283 → server/api/v1/api_v1.py:283 → server/api/v1/api_v1.py:283 → server/api/v1/api_v1.py:283 → server/api/v1/api_v1.py:283 → server/api/v1/api_v1.py:284 → server/api/v1/api_v1.py:284; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:21.687404+00:00",
+      "processing_duration_ms": 516,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "f9f27624b45b1721a0362500e11aa410d4aea589e29b19b6bf20be7c12bd3cd0"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "dcb65958460f7f1f54c2e299e7afeab0498ab17f1e05fdeb8f705b59e351f1fe",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 55,
+        "end_line": 55,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:22.208117+00:00",
+      "processing_duration_ms": 422,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "13caba9bfdfdf716d889bf3900a5180a53bd3fdb203da16ce0627c5ee585e003"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "438a22138892cf3916ad876608076421bc8b73f6ab6f09de121069047c0f4802",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 180,
+        "end_line": 180,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:22.637550+00:00",
+      "processing_duration_ms": 555,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "64699f0d18d747e63c3d8b267dbcce81ca006768f34b9e89ee91a3d410ec1dce"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "c5c238cf26ed4ac4718a134ab95de528b20b768f37a19e981367c9e549073ba6",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 99,
+        "end_line": 99,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:23.199367+00:00",
+      "processing_duration_ms": 423,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "8c9d6f2b4e9d1411d790aeecc39d7585de25a9036d003b6697bf4fe5046f468c"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "6d1d83a26e0c9fe3d88066897f60547c56724c4ec9028d3c55d3b67e73d69cc0",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 350,
+        "end_line": 350,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:23.626233+00:00",
+      "processing_duration_ms": 504,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5a603970396290c63d51f47ea960db26d8ef1d3ebe8efc9a4eb343adaa846328"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "f05c8efba8ee3174549e62f32d1cf84a6f46e886c7949781d1bf50db4e937275",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 113,
+        "end_line": 113,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:24.136970+00:00",
+      "processing_duration_ms": 453,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "95d099e336e24a716fcbfbc699b5475ba99a35e92cdf709e6557b62398ecfc1f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "42f6a66429b6daeceeb15f3bf2f16aafeba8bf657c02015f38d7510dd38702c3",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 292,
+        "end_line": 292,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:24.598770+00:00",
+      "processing_duration_ms": 379,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "a6a64b1275a1ee0035560b7d4628924096398a186c348b2ca13d14659f0245df"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "120553b40a81b3a4b3d36561eef766c0ffeb3dcac5d9a9a94f819849cb8f3412",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 132,
+        "end_line": 132,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:24.981561+00:00",
+      "processing_duration_ms": 499,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "a347dc6626cc5ef31b3e464153425eca8d91851e563df8e20b493da9037b2777"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "90e35c0627ea455fef2b6c9aee6df82e6dc4018e44935bced6e5684b7fd8c12c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 288,
+        "end_line": 288,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:25.484979+00:00",
+      "processing_duration_ms": 402,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "b1dac85d73276f078d72127319aa15739fcf44faeb72f4304b4a5b184348d868"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "14d59bf4253b07195718138a584161ff71f980f54b501889acb05aafdf13b04b",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 232,
+        "end_line": 232,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:25.892506+00:00",
+      "processing_duration_ms": 399,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "73d04b306603117eea88e5b3a4ec415f3a6dc8babb5cacaa628467f281c5e4d7"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "0c1d123e2926275c6e1cb8a7c3f1841773633bad8abfad170bcf9158516cfac0",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 207,
+        "end_line": 207,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:26.295277+00:00",
+      "processing_duration_ms": 359,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "12b38228f12218e68f5890fa5e58aac6a1fd49c5d1a18d98e73207d52af64120"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "51ae5b6b6ddd838369b93b389039891ed43fb55554c88275002b96d7309cbdc1",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 298,
+        "end_line": 298,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:26.661235+00:00",
+      "processing_duration_ms": 362,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "997454b1d9c1de8951a8b2b7e055737be40b4a7e5b90f31bd14ae844f0b55011"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "152953725043e8facbdc61eda322d52a5284b157bf7a1d4a810d1cbcc2cab4f6",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 275,
+        "end_line": 275,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:27.028247+00:00",
+      "processing_duration_ms": 404,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "39950a25c7e182b10a788499c406c87998240e93e0542602800c9903c5176471"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "717c4bc01b8d5aa76c725a9c621651a2e900ce552364f35328e60e508a93ac5c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 106,
+        "end_line": 106,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:27.440722+00:00",
+      "processing_duration_ms": 349,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "1ddb086ec3a2a7965bb16b0b32f8c0c535ab7aa14b1988a008d80cdb29795c9b"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "e3243e5dfc9b5ae1ea043388d7b7095bf7cd94df657ffc70020de94941ac1a36",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 124,
+        "end_line": 124,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:27.797954+00:00",
+      "processing_duration_ms": 415,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "45a522b32b11ae6aaf07c4f7d2e96b512b79a3b7197f84331cb8c79accd859e1"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "8fae7d74208bf1b53b9dd25990eefe314e7ec11632fa83530db895883c97e3b8",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 365,
+        "end_line": 365,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:28.217764+00:00",
+      "processing_duration_ms": 468,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "1a3001a5f3938cc0691e1716e17a4791152a31a8500b0753602254d4b70b45dc"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "74a40fe27a6a89b7f15387dd06992f21187c1ef20efb67c68c3d5574aece187c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 411,
+        "end_line": 411,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:28.693448+00:00",
+      "processing_duration_ms": 359,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "6f65ca4ba1bf7db510d37c27039a2f2672a9804a717e293f83ee9a5f541b9c11"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "8d6c2b39f080c705761e813abab8a252c7888440ab9d04e90c5557e623f134f6",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 234,
+        "end_line": 234,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:29.057947+00:00",
+      "processing_duration_ms": 381,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "0cd50ffb40b971e5e71cdc29fb90bbb8ea4ff8700d3e4de8fed36b7008364af5"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "4070501fbf2385ec09f901b5013865d08d5c75c2932fd85917f3c2e460cc3e92",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "db/create_db_tables.py",
+        "start_line": 29,
+        "end_line": 29,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:29.447584+00:00",
+      "processing_duration_ms": 421,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "c82a5c60e4115adc6da1f038738a624c288fd2c2fbc822b96a602fa7a5dec486"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "1783b64e1d7d12f726d266b4dfa8b3c8d3c61a8509ec76698edd0191f2941d0e",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 266,
+        "end_line": 266,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:29.876242+00:00",
+      "processing_duration_ms": 477,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5ae10fb343367739cf21ea5ee9b6164bf7f42d1d66cf15cf4713b88cf480da1a"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "b7ab93417aafe09d6287556922b093223f0e0e6c67af45daf3843c062ad09470",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 140,
+        "end_line": 140,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:30.357758+00:00",
+      "processing_duration_ms": 426,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "106833cf3041e4b2c9936747a030116c94a114819d1cb54e4061d55bf8ef5f8e"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "84fd0262ab2a8a441c0b3c63c6fdd7918342f77b28751b6b7d4a2871adff5ec2",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 165,
+        "end_line": 165,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:30.792596+00:00",
+      "processing_duration_ms": 365,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "37ab706685df63e7e1a09081425e5c1317d84f66912006438aad0986cdd7cdde"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "6992d928559592b09b2f78b0c166e3f27f701a5ace3fd9136e36c5ff1dd9b343",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 270,
+        "end_line": 270,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:31.165512+00:00",
+      "processing_duration_ms": 350,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "428f4e21da9abb24ebcfe9d5ee0911389a7319ce8f9a6370755d42934fdd1195"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "48123e6dfed166692401a7a36aaa0c18d18cfa5c81bb595f77fa01daa1f6d69c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 356,
+        "end_line": 356,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:31.524961+00:00",
+      "processing_duration_ms": 356,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "7053a9e50b0460c4506f3f734355084d19cc5ac01ccdf63288e85cb81767a415"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "8d2f4780cc8e8e3bbae36185781091a4151c31d23da71ae84f59e4ab555b2ce4",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 138,
+        "end_line": 138,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:31.888284+00:00",
+      "processing_duration_ms": 501,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "d8fd5070d6a235ee8f4e391763dc03827a8ed81ba6e150e85dd8ee00dc544ee3"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "c25bdfe3e082328aed19b25b163c1583bcd45e36366d4b79cdc5bdc60ea6c279",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 139,
+        "end_line": 139,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:32.394838+00:00",
+      "processing_duration_ms": 292,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "909d37665eb8e00363d469f15636757109ecc9f4627622c2a45a84769169c86a"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "71b8c024d3a4ad4a2b85ee3468ea5931ad6d55796a78ccf7e7be7cfe02908ae3",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "db/create_db_tables.py",
+        "start_line": 7,
+        "end_line": 7,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:32.691634+00:00",
+      "processing_duration_ms": 375,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "46f46a678adb9f90d944a27b258cc1ac414abf47f4dcf96a61f40464c908c0a4"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "4689a8273db4223cfc128b302e069dd3622c5023c3cbccadd25b1c761fa211f8",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 330,
+        "end_line": 330,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:33.074231+00:00",
+      "processing_duration_ms": 489,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5000ad68accf311bd34e10e3e6f8fef460bc1e20ec316ac706fa445ab30ef9a3"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "9b1e2a10f13eebaa027bfb660aed62b7c70fcfeb4d27961cb30d548d45b2e98c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.executemany",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "db/create_dummy_data.py",
+        "start_line": 30,
+        "end_line": 30,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:33.569577+00:00",
+      "processing_duration_ms": 407,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "2e85f55273c6e64532dd716ec20b291f483f6633a8d7537eaeb7926b255b6af8"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "7f0d289c650aac00ae8c139e055dfd0e0997d412e7bde9d6da0978f1306ac241",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 324,
+        "end_line": 324,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:33.983651+00:00",
+      "processing_duration_ms": 360,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "312df3e89dc63bbe82e344fa746cdc231c5751bc01b067cee20d622f585ba151"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "9be2c8ce998c5720856d0fdbe4f24469511492a04fdf2880a019e6a90b07c55a",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/api/v1/api_v1.py",
+        "start_line": 164,
+        "end_line": 164,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:34.349820+00:00",
+      "processing_duration_ms": 313,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "12e26688b779e240dcac34eff975a6c24adf775fd17789ca7c314fca8770f89b"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "34deeae5608698ecb80f7c2b7f69c13eed237a035981705c69cad91990f249bb",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 206,
+        "end_line": 206,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:34.668215+00:00",
+      "processing_duration_ms": 380,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "1a3e71e4e1e3489567e41b25a76a17053a1e476b19f64239b4a93d4ef6fb2a68"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "51adffcb7ab002849b94056fe142443ca35424296d644ee14dc0a5f0504a7782",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.joern.cross-file.execute",
+        "rule_name": "Joern cross-file source-to-sink path",
+        "file_path": "server/routes.py",
+        "start_line": 46,
+        "end_line": 46,
+        "severity": "HIGH",
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "metadata": {
+          "analysis_scope": "cross_file",
+          "analysis_backend": "joern"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-20T14:44:35.053711+00:00",
+      "processing_duration_ms": 468,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "7e26c7a6a04623c68ab620454d1504252edc9499c710b8e4cb80bedd8646416f"
+    }
+  ],
+  "scanner_errors": []
+}

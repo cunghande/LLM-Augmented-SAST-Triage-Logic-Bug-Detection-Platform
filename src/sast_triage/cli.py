@@ -68,12 +68,6 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--prompt-type", default="fake.default")
     parser.add_argument("--repository-identifier", default=None)
     parser.add_argument(
-        "--analysis-backend",
-        choices=("native", "joern"),
-        default="native",
-        help="Backend phân tích: native (mặc định) hoặc Joern CPG qua Docker",
-    )
-    parser.add_argument(
         "--semgrep-config",
         action="append",
         default=None,
@@ -101,11 +95,11 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--logic-detector",
-        choices=("off", "python-five-logic"),
+        choices=("off", "python-idor-business-logic"),
         default="off",
         help=(
-            "Explicit Sprint 2 detector: python-five-logic analyzes the five "
-            "logic-bug classes from the project plan (default: off)"
+            "Explicit Sprint 2 detector: python-idor-business-logic analyzes "
+            "missing authorization/IDOR and business-rule bypass (default: off)"
         ),
     )
     parser.add_argument(

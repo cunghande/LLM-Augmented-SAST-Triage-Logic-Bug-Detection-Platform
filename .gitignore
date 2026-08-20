@@ -13,6 +13,7 @@ __pycache__/
 htmlcov/
 
 # File tạm và log cục bộ
+.env
 *.tmp
 *.bak
 *.log

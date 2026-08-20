@@ -6,7 +6,6 @@ lưu tại đây phải được làm sạch trước khi package được dựn
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
 
 
 class EvidenceStatus(str, Enum):
@@ -15,14 +14,6 @@ class EvidenceStatus(str, Enum):
     COMPLETE = "complete"
     PARTIAL = "partial"
     FAILED = "failed"
-
-
-class ToolStatus(str, Enum):
-    """Trạng thái an toàn do tool bằng chứng trả về."""
-
-    SUCCESS = "success"
-    PARTIAL = "partial"
-    ERROR = "error"
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,33 +127,3 @@ class EvidencePackage:
     security_controls: tuple[SecurityControlEvidence, ...]
     context_completeness: ContextCompleteness
     provenance: tuple[str, ...] = ()
-
-
-@dataclass(frozen=True, slots=True)
-class ToolResult:
-    """Kết quả tool thống nhất, an toàn và tương thích JSON."""
-
-    status: ToolStatus
-    complete: bool
-    evidence: dict[str, Any]
-    limitations: tuple[str, ...] = ()
-    provenance: tuple[str, ...] = ()
-
-    def to_json_dict(self) -> dict[str, Any]:
-        """Trả về hình dạng kết quả JSON bắt buộc."""
-        return {
-            "status": self.status.value,
-            "complete": self.complete,
-            "evidence": self.evidence,
-            "limitations": list(self.limitations),
-            "provenance": list(self.provenance),
-        }
-
-
-@dataclass(frozen=True, slots=True)
-class EvidenceExpansionResult:
-    """Kết quả mở rộng của agent không chứa transcript tool thô."""
-
-    evidence: EvidencePackage
-    tool_calls: int
-    tool_names: tuple[str, ...]

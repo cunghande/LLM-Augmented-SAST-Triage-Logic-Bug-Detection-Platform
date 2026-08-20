@@ -1,0 +1,48 @@
+{
+  "run_id": "2a201b89-4c4c-42dc-a011-00b9a39c3396",
+  "repository_name": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+  "repository_identifier": "vc-codex-high-seeded-v2-fintech-lending-fastapi",
+  "commit_sha": "056336c2bf4e00df7864ab36290218fc6ede117d",
+  "working_tree_state": "clean",
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.170.0",
+    "GITLEAKS": "8.30.1",
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "p/python+p/security-audit",
+    "GITLEAKS": "gitleaks-built-in",
+    "MODULE2": "python-idor-business-logic-v1"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "1f7b2a1d326d2960087639eccda20662ebb1302e378d5db624e2f1d79de7ee36",
+    "gitleaks": "d0df099ac52a359ac7de08c9bb68b3a849afeedcdf8a6e8b420d6d3c8e84f431"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 19.76209,
+  "prompt_version": "triage-prompt-v13",
+  "model_version": "fake-triage-v1",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "fake",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-20T15:00:02.237853Z",
+  "completed_at": "2026-08-20T15:00:08.810835Z",
+  "total_findings_parsed": 15,
+  "findings_triaged_ok": 15,
+  "findings_with_errors": 0
+}

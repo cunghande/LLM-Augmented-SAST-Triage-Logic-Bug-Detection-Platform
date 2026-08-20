@@ -1,4 +1,4 @@
-"""Conservative AST patterns for the five Sprint 2 logic-bug classes.
+"""Conservative AST patterns for focused IDOR and business-rule bugs.
 
 The analyzer receives an already parsed AST and returns identifiers, relative
 paths, line numbers and classifications only. It never retains source text or
@@ -9,11 +9,19 @@ from __future__ import annotations
 
 import ast
 
-from sast_triage.context.framework_registry import endpoint_source_type
 from sast_triage.logic.models import LogicBugClass, LogicCandidate
 from sast_triage.models import Severity
 
 _REQUEST_ROOTS = {"request", "req"}
+_ROUTE_DECORATOR_SUFFIXES = (
+    "route",
+    "get",
+    "post",
+    "put",
+    "patch",
+    "delete",
+    "api_view",
+)
 _ACTOR_NAMES = {
     "current_user",
     "request.user",
@@ -86,19 +94,16 @@ _DOMAIN_VALUE_TOKENS = (
     "stock",
     "total",
 )
-_WORKFLOW_ACTIONS = (
-    "approve",
-    "cancel",
-    "change_password",
-    "checkout",
-    "close",
-    "complete",
-    "decide",
-    "delete",
-    "publish",
-    "reset_password",
-    "update_password",
+_PAGINATION_TOKENS = ("limit", "offset", "page", "page_size", "per_page")
+_COLLECTION_FUNCTION_TOKENS = (
+    "admin",
+    "gallery",
+    "images",
+    "list",
+    "records",
+    "users",
 )
+_CLIENT_PRICE_TOKENS = ("discount", "price", "subtotal", "total", "unit_price")
 
 _CLASS_FACTS: dict[LogicBugClass, tuple[str, Severity, str]] = {
     LogicBugClass.MISSING_AUTHZ_IDOR: (
@@ -106,25 +111,10 @@ _CLASS_FACTS: dict[LogicBugClass, tuple[str, Severity, str]] = {
         Severity.HIGH,
         "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
     ),
-    LogicBugClass.MASS_ASSIGNMENT: (
-        "CWE-915",
-        Severity.HIGH,
-        "Replace blanket binding with an explicit allowlist of writable fields and reject privileged fields.",
-    ),
-    LogicBugClass.RACE_CONDITION_TOCTOU: (
-        "CWE-367",
-        Severity.HIGH,
-        "Move the check and state change into one atomic transaction with an appropriate row or process lock.",
-    ),
     LogicBugClass.BUSINESS_RULE_BYPASS: (
         "CWE-840",
         Severity.HIGH,
-        "Enforce server-side domain bounds and invariants immediately before the state-changing operation.",
-    ),
-    LogicBugClass.INSECURE_WORKFLOW: (
-        "CWE-841",
-        Severity.HIGH,
-        "Validate the current workflow state and required proof before allowing the sensitive transition.",
+        "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
     ),
 }
 
@@ -136,6 +126,24 @@ def _qualified_name(node: ast.AST | None) -> str | None:
         base = _qualified_name(node.value)
         return f"{base}.{node.attr}" if base else node.attr
     return None
+
+
+def _is_endpoint(function: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+    decorators = [
+        _qualified_name(item.func) if isinstance(item, ast.Call) else _qualified_name(item)
+        for item in function.decorator_list
+    ]
+    if any(
+        name is not None
+        and any(
+            name == suffix or name.endswith(f".{suffix}")
+            for suffix in _ROUTE_DECORATOR_SUFFIXES
+        )
+        for name in decorators
+    ):
+        return True
+    parameters = (*function.args.posonlyargs, *function.args.args)
+    return bool(parameters and parameters[0].arg in _REQUEST_ROOTS)
 
 
 def _walk_function(function: ast.FunctionDef | ast.AsyncFunctionDef) -> tuple[ast.AST, ...]:
@@ -379,40 +387,6 @@ def _lookup_is_subject_scoped(node: ast.Call) -> bool:
     return has_actor and has_scope
 
 
-def _has_atomic_control(nodes: tuple[ast.AST, ...]) -> bool:
-    def is_atomic_name(name: str) -> bool:
-        lowered = name.lower()
-        last = _last_name(lowered)
-        return (
-            last in {
-                "acquire",
-                "atomic",
-                "begin_nested",
-                "compare_and_swap",
-                "lock",
-                "select_for_update",
-                "synchronized",
-            }
-            or lowered.endswith("transaction.atomic")
-        )
-
-    for node in nodes:
-        target: ast.AST | None = None
-        if isinstance(node, ast.Call):
-            target = node.func
-        elif isinstance(node, (ast.With, ast.AsyncWith)):
-            names = set()
-            for item in node.items:
-                names.update(_node_names(item.context_expr))
-            if any(is_atomic_name(name) for name in names):
-                return True
-        if target is not None:
-            name = (_qualified_name(target) or "").lower()
-            if is_atomic_name(name):
-                return True
-    return False
-
-
 def _has_numeric_bound_guard(nodes: tuple[ast.AST, ...], variable: str) -> bool:
     for node in nodes:
         if not isinstance(node, (ast.If, ast.Assert)):
@@ -432,18 +406,124 @@ def _has_numeric_bound_guard(nodes: tuple[ast.AST, ...], variable: str) -> bool:
     return False
 
 
-def _has_state_guard(nodes: tuple[ast.AST, ...], transition_line: int) -> bool:
+def _source_assignments(
+    nodes: tuple[ast.AST, ...],
+    sources: dict[str, str],
+) -> dict[str, set[str]]:
+    """Build a bounded source-alias graph once for one function."""
+    assignments: dict[str, set[str]] = {}
     for node in nodes:
-        if getattr(node, "lineno", transition_line) >= transition_line:
+        value: ast.AST | None = None
+        targets: tuple[ast.AST, ...] = ()
+        if isinstance(node, ast.Assign):
+            value = node.value
+            targets = tuple(node.targets)
+        elif isinstance(node, ast.AnnAssign):
+            value = node.value
+            targets = (node.target,)
+        if value is None:
             continue
-        if not isinstance(node, (ast.If, ast.Assert)):
+        dependencies = {
+            name
+            for name in _node_names(value)
+            if name in sources
+        }
+        for target in targets:
+            name = _qualified_name(target)
+            if name in sources:
+                assignments[name] = dependencies - {name}
+    return assignments
+
+
+def _source_roots(
+    variable: str,
+    assignments: dict[str, set[str]],
+) -> set[str]:
+    """Resolve bounded assignment aliases back to caller-controlled roots."""
+
+    resolved: set[str] = set()
+    pending = [variable]
+    visited: set[str] = set()
+    while pending:
+        current = pending.pop()
+        if current in visited:
             continue
-        if any(
-            name.endswith((".status", ".state")) or name in {"status", "state"}
-            for name in _node_names(node.test)
-        ):
-            return True
-    return False
+        visited.add(current)
+        dependencies = assignments.get(current, set())
+        if dependencies:
+            pending.extend(dependencies)
+        else:
+            resolved.add(current)
+    return resolved or {variable}
+
+
+def _source_lineage(
+    variable: str,
+    assignments: dict[str, set[str]],
+) -> set[str]:
+    """Return bounded source aliases, including intermediate business fields."""
+    lineage: set[str] = set()
+    pending = [variable]
+    while pending:
+        current = pending.pop()
+        if current in lineage:
+            continue
+        lineage.add(current)
+        pending.extend(assignments.get(current, set()))
+    return lineage
+
+
+def _pagination_bound_status(
+    nodes: tuple[ast.AST, ...],
+    variable: str,
+) -> tuple[bool, bool]:
+    """Return whether a pagination value has lower and upper server-side bounds."""
+    lower = False
+    upper = False
+    lowered_variable = variable.lower()
+    for node in nodes:
+        if isinstance(node, (ast.If, ast.Assert)):
+            expression = node.test
+            if lowered_variable not in _node_names(expression):
+                continue
+            constants = [
+                child.value
+                for child in ast.walk(expression)
+                if isinstance(child, ast.Constant)
+                and isinstance(child.value, int)
+                and not isinstance(child.value, bool)
+            ]
+            lower = lower or any(value <= 1 for value in constants)
+            upper = upper or any(value > 1 for value in constants)
+            call_names = {
+                (_qualified_name(child.func) or "").lower()
+                for child in ast.walk(expression)
+                if isinstance(child, ast.Call)
+            }
+            if any("validate" in name or "pagination" in name for name in call_names):
+                lower = True
+                upper = True
+        if not isinstance(node, ast.Call):
+            continue
+        names = _node_names(node)
+        if lowered_variable not in names:
+            continue
+        call_name = _last_name(_qualified_name(node.func))
+        constants = [
+            child.value
+            for child in ast.walk(node)
+            if isinstance(child, ast.Constant)
+            and isinstance(child.value, int)
+            and not isinstance(child.value, bool)
+        ]
+        if call_name == "max" and constants:
+            lower = True
+        if call_name == "min" and constants:
+            upper = True
+        if "validate" in call_name or "pagination" in call_name:
+            lower = True
+            upper = True
+    return lower, upper
 
 
 def _risk(
@@ -456,10 +536,7 @@ def _risk(
     exposure = 4.5 if entrypoint else 3.0
     sensitivity = {
         LogicBugClass.MISSING_AUTHZ_IDOR: 4.5,
-        LogicBugClass.MASS_ASSIGNMENT: 4.5,
-        LogicBugClass.RACE_CONDITION_TOCTOU: 4.0,
         LogicBugClass.BUSINESS_RULE_BYPASS: 4.0,
-        LogicBugClass.INSECURE_WORKFLOW: 4.5,
     }[bug_class]
     exploitability = 4.0
     score = round(
@@ -522,8 +599,8 @@ def _candidate(
         risk_factors=factors,
         remediation=remediation,
         validation_checklist=(
-            "Add a negative authorization or invariant test.",
-            "Add a positive test for the intended workflow.",
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
             "Review the complete source-to-guard-to-sink trace.",
         ),
     )
@@ -564,154 +641,120 @@ def _idor_candidates(
     return results
 
 
-def _mass_assignment_candidates(
-    function: ast.FunctionDef | ast.AsyncFunctionDef,
-    nodes: tuple[ast.AST, ...],
-    sources: dict[str, str],
-    **common: object,
-) -> list[LogicCandidate]:
-    guards = _guard_names(nodes)
-    results: list[LogicCandidate] = []
-    for node in nodes:
-        if not isinstance(node, ast.Call):
-            continue
-        name = (_qualified_name(node.func) or "").lower()
-        source_kind: str | None = None
-        sink_kind: str | None = None
-        if _matches_last(name, _MUTATION_CALLS):
-            expansions = [item.value for item in node.keywords if item.arg is None]
-            source_kind = next((_source_for(item, sources) for item in expansions if _source_for(item, sources)), None)
-            if source_kind:
-                sink_kind = "unfiltered_keyword_expansion"
-            if not source_kind and node.args and _last_name(name) == "update":
-                source_kind = _source_for(node.args[0], sources)
-                if source_kind:
-                    sink_kind = "unfiltered_mapping_update"
-        expansions = [item.value for item in node.keywords if item.arg is None]
-        if not source_kind and expansions:
-            source_kind = next(
-                (
-                    kind
-                    for item in expansions
-                    if (kind := _source_for(item, sources)) is not None
-                ),
-                None,
-            )
-            if source_kind:
-                sink_kind = "unfiltered_model_construction"
-        if name.endswith(".__dict__.update") and node.args:
-            source_kind = _source_for(node.args[0], sources)
-            if source_kind:
-                sink_kind = "model_dictionary_update"
-        if _last_name(name) == "setattr" and len(node.args) >= 3:
-            source_kind = _source_for(node.args[1], sources) or _source_for(node.args[2], sources)
-            if source_kind:
-                sink_kind = "dynamic_attribute_assignment"
-        if source_kind and sink_kind:
-            results.append(
-                _candidate(
-                    LogicBugClass.MASS_ASSIGNMENT,
-                    function=function,
-                    line=node.lineno,
-                    end_line=node.end_lineno or node.lineno,
-                    source_kind=source_kind,
-                    sink_kind=sink_kind,
-                    guards=guards,
-                    **common,
-                )
-            )
-    return results
-
-
-def _race_candidates(
-    function: ast.FunctionDef | ast.AsyncFunctionDef,
-    nodes: tuple[ast.AST, ...],
-    **common: object,
-) -> list[LogicCandidate]:
-    if _has_atomic_control(nodes):
-        return []
-    mutations: list[tuple[int, set[str], ast.AST]] = []
-    for node in nodes:
-        if isinstance(node, ast.AugAssign):
-            mutations.append((node.lineno, _node_names(node.target), node))
-        elif isinstance(node, (ast.Assign, ast.AnnAssign)):
-            target = node.targets[0] if isinstance(node, ast.Assign) else node.target
-            mutations.append((node.lineno, _node_names(target), node))
-    results: list[LogicCandidate] = []
-    for node in nodes:
-        if not isinstance(node, ast.If):
-            continue
-        checked = {
-            name
-            for name in _node_names(node.test)
-            if any(token in name for token in _DOMAIN_VALUE_TOKENS)
-        }
-        if not checked:
-            continue
-        later = next(
-            (
-                mutation
-                for line, names, mutation in sorted(mutations, key=lambda item: item[0])
-                if line > node.lineno and any(name in checked for name in names)
-            ),
-            None,
-        )
-        if later is None:
-            continue
-        results.append(
-            _candidate(
-                LogicBugClass.RACE_CONDITION_TOCTOU,
-                function=function,
-                line=node.lineno,
-                end_line=getattr(later, "end_lineno", later.lineno) or later.lineno,
-                source_kind="shared_mutable_state",
-                sink_kind="non_atomic_check_then_mutate",
-                guards=_guard_names(nodes),
-                **common,
-            )
-        )
-    return results
-
-
 def _business_rule_candidates(
     function: ast.FunctionDef | ast.AsyncFunctionDef,
     nodes: tuple[ast.AST, ...],
     sources: dict[str, str],
     **common: object,
 ) -> list[LogicCandidate]:
-    state_change_lines = [
-        node.lineno
-        for node in nodes
-        if (
-            isinstance(node, ast.Call)
-            and _matches_last(_qualified_name(node.func), _MUTATION_CALLS)
-        )
-        or isinstance(node, ast.AugAssign)
-    ]
-    if not state_change_lines:
-        return []
     guards = _guard_names(nodes)
+    assignments = _source_assignments(nodes, sources)
     results: list[LogicCandidate] = []
     for variable, source_kind in sources.items():
         last = variable.rsplit(".", 1)[-1].lower()
         if not any(token in last for token in _DOMAIN_VALUE_TOKENS):
             continue
-        if _has_numeric_bound_guard(nodes, variable):
+        roots = _source_roots(variable, assignments)
+        lineage = _source_lineage(variable, assignments)
+        client_controls_price = any(
+            any(
+                token in name.rsplit(".", 1)[-1].lower()
+                for token in _CLIENT_PRICE_TOKENS
+            )
+            for name in lineage
+            if name != variable or name in roots
+        )
+        domain_lineage = {
+            name
+            for name in lineage
+            if any(
+                token in name.rsplit(".", 1)[-1].lower()
+                for token in _DOMAIN_VALUE_TOKENS
+            )
+        }
+        domain_values = domain_lineage - {variable} or domain_lineage
+        roots_are_bounded = all(
+            _has_numeric_bound_guard(nodes, value) for value in domain_values
+        )
+        if not client_controls_price and roots_are_bounded:
+            continue
+        call_sinks = [
+            node
+            for node in nodes
+            if isinstance(node, ast.Call)
+            and _matches_last(_qualified_name(node.func), _MUTATION_CALLS)
+            and variable.lower() in _node_names(node)
+        ]
+        assignment_sinks = [
+            node
+            for node in nodes
+            if isinstance(node, ast.AugAssign)
+            and variable.lower() in _node_names(node.value)
+        ]
+        return_sinks = [
+            node
+            for node in nodes
+            if isinstance(node, ast.Return)
+            and variable.lower() in _node_names(node.value)
+        ]
+        sinks = [*call_sinks, *assignment_sinks, *return_sinks]
+        if not sinks:
+            continue
+        sink = min(sinks, key=lambda item: item.lineno)
+        results.append(
+            _candidate(
+                LogicBugClass.BUSINESS_RULE_BYPASS,
+                function=function,
+                line=sink.lineno,
+                end_line=sink.end_lineno or sink.lineno,
+                source_kind=source_kind,
+                sink_kind=(
+                    "client_controlled_price_or_total"
+                    if client_controls_price
+                    else "unvalidated_domain_value_operation"
+                ),
+                guards=guards,
+                **common,
+            )
+        )
+    return results
+
+
+def _pagination_candidates(
+    function: ast.FunctionDef | ast.AsyncFunctionDef,
+    nodes: tuple[ast.AST, ...],
+    sources: dict[str, str],
+    **common: object,
+) -> list[LogicCandidate]:
+    guards = _guard_names(nodes)
+    assignments = _source_assignments(nodes, sources)
+    results: list[LogicCandidate] = []
+    for variable, source_kind in sources.items():
+        last = variable.rsplit(".", 1)[-1].lower()
+        if not any(
+            token == last or last.endswith(f"_{token}")
+            for token in _PAGINATION_TOKENS
+        ):
             continue
         uses = [
             node
             for node in nodes
-            if getattr(node, "lineno", 0) in state_change_lines
+            if isinstance(node, ast.Call)
+            and _last_name(_qualified_name(node.func))
+            in {"limit", "offset", "paginate", "slice"}
             and variable.lower() in _node_names(node)
         ]
         if not uses:
-            uses = [
-                node
-                for node in nodes
-                if isinstance(node, ast.AugAssign)
-                and variable.lower() in _node_names(node.value)
-            ]
-        if not uses:
+            continue
+        roots = _source_roots(variable, assignments)
+        bounds = [_pagination_bound_status(nodes, root) for root in roots]
+        requires_upper = any(
+            token in last for token in ("limit", "page_size", "per_page")
+        )
+        bounded = all(
+            lower and (upper or not requires_upper) for lower, upper in bounds
+        )
+        if bounded:
             continue
         sink = min(uses, key=lambda item: item.lineno)
         results.append(
@@ -721,122 +764,41 @@ def _business_rule_candidates(
                 line=sink.lineno,
                 end_line=sink.end_lineno or sink.lineno,
                 source_kind=source_kind,
-                sink_kind="unvalidated_domain_value_mutation",
+                sink_kind="unbounded_pagination_parameter",
                 guards=guards,
                 **common,
             )
         )
-    return results
 
-
-def _workflow_candidates(
-    function: ast.FunctionDef | ast.AsyncFunctionDef,
-    nodes: tuple[ast.AST, ...],
-    sources: dict[str, str],
-    **common: object,
-) -> list[LogicCandidate]:
-    lowered_name = function.name.lower()
-    guards = _guard_names(nodes)
-    results: list[LogicCandidate] = []
-    if "password" in lowered_name and any(action in lowered_name for action in ("change", "update", "reset")):
-        calls = [node for node in nodes if isinstance(node, ast.Call)]
-        password_calls = [
+    calls = [node for node in nodes if isinstance(node, ast.Call)]
+    has_collection_shape = any(
+        token in function.name.lower() for token in _COLLECTION_FUNCTION_TOKENS
+    )
+    has_bound = any(
+        _last_name(_qualified_name(node.func)) in {"limit", "paginate", "slice"}
+        for node in calls
+    )
+    unbounded_query = next(
+        (
             node
             for node in calls
-            if any(
-                token in (_qualified_name(node.func) or "").lower()
-                for token in (
-                    "set_password",
-                    "get_password_hash",
-                    "hash_password",
-                    "generate_password_hash",
-                )
+            if _last_name(_qualified_name(node.func)) in {"all", "fetchall"}
+        ),
+        None,
+    )
+    if has_collection_shape and not has_bound and unbounded_query is not None:
+        results.append(
+            _candidate(
+                LogicBugClass.BUSINESS_RULE_BYPASS,
+                function=function,
+                line=unbounded_query.lineno,
+                end_line=unbounded_query.end_lineno or unbounded_query.lineno,
+                source_kind="http_endpoint",
+                sink_kind="unbounded_collection_query",
+                guards=guards,
+                **common,
             )
-        ]
-        password_assignments = [
-            node
-            for node in nodes
-            if isinstance(node, (ast.Assign, ast.AnnAssign))
-            and any(
-                "password" in name
-                for name in _node_names(
-                    node.targets[0] if isinstance(node, ast.Assign) else node.target
-                )
-            )
-        ]
-        changes_password = bool(password_calls or password_assignments)
-        if "reset" in lowered_name:
-            verifies_existing = any(
-                "token" in _node_names(argument)
-                and any(
-                    token in (_qualified_name(node.func) or "").lower()
-                    for token in ("check", "decode", "find", "get", "lookup", "validate", "verify")
-                )
-                for node in calls
-                for argument in node.args
-            ) or any(
-                isinstance(node, (ast.If, ast.Assert))
-                and "token" in _node_names(node.test)
-                for node in nodes
-            )
-        else:
-            verifies_existing = any(
-                any(
-                    token in (_qualified_name(node.func) or "").lower()
-                    for token in (
-                        "check_password",
-                        "verify_password",
-                        "verify_current",
-                        "old_password",
-                    )
-                )
-                for node in calls
-            ) or any(
-                "old_password" in name or "current_password" in name
-                for node in nodes
-                for name in _node_names(node)
-            )
-        if changes_password and not verifies_existing:
-            sink = (password_calls or password_assignments)[0]
-            results.append(
-                _candidate(
-                    LogicBugClass.INSECURE_WORKFLOW,
-                    function=function,
-                    line=sink.lineno,
-                    end_line=sink.end_lineno or sink.lineno,
-                    source_kind=next(iter(sources.values()), "http_request_body"),
-                    sink_kind="password_change_without_existing_secret_verification",
-                    guards=guards,
-                    **common,
-                )
-            )
-    if any(action in lowered_name for action in (*_WORKFLOW_ACTIONS, "upload")):
-        for node in nodes:
-            target: ast.AST | None = None
-            value: ast.AST | None = None
-            if isinstance(node, ast.Assign):
-                target, value = node.targets[0], node.value
-            elif isinstance(node, ast.AnnAssign):
-                target, value = node.target, node.value
-            if target is None or value is None:
-                continue
-            target_names = _node_names(target)
-            if not any(name.endswith((".status", ".state")) for name in target_names):
-                continue
-            if _has_state_guard(nodes, node.lineno):
-                continue
-            results.append(
-                _candidate(
-                    LogicBugClass.INSECURE_WORKFLOW,
-                    function=function,
-                    line=node.lineno,
-                    end_line=node.end_lineno or node.lineno,
-                    source_kind=_source_for(value, sources) or "workflow_action",
-                    sink_kind="state_transition_without_prior_state_guard",
-                    guards=guards,
-                    **common,
-                )
-            )
+        )
     return results
 
 
@@ -846,13 +808,13 @@ def analyze_python_module(
     file_path: str,
     component: str,
 ) -> tuple[LogicCandidate, ...]:
-    """Return bounded candidates for all five required logic-bug classes."""
+    """Return bounded candidates for focused IDOR and business-rule bugs."""
     results: list[LogicCandidate] = []
     for function in ast.walk(tree):
         if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
         nodes = _walk_function(function)
-        entrypoint = endpoint_source_type(function) is not None
+        entrypoint = _is_endpoint(function)
         parameters = {
             item.arg
             for item in (
@@ -871,10 +833,8 @@ def analyze_python_module(
             "entrypoint": entrypoint,
         }
         results.extend(_idor_candidates(function, nodes, sources, **common))
-        results.extend(_mass_assignment_candidates(function, nodes, sources, **common))
-        results.extend(_race_candidates(function, nodes, **common))
         results.extend(_business_rule_candidates(function, nodes, sources, **common))
-        results.extend(_workflow_candidates(function, nodes, sources, **common))
+        results.extend(_pagination_candidates(function, nodes, sources, **common))
 
     unique: dict[tuple[object, ...], LogicCandidate] = {}
     for candidate in results:

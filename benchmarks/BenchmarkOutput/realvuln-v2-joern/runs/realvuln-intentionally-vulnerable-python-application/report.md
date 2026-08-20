@@ -1,0 +1,371 @@
+# Báo cáo SAST Triage
+
+> **Dành cho security reviewer:** Báo cáo này hiển thị quyết định LLM đã qua
+> validation và quyết định policy của hệ thống. Đây không phải response thô hay
+> chain-of-thought. Không được tự động đóng finding chỉ dựa trên kết luận của LLM.
+
+## 1. Tóm tắt điều hành
+
+**Trạng thái:** Pipeline hoàn tất nhưng vẫn còn finding cần chuyên gia review\.
+
+| Chỉ số | Giá trị |
+|---|---:|
+| Finding đã parse | 4 |
+| Triage thành công | 4 |
+| Finding có lỗi | 0 |
+| Lỗi scanner | 0 |
+| Thời gian toàn run (giây) | 3\.515575 |
+
+### Phân bố quyết định policy
+
+| Action | Số lượng | Reviewer cần làm gì |
+|---|---:|---|
+| TRIAGE\_ERROR — Lỗi xử lý triage — cần kiểm tra hệ thống | 0 | Kiểm tra mã lỗi xử lý và trạng thái provider trước khi đánh giá finding\. |
+| MANUAL\_REVIEW — Cần chuyên gia review thủ công | 4 | Đối chiếu kết luận với từng bằng chứng và dữ kiện còn thiếu do LLM nêu\. |
+| LIKELY\_TP — Có khả năng là lỗ hổng thật | 0 | Xác nhận nguồn dữ liệu, điểm sử dụng nguy hiểm và guard\/sanitizer liên quan\. |
+| FP\_CANDIDATE — Ứng viên false positive — không tự động đóng | 0 | Xác minh độc lập rằng dữ liệu không thể đi tới điểm sử dụng nguy hiểm\. |
+
+## 2. Cấu hình và khả năng tái lập
+
+| Thuộc tính | Giá trị |
+|---|---|
+| Run ID | 91c7afd5\-7981\-417a\-b605\-101bd8e6ecd4 |
+| Repository | realvuln\-intentionally\-vulnerable\-python\-application |
+| Repository identifier | realvuln\-intentionally\-vulnerable\-python\-application |
+| Commit | 3804a18ae666b296675f9a60bc617e527beae520 |
+| Trạng thái working tree | clean |
+| Xác minh artifact–repository | VERIFIED |
+| Provider | fake |
+| Model | fake\-triage\-v1 |
+| Prompt version | triage\-prompt\-v13 |
+| Analysis backend | joern |
+| Backend version | 4\.0\.600 |
+| Analysis config ID | joern\-pysrc2cpg\-v4\.0\.600\-evidence\-v2 |
+| Trạng thái CPG | complete |
+| Thời gian dựng CPG | 12\.362573 giây |
+| Policy version | conservative\-policy\-v2 |
+| Tool version | 0\.1\.0 |
+| Chế độ CLI | scan\-and\-triage |
+| Bắt đầu | 2026\-08\-20T14\:38\:48\.366023\+00\:00 |
+| Kết thúc | 2026\-08\-20T14\:38\:51\.881598\+00\:00 |
+
+### Scanner
+
+- Đã chạy: SEMGREP; GITLEAKS; MODULE2
+- Thành công: SEMGREP; GITLEAKS; MODULE2
+- Phiên bản: GITLEAKS=8\.30\.1; MODULE2=0\.1\.0; SEMGREP=1\.170\.0
+- Cấu hình: GITLEAKS=gitleaks\-built\-in; MODULE2=python\-idor\-business\-logic\-v1; SEMGREP=p\/python\+p\/security\-audit
+- Hash artifact: gitleaks=37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570; semgrep=816dbb7698bd3764fc189153d84af8ef101e6e9fadd2db62eeef4106867509a2
+
+## 3. Cách đọc verdict và action
+
+- **Verdict của LLM** là đề xuất phân loại dựa trên ngữ cảnh đã làm sạch.
+- **Confidence** phản ánh độ mạnh của bằng chứng, không phải severity.
+- **Policy action** là quyết định bảo thủ cuối cùng của hệ thống.
+- **FP_CANDIDATE** vẫn phải được con người xác nhận; hệ thống không tự loại finding.
+- Phần **Phân tích của LLM** chỉ chứa output có cấu trúc đã qua validation.
+
+## 4. Hàng đợi review
+
+| STT | Action | Severity | Finding ID | Rule | Vị trí | Verdict / Confidence |
+|---:|---|---|---|---|---|---|
+| 1 | MANUAL\_REVIEW | HIGH | 7d1cd1f5494a9d5c | python\.flask\.security\.insecure\-deserialization\.insecure\-deserialization | VulnerablePythonScript\.py\:33 | NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận / MEDIUM — Trung bình |
+| 2 | MANUAL\_REVIEW | HIGH | d252c22772b377c0 | python\.flask\.security\.injection\.tainted\-sql\-string\.tainted\-sql\-string | VulnerablePythonScript\.py\:46 | NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận / MEDIUM — Trung bình |
+| 3 | MANUAL\_REVIEW | MEDIUM | 44d39409a69ecafe | python\.flask\.security\.audit\.debug\-enabled\.debug\-enabled | VulnerablePythonScript\.py\:55 | NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận / MEDIUM — Trung bình |
+| 4 | MANUAL\_REVIEW | MEDIUM | f902559a995159f9 | python\.lang\.security\.deserialization\.pickle\.avoid\-pickle | VulnerablePythonScript\.py\:33 | NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận / MEDIUM — Trung bình |
+
+## 5. Chi tiết từng finding
+
+### 5.1. MANUAL\_REVIEW — python\.flask\.security\.insecure\-deserialization\.insecure\-deserialization
+
+> **Ưu tiên review:** Cần chuyên gia review thủ công
+
+#### Thông tin finding
+
+| Thuộc tính | Giá trị |
+|---|---|
+| Finding ID | 7d1cd1f5494a9d5c |
+| Scanner / loại finding | SEMGREP / SAST |
+| Rule | python\.flask\.security\.insecure\-deserialization\.insecure\-deserialization |
+| File | VulnerablePythonScript\.py |
+| Dòng | 33 |
+| Severity | HIGH |
+| Metadata an toàn | category=security; confidence=LOW; cwe=\['CWE\-502\: Deserialization of Untrusted Data'\]; owasp=\['A08\:2017 \- Insecure Deserialization', 'A08\:2021 \- Software and Data Integrity Failures', 'A08\:2025 \- Software or Data Integrity Failures'\]; references=\['https\:\/\/docs\.python\.org\/3\/library\/pickle\.html'\]; technology=\['flask'\] |
+| Thời gian xử lý | 1275 ms |
+| Thời gian provider | 0 ms |
+| SHA-256 đầu vào triage | f58fe25151be8a24b795c6ed08b44e91e4cc893a67677dfc7fcdb1a6ddc9ef49 |
+
+**Thông báo của scanner**
+
+> Detected the use of an insecure deserialization library in a Flask route\. These libraries are prone to code execution vulnerabilities\. Ensure user data does not enter this function\. To fix this, try to avoid serializing whole objects\. Consider instead using a serializer such as JSON\.
+
+**Tóm tắt ngữ cảnh an toàn**
+
+> Joern CPG evidence complete; source VulnerablePythonScript\.py\:32; sink VulnerablePythonScript\.py\:33; đường source–sink VulnerablePythonScript\.py\:32 → VulnerablePythonScript\.py\:32 → VulnerablePythonScript\.py\:33 → VulnerablePythonScript\.py\:33 → VulnerablePythonScript\.py\:33; control không tìm thấy; Agent dừng vì EVIDENCE\_SUFFICIENT\.
+
+#### Phân tích của LLM
+
+- **Verdict:** NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận
+- **Confidence:** MEDIUM — Trung bình
+- **Model / Prompt:** fake\-triage\-v1 / triage\-prompt\-v13
+
+**Kết luận ngắn gọn**
+
+> Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công\.
+
+**Bằng chứng LLM sử dụng**
+
+- Không có kịch bản prompt\_type chuyên biệt nên provider dùng nhánh mặc định\.
+
+**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**
+
+- LLM không ghi nhận thông tin quan trọng còn thiếu\.
+
+**Giả định LLM đã sử dụng**
+
+- Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử\.
+
+> Ghi chú: Đây là phần giải thích có cấu trúc đã qua validation, không phải
+> nội dung suy luận nội bộ và không thay thế kết luận của security reviewer.
+
+#### Quyết định policy của hệ thống
+
+- **Action:** MANUAL\_REVIEW — Cần chuyên gia review thủ công
+- **Policy version:** conservative\-policy\-v2
+- **Đã escalated:** Không
+- **Lý do escalation:** Không có
+- **Lý do policy:**
+  - LLM yêu cầu chuyên gia review thủ công\.
+
+#### Reviewer nên làm gì tiếp theo
+
+- Đối chiếu kết luận với từng bằng chứng và dữ kiện còn thiếu do LLM nêu\.
+- Kiểm tra trực tiếp file và khoảng dòng tương đối trước khi quyết định TP hoặc FP\.
+- Nếu dataflow chưa đầy đủ, giữ finding ở trạng thái cần review\.
+
+#### Lỗi xử lý
+
+- Không có lỗi xử lý cho finding này.
+
+### 5.2. MANUAL\_REVIEW — python\.flask\.security\.injection\.tainted\-sql\-string\.tainted\-sql\-string
+
+> **Ưu tiên review:** Cần chuyên gia review thủ công
+
+#### Thông tin finding
+
+| Thuộc tính | Giá trị |
+|---|---|
+| Finding ID | d252c22772b377c0 |
+| Scanner / loại finding | SEMGREP / SAST |
+| Rule | python\.flask\.security\.injection\.tainted\-sql\-string\.tainted\-sql\-string |
+| File | VulnerablePythonScript\.py |
+| Dòng | 46 |
+| Severity | HIGH |
+| Metadata an toàn | category=security; confidence=MEDIUM; cwe=\['CWE\-704\: Incorrect Type Conversion or Cast'\]; owasp=\['A01\:2017 \- Injection', 'A03\:2021 \- Injection', 'A05\:2025 \- Injection'\]; references=\['https\:\/\/docs\.sqlalchemy\.org\/en\/14\/core\/tutorial\.html\#using\-textual\-sql', 'https\:\/\/www\.tutorialspoint\.com\/sqlalchemy\/sqlalchemy\_quick\_guide\.htm', 'https\:\/\/docs\.sqlalchemy\.org\/en\/14\/core\/tutorial\.html\#using\-more\-specific\-text\-with\-table\-expression\-literal\-column\-and\-expression\-column'\]; technology=\['sqlalchemy', 'flask'\] |
+| Thời gian xử lý | 666 ms |
+| Thời gian provider | 0 ms |
+| SHA-256 đầu vào triage | 422aef7ffdcd643c077ae2c53ff0b535fd31f44e18b58414f12b5f0015ee4b47 |
+
+**Thông báo của scanner**
+
+> Detected user input used to manually construct a SQL string\. This is usually bad practice because manual construction could accidentally result in a SQL injection\. An attacker could use a SQL injection to steal or modify contents of the database\. Instead, use a parameterized query which is available by default in most database engines\. Alternatively, consider using an object\-relational mapper \(ORM\) such as SQLAlchemy which will protect your queries\.
+
+**Tóm tắt ngữ cảnh an toàn**
+
+> Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT\_NO\_PROGRESS\.
+
+#### Phân tích của LLM
+
+- **Verdict:** NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận
+- **Confidence:** MEDIUM — Trung bình
+- **Model / Prompt:** fake\-triage\-v1 / triage\-prompt\-v13
+
+**Kết luận ngắn gọn**
+
+> Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công\.
+
+**Bằng chứng LLM sử dụng**
+
+- Không có kịch bản prompt\_type chuyên biệt nên provider dùng nhánh mặc định\.
+
+**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**
+
+- LLM không ghi nhận thông tin quan trọng còn thiếu\.
+
+**Giả định LLM đã sử dụng**
+
+- Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử\.
+
+> Ghi chú: Đây là phần giải thích có cấu trúc đã qua validation, không phải
+> nội dung suy luận nội bộ và không thay thế kết luận của security reviewer.
+
+#### Quyết định policy của hệ thống
+
+- **Action:** MANUAL\_REVIEW — Cần chuyên gia review thủ công
+- **Policy version:** conservative\-policy\-v2
+- **Đã escalated:** Không
+- **Lý do escalation:** Không có
+- **Lý do policy:**
+  - Bằng chứng ngữ cảnh vẫn chưa đầy đủ sau khi mở rộng trong giới hạn an toàn\.
+
+#### Reviewer nên làm gì tiếp theo
+
+- Đối chiếu kết luận với từng bằng chứng và dữ kiện còn thiếu do LLM nêu\.
+- Kiểm tra trực tiếp file và khoảng dòng tương đối trước khi quyết định TP hoặc FP\.
+- Nếu dataflow chưa đầy đủ, giữ finding ở trạng thái cần review\.
+
+#### Lỗi xử lý
+
+- Không có lỗi xử lý cho finding này.
+
+### 5.3. MANUAL\_REVIEW — python\.flask\.security\.audit\.debug\-enabled\.debug\-enabled
+
+> **Ưu tiên review:** Cần chuyên gia review thủ công
+
+#### Thông tin finding
+
+| Thuộc tính | Giá trị |
+|---|---|
+| Finding ID | 44d39409a69ecafe |
+| Scanner / loại finding | SEMGREP / SAST |
+| Rule | python\.flask\.security\.audit\.debug\-enabled\.debug\-enabled |
+| File | VulnerablePythonScript\.py |
+| Dòng | 55 |
+| Severity | MEDIUM |
+| Metadata an toàn | category=security; confidence=HIGH; cwe=\['CWE\-489\: Active Debug Code'\]; owasp=A06\:2017 \- Security Misconfiguration; references=\['https\:\/\/labs\.detectify\.com\/2015\/10\/02\/how\-patreon\-got\-hacked\-publicly\-exposed\-werkzeug\-debugger\/'\]; technology=\['flask'\] |
+| Thời gian xử lý | 612 ms |
+| Thời gian provider | 0 ms |
+| SHA-256 đầu vào triage | 0d746aa39700d57f09ad1b48fd4e530b65803bf8e88c9d645b4bf2a052fc28eb |
+
+**Thông báo của scanner**
+
+> Detected Flask app with debug\=True\. Do not deploy to production with this flag enabled as it will leak sensitive information\. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables\.
+
+**Tóm tắt ngữ cảnh an toàn**
+
+> Joern CPG evidence partial; source chưa xác định; sink VulnerablePythonScript\.py\:55; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT\_NO\_PROGRESS\.
+
+#### Phân tích của LLM
+
+- **Verdict:** NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận
+- **Confidence:** MEDIUM — Trung bình
+- **Model / Prompt:** fake\-triage\-v1 / triage\-prompt\-v13
+
+**Kết luận ngắn gọn**
+
+> Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công\.
+
+**Bằng chứng LLM sử dụng**
+
+- Không có kịch bản prompt\_type chuyên biệt nên provider dùng nhánh mặc định\.
+
+**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**
+
+- LLM không ghi nhận thông tin quan trọng còn thiếu\.
+
+**Giả định LLM đã sử dụng**
+
+- Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử\.
+
+> Ghi chú: Đây là phần giải thích có cấu trúc đã qua validation, không phải
+> nội dung suy luận nội bộ và không thay thế kết luận của security reviewer.
+
+#### Quyết định policy của hệ thống
+
+- **Action:** MANUAL\_REVIEW — Cần chuyên gia review thủ công
+- **Policy version:** conservative\-policy\-v2
+- **Đã escalated:** Không
+- **Lý do escalation:** Không có
+- **Lý do policy:**
+  - Bằng chứng ngữ cảnh vẫn chưa đầy đủ sau khi mở rộng trong giới hạn an toàn\.
+
+#### Reviewer nên làm gì tiếp theo
+
+- Đối chiếu kết luận với từng bằng chứng và dữ kiện còn thiếu do LLM nêu\.
+- Kiểm tra trực tiếp file và khoảng dòng tương đối trước khi quyết định TP hoặc FP\.
+- Nếu dataflow chưa đầy đủ, giữ finding ở trạng thái cần review\.
+
+#### Lỗi xử lý
+
+- Không có lỗi xử lý cho finding này.
+
+### 5.4. MANUAL\_REVIEW — python\.lang\.security\.deserialization\.pickle\.avoid\-pickle
+
+> **Ưu tiên review:** Cần chuyên gia review thủ công
+
+#### Thông tin finding
+
+| Thuộc tính | Giá trị |
+|---|---|
+| Finding ID | f902559a995159f9 |
+| Scanner / loại finding | SEMGREP / SAST |
+| Rule | python\.lang\.security\.deserialization\.pickle\.avoid\-pickle |
+| File | VulnerablePythonScript\.py |
+| Dòng | 33 |
+| Severity | MEDIUM |
+| Metadata an toàn | category=security; confidence=LOW; cwe=\['CWE\-502\: Deserialization of Untrusted Data'\]; owasp=\['A08\:2017 \- Insecure Deserialization', 'A08\:2021 \- Software and Data Integrity Failures', 'A08\:2025 \- Software or Data Integrity Failures'\]; references=\['https\:\/\/docs\.python\.org\/3\/library\/pickle\.html'\]; technology=\['python'\] |
+| Thời gian xử lý | 935 ms |
+| Thời gian provider | 0 ms |
+| SHA-256 đầu vào triage | b5d54249cfcc8ac9bf9a72f60d86e7c520908f4aa2d24a7fa42d8703a709543f |
+
+**Thông báo của scanner**
+
+> Avoid using \`pickle\`, which is known to lead to code execution vulnerabilities\. When unpickling, the serialized data could be manipulated to run arbitrary code\. Instead, consider serializing the relevant data as JSON or a similar text\-based serialization format\.
+
+**Tóm tắt ngữ cảnh an toàn**
+
+> Joern CPG evidence complete; source VulnerablePythonScript\.py\:32; sink VulnerablePythonScript\.py\:33; đường source–sink VulnerablePythonScript\.py\:32 → VulnerablePythonScript\.py\:32 → VulnerablePythonScript\.py\:33 → VulnerablePythonScript\.py\:33 → VulnerablePythonScript\.py\:33; control không tìm thấy; Agent dừng vì EVIDENCE\_SUFFICIENT\.
+
+#### Phân tích của LLM
+
+- **Verdict:** NEEDS\_REVIEW — LLM chưa đủ bằng chứng để kết luận
+- **Confidence:** MEDIUM — Trung bình
+- **Model / Prompt:** fake\-triage\-v1 / triage\-prompt\-v13
+
+**Kết luận ngắn gọn**
+
+> Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công\.
+
+**Bằng chứng LLM sử dụng**
+
+- Không có kịch bản prompt\_type chuyên biệt nên provider dùng nhánh mặc định\.
+
+**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**
+
+- LLM không ghi nhận thông tin quan trọng còn thiếu\.
+
+**Giả định LLM đã sử dụng**
+
+- Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử\.
+
+> Ghi chú: Đây là phần giải thích có cấu trúc đã qua validation, không phải
+> nội dung suy luận nội bộ và không thay thế kết luận của security reviewer.
+
+#### Quyết định policy của hệ thống
+
+- **Action:** MANUAL\_REVIEW — Cần chuyên gia review thủ công
+- **Policy version:** conservative\-policy\-v2
+- **Đã escalated:** Không
+- **Lý do escalation:** Không có
+- **Lý do policy:**
+  - LLM yêu cầu chuyên gia review thủ công\.
+
+#### Reviewer nên làm gì tiếp theo
+
+- Đối chiếu kết luận với từng bằng chứng và dữ kiện còn thiếu do LLM nêu\.
+- Kiểm tra trực tiếp file và khoảng dòng tương đối trước khi quyết định TP hoặc FP\.
+- Nếu dataflow chưa đầy đủ, giữ finding ở trạng thái cần review\.
+
+#### Lỗi xử lý
+
+- Không có lỗi xử lý cho finding này.
+
+## 6. Lỗi scanner
+- Không có lỗi scanner.
+
+## 7. Ghi chú bảo mật và giới hạn
+
+- Báo cáo không chứa mã nguồn thô, prompt thô, response LLM thô hoặc traceback.
+- Đường dẫn trong báo cáo là đường dẫn tương đối của repository.
+- Verdict của LLM là dữ liệu hỗ trợ; policy và reviewer mới quyết định xử lý.
+- Mọi finding đều xuất hiện trong báo cáo, kể cả khi triage hoặc scanner gặp lỗi.

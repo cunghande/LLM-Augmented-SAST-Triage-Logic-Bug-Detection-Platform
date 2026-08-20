@@ -1,121 +1,74 @@
-# Sprint 2 — Five-class logic-bug detection
+# Sprint 2 — Focused IDOR and business-rule detection
 
 ## Mục tiêu
 
-Sprint 2 mở rộng pipeline Sprint 1 bằng một detector Python chạy trên AST và
-repository index có giới hạn. Detector tạo finding mới cho đúng năm lớp trong
-kế hoạch gốc, sau đó đưa mọi finding qua cùng Safe Context, provider, policy và
-reporter của Sprint 1.
+Sprint 2 tập trung detector Python vào đúng hai lớp:
 
-Năm lớp được hỗ trợ:
+1. missing authorization / IDOR (`missing_authz_idor`, `CWE-639`);
+2. business-rule bypass (`business_rule_bypass`, `CWE-840`).
 
-1. missing authorization / IDOR (`CWE-639`);
-2. mass assignment (`CWE-915`);
-3. race condition / TOCTOU (`CWE-367`);
-4. business-rule bypass (`CWE-840`);
-5. insecure workflow (`CWE-841`).
+Detector phải được bật tường minh bằng
+`--logic-detector python-idor-business-logic` và yêu cầu Module 2. Finding mới
+vẫn đi qua Safe Context, provider, policy và ba reporter
+chung; không có pipeline hoặc cơ chế tự suppress riêng.
 
-Detector phải được bật tường minh bằng `--logic-detector python-five-logic`.
-Phần FastAPI missing-authz chuyên biệt không nằm trên nhánh `main` của phạm vi
-này.
+## Use case ưu tiên
 
-## Ánh xạ với kế hoạch gốc
+### Tính tiền giỏ hàng
 
-| Hạng mục | Hiện thực |
-|---|---|
-| S2-01 | AST Python, entrypoint Flask/FastAPI/Django, source–guard–sink trace và repository index source-free. |
-| S2-02 | Khi chạm giới hạn file, ưu tiên đường dẫn auth, admin, payment, user, workflow và application route trước test/example. |
-| S2-03 | Năm detector độc lập; prompt v13 dùng proof obligations, counter-evidence, retrieval-resolution, rubric riêng theo lớp và verifier pass có giới hạn. |
-| S2-04 | Benchmark trên repository thật có ground truth; PoC trên service nội bộ vẫn cần AppSec/service owner phê duyệt. |
-| S2-05 | Điểm rủi ro lưu cả tổng và năm thành phần theo công thức của plan. |
-| S2-06 | Mỗi finding có remediation và validation checklist theo lớp lỗi. Patch vẫn là đề xuất cần developer review. |
-| S2-07 | JSON/Markdown giữ risk level, risk score, evidence trace và remediation trong metadata an toàn. |
+Detector theo dõi `price`, `unit_price`, `discount`, `subtotal`, `total`,
+`quantity` và các alias lấy từ request. Candidate được tạo khi:
 
-## Evidence và an toàn
+- giá hoặc tổng do client kiểm soát đi tới kết quả hay mutation;
+- số lượng/domain value đi tới operation mà không có bound phía server.
 
-Các kỹ thuật evidence mới được dùng lại từ phần nghiên cứu trước:
+Counter-example an toàn cần có quantity dương và có upper bound, đồng thời giá
+được load từ nguồn phía server thay vì dùng giá do client gửi.
 
-- khoanh vùng theo entrypoint và vùng code rủi ro;
-- biểu diễn source → guard → sink thay vì chỉ gửi một dòng code;
-- deterministic verification card trước khi LLM kết luận;
-- prompt theo lớp lỗi với các negative distinction cụ thể;
-- remediation và checklist gắn với nguyên nhân gốc.
+### Truy cập tài liệu khác chủ sở hữu
 
-Repository index và `LogicCandidate` chỉ giữ identifier, đường dẫn tương đối,
-số dòng, loại flow và điểm số. Raw source chỉ tồn tại cục bộ trong context layer,
-được sanitize trước khi provider nhận `TriageInput`.
+Detector theo dõi identifier từ route/query/body tới object lookup. Candidate
+được loại khi query đã scope theo owner/user/tenant/share ACL hoặc có guard
+authorization bảo vệ đúng object.
 
-## Chạy demo một dòng
+### Pagination/limit gây resource exhaustion
 
-Điều kiện: `.venv` đã kích hoạt và PowerShell đang ở
-`D:\Code\target-repos`. Chỉ thay cả hai chỗ `<TEN_REPO>`:
+Detector tạo business-rule candidate khi page/limit do request kiểm soát được
+đưa vào query mà không có lower/upper bound phù hợp, hoặc endpoint dạng list
+gọi `all()`/`fetchall()` mà không có `limit`, `slice` hay `paginate`.
+
+Đây là projection vào lớp `business_rule_bypass` của dự án. Tác động kỹ thuật
+cụ thể có thể đồng thời được reviewer gắn `CWE-400` (uncontrolled resource
+consumption); detector không đổi taxonomy public ngoài hai lớp đã chốt.
+
+## Chạy demo
+
+Khi `.venv` đã kích hoạt và PowerShell đang ở `D:\Code\target-repos`:
 
 ```powershell
-python -m sast_triage scan-and-triage --repository .\<TEN_REPO> --output-dir ..\triage-runs\<TEN_REPO>-sprint2 --analysis-backend native --module2 --logic-detector python-five-logic --provider fake
+python -m sast_triage scan-and-triage --repository .\<TEN_REPO> --output-dir ..\triage-runs\<TEN_REPO>-sprint2 --module2 --logic-detector python-idor-business-logic --provider fake
 ```
 
-`triage-runs` và thư mục run con được CLI tự tạo. `fake` dùng để demo pipeline
-offline; đổi thành `real` để dùng Modal đã cấu hình, hoặc `ollama` để dùng model
-local.
+Đổi `fake` thành `real` sau khi Modal đã được cấu hình nếu cần benchmark LLM.
 
-## Benchmark và cách đọc số liệu
+## Benchmark
 
-Script đánh giá:
+Lệnh tái lập detector benchmark:
 
 ```powershell
-python scripts\benchmark_logic_bugs.py --ground-truth-root benchmarks\ExternalTargets\Real-Vuln-Benchmark\ground-truth --repos-root benchmarks\ExternalTargets\Real-Vuln-Benchmark\repos --output benchmarks\BenchmarkOutput\sprint2-five-logic\realvuln-full-v4-strix-evidence.json
+python scripts\benchmark_logic_bugs.py --ground-truth-root benchmarks\ExternalTargets\Real-Vuln-Benchmark\ground-truth --repos-root benchmarks\ExternalTargets\Real-Vuln-Benchmark\repos --output benchmarks\BenchmarkOutput\sprint2-idor-business\realvuln-focused-v1.json
 ```
 
-Dataset là repository bên ngoài có ground truth review, không phải fixture tự
-tạo. Chỉ location dương/âm được map rõ vào năm lớp mới tham gia confusion
-matrix. Candidate ngoài các location đã gán nhãn được ghi là `unreviewed_candidates`;
-không được tự coi là TP hoặc FP.
-
-Kết quả v4 hiện tại trên 25 repository, 63 case phù hợp:
-
-| Chỉ số | Giá trị |
-|---|---:|
-| TP / FP / FN / TN | 42 / 0 / 7 / 14 |
-| Precision | 1,0000 |
-| Recall | 0,8571 |
-| F1 | 0,9231 |
-
-Đây là kết quả detector xác định trên các location đã review, không phải kết
-quả của LLM thật. Benchmark còn 377 candidate ngoài vùng nhãn cần review thủ
-công trước khi công bố false-positive rate toàn repository.
+Các artifact và số liệu benchmark cũ đã được xóa trước khi chuyển sang Joern-only.
+Chưa có kết quả chất lượng hiện hành cho tới khi chạy lại trên repository và
+ground truth mới.
 
 ## Điều kiện kết thúc
 
-Phần kỹ thuật được coi là đạt khi full test và Ruff đạt, CLI sinh đủ năm lớp,
-finding không bị mất khi provider lỗi, và artifact benchmark tái lập được.
-
-Validation ngày 2026-08-17:
-
-- full regression: `479 passed, 2 skipped`;
-- Ruff: đạt trên `src`, `tests`, `modal_apps`, `scripts`;
-- CLI integration với fake provider: sinh đủ năm lớp và không có processing error;
-- benchmark v5 tái lập đúng TP/FP/FN/TN `42/0/7/14`.
-
-Pilot LLM thật trên Modal/Qwen3-14B-AWQ cũng đã chạy 7 case có ground truth
-(mỗi lớp một positive và hai detector false positive): 7/7 hoàn thành, không có
-`TRIAGE_ERROR`, nhưng model abstain 6/7 case. Verdict dứt khoát duy nhất là một
-mass-assignment TP đúng; coverage chỉ 14,29%. Vì mẫu decisive chỉ có một case,
-không được dùng selective accuracy 100% để tuyên bố chất lượng model.
-
-Sau khi thêm proof obligations và counter-evidence theo hướng evidence-first,
-prompt v12 được chạy lại trên đúng năm positive case: verdict dứt khoát tăng từ
-1/5 lên 2/5, cả hai đúng, coverage tăng 20% lên 40%, không có `TRIAGE_ERROR`.
-Hai negative cũ được verifier loại trước LLM vì tìm thấy authorization guard thật.
-
-Prompt v13 bổ sung các fact đã được bounded static retrieval giải quyết, rubric
-riêng cho từng lớp và tối đa một verifier pass khi kết quả đầu là `NEEDS_REVIEW`.
-Trên đúng năm positive case đó, verdict dứt khoát tăng tiếp lên 3/5, cả ba đúng,
-coverage 60%, không có `TRIAGE_ERROR`; verifier được gọi hai lần. Business-rule
-bypass trở thành case dứt khoát mới, còn IDOR và insecure workflow vẫn abstain.
-Mẫu năm case quá nhỏ nên không dùng selective accuracy 100% để suy rộng chất
-lượng model.
-
-Nghiệm thu tổ chức theo S2-04 chưa thể tự động hóa: cần AppSec/service owner
-review ít nhất ba service thật, xác nhận TP/FP và chỉ chạy PoC trong môi trường
-được phép. Vì vậy trạng thái nên báo là **engineering complete / formal
-acceptance pending** cho tới khi có biên bản review đó.
+- CLI chỉ sinh hai logic class đã chốt.
+- Guard object/tenant/share hợp lệ chặn candidate IDOR.
+- Giá client, quantity thiếu bound, pagination thiếu cap và collection query
+  không giới hạn có regression test.
+- Giá server với quantity bounded và pagination bounded có negative test.
+- Full test, Ruff và benchmark artifact tái lập đạt.
+- AppSec/service owner vẫn phải review trên service thật trước formal acceptance.

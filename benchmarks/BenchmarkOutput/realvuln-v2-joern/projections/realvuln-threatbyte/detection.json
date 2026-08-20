@@ -1,0 +1,1018 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "client/templates/dashboard.html",
+      "start": {
+        "line": 64,
+        "col": 1
+      },
+      "end": {
+        "line": 64,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.xss.audit.template-unescaped-with-safe.template-unescaped-with-safe",
+      "path": "client/templates/profile.html",
+      "start": {
+        "line": 41,
+        "col": 1
+      },
+      "end": {
+        "line": 41,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a segment of a Flask template where autoescaping is explicitly disabled with '| safe' filter. This allows rendering of raw HTML in this segment. Ensure no user data is rendered here, otherwise this is a cross-site scripting (XSS) vulnerability.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "db/create_dummy_data.py",
+      "start": {
+        "line": 8,
+        "col": 1
+      },
+      "end": {
+        "line": 8,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+      "path": "db/create_dummy_data.py",
+      "start": {
+        "line": 8,
+        "col": 1
+      },
+      "end": {
+        "line": 8,
+        "col": 1
+      },
+      "extra": {
+        "message": "It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.sql.sql-injection-using-db-cursor-execute.sql-injection-db-cursor-execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 126,
+        "col": 1
+      },
+      "end": {
+        "line": 140,
+        "col": 1
+      },
+      "extra": {
+        "message": "User-controlled data from a request is passed to 'execute()'. This could lead to a SQL injection and therefore protected information could be leaked. Instead, use django's QuerySets, which are built with query parameterization and therefore not vulnerable to sql injection. For example, you could use `Entry.objects.filter(date=2006)`.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+      "path": "server/routes.py",
+      "start": {
+        "line": 137,
+        "col": 1
+      },
+      "end": {
+        "line": 137,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-704"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.open-redirect.open-redirect",
+      "path": "server/routes.py",
+      "start": {
+        "line": 256,
+        "col": 1
+      },
+      "end": {
+        "line": 256,
+        "col": 1
+      },
+      "extra": {
+        "message": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-601"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.flask.security.open-redirect.open-redirect",
+      "path": "server/routes.py",
+      "start": {
+        "line": 260,
+        "col": 1
+      },
+      "end": {
+        "line": 260,
+        "col": 1
+      },
+      "extra": {
+        "message": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-601"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "server/routes.py",
+      "start": {
+        "line": 403,
+        "col": 1
+      },
+      "end": {
+        "line": 403,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+      "path": "server/routes.py",
+      "start": {
+        "line": 403,
+        "col": 1
+      },
+      "end": {
+        "line": 403,
+        "col": 1
+      },
+      "extra": {
+        "message": "It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 229,
+        "col": 1
+      },
+      "end": {
+        "line": 229,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 275,
+        "col": 1
+      },
+      "end": {
+        "line": 275,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 198,
+        "col": 1
+      },
+      "end": {
+        "line": 198,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.open",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 284,
+        "col": 1
+      },
+      "end": {
+        "line": 284,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-22"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 55,
+        "col": 1
+      },
+      "end": {
+        "line": 55,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 180,
+        "col": 1
+      },
+      "end": {
+        "line": 180,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 99,
+        "col": 1
+      },
+      "end": {
+        "line": 99,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 350,
+        "col": 1
+      },
+      "end": {
+        "line": 350,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 113,
+        "col": 1
+      },
+      "end": {
+        "line": 113,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 292,
+        "col": 1
+      },
+      "end": {
+        "line": 292,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 132,
+        "col": 1
+      },
+      "end": {
+        "line": 132,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 288,
+        "col": 1
+      },
+      "end": {
+        "line": 288,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 232,
+        "col": 1
+      },
+      "end": {
+        "line": 232,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 207,
+        "col": 1
+      },
+      "end": {
+        "line": 207,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 298,
+        "col": 1
+      },
+      "end": {
+        "line": 298,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 275,
+        "col": 1
+      },
+      "end": {
+        "line": 275,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 106,
+        "col": 1
+      },
+      "end": {
+        "line": 106,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 124,
+        "col": 1
+      },
+      "end": {
+        "line": 124,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 365,
+        "col": 1
+      },
+      "end": {
+        "line": 365,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 411,
+        "col": 1
+      },
+      "end": {
+        "line": 411,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 234,
+        "col": 1
+      },
+      "end": {
+        "line": 234,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "db/create_db_tables.py",
+      "start": {
+        "line": 29,
+        "col": 1
+      },
+      "end": {
+        "line": 29,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 266,
+        "col": 1
+      },
+      "end": {
+        "line": 266,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 140,
+        "col": 1
+      },
+      "end": {
+        "line": 140,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 165,
+        "col": 1
+      },
+      "end": {
+        "line": 165,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 270,
+        "col": 1
+      },
+      "end": {
+        "line": 270,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 356,
+        "col": 1
+      },
+      "end": {
+        "line": 356,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 138,
+        "col": 1
+      },
+      "end": {
+        "line": 138,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 139,
+        "col": 1
+      },
+      "end": {
+        "line": 139,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "db/create_db_tables.py",
+      "start": {
+        "line": 7,
+        "col": 1
+      },
+      "end": {
+        "line": 7,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 330,
+        "col": 1
+      },
+      "end": {
+        "line": 330,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.executemany",
+      "path": "db/create_dummy_data.py",
+      "start": {
+        "line": 30,
+        "col": 1
+      },
+      "end": {
+        "line": 30,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 324,
+        "col": 1
+      },
+      "end": {
+        "line": 324,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/api/v1/api_v1.py",
+      "start": {
+        "line": 164,
+        "col": 1
+      },
+      "end": {
+        "line": 164,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 206,
+        "col": 1
+      },
+      "end": {
+        "line": 206,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.joern.cross-file.execute",
+      "path": "server/routes.py",
+      "start": {
+        "line": 46,
+        "col": 1
+      },
+      "end": {
+        "line": 46,
+        "col": 1
+      },
+      "extra": {
+        "message": "Joern found a bounded cross-file source-to-sink path.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}
