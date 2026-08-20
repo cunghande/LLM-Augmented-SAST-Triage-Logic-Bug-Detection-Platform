@@ -31,6 +31,7 @@ flowchart TD
 
     PIPELINE --> JSON_REPORT["Báo cáo JSON"]
     PIPELINE --> MD_REPORT["Báo cáo Markdown"]
+    PIPELINE --> HTML_REPORT["Báo cáo HTML"]
 ```
 
 ## Hai chế độ CLI — Một pipeline
@@ -57,7 +58,7 @@ flowchart TD
     R2 --> VERIFY
 
     VERIFY --> SHARED["Pipeline Triage dùng chung"]
-    SHARED --> REPORTS["Báo cáo JSON + Markdown"]
+    SHARED --> REPORTS["Báo cáo JSON + Markdown + HTML"]
 ```
 
 Trong chế độ `scan-and-triage`, runner tạo artifact và trạng thái
@@ -99,9 +100,11 @@ flowchart TD
 
     COLLECT --> JR["JSON Reporter"]
     COLLECT --> MR["Markdown Reporter"]
+    COLLECT --> HR["HTML Reporter"]
 
     JR --> LEAK_J["Kiểm tra rò rỉ"] --> JSON_OUT["report.json"]
     MR --> LEAK_M["Kiểm tra rò rỉ"] --> MD_OUT["report.md"]
+    HR --> LEAK_H["Kiểm tra rò rỉ"] --> HTML_OUT["report.html"]
 ```
 
 ### SafeContextService — ranh giới raw source
@@ -317,6 +320,7 @@ gitleaks.json
 | `ArtifactBinder` | Xác minh ràng buộc repository-artifact | Artifact + repo path | `ArtifactRepositoryMatch` | Âm thầm chấp nhận artifact không khớp |
 | `JSONReporter` | Render báo cáo JSON | `BatchResult` | File | Chứa bí mật thô, prompt, traceback, đường dẫn tuyệt đối |
 | `MarkdownReporter` | Render báo cáo Markdown | `BatchResult` | File | Chứa bí mật thô, prompt, traceback, đường dẫn tuyệt đối |
+| `HTMLReporter` | Render báo cáo HTML độc lập | `BatchResult` | File | Chứa bí mật thô, prompt, traceback, đường dẫn tuyệt đối hoặc HTML động chưa escape |
 | `SemgrepRunner` | Chạy Semgrep (Iter 6) | Repo path + config | `ScannerRunResult` | Dùng `shell=True`, log bí mật |
 | `GitleaksRunner` | Chạy Gitleaks (Iter 6) | Repo path + config | `ScannerRunResult` | Dùng `shell=True`, log bí mật |
 
@@ -360,7 +364,7 @@ src/sast_triage/
 ├── policy/                # Quyết định bảo thủ của hệ thống
 ├── pipeline/              # Pipeline một finding và cả batch
 ├── runners/               # Tiến trình Semgrep/Gitleaks
-├── reporting/             # Báo cáo JSON/Markdown
+├── reporting/             # Báo cáo JSON/Markdown/HTML
 └── evaluation/            # Benchmark và metric
 ```
 

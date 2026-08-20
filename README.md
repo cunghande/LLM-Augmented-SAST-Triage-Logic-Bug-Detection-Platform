@@ -2,8 +2,8 @@
 
 Công cụ CLI hỗ trợ reviewer phân loại finding bảo mật từ Semgrep và Gitleaks.
 Pipeline quét repository, chuẩn hóa finding, đọc context an toàn, tạo evidence
-same-file/cross-file, gọi LLM, áp dụng policy bảo thủ và xuất báo cáo JSON cùng
-Markdown.
+same-file/cross-file, gọi LLM, áp dụng policy bảo thủ và xuất báo cáo JSON,
+Markdown cùng HTML độc lập.
 
 > LLM chỉ đưa ra đề xuất. Hệ thống không tự động xóa hoặc làm mất finding; khi
 > bằng chứng chưa đủ, kết quả được chuyển sang `MANUAL_REVIEW`.
@@ -34,7 +34,7 @@ Repository
   → TriageInput
   → LLM verdict đã validate
   → PolicyDecision
-  → report.json + report.md
+  → report.json + report.md + report.html
 ```
 
 `triage` và `scan-and-triage` dùng chung pipeline. Module 1 và Module 2 cũng
@@ -142,6 +142,7 @@ Output có dạng:
 D:\Code\triage-runs\Sequential-Recommender-qwen14b-YYYYMMDD-HHMMSSZ\
 ├── report.md
 ├── report.json
+├── report.html
 ├── run-metadata.json
 └── scanner-artifacts\
     ├── semgrep.json
@@ -155,6 +156,7 @@ Cold start Modal có thể mất khoảng 4–7 phút. Chờ đến khi CLI in `
 
 - `report.md`: báo cáo chính cho reviewer/mentor.
 - `report.json`: dữ liệu đầy đủ cho đánh giá tự động.
+- `report.html`: báo cáo security trực quan, có thể mở trực tiếp hoặc in thành PDF.
 - `run-metadata.json`: commit, scanner version/config, model và binding.
 - `scanner-artifacts/`: artifact nội bộ; không nên gửi ra ngoài vì có thể chứa
   source snippet hoặc dữ liệu nhạy cảm.
@@ -184,7 +186,7 @@ cuối của hệ thống.
 │   ├── pipeline/             xử lý một finding và toàn batch
 │   ├── triage/               system prompt, provider, schema validation
 │   ├── policy/               LLM verdict → system action
-│   ├── reporting/            report JSON/Markdown an toàn
+│   ├── reporting/            report JSON/Markdown/HTML an toàn
 │   └── evaluation/           benchmark loader và metric
 ├── modal_apps/               entrypoint/runner Modal và benchmark
 ├── tests/                    unit, integration và security regression test

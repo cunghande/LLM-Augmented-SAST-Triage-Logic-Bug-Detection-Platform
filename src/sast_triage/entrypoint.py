@@ -131,6 +131,7 @@ def _print_summary(output_dir_text: str | None, exit_code: int) -> None:
     )
     print(f"Báo cáo JSON: {_display_path(report_path)}", flush=True)
     print(f"Báo cáo Markdown: {_display_path(output_dir / 'report.md')}", flush=True)
+    print(f"Báo cáo HTML: {_display_path(output_dir / 'report.html')}", flush=True)
 
 
 def main(argv: list[str] | None = None) -> int:

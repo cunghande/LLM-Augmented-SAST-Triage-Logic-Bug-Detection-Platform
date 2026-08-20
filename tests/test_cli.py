@@ -18,7 +18,7 @@ from sast_triage.runners.scanners import ScannerRunResult
 from sast_triage.triage.fake_provider import FakeTriageProvider
 
 
-def test_triage_cli_writes_both_reports_and_metadata(tmp_path: Path, capsys) -> None:
+def test_triage_cli_writes_all_reports_and_metadata(tmp_path: Path, capsys) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
     (repo / "app.py").write_text("x = 1\n", encoding="utf-8")
@@ -34,6 +34,7 @@ def test_triage_cli_writes_both_reports_and_metadata(tmp_path: Path, capsys) -> 
     assert exit_code == EXIT_SUCCESS
     assert (output / "report.json").is_file()
     assert (output / "report.md").is_file()
+    assert (output / "report.html").is_file()
     assert (output / "run-metadata.json").is_file()
     assert "x = 1" not in (output / "report.json").read_text(encoding="utf-8")
     progress = capsys.readouterr().out

@@ -97,6 +97,7 @@ def test_entrypoint_prints_report_summary(tmp_path: Path, monkeypatch, capsys) -
         )
         (output / "report.json").write_text("{}", encoding="utf-8")
         (output / "report.md").write_text("# report\n", encoding="utf-8")
+        (output / "report.html").write_text("<!doctype html>\n", encoding="utf-8")
         return 0
 
     monkeypatch.setattr(entrypoint, "run_cli", fake_cli)
@@ -119,6 +120,7 @@ def test_entrypoint_prints_report_summary(tmp_path: Path, monkeypatch, capsys) -
     assert "đã_parse=12" in captured.out
     assert "triage_thành_công=10" in captured.out
     assert "report.json" in captured.out
+    assert "report.html" in captured.out
 
 
 def test_entrypoint_explains_modal_checkpoint_resume(tmp_path: Path, monkeypatch, capsys) -> None:

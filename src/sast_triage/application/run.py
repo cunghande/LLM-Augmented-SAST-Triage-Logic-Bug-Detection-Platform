@@ -30,6 +30,7 @@ from sast_triage.models import (
     TriageResult,
 )
 from sast_triage.pipeline.batch import triage_batch
+from sast_triage.reporting.html_reporter import write_html_report
 from sast_triage.reporting.json_reporter import write_json_report
 from sast_triage.reporting.markdown_reporter import write_markdown_report
 
@@ -254,6 +255,7 @@ def _write_outputs(batch: BatchResult, output_dir: Path, overwrite: bool) -> Non
     show_progress("6/7", "Triage hoàn tất; đang kiểm tra và ghi báo cáo.")
     write_json_report(batch, output_dir / "report.json", overwrite=overwrite)
     write_markdown_report(batch, output_dir / "report.md", overwrite=overwrite)
+    write_html_report(batch, output_dir / "report.html", overwrite=overwrite)
     _atomic_write_metadata(
         output_dir / "run-metadata.json",
         batch.run_metadata.model_dump(mode="json"),

@@ -335,6 +335,7 @@ Một run `scan-and-triage` có cấu trúc:
 run-directory\
 ├── report.md
 ├── report.json
+├── report.html
 ├── run-metadata.json
 └── scanner-artifacts\
     ├── semgrep.json
@@ -348,6 +349,7 @@ khi report và metadata được ghi thành công.
 
 - `report.md`: đọc bằng mắt, dùng khi trình bày mentor.
 - `report.json`: tích hợp chương trình hoặc benchmark.
+- `report.html`: báo cáo security trực quan, hỗ trợ in hoặc lưu thành PDF từ trình duyệt.
 - `run-metadata.json`: kiểm tra commit, trạng thái worktree, binding, model,
   scanner version/config và số finding lỗi.
 - `scanner-artifacts/`: dùng debug nội bộ, không gửi ra ngoài mặc định.
