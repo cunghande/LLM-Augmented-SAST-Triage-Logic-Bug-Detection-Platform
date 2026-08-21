@@ -32,12 +32,30 @@ def _automatic_output_dir(repository: Path, timestamp: str | None = None) -> Pat
     return candidate
 
 
+def _has_option(arguments: list[str], option: str) -> bool:
+    """Return whether shortcut arguments explicitly configure an option."""
+    negative_option = f"--no-{option.removeprefix('--')}"
+    return any(
+        value in {option, negative_option}
+        or value.startswith(f"{option}=")
+        for value in arguments
+    )
+
+
 def _expand_repository_shortcut(arguments: list[str]) -> list[str]:
     """Biến ``sast-triage REPO`` thành lần quét Qwen3-14B đầy đủ."""
     if not arguments or arguments[0] in _COMMANDS or arguments[0].startswith("-"):
         return list(arguments)
     repository = Path(arguments[0])
     output_dir = _automatic_output_dir(repository)
+    extra_arguments = arguments[1:]
+    full_analysis_options: list[str] = []
+    if not _has_option(extra_arguments, "--module2-discovery"):
+        full_analysis_options.append("--module2-discovery")
+    if not _has_option(extra_arguments, "--logic-detector"):
+        full_analysis_options.extend(
+            ("--logic-detector", "python-idor-business-logic")
+        )
     return [
         "scan-and-triage",
         "--repository",
@@ -50,7 +68,8 @@ def _expand_repository_shortcut(arguments: list[str]) -> list[str]:
         "p/python",
         "--semgrep-config",
         "p/security-audit",
-        *arguments[1:],
+        *full_analysis_options,
+        *extra_arguments,
     ]
 
 

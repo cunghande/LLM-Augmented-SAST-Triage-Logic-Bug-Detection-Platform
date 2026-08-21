@@ -28,6 +28,9 @@ def test_repository_shortcut_builds_real_qwen_scan(tmp_path: Path) -> None:
         "p/python",
         "--semgrep-config",
         "p/security-audit",
+        "--module2-discovery",
+        "--logic-detector",
+        "python-idor-business-logic",
     ]
 
 
@@ -39,6 +42,25 @@ def test_repository_shortcut_preserves_extra_options(tmp_path: Path) -> None:
     )
 
     assert arguments[-1] == "--no-module2"
+
+
+def test_repository_shortcut_allows_disabling_full_analysis_defaults(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "target-repos" / "sample-repo"
+
+    arguments = entrypoint._expand_repository_shortcut(
+        [
+            str(repository),
+            "--no-module2-discovery",
+            "--logic-detector",
+            "off",
+        ]
+    )
+
+    assert arguments.count("--module2-discovery") == 0
+    assert arguments.count("--logic-detector") == 1
+    assert arguments[-3:] == ["--no-module2-discovery", "--logic-detector", "off"]
 
 
 def test_explicit_commands_are_not_rewritten() -> None:

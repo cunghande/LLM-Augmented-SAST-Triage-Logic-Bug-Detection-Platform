@@ -171,19 +171,28 @@ Nếu repository đã tồn tại, không clone lại.
 
 ### 5. Chạy Qwen3-14B bằng một lệnh
 
-Khi `.venv` đang được kích hoạt và PowerShell đang ở `target-repos`:
+Khi `.venv` đang được kích hoạt và PowerShell đang ở `target-repos`, chỉ cần
+một lệnh để chạy Qwen, Joern, Module 2 discovery và logic detector:
 
 ```powershell
 python -m sast_triage Sequential-Recommender
 ```
 
-Lệnh rút gọn tự chọn:
+Lệnh này tự chọn:
 
 - `Qwen/Qwen3-14B-AWQ` trên Modal B200;
 - Semgrep `p/python` và `p/security-audit`;
 - Gitleaks built-in rules;
-- Module 2 bật;
+- Module 2 index, discovery thử nghiệm và detector IDOR/business logic;
 - output mới có timestamp, không ghi đè run cũ.
+
+Nếu chỉ muốn quét scanner cơ bản, có thể tắt discovery và detector:
+
+```powershell
+python -m sast_triage Sequential-Recommender `
+  --no-module2-discovery `
+  --logic-detector off
+```
 
 Output có dạng:
 
