@@ -160,12 +160,33 @@ class ModalQwenProvider:
         triage_input: TriageInput,
         decision: TriageDecision,
     ) -> bool:
-        """Retry only bounded v13 logic abstentions with generated metadata."""
-        return (
+        """Retry one v13 abstention when bounded static evidence is complete."""
+        logic_evidence = (
             triage_input.prompt_version == "triage-prompt-v13"
             and decision.model_verdict == ModelVerdict.NEEDS_REVIEW
             and triage_input.finding.metadata.get("logic_class")
             in {bug_class.value for bug_class in LogicBugClass}
+        )
+        if logic_evidence:
+            return True
+        if (
+            triage_input.prompt_version != "triage-prompt-v13"
+            or decision.model_verdict != ModelVerdict.NEEDS_REVIEW
+        ):
+            return False
+        try:
+            evidence = json.loads(triage_input.context.sanitized_snippet or "{}")
+        except json.JSONDecodeError:
+            return False
+        if not isinstance(evidence, dict):
+            return False
+        verification = evidence.get("deterministic_verification")
+        return (
+            isinstance(verification, dict)
+            and verification.get("evidence_complete") is True
+            and verification.get("has_evidence_conflict") is not True
+            and verification.get("mechanism")
+            in {"taint_flow", "intrinsic_usage", "configuration", "logic_pattern"}
         )
 
     def _retry_logic_verification(
@@ -180,9 +201,9 @@ class ModalQwenProvider:
                 "role": "system",
                 "content": (
                     messages[0]["content"]
-                    + "\n\nLOGIC VERIFIER PASS: The first pass abstained. Re-evaluate "
+                    + "\n\nSTATIC EVIDENCE VERIFIER PASS: The first pass abstained. Re-evaluate "
                     "the same sanitized Evidence Card using retrieval_resolution and the "
-                    "specialized rubric. Do not request facts already marked resolved. "
+                    "deterministic_verification facts. Do not request facts already marked resolved. "
                     "Return NEEDS_REVIEW only if a specific unresolved limitation could "
                     "change the verdict. Never invent runtime execution or a PoC."
                 ),

@@ -6,6 +6,12 @@ import json
 from dataclasses import dataclass, replace
 
 from sast_triage.analysis.base import AnalysisBackend, GraphEvidence
+from sast_triage.analysis.rule_semantics import (
+    RuleMechanism,
+    mechanism_for_rule_id,
+    rule_mechanism,
+    sink_only_evidence_is_sufficient,
+)
 from sast_triage.context.evidence_agent import GraphEvidenceExpansionAgent
 from sast_triage.context.evidence_models import (
     ContextCompleteness,
@@ -25,6 +31,7 @@ from sast_triage.models import NormalizedFinding, SanitizedContext
 
 MAX_EVIDENCE_CODE_CHARACTERS = 6_000
 MAX_EVIDENCE_JSON_CHARACTERS = 12_000
+_TEMPLATE_SUFFIXES = frozenset({".html", ".htm", ".jinja", ".jinja2", ".j2"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +43,24 @@ class EvidenceContextResult:
     complete: bool
     tool_calls: int
     tool_names: tuple[str, ...]
+
+
+def _template_fallback_graph(finding: NormalizedFinding) -> GraphEvidence | None:
+    """Represent a scanner-matched template sink when Python CPG cannot parse the file."""
+    suffix = "." + finding.file_path.rsplit(".", 1)[-1].lower()
+    rule = finding.rule_id.lower()
+    if suffix not in _TEMPLATE_SUFFIXES or not any(
+        token in rule for token in ("template", "xss", "raw-html")
+    ):
+        return None
+    return GraphEvidence(
+        sink_type="html_rendering",
+        sink_symbol="scanner_reported_template_output",
+        sink_file=finding.file_path,
+        sink_line=finding.start_line,
+        limitations=("NON_PYTHON_TEMPLATE_DATAFLOW_UNSUPPORTED",),
+        provenance=("SCANNER_MATCH", "SANITIZED_TEMPLATE_CONTEXT"),
+    )
 
 
 def _graph_evidence_package(
@@ -91,10 +116,7 @@ def _graph_evidence_package(
         )
         for control in graph.controls
     )
-    intrinsic = any(
-        token in finding.rule_id.lower()
-        for token in ("insecure-hash", "weak-random", "secure-cookie")
-    )
+    sink_only = sink_only_evidence_is_sufficient(finding)
     sink_resolved = sink is not None
     source_resolved = source is not None
     negative_proven = (
@@ -106,7 +128,7 @@ def _graph_evidence_package(
     complete = (
         sink_resolved
         and (
-            intrinsic
+            sink_only
             or negative_proven
             or (
                 source_resolved
@@ -120,14 +142,14 @@ def _graph_evidence_package(
     missing: list[str] = []
     if not sink_resolved:
         missing.append("SINK_NOT_RESOLVED")
-    if not intrinsic and not source_resolved and not negative_proven:
+    if not sink_only and not source_resolved and not negative_proven:
         missing.append("SOURCE_NOT_RESOLVED")
-    if not intrinsic and not graph.path_complete:
+    if not sink_only and not graph.path_complete:
         missing.append("TAINT_PATH_INCOMPLETE")
-    if not intrinsic and not graph.reachability_resolved:
+    if not sink_only and not graph.reachability_resolved:
         missing.append("REACHABILITY_NOT_RESOLVED")
     if (
-        not intrinsic
+        not sink_only
         and not negative_proven
         and "JOERN_CONTROL_FLOW" not in graph.provenance
     ):
@@ -161,20 +183,24 @@ def _graph_evidence_package(
             path_type=(
                 "cross_file"
                 if len({step.file_path for step in selected_path}) > 1
-                else "same_file" if selected_path else "intrinsic_usage" if intrinsic else "unknown"
+                else "same_file"
+                if selected_path
+                else rule_mechanism(finding).value
+                if sink_only
+                else "unknown"
             ),
             steps=steps,
             source_reaches_sink=graph.source_reaches_sink,
-            complete=graph.path_complete or intrinsic,
+            complete=graph.path_complete or sink_only,
         ),
         security_controls=controls,
         context_completeness=ContextCompleteness(
             status=EvidenceStatus.COMPLETE if complete else EvidenceStatus.PARTIAL,
-            source_resolved=source_resolved or intrinsic,
+            source_resolved=source_resolved or sink_only,
             sink_resolved=sink_resolved,
-            taint_path_complete=graph.path_complete or intrinsic,
-            call_chain_complete=graph.path_complete or intrinsic,
-            reachability_resolved=graph.reachability_resolved or intrinsic,
+            taint_path_complete=graph.path_complete or sink_only,
+            call_chain_complete=graph.path_complete or sink_only,
+            reachability_resolved=graph.reachability_resolved or sink_only,
             unresolved_symbols=(),
             missing_information=tuple(missing),
             limitations=graph.limitations,
@@ -234,22 +260,10 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
         for control in evidence.security_controls
         if control.effective is True and control.protects_target is not False
     ]
-    rule_id = evidence.finding.rule_id.lower()
-    intrinsic_usage = any(
-        token in rule_id
-        for token in ("insecure-hash", "weak-random", "secure-cookie")
-    )
-    taint_mechanism = any(
-        token in rule_id
-        for token in (
-            "injection",
-            "path-traversal",
-            "deserialization",
-            "xxe",
-            "xpath",
-            "raw-html",
-        )
-    )
+    mechanism = mechanism_for_rule_id(evidence.finding.rule_id)
+    intrinsic_usage = mechanism == RuleMechanism.INTRINSIC_USAGE
+    configuration = mechanism == RuleMechanism.CONFIGURATION
+    taint_mechanism = mechanism == RuleMechanism.TAINT_FLOW
     source_user_controlled = (
         evidence.source.user_controlled if evidence.source is not None else None
     )
@@ -316,33 +330,32 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
             "limitations": list(completeness.limitations),
         },
         "deterministic_verification": {
-            "mechanism": (
-                "intrinsic_usage"
-                if intrinsic_usage
-                else "taint_flow" if taint_mechanism else "rule_specific"
+            "mechanism": mechanism.value,
+            "attacker_control_required": (
+                True if taint_mechanism else False if intrinsic_usage else None
             ),
-            "attacker_control_required": False if intrinsic_usage else True if taint_mechanism else None,
             "evidence_complete": completeness.status == EvidenceStatus.COMPLETE,
             "source_user_controlled": (
                 None
-                if intrinsic_usage
+                if intrinsic_usage or configuration
                 else True if source_user_controlled is True else None
             ),
             "source_reaches_sink": (
                 None
-                if intrinsic_usage
+                if intrinsic_usage or configuration
                 else source_reaches_sink
                 if source_reaches_sink is True or negative_taint_proven
                 else None
             ),
             "negative_taint_conclusion_proven": negative_taint_proven,
             "unsafe_primitive_observed": bool(intrinsic_usage and sink is not None),
+            "unsafe_configuration_observed": bool(configuration and sink is not None),
             "effective_controls": effective_controls,
             "has_evidence_conflict": (
                 completeness.status == EvidenceStatus.COMPLETE
                 and (
                     evidence.sink is None
-                    if intrinsic_usage
+                    if intrinsic_usage or configuration
                     else (
                         evidence.source is None
                         or evidence.sink is None
@@ -635,6 +648,14 @@ def build_evidence_context(
         )
         expansion_tool_calls = 0
         expansion_tool_names = ("logic_candidate_projection",)
+    elif (template_graph := _template_fallback_graph(finding)) is not None:
+        evidence = _graph_evidence_package(
+            finding,
+            sanitized_context,
+            template_graph,
+        )
+        expansion_tool_calls = 0
+        expansion_tool_names = ("template_context_projection",)
     elif analysis_backend is not None:
         initial = analysis_backend.initial_evidence(finding)
         graph_expansion = GraphEvidenceExpansionAgent(
@@ -659,10 +680,7 @@ def build_evidence_context(
                 sink_type="rule_specific_sink",
                 sink_symbol=(
                     "<scanner_reported_intrinsic>"
-                    if any(
-                        token in finding.rule_id.lower()
-                        for token in ("insecure-hash", "weak-random", "secure-cookie")
-                    )
+                    if sink_only_evidence_is_sufficient(finding)
                     else None
                 ),
                 sink_file=finding.file_path,

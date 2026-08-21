@@ -115,6 +115,8 @@ def _tp_has_deterministic_support(
         )
     if mechanism == "intrinsic_usage":
         return verification.get("unsafe_primitive_observed") is True
+    if mechanism == "configuration":
+        return verification.get("unsafe_configuration_observed") is True
     if mechanism == "logic_pattern":
         return (
             verification.get("unsafe_pattern_observed") is True

@@ -120,6 +120,28 @@ def _logic_input(prompt_version: str = "triage-prompt-v13") -> TriageInput:
     )
 
 
+def _complete_taint_input() -> TriageInput:
+    base = _input()
+    context = base.context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "deterministic_verification": {
+                        "mechanism": "taint_flow",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "source_user_controlled": True,
+                        "source_reaches_sink": True,
+                    }
+                }
+            )
+        }
+    )
+    return base.model_copy(
+        update={"context": context, "prompt_version": "triage-prompt-v13"}
+    )
+
+
 def _modal_response(verdict: str, prompt_version: str) -> str:
     return json.dumps(
         {
@@ -220,8 +242,24 @@ def test_modal_provider_runs_one_v13_logic_verifier_pass() -> None:
     assert [call["max_tokens"] for call in remote.chat.calls] == [512, 768]
     retry_messages = remote.chat.calls[1]["messages"]
     assert isinstance(retry_messages, list)
-    assert "LOGIC VERIFIER PASS" in retry_messages[0]["content"]
+    assert "STATIC EVIDENCE VERIFIER PASS" in retry_messages[0]["content"]
     assert "retrieval_resolution" in retry_messages[1]["content"]
+
+
+def test_modal_provider_retries_complete_taint_abstention() -> None:
+    remote = _RemoteModel(
+        [
+            _modal_response("NEEDS_REVIEW", "triage-prompt-v13"),
+            _modal_response("LIKELY_TP", "triage-prompt-v13"),
+        ]
+    )
+
+    provider = ModalQwenProvider(remote)
+    decision = provider.triage(_complete_taint_input())
+
+    assert decision.model_verdict.value == "LIKELY_TP"
+    assert provider.logic_verification_retries == 1
+    assert [call["max_tokens"] for call in remote.chat.calls] == [512, 768]
 
 
 def test_modal_provider_does_not_retry_logic_before_v13() -> None:

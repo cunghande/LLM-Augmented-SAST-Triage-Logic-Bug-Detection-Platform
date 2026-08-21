@@ -22,6 +22,7 @@ from sast_triage.analysis.base import (
     GraphEvidence,
     GraphStep,
 )
+from sast_triage.analysis.rule_semantics import sink_only_evidence_is_sufficient
 from sast_triage.errors import SastTriageError
 from sast_triage.logic.index import LogicFindingIndex, build_logic_index
 from sast_triage.models import (
@@ -73,6 +74,7 @@ def _sink_type(finding: NormalizedFinding) -> str:
     mappings = (
         (("command", "subprocess", "os-system"), "command_execution"),
         (("sql",), "sql_query"),
+        (("ssrf", "urllib", "urlopen"), "network_request"),
         (("path", "travers"), "file_access"),
         (("deserial", "pickle", "yaml"), "deserialization"),
         (("xxe", "xml"), "xml_parsing"),
@@ -80,6 +82,7 @@ def _sink_type(finding: NormalizedFinding) -> str:
         (("xss", "html", "template"), "html_rendering"),
         (("hash", "md5", "sha1"), "weak_cryptography"),
         (("random",), "weak_randomness"),
+        (("secure-cookie", "set-cookie"), "cookie_configuration"),
     )
     for tokens, value in mappings:
         if any(token in text for token in tokens):
@@ -88,8 +91,8 @@ def _sink_type(finding: NormalizedFinding) -> str:
 
 
 def _intrinsic_usage(finding: NormalizedFinding) -> bool:
-    rule = finding.rule_id.lower()
-    return any(token in rule for token in ("insecure-hash", "weak-random", "secure-cookie"))
+    """Return whether finding validation needs only the matched sink operation."""
+    return sink_only_evidence_is_sufficient(finding)
 
 
 def _sink_call_regex(finding: NormalizedFinding) -> str:
@@ -97,14 +100,16 @@ def _sink_call_regex(finding: NormalizedFinding) -> str:
     sink_type = _sink_type(finding)
     mapping = {
         "command_execution": "(?i)(system|run|call|popen)",
-        "sql_query": "(?i)(execute|executemany)",
+        "sql_query": "(?i)(text|execute|executemany)",
+        "network_request": "(?i)(urlopen|open_url|request|fetch)",
         "file_access": "(?i)(open)",
-        "deserialization": "(?i)(load|loads|unsafe_load|full_load)",
+        "deserialization": "(?i)(load|loads|dump|dumps|unsafe_load|full_load)",
         "xml_parsing": "(?i)(fromstring|parse)",
         "xpath_query": "(?i)(xpath)",
         "html_rendering": "(?i)(render_template_string|mark_safe|Markup)",
         "weak_cryptography": "(?i)(md5|sha1|new)",
         "weak_randomness": "(?i)(random|randint|randrange|choice)",
+        "cookie_configuration": "(?i)(set_cookie)",
     }
     return mapping.get(sink_type, _SINK_CALL_REGEX)
 

@@ -111,21 +111,23 @@ def test_html_report_contains_security_sections_and_source_to_sink_trace(
     report = output.read_text(encoding="utf-8")
 
     assert report.startswith("<!doctype html>")
+    assert '<html lang="vi">' in report
     for section in (
-        "Details of Vulnerabilities Found",
-        "Description",
-        "Impact",
-        "Affected Components",
-        "Source-to-Sink Evidence",
-        "Safe Reproduction and Validation",
-        "Suggested Fix",
+        "Chi tiết lỗ hổng được phát hiện",
+        "Mô tả",
+        "Tác động",
+        "Thành phần bị ảnh hưởng",
+        "Bằng chứng Source-to-Sink",
+        "Tái hiện và xác minh an toàn",
+        "Hướng khắc phục đề xuất",
+        "Thông báo gốc từ scanner",
     ):
         assert section in report
     assert "CWE-915" in report
     assert "4.2/5.0" in report
-    assert "source:request.json@20" in report
-    assert "guard:field_allowlist@21" in report
-    assert "sink:model.update@22" in report
+    assert "Nguồn: request.json@20" in report
+    assert "Kiểm soát: field_allowlist@21" in report
+    assert "Điểm nguy hiểm: model.update@22" in report
     assert "Backend: joern" in report
 
 
@@ -161,10 +163,10 @@ def test_html_report_uses_source_free_joern_summary_when_metadata_has_no_trace(
     write_html_report(batch.model_copy(update={"results": [result]}), output)
     report = output.read_text(encoding="utf-8")
 
-    assert "Source: api/input.py:5" in report
-    assert "Flow: service/user.py:18" in report
-    assert "Control: require_user" in report
-    assert "Sink: db/query.py:30" in report
+    assert "Nguồn: api/input.py:5" in report
+    assert "Luồng: service/user.py:18" in report
+    assert "Kiểm soát: require_user" in report
+    assert "Điểm nguy hiểm: db/query.py:30" in report
 
 
 def test_html_report_fails_closed_on_forbidden_value(tmp_path: Path) -> None:

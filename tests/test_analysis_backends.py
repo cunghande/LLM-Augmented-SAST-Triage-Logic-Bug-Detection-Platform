@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import asdict
 from pathlib import Path
 from subprocess import CompletedProcess
@@ -19,13 +20,19 @@ from sast_triage.analysis.joern import (
     _relative_cpg_path,
     _sink_call_regex,
 )
+from sast_triage.analysis.rule_semantics import RuleMechanism, rule_mechanism
 from sast_triage.context.evidence_agent import GraphEvidenceExpansionAgent
+from sast_triage.context.evidence_service import build_evidence_context
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
+    ContextStrategy,
     FindingType,
     NormalizedFinding,
+    PathCategory,
+    SanitizedContext,
     ScannerType,
     Severity,
+    SourceKind,
 )
 
 
@@ -165,6 +172,110 @@ def test_joern_target_uses_rule_scoped_sink_and_full_finding_range() -> None:
     assert "l >= 5 && l <= 20" in target
     assert _sink_call_regex(finding) == "(?i)(system|run|call|popen)"
     assert "loads" not in _sink_call_regex(finding)
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "expected_call"),
+    (
+        ("python.sqlalchemy.security.audit.avoid-sqlalchemy-text", "text"),
+        ("python.lang.security.audit.dynamic-urllib-use-detected", "urlopen"),
+        ("python.flask.security.audit.secure-set-cookie", "set_cookie"),
+        ("python.lang.security.deserialization.pickle.avoid-pickle", "dumps"),
+        ("python.flask.security.audit.render-template-string", "render_template_string"),
+    ),
+)
+def test_joern_sink_mapping_covers_framework_rules(
+    rule_id: str,
+    expected_call: str,
+) -> None:
+    finding = _finding().model_copy(
+        update={"rule_id": rule_id, "rule_name": None, "message": rule_id}
+    )
+
+    assert expected_call in _sink_call_regex(finding)
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "expected"),
+    (
+        ("python.flask.security.audit.render-template-string", RuleMechanism.TAINT_FLOW),
+        ("python.sqlalchemy.security.audit.avoid-sqlalchemy-text", RuleMechanism.TAINT_FLOW),
+        ("python.lang.security.deserialization.pickle.avoid-pickle", RuleMechanism.TAINT_FLOW),
+        ("python.lang.security.audit.dynamic-urllib-use-detected", RuleMechanism.TAINT_FLOW),
+        ("python.flask.security.audit.secure-set-cookie", RuleMechanism.CONFIGURATION),
+    ),
+)
+def test_rule_semantics_cover_target_frameworks(
+    rule_id: str,
+    expected: RuleMechanism,
+) -> None:
+    finding = _finding().model_copy(update={"rule_id": rule_id})
+
+    assert rule_mechanism(finding) == expected
+
+
+def test_complete_ssti_graph_projects_taint_mechanism() -> None:
+    finding = _finding().model_copy(
+        update={"rule_id": "python.flask.security.audit.render-template-string"}
+    )
+    context = SanitizedContext(
+        finding_id=finding.finding_instance_id,
+        sanitized_snippet="sanitized code",
+        context_strategy=ContextStrategy.LINE_WINDOW,
+        context_start_line=1,
+        context_end_line=5,
+        finding_start_line=5,
+        finding_end_line=5,
+        path_category=PathCategory.PRODUCTION,
+        source_kind=SourceKind.WORKTREE,
+        context_available=True,
+    )
+
+    result = build_evidence_context(
+        finding,
+        context,
+        analysis_backend=_SequenceBackend(),
+    )
+    projection = json.loads(result.context.sanitized_snippet or "{}")
+
+    assert result.complete is True
+    assert projection["deterministic_verification"]["mechanism"] == "taint_flow"
+    assert projection["deterministic_verification"]["source_reaches_sink"] is True
+
+
+def test_template_finding_uses_safe_fallback_instead_of_python_cpg() -> None:
+    finding = _finding().model_copy(
+        update={
+            "rule_id": "python.flask.security.xss.template-unescaped-with-safe",
+            "file_path": "templates/home.html",
+        }
+    )
+    context = SanitizedContext(
+        finding_id=finding.finding_instance_id,
+        sanitized_snippet="{{ note.text | safe }}",
+        context_strategy=ContextStrategy.LINE_WINDOW,
+        context_start_line=1,
+        context_end_line=5,
+        finding_start_line=5,
+        finding_end_line=5,
+        path_category=PathCategory.PRODUCTION,
+        source_kind=SourceKind.WORKTREE,
+        context_available=True,
+    )
+
+    result = build_evidence_context(
+        finding,
+        context,
+        analysis_backend=_SequenceBackend(),
+    )
+    projection = json.loads(result.context.sanitized_snippet or "{}")
+
+    assert result.complete is False
+    assert result.tool_names == ("template_context_projection",)
+    assert projection["sink"]["sink_type"] == "html_rendering"
+    assert "NON_PYTHON_TEMPLATE_DATAFLOW_UNSUPPORTED" in projection[
+        "context_completeness"
+    ]["limitations"]
 
 
 def test_joern_source_selector_excludes_deserialization_sinks() -> None:

@@ -288,6 +288,37 @@ def test_likely_tp_high_confidence_classified_tp() -> None:
     assert res.escalated is False
 
 
+def test_likely_tp_configuration_with_complete_sink_evidence_is_tp() -> None:
+    """A directly observed unsafe framework configuration does not require dataflow."""
+    finding = make_finding().model_copy(
+        update={"rule_id": "python.flask.security.audit.secure-set-cookie"}
+    )
+    context = make_context().model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "configuration",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "unsafe_configuration_observed": True,
+                    },
+                }
+            )
+        }
+    )
+    decision = make_triage_decision(
+        verdict=ModelVerdict.LIKELY_TP,
+        confidence=ModelConfidence.HIGH,
+    )
+
+    result = apply_policy(finding, context, decision)
+
+    assert result.action == PolicyAction.LIKELY_TP
+    assert result.escalated is False
+
+
 def test_likely_tp_without_deterministic_support_is_manual_review() -> None:
     """High-confidence TP opinions without a proven rule mechanism remain reviewable."""
     finding = make_finding()

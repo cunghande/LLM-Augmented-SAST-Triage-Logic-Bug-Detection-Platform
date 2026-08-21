@@ -6,6 +6,7 @@ import time
 from dataclasses import dataclass, replace
 
 from sast_triage.analysis.base import AnalysisBackend, GraphEvidence
+from sast_triage.analysis.rule_semantics import sink_only_evidence_is_sufficient
 from sast_triage.models import NormalizedFinding
 
 
@@ -54,11 +55,7 @@ class GraphEvidenceExpansionAgent:
 
     @staticmethod
     def _is_intrinsic(finding: NormalizedFinding) -> bool:
-        rule = finding.rule_id.lower()
-        return any(
-            token in rule
-            for token in ("insecure-hash", "weak-random", "secure-cookie")
-        )
+        return sink_only_evidence_is_sufficient(finding)
 
     def _sufficient(self, evidence: GraphEvidence) -> bool:
         if evidence.sink_symbol is None:

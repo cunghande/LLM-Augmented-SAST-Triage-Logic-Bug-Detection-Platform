@@ -103,6 +103,7 @@ def _build_context_summary(context: SanitizedContext) -> str:
         taint_path = projected.get("taint_path")
         controls = projected.get("security_controls")
         completeness = projected.get("context_completeness")
+        verification = projected.get("deterministic_verification")
         source_location = "chưa xác định"
         sink_location = "chưa xác định"
         path_text = "chưa có đường đi đầy đủ"
@@ -126,6 +127,14 @@ def _build_context_summary(context: SanitizedContext) -> str:
                         for item in group
                         if isinstance(item, dict) and item.get("symbol")
                     )
+        mechanism = (
+            verification.get("mechanism")
+            if isinstance(verification, dict)
+            else None
+        )
+        if mechanism in {"configuration", "intrinsic_usage"}:
+            source_location = "không áp dụng"
+            path_text = "không yêu cầu cho cơ chế này"
         status = "partial"
         stop_reason = "INSUFFICIENT_EVIDENCE"
         if isinstance(completeness, dict):

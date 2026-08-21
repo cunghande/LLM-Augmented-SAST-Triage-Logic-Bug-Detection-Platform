@@ -27,6 +27,25 @@ _ACTION_PRIORITY = {
     PolicyAction.FP_CANDIDATE: 3,
 }
 _SEVERITY_PRIORITY = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3, "UNKNOWN": 4}
+_ACTION_LABELS = {
+    PolicyAction.TRIAGE_ERROR: "Lỗi phân loại",
+    PolicyAction.MANUAL_REVIEW: "Cần đánh giá thủ công",
+    PolicyAction.LIKELY_TP: "Có khả năng là lỗ hổng thật",
+    PolicyAction.FP_CANDIDATE: "Ứng viên dương tính giả",
+}
+_SEVERITY_LABELS = {
+    "CRITICAL": "NGHIÊM TRỌNG",
+    "HIGH": "CAO",
+    "MEDIUM": "TRUNG BÌNH",
+    "LOW": "THẤP",
+    "UNKNOWN": "CHƯA XÁC ĐỊNH",
+}
+_RISK_FACTOR_LABELS = {
+    "confidence": "Độ tin cậy",
+    "exploitability": "Khả năng khai thác",
+    "exposure": "Mức độ phơi bày",
+    "severity": "Mức độ nghiêm trọng",
+}
 
 _EC_INVALID_INPUT = "REPORT_INVALID_INPUT"
 _EC_OUTPUT_EXISTS = "REPORT_OUTPUT_EXISTS"
@@ -36,7 +55,7 @@ _EC_WRITE_ERROR = "REPORT_WRITE_ERROR"
 
 def _escape(value: object) -> str:
     """Escape untrusted report data for an HTML text node."""
-    text = "Not available" if value is None else str(value)
+    text = "Không có dữ liệu" if value is None else str(value)
     return html.escape(text, quote=True)
 
 
@@ -67,29 +86,43 @@ def _risk_value(metadata: dict[str, Any]) -> str:
     score = metadata.get("risk_score")
     if isinstance(score, (int, float)) and not isinstance(score, bool):
         return f"{score:.1f}/5.0"
-    return "Not calculated"
+    return "Chưa tính"
 
 
 def _risk_factors(metadata: dict[str, Any]) -> tuple[str, ...]:
     factors = metadata.get("risk_factors")
     if not isinstance(factors, dict):
         return ()
-    return tuple(f"{key}: {value}" for key, value in sorted(factors.items()))
+    return tuple(
+        f"{_RISK_FACTOR_LABELS.get(str(key), str(key))}: {value}"
+        for key, value in sorted(factors.items())
+    )
 
 
 def _trace(metadata: dict[str, Any]) -> tuple[str, ...]:
     trace = _string_list(metadata.get("trace"))
     if trace:
-        return trace
+        translated: list[str] = []
+        for step in trace:
+            prefix, separator, value = step.partition(":")
+            label = {
+                "source": "Nguồn",
+                "flow": "Luồng",
+                "guard": "Kiểm soát",
+                "control": "Kiểm soát",
+                "sink": "Điểm nguy hiểm",
+            }.get(prefix.strip().lower())
+            translated.append(f"{label}: {value}" if label and separator else step)
+        return tuple(translated)
     source = metadata.get("source_kind")
     guards = _string_list(metadata.get("guards"))
     sink = metadata.get("sink_kind")
     steps: list[str] = []
     if source is not None:
-        steps.append(f"Source: {source}")
-    steps.extend(f"Guard: {guard}" for guard in guards)
+        steps.append(f"Nguồn: {source}")
+    steps.extend(f"Kiểm soát: {guard}" for guard in guards)
     if sink is not None:
-        steps.append(f"Sink: {sink}")
+        steps.append(f"Điểm nguy hiểm: {sink}")
     return tuple(steps)
 
 
@@ -111,19 +144,26 @@ def _joern_summary_trace(context_summary: str | None) -> tuple[str, ...]:
 
     steps: list[str] = []
     source = fields.get("source")
-    if source and source != "chưa xác định":
-        steps.append(f"Source: {source}")
+    if source and source not in {"chưa xác định", "không áp dụng"}:
+        steps.append(f"Nguồn: {source}")
     path = fields.get("path")
-    if path and path != "chưa có đường đi đầy đủ":
+    if path and path not in {
+        "chưa có đường đi đầy đủ",
+        "không yêu cầu cho cơ chế này",
+    }:
         for location in (item.strip() for item in path.split("→")):
             if location and location not in {source, fields.get("sink")}:
-                steps.append(f"Flow: {location}")
+                steps.append(f"Luồng: {location}")
     control = fields.get("control")
     if control and control != "không tìm thấy":
-        steps.extend(f"Control: {item.strip()}" for item in control.split(",") if item.strip())
+        steps.extend(
+            f"Kiểm soát: {item.strip()}"
+            for item in control.split(",")
+            if item.strip()
+        )
     sink = fields.get("sink")
     if sink and sink != "chưa xác định":
-        steps.append(f"Sink: {sink}")
+        steps.append(f"Điểm nguy hiểm: {sink}")
     return tuple(steps)
 
 
@@ -137,19 +177,19 @@ def _trace_html(
         steps = _joern_summary_trace(context_summary)
     if not steps:
         note = (
-            "No source-to-sink path was exported for this finding. "
-            f"Analysis backend: {backend}."
+            "Chưa có đường đi source-to-sink được xuất cho phát hiện này. "
+            f"Backend phân tích: {backend}."
         )
         return f'<p class="muted">{_escape(note)}</p>'
     cards = []
     for index, step in enumerate(steps, start=1):
         kind = "flow-step"
         lowered = step.lower()
-        if "source" in lowered:
+        if "source" in lowered or "nguồn" in lowered:
             kind += " source"
-        elif "sink" in lowered:
+        elif "sink" in lowered or "điểm nguy hiểm" in lowered:
             kind += " sink"
-        elif "guard" in lowered or "control" in lowered:
+        elif "guard" in lowered or "control" in lowered or "kiểm soát" in lowered:
             kind += " guard"
         cards.append(
             f'<div class="{kind}"><span>{index}</span><strong>{_escape(step)}</strong></div>'
@@ -171,26 +211,31 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
     summary = (
         decision.summary
         if decision is not None
-        else "The provider did not return a valid decision; this finding requires review."
+        else "Provider không trả về quyết định hợp lệ; phát hiện này cần được đánh giá thủ công."
     )
     evidence = () if decision is None else tuple(decision.evidence)
     missing = () if decision is None else tuple(decision.missing_information)
     remediation = metadata.get("remediation")
     if not isinstance(remediation, str) or not remediation.strip():
         remediation = (
-            "Review the complete data flow, confirm the trust boundary, and apply the "
-            "scanner rule's recommended control before retesting."
+            "Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện "
+            "pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại."
         )
     checklist = _string_list(metadata.get("validation_checklist"))
     if not checklist:
         checklist = (
-            "Confirm the source, trust boundary, guard, and sink with a security reviewer.",
-            "Add a regression test for the vulnerable and expected-safe behavior.",
-            "Retest after the fix without exposing production data or secrets.",
+            "Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.",
+            "Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.",
+            "Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.",
         )
 
     title = finding.rule_name or finding.rule_id
     location = f"{finding.file_path}:{_line_range(finding.start_line, finding.end_line)}"
+    description = (
+        f"{finding.scanner.value} phát hiện dấu hiệu liên quan đến rule “{title}” tại "
+        f"{location}. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay "
+        "không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu."
+    )
     errors = tuple(
         f"{error.stage.value} / {error.error_code}: {error.safe_message}"
         for error in result.processing_errors
@@ -199,47 +244,48 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
     <article class="finding" id="finding-{index}">
       <div class="finding-heading">
         <div>
-          <p class="eyebrow">Finding {index}</p>
+          <p class="eyebrow">Phát hiện {index}</p>
           <h2>{_escape(title)}</h2>
         </div>
-        <span class="severity severity-{_escape(severity.lower())}">{_escape(severity)}</span>
+        <span class="severity severity-{_escape(severity.lower())}">{_escape(_SEVERITY_LABELS[severity])}</span>
       </div>
 
       <table class="details"><tbody>
-        {_row("Status", policy.action.value)}
-        {_row("Risk score", _risk_value(metadata))}
-        {_row("Risk level", metadata.get("risk_level", severity))}
-        {_row("CWE", metadata.get("cwe", "Not mapped"))}
-        {_row("CVSS", metadata.get("cvss", "Not calculated"))}
-        {_row("Labels", ", ".join(labels))}
+        {_row("Trạng thái", _ACTION_LABELS[policy.action])}
+        {_row("Điểm rủi ro", _risk_value(metadata))}
+        {_row("Mức rủi ro", metadata.get("risk_level", _SEVERITY_LABELS[severity]))}
+        {_row("CWE", metadata.get("cwe", "Chưa ánh xạ"))}
+        {_row("CVSS", metadata.get("cvss", "Chưa tính"))}
+        {_row("Nhãn", ", ".join(labels))}
       </tbody></table>
 
-      <section><h3>Description</h3><p>{_escape(finding.message)}</p>
-        <div class="callout">{_escape(result.context_summary or "No safe context summary is available.")}</div>
+      <section><h3>Mô tả</h3><p>{_escape(description)}</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>{_escape(finding.message)}</p></details>
+        <div class="callout">{_escape(result.context_summary or "Không có tóm tắt ngữ cảnh an toàn.")}</div>
       </section>
-      <section><h3>Impact</h3><p>{_escape(summary)}</p>
-        {_list(_risk_factors(metadata), empty="No structured risk factors are available.")}
+      <section><h3>Tác động</h3><p>{_escape(summary)}</p>
+        {_list(_risk_factors(metadata), empty="Không có yếu tố rủi ro dạng cấu trúc.")}
       </section>
-      <section><h3>Affected Components</h3>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
         <p><code>{_escape(location)}</code></p>
-        <p>Component: {_escape(metadata.get("component", "Not identified"))}; entrypoint: {_escape(metadata.get("entrypoint", "Not identified"))}</p>
+        <p>Thành phần: {_escape(metadata.get("component", "Chưa xác định"))}; điểm vào: {_escape(metadata.get("entrypoint", "Chưa xác định"))}</p>
       </section>
-      <section><h3>Source-to-Sink Evidence</h3>
-        <p class="provenance">Backend: {_escape(backend)}. Flow is displayed Source &rarr; Guard/Control &rarr; Sink when exported by the analysis backend.</p>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: {_escape(backend)}. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
         {_trace_html(metadata, backend, result.context_summary)}
-        <h4>Validated evidence</h4>{_list(evidence, empty="No additional validated LLM evidence is available.")}
+        <h4>Bằng chứng đã xác thực</h4>{_list(evidence, empty="Không có thêm bằng chứng đã được LLM xác thực.")}
       </section>
-      <section><h3>Safe Reproduction and Validation</h3>
-        <p>Reproduce only in an authorized test environment. Do not use production secrets or destructive payloads.</p>
-        {_list(checklist, empty="No validation checklist is available.")}
-        <h4>Information still required</h4>{_list(missing, empty="No additional information was requested.")}
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        {_list(checklist, empty="Không có danh sách bước xác minh.")}
+        <h4>Thông tin còn thiếu</h4>{_list(missing, empty="Không yêu cầu thêm thông tin.")}
       </section>
-      <section><h3>Suggested Fix</h3><p>{_escape(remediation)}</p></section>
-      <section><h3>Policy Decision</h3>
-        <p><strong>{_escape(policy.action.value)}</strong> — policy {_escape(policy.policy_version)}</p>
-        {_list(policy.reasons, empty="No policy reason is available.")}
+      <section><h3>Hướng khắc phục đề xuất</h3><p>{_escape(remediation)}</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>{_escape(_ACTION_LABELS[policy.action])}</strong> — chính sách {_escape(policy.policy_version)}</p>
+        {_list(policy.reasons, empty="Không có lý do từ chính sách.")}
       </section>
-      <section><h3>Processing Errors</h3>{_list(errors, empty="No processing errors for this finding.")}</section>
+      <section><h3>Lỗi xử lý</h3>{_list(errors, empty="Phát hiện này không có lỗi xử lý.")}</section>
     </article>
     """
 
@@ -262,18 +308,18 @@ def _render_report(batch_result: BatchResult) -> str:
         for index, result in enumerate(ordered, start=1)
     )
     if not findings:
-        findings = '<div class="empty">No findings were produced for this run.</div>'
+        findings = '<div class="empty">Lần chạy này không tạo ra phát hiện nào.</div>'
     scanner_errors = tuple(
         f"{error.stage.value} / {error.error_code}: {error.safe_message}"
         for error in batch_result.scanner_errors
     )
     return f"""<!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Security Assessment Report — {_escape(metadata.repository_name)}</title>
+  <title>Báo cáo đánh giá bảo mật — {_escape(metadata.repository_name)}</title>
   <style>
     :root {{ --blue:#2474e5; --ink:#1f2937; --muted:#667085; --line:#d9e2ef; --paper:#fff; --bg:#f2f6fb; --critical:#b42318; --high:#d92d20; --medium:#dc6803; --low:#027a48; }}
     * {{ box-sizing:border-box; }}
@@ -305,19 +351,19 @@ def _render_report(batch_result: BatchResult) -> str:
 <body><main>
   <header class="cover">
     <p class="eyebrow">SAST Triage Platform</p>
-    <h1>Security Assessment Report</h1>
+    <h1>Báo cáo đánh giá bảo mật</h1>
     <p>Repository: <strong>{_escape(metadata.repository_name)}</strong></p>
-    <p class="muted">Run {_escape(metadata.run_id)} · {_escape(metadata.completed_at.isoformat())} · Analysis backend: {_escape(metadata.analysis_backend)}</p>
+    <p class="muted">Lần chạy {_escape(metadata.run_id)} · {_escape(metadata.completed_at.isoformat())} · Backend phân tích: {_escape(metadata.analysis_backend)}</p>
   </header>
-  <section class="summary" aria-label="Executive summary">
-    <div class="metric"><strong>{len(batch_result.results)}</strong>Total findings</div>
-    <div class="metric"><strong>{counts[PolicyAction.LIKELY_TP.value]}</strong>Likely true positives</div>
-    <div class="metric"><strong>{counts[PolicyAction.MANUAL_REVIEW.value]}</strong>Manual review</div>
-    <div class="metric"><strong>{counts[PolicyAction.TRIAGE_ERROR.value]}</strong>Triage errors</div>
+  <section class="summary" aria-label="Tóm tắt kết quả">
+    <div class="metric"><strong>{len(batch_result.results)}</strong>Tổng số phát hiện</div>
+    <div class="metric"><strong>{counts[PolicyAction.LIKELY_TP.value]}</strong>Có khả năng là lỗ hổng thật</div>
+    <div class="metric"><strong>{counts[PolicyAction.MANUAL_REVIEW.value]}</strong>Cần đánh giá thủ công</div>
+    <div class="metric"><strong>{counts[PolicyAction.TRIAGE_ERROR.value]}</strong>Lỗi phân loại</div>
   </section>
-  <section aria-labelledby="details-heading"><p class="eyebrow">Details of Vulnerabilities Found</p><h2 id="details-heading">Findings</h2>{findings}</section>
-  <section class="footer"><strong>Scanner errors</strong>{_list(scanner_errors, empty="No scanner errors.")}
-    <p>This report contains no raw source, raw prompts, raw model responses, tracebacks, or absolute repository paths. Findings are never automatically discarded.</p>
+  <section aria-labelledby="details-heading"><p class="eyebrow">Chi tiết lỗ hổng được phát hiện</p><h2 id="details-heading">Các phát hiện</h2>{findings}</section>
+  <section class="footer"><strong>Lỗi scanner</strong>{_list(scanner_errors, empty="Không có lỗi scanner.")}
+    <p>Báo cáo không chứa mã nguồn thô, prompt thô, phản hồi thô từ model, traceback hoặc đường dẫn tuyệt đối của repository. Không phát hiện nào bị tự động loại bỏ.</p>
   </section>
 </main></body></html>
 """
