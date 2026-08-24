@@ -18,10 +18,12 @@ Ngày xác minh: 2026-08-24.
 
 ## Kiểm chứng
 
-- Full test suite: 468 passed, 2 skipped.
+- Full test suite: 469 passed, 2 skipped.
 - Ruff: tất cả check đạt.
 - Regression xác nhận lần chạy thứ hai cache hit không gọi lại provider.
 - Regression xác nhận lazy Modal provider không mở session khi không có cache miss.
+- Lệnh rút gọn `python -m sast_triage <REPO>` tự bật cache 7 ngày và telemetry chi
+  phí B200; người dùng vẫn có thể ghi đè TTL, cache directory và đơn giá.
 
 ## Chưa hoàn thành của Sprint 3 tổng thể
 

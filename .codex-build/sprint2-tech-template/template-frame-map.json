@@ -1,0 +1,166 @@
+{
+  "outputSlides": [
+    {
+      "outputSlide": 1,
+      "sourceSlide": 1,
+      "narrativeRole": "technical opening",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/7qp4be9c", "action": "rewrite" },
+        { "sourceElementId": "sh/547294r6", "action": "rewrite" },
+        { "sourceElementId": "sh/k3yl0zql", "action": "rewrite" },
+        { "sourceElementId": "sh/hofulsf2", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 2,
+      "sourceSlide": 10,
+      "narrativeRole": "single triage pipeline",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/xc3mho32", "action": "rewrite" },
+        { "sourceElementId": "sh/cbu58j2h", "action": "rewrite" },
+        { "sourceElementId": "sh/ydcnatkn", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 3,
+      "sourceSlide": 16,
+      "narrativeRole": "scanner and safe-context contracts",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/8z2h8bq1", "action": "rewrite" },
+        { "sourceElementId": "sh/9kby1g7m", "action": "rewrite" },
+        { "sourceElementId": "sh/ytkf2h8j", "action": "rewrite" },
+        { "sourceElementId": "sh/zutgvm94", "action": "rewrite" },
+        { "sourceElementId": "sh/kv2h4rqp", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 4,
+      "sourceSlide": 12,
+      "narrativeRole": "safe context security boundary",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/1gbm9s3a", "action": "rewrite" },
+        { "sourceElementId": "sh/0f2lgnmp", "action": "rewrite" },
+        { "sourceElementId": "sh/ra943il8", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 5,
+      "sourceSlide": 13,
+      "narrativeRole": "joern cross-file evidence",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/q50nydsj", "action": "rewrite" },
+        { "sourceElementId": "sh/bq9orito", "action": "rewrite" },
+        { "sourceElementId": "sh/p4r6p8by", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 6,
+      "sourceSlide": 14,
+      "narrativeRole": "evidence agent and card",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/xc7eds76", "action": "rewrite" },
+        { "sourceElementId": "sh/wbydknq1", "action": "rewrite" },
+        { "sourceElementId": "sh/jepwf2pc", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 7,
+      "sourceSlide": 18,
+      "narrativeRole": "logic detector scope",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/wrelszu9", "action": "rewrite" },
+        { "sourceElementId": "sh/hsn2l4bu", "action": "rewrite" },
+        { "sourceElementId": "sh/itw3upcf", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 8,
+      "sourceSlide": 15,
+      "narrativeRole": "llm schema and conservative policy",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/547mhg3m", "action": "rewrite" },
+        { "sourceElementId": "sh/k3y5ov21", "action": "rewrite" },
+        { "sourceElementId": "sh/65gnqlk7", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 9,
+      "sourceSlide": 19,
+      "narrativeRole": "deterministic risk scoring",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/9gb6xgbi", "action": "rewrite" },
+        { "sourceElementId": "sh/8v2pobax", "action": "rewrite" },
+        { "sourceElementId": "sh/vitozqt8", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 10,
+      "sourceSlide": 16,
+      "narrativeRole": "report and audit artifacts",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/8z2h8bq1", "action": "rewrite" },
+        { "sourceElementId": "sh/9kby1g7m", "action": "rewrite" },
+        { "sourceElementId": "sh/ytkf2h8j", "action": "rewrite" },
+        { "sourceElementId": "sh/zutgvm94", "action": "rewrite" },
+        { "sourceElementId": "sh/kv2h4rqp", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 11,
+      "sourceSlide": 17,
+      "narrativeRole": "end-to-end verification",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/1c7e50ni", "action": "rewrite" },
+        { "sourceElementId": "sh/gbedwfmx", "action": "rewrite" },
+        { "sourceElementId": "tb/onqd07e5", "action": "rewrite" },
+        { "sourceElementId": "sh/6lwvql4v", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 12,
+      "sourceSlide": 17,
+      "narrativeRole": "focused benchmark",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/1c7e50ni", "action": "rewrite" },
+        { "sourceElementId": "sh/gbedwfmx", "action": "rewrite" },
+        { "sourceElementId": "tb/onqd07e5", "action": "rewrite" },
+        { "sourceElementId": "sh/6lwvql4v", "action": "rewrite" }
+      ]
+    },
+    {
+      "outputSlide": 13,
+      "sourceSlide": 19,
+      "narrativeRole": "limitations and next technical gates",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "sourceElementId": "sh/9gb6xgbi", "action": "rewrite" },
+        { "sourceElementId": "sh/8v2pobax", "action": "rewrite" },
+        { "sourceElementId": "sh/vitozqt8", "action": "rewrite" }
+      ]
+    }
+  ],
+  "omittedSourceSlides": [
+    { "sourceSlide": 2, "reason": "agenda removed" },
+    { "sourceSlide": 3, "reason": "problem overview removed" },
+    { "sourceSlide": 4, "reason": "problem overview removed" },
+    { "sourceSlide": 5, "reason": "solution overview replaced by technical pipeline" },
+    { "sourceSlide": 6, "reason": "scanner theory removed" },
+    { "sourceSlide": 7, "reason": "taint-analysis theory removed" },
+    { "sourceSlide": 8, "reason": "generic source-analysis theory removed" },
+    { "sourceSlide": 9, "reason": "generic CPG theory removed" },
+    { "sourceSlide": 11, "reason": "example code screenshots replaced by contracts" },
+    { "sourceSlide": 20, "reason": "thank-you slide removed" }
+  ]
+}

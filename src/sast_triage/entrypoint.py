@@ -13,6 +13,8 @@ from sast_triage.checkpoint import CHECKPOINT_FILENAME, read_checkpoint_summary
 from sast_triage.cli import main as run_cli
 
 _COMMANDS = frozenset({"triage", "scan-and-triage", "cache-clear"})
+_MODAL_B200_GPU_RATE_USD_PER_HOUR = "6.25"
+_DEFAULT_CACHE_TTL_HOURS = "168"
 
 
 def _automatic_output_dir(repository: Path, timestamp: str | None = None) -> Path:
@@ -32,6 +34,16 @@ def _automatic_output_dir(repository: Path, timestamp: str | None = None) -> Pat
     return candidate
 
 
+def _automatic_cache_dir(repository: Path) -> Path:
+    """Choose one stable cache outside the target repository for shortcut runs."""
+    resolved = repository.resolve()
+    if resolved.parent.name.casefold() == "target-repos":
+        cache_root = resolved.parent.parent / "triage-cache"
+    else:
+        cache_root = resolved.parent / "triage-cache"
+    return cache_root / resolved.name
+
+
 def _has_option(arguments: list[str], option: str) -> bool:
     """Return whether shortcut arguments explicitly configure an option."""
     negative_option = f"--no-{option.removeprefix('--')}"
@@ -48,6 +60,7 @@ def _expand_repository_shortcut(arguments: list[str]) -> list[str]:
         return list(arguments)
     repository = Path(arguments[0])
     output_dir = _automatic_output_dir(repository)
+    cache_dir = _automatic_cache_dir(repository)
     extra_arguments = arguments[1:]
     full_analysis_options: list[str] = []
     if not _has_option(extra_arguments, "--module2-discovery"):
@@ -55,6 +68,23 @@ def _expand_repository_shortcut(arguments: list[str]) -> list[str]:
     if not _has_option(extra_arguments, "--logic-detector"):
         full_analysis_options.extend(
             ("--logic-detector", "python-idor-business-logic")
+        )
+    if not _has_option(extra_arguments, "--decision-cache-dir"):
+        full_analysis_options.extend(("--decision-cache-dir", str(cache_dir)))
+    if not _has_option(extra_arguments, "--decision-cache-ttl-hours"):
+        full_analysis_options.extend(
+            ("--decision-cache-ttl-hours", _DEFAULT_CACHE_TTL_HOURS)
+        )
+    selected_provider = _argument_value(extra_arguments, "--provider") or "real"
+    if (
+        selected_provider == "real"
+        and not _has_option(extra_arguments, "--provider-cost-per-hour-usd")
+    ):
+        full_analysis_options.extend(
+            (
+                "--provider-cost-per-hour-usd",
+                _MODAL_B200_GPU_RATE_USD_PER_HOUR,
+            )
         )
     return [
         "scan-and-triage",

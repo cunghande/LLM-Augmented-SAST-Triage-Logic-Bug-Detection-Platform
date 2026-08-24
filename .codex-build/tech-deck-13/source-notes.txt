@@ -1,0 +1,8 @@
+Nguồn nội bộ dùng để xây dựng deck:
+- D:\Code\AI security\README.md
+- D:\Code\AI security\docs\current-project-plan.md
+- D:\Code\AI security\docs\sprint-2-status.md
+- D:\Code\AI security\docs\architecture.md
+- D:\Code\AI security\docs\security-policy.md
+
+Không sử dụng hình ảnh hoặc tuyên bố từ nguồn bên ngoài.

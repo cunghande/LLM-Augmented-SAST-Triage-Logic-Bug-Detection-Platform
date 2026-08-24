@@ -1,0 +1,6 @@
+- Slide 1: đổi nhãn SEMINAR thành SPRINT 2 TECHNICAL DECK theo yêu cầu tập trung tech.
+- Slide 2: giữ pipeline image Sprint 1 làm khung kiến trúc; các capability mới được giải thích ở các slide sau.
+- Slide 3, 10: tái sử dụng layout hai cột của slide 16 cho nội dung component contract/reporting.
+- Slide 11, 12: tái sử dụng layout table của slide 17 cho hai nhóm số liệu kiểm chứng khác nhau.
+- Slide 13: tái sử dụng layout hướng phát triển nhưng chuyển thành giới hạn và stage gate kỹ thuật.
+- Không đưa slide agenda, problem overview, theory-only hoặc thank-you vào output.

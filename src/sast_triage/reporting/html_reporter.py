@@ -210,15 +210,21 @@ def _trace_html(
 
 
 def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
-    """Render every safe bounded path, caller and limitation exported by Joern."""
+    """Render one representative path while preserving full evidence elsewhere."""
     if not isinstance(details, dict):
         return ""
     paths = details.get("paths")
     sections: list[str] = []
     if isinstance(paths, list):
-        for path_number, path in enumerate(paths, start=1):
-            if not isinstance(path, dict) or not isinstance(path.get("steps"), list):
-                continue
+        valid_paths = [
+            path
+            for path in paths
+            if isinstance(path, dict)
+            and isinstance(path.get("steps"), list)
+            and any(isinstance(step, dict) for step in path["steps"])
+        ]
+        if valid_paths:
+            path = max(valid_paths, key=_display_path_score)
             cards: list[str] = []
             for step_number, step in enumerate(path["steps"], start=1):
                 if not isinstance(step, dict):
@@ -236,16 +242,26 @@ def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
                     f"<strong>{_escape(label)}</strong></div>"
                 )
             if not cards:
-                continue
-            files = _string_list(path.get("files"))
-            path_type = str(path.get("path_type", "unknown"))
-            sections.append(
-                f"<h4>Đường dữ liệu {path_number} — {_escape(path_type)}</h4>"
-                f'<p class="provenance">File đi qua: {_escape(", ".join(files))}</p>'
-                '<div class="flow">'
-                + '<div class="arrow">&rarr;</div>'.join(cards)
-                + "</div>"
-            )
+                valid_paths = []
+            else:
+                files = _string_list(path.get("files"))
+                path_type = str(path.get("path_type", "unknown"))
+                hidden_count = len(valid_paths) - 1
+                hidden_note = ""
+                if hidden_count:
+                    hidden_note = (
+                        '<p class="provenance">HTML chỉ hiển thị một đường đại diện; '
+                        f"{hidden_count} đường thay thế vẫn được giữ trong evidence "
+                        "cho LLM và report.json.</p>"
+                    )
+                sections.append(
+                    f"<h4>Đường dữ liệu đại diện — {_escape(path_type)}</h4>"
+                    f'<p class="provenance">File đi qua: {_escape(", ".join(files))}</p>'
+                    '<div class="flow">'
+                    + '<div class="arrow">&rarr;</div>'.join(cards)
+                    + "</div>"
+                    + hidden_note
+                )
 
     callers = details.get("callers")
     if isinstance(callers, list) and callers:
@@ -304,6 +320,24 @@ def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
             + _list(missing, empty="Không có thông tin bắt buộc còn thiếu.")
         )
     return "".join(sections)
+
+
+def _display_path_score(path: dict[str, Any]) -> tuple[int, int, int, int]:
+    """Rank a safe path for compact HTML without changing stored evidence."""
+    steps = [step for step in path.get("steps", []) if isinstance(step, dict)]
+    files = {
+        str(step.get("file_path"))
+        for step in steps
+        if step.get("file_path") not in {None, "", "?"}
+    }
+    first = steps[0] if steps else {}
+    last = steps[-1] if steps else {}
+    endpoints_resolved = int(
+        first.get("file_path") not in {None, "", "?"}
+        and last.get("file_path") not in {None, "", "?"}
+    )
+    is_cross_file = int(str(path.get("path_type", "")) == "cross_file")
+    return endpoints_resolved, is_cross_file, len(files), -len(steps)
 
 
 def _finding_html(index: int, result: TriageResult, backend: str) -> str:

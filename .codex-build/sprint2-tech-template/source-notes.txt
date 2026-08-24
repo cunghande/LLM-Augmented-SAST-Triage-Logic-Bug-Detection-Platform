@@ -1,0 +1,9 @@
+Nguồn nội bộ:
+- D:\Documents\LLM-Augmented-SAST.pptx (visual reference và nội dung Sprint 1)
+- D:\Code\AI security\README.md
+- D:\Code\AI security\docs\architecture.md
+- D:\Code\AI security\docs\security-policy.md
+- D:\Code\AI security\docs\sprint-2-status.md
+- D:\Code\AI security\docs\current-project-plan.md
+
+Không sử dụng nguồn web mới.

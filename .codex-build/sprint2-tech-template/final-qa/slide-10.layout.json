@@ -1,0 +1,1096 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/m90b6t0r",
+    "id": "m90b6t0r",
+    "slide": 10,
+    "layoutId": "/ppt/slideLayouts/slideLayout15.xml",
+    "layoutName": "Title and Content",
+    "layoutType": "obj",
+    "masterLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "Office",
+    "colors": {
+      "accent1": "#4472C4",
+      "accent2": "#ED7D31",
+      "accent3": "#A5A5A5",
+      "accent4": "#FFC000",
+      "accent5": "#5B9BD5",
+      "accent6": "#70AD47",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#44546A",
+      "lt2": "#E7E6E6",
+      "hlink": "#0563C1",
+      "folHlink": "#954F72"
+    },
+    "fontScheme": {
+      "name": "Office",
+      "majorFont": {
+        "latinTypeface": "Calibri Light"
+      },
+      "minorFont": {
+        "latinTypeface": "Calibri"
+      }
+    },
+    "typefaces": [
+      "Calibri",
+      "Calibri Light",
+      "Times New Roman"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "/ppt/slideLayouts/slideLayout15.xml",
+      "name": "Title and Content",
+      "type": "obj",
+      "parentLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+      "elements": [
+        {
+          "order": 1,
+          "kind": "image",
+          "scope": "layout",
+          "aid": "template/layout//ppt/slideLayouts/slideLayout15.xml/7",
+          "id": "7",
+          "name": "Picture 6",
+          "bbox": [
+            0.13,
+            0,
+            1279.74,
+            720
+          ],
+          "contentType": "image/png",
+          "imageCrop": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0
+          },
+          "asset": {
+            "assetId": "/ppt/media/image15.png",
+            "contentType": "image/png",
+            "byteLength": 56541
+          },
+          "fillImage": {
+            "assetId": "/ppt/media/image15.png",
+            "contentType": "image/png",
+            "byteLength": 56541
+          }
+        },
+        {
+          "order": 2,
+          "kind": "shape",
+          "scope": "layout",
+          "aid": "template/layout//ppt/slideLayouts/slideLayout15.xml/2",
+          "id": "2",
+          "name": "Title 1",
+          "bbox": [
+            24.23,
+            0,
+            1009.89,
+            71.5
+          ],
+          "text": "Click to edit Master title style",
+          "textPreview": "Click to edit Master title style",
+          "resolvedTextStyle": {
+            "autoFit": "shrinkText"
+          },
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Click to edit Master title style",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Click to edit Master title style"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "order": 3,
+          "kind": "shape",
+          "scope": "layout",
+          "aid": "template/layout//ppt/slideLayouts/slideLayout15.xml/3",
+          "id": "3",
+          "name": "Content Placeholder 2",
+          "bbox": [
+            24.23,
+            81.42,
+            1235.88,
+            567.08
+          ],
+          "text": "Click to edit Master text styles\nSecond level\nThird level\nFourth level\nFifth level",
+          "textPreview": "Click to edit Master text styles | Second level | Third level | Fourth level | Fifth level",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Click to edit Master text styles",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Click to edit Master text styles"
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "text": "Second level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Second level"
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "text": "Third level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Third level"
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "text": "Fourth level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Fourth level"
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "text": "Fifth level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Fifth level"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "order": 4,
+          "kind": "shape",
+          "scope": "layout",
+          "aid": "template/layout//ppt/slideLayouts/slideLayout15.xml/4",
+          "id": "4",
+          "name": "Date Placeholder 3",
+          "bbox": [
+            24.23,
+            665.08,
+            288,
+            38.33
+          ],
+          "text": "8/14/2026",
+          "textPreview": "8/14/2026",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "8/14/2026",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "8/14/2026"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "order": 5,
+          "kind": "shape",
+          "scope": "layout",
+          "aid": "template/layout//ppt/slideLayouts/slideLayout15.xml/5",
+          "id": "5",
+          "name": "Footer Placeholder 4",
+          "bbox": [
+            392.12,
+            667.33,
+            432,
+            38.33
+          ]
+        },
+        {
+          "order": 6,
+          "kind": "shape",
+          "scope": "layout",
+          "aid": "template/layout//ppt/slideLayouts/slideLayout15.xml/6",
+          "id": "6",
+          "name": "Slide Number Placeholder 5",
+          "bbox": [
+            980.43,
+            673.39,
+            288,
+            38.33
+          ],
+          "text": "‹#›",
+          "textPreview": "‹#›",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "‹#›",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "‹#›"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope": "master",
+      "id": "/ppt/slideMasters/slideMaster1.xml",
+      "type": "master",
+      "elements": [
+        {
+          "order": 1,
+          "kind": "shape",
+          "scope": "master",
+          "aid": "template/master//ppt/slideMasters/slideMaster1.xml/2",
+          "id": "2",
+          "name": "Title Placeholder 1",
+          "bbox": [
+            86.28,
+            0,
+            947.85,
+            71.5
+          ],
+          "geometry": "rect",
+          "text": "Click to edit Master title style",
+          "textPreview": "Click to edit Master title style",
+          "resolvedTextStyle": {
+            "anchor": 2,
+            "vertical": 1,
+            "verticalAlignment": "middle",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          },
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Click to edit Master title style",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Click to edit Master title style"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "order": 2,
+          "kind": "shape",
+          "scope": "master",
+          "aid": "template/master//ppt/slideMasters/slideMaster1.xml/3",
+          "id": "3",
+          "name": "Text Placeholder 2",
+          "bbox": [
+            88,
+            81.42,
+            1104,
+            567.08
+          ],
+          "geometry": "rect",
+          "text": "Click to edit Master text styles\nSecond level\nThird level\nFourth level\nFifth level",
+          "textPreview": "Click to edit Master text styles | Second level | Third level | Fourth level | Fifth level",
+          "resolvedTextStyle": {
+            "vertical": 1,
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          },
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Click to edit Master text styles",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Click to edit Master text styles"
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "text": "Second level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Second level"
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "text": "Third level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Third level"
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "text": "Fourth level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Fourth level"
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "text": "Fifth level",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Fifth level"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "order": 3,
+          "kind": "shape",
+          "scope": "master",
+          "aid": "template/master//ppt/slideMasters/slideMaster1.xml/4",
+          "id": "4",
+          "name": "Date Placeholder 3",
+          "bbox": [
+            88,
+            667.33,
+            288,
+            38.33
+          ],
+          "geometry": "rect",
+          "text": "8/14/2026",
+          "textPreview": "8/14/2026",
+          "resolvedTextStyle": {
+            "anchor": 2,
+            "vertical": 1,
+            "verticalAlignment": "middle",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          },
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "8/14/2026",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "8/14/2026"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "order": 4,
+          "kind": "shape",
+          "scope": "master",
+          "aid": "template/master//ppt/slideMasters/slideMaster1.xml/5",
+          "id": "5",
+          "name": "Footer Placeholder 4",
+          "bbox": [
+            424,
+            667.33,
+            432,
+            38.33
+          ],
+          "geometry": "rect",
+          "resolvedTextStyle": {
+            "anchor": 2,
+            "vertical": 1,
+            "verticalAlignment": "middle",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          }
+        },
+        {
+          "order": 5,
+          "kind": "shape",
+          "scope": "master",
+          "aid": "template/master//ppt/slideMasters/slideMaster1.xml/6",
+          "id": "6",
+          "name": "Slide Number Placeholder 5",
+          "bbox": [
+            904,
+            667.33,
+            288,
+            38.33
+          ],
+          "geometry": "rect",
+          "text": "‹#›",
+          "textPreview": "‹#›",
+          "resolvedTextStyle": {
+            "anchor": 2,
+            "vertical": 1,
+            "verticalAlignment": "middle",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          },
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "‹#›",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "‹#›"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xc3mho32",
+      "id": "2",
+      "name": "Title 1",
+      "bbox": [
+        24.23,
+        0,
+        1009.89,
+        71.5
+      ],
+      "text": "REPORTING & AUDIT",
+      "textPreview": "REPORTING & AUDIT",
+      "resolvedFontSize": 42.67,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "vertical": 1,
+        "fontSize": 42.67,
+        "typeface": "Times New Roman",
+        "color": "bg1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "autoFit": "shrinkText",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "REPORTING & AUDIT"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "REPORTING & AUDIT",
+          "runs": [
+            {
+              "index": 1,
+              "text": "REPORTING & AUDIT",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "lineSpacingPercent": 90000
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cbu58j2h",
+      "id": "3",
+      "name": "Content Placeholder 2",
+      "bbox": [
+        24.23,
+        81.42,
+        1235.88,
+        610.71
+      ],
+      "text": "Ba báo cáo và run metadata",
+      "textPreview": "Ba báo cáo và run metadata",
+      "resolvedFontSize": 37,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "vertical": 1,
+        "fontSize": 37,
+        "typeface": "Times New Roman",
+        "color": "#000000",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "vBa báo cáo và run metadata"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ba báo cáo và run metadata",
+          "resolvedTextStyle": {
+            "fontSize": 37,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ba báo cáo và run metadata",
+              "fontSize": 37,
+              "typeface": "Times New Roman",
+              "color": "#000000",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "bulletCharacter": "•",
+          "marginLeft": 228600,
+          "indent": -228600,
+          "lineSpacingPercent": 90000
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zelojyl8",
+      "id": "4",
+      "name": "TextBox 3",
+      "bbox": [
+        24.23,
+        132.24,
+        531.2,
+        617.17
+      ],
+      "geometry": "rect",
+      "text": "1. Reviewer output\nreport.md\nreport.html\nEvidence path từng bước\nRisk, remediation, checklist\nLý do MANUAL_REVIEW",
+      "textPreview": "1. Reviewer output | report.md | report.html | Evidence path từng bước | Risk, remediation, checklist | Lý do MANUAL_REVIEW",
+      "resolvedFontSize": 27,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 27,
+        "typeface": "Times New Roman",
+        "color": "#000000",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 6,
+        "lines": [
+          {
+            "index": 1,
+            "text": "1. Reviewer output"
+          },
+          {
+            "index": 2,
+            "text": "• report.md"
+          },
+          {
+            "index": 3,
+            "text": "• report.html"
+          },
+          {
+            "index": 4,
+            "text": "• Evidence path từng bước"
+          },
+          {
+            "index": 5,
+            "text": "• Risk, remediation, checklist"
+          },
+          {
+            "index": 6,
+            "text": "• Lý do MANUAL_REVIEW"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "1. Reviewer output",
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "square",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "1. Reviewer output",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "report.md",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "square",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "report.md",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "text": "report.html",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "square",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "report.html",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "text": "Evidence path từng bước",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "square",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Evidence path từng bước",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "text": "Risk, remediation, checklist",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "square",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Risk, remediation, checklist",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "text": "Lý do MANUAL_REVIEW",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "square",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Lý do MANUAL_REVIEW",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ydcnatkn",
+      "id": "5",
+      "name": "TextBox 4",
+      "bbox": [
+        642.17,
+        132.24,
+        535.04,
+        500.84
+      ],
+      "geometry": "rect",
+      "text": "2. Machine & audit output\nreport.json\nrun-metadata.json\nScanner / model / config binding\nSafe processing error\nKhông raw prompt, response, traceback",
+      "textPreview": "2. Machine & audit output | report.json | run-metadata.json | Scanner / model / config binding | Safe processing error | Không raw prompt...",
+      "resolvedFontSize": 27,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 27,
+        "typeface": "Times New Roman",
+        "color": "#000000",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 6,
+        "lines": [
+          {
+            "index": 1,
+            "text": "2. Machine & audit output"
+          },
+          {
+            "index": 2,
+            "text": "• report.json"
+          },
+          {
+            "index": 3,
+            "text": "• run-metadata.json"
+          },
+          {
+            "index": 4,
+            "text": "• Scanner / model / config binding"
+          },
+          {
+            "index": 5,
+            "text": "• Safe processing error"
+          },
+          {
+            "index": 6,
+            "text": "• Không raw prompt, response, traceback"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "2. Machine & audit output",
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "none",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "2. Machine & audit output",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "report.json",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "none",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "report.json",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "text": "run-metadata.json",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "none",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "run-metadata.json",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "text": "Scanner / model / config binding",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "none",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Scanner / model / config binding",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "text": "Safe processing error",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "none",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Safe processing error",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "text": "Không raw prompt, response, traceback",
+          "bulletCharacter": "•",
+          "marginLeft": 28,
+          "indent": -16,
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "typeface": "Times New Roman",
+            "color": "#000000",
+            "wrap": "none",
+            "autoFit": "resizeShapeToFitText"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Không raw prompt, response, traceback",
+              "fontSize": 27,
+              "typeface": "Times New Roman",
+              "color": "#000000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l036l83y",
+      "id": "6",
+      "name": "Page Number 16",
+      "bbox": [
+        1137.6,
+        667.2,
+        76.8,
+        24
+      ],
+      "geometry": "rect",
+      "text": "10",
+      "textPreview": "10",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "10"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "10",
+          "resolvedTextStyle": {
+            "fontSize": 18.67,
+            "color": "#007A68",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "10",
+              "fontSize": 18.67,
+              "color": "#007A68"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

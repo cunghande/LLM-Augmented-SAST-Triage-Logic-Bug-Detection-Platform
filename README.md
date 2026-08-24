@@ -184,7 +184,12 @@ Lệnh này tự chọn:
 - Semgrep `p/python` và `p/security-audit`;
 - Gitleaks built-in rules;
 - Module 2 index, discovery thử nghiệm và detector IDOR/business logic;
+- decision cache 7 ngày tại `D:\Code\triage-cache\Sequential-Recommender`;
+- telemetry cache/token/latency và chi phí B200 ước tính 6,25 USD/GPU-giờ;
 - output mới có timestamp, không ghi đè run cũ.
+
+Đơn giá là snapshot phục vụ ước tính và có thể ghi đè bằng
+`--provider-cost-per-hour-usd`; số tiền trong report không phải hóa đơn Modal.
 
 Nếu chỉ muốn quét scanner cơ bản, có thể tắt discovery và detector:
 

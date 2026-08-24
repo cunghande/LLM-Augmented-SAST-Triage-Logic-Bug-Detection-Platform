@@ -1,0 +1,22 @@
+Communication job: giúp người nghe kỹ thuật hiểu pipeline hiện tại, các trust boundary,
+evidence cross-file, logic detector, policy/risk và mức độ kiểm chứng của Sprint 2.
+
+Source deck: 20 slide, 16:9, nền trắng, nhận diện trường màu xanh lá và vàng.
+Typography: Times New Roman cho tiêu đề/nội dung chính; một số textbox cũ dùng Calibri.
+Master/layout: phần lớn slide nội dung dùng Title and Content với background thương hiệu
+kế thừa từ layout. Page number là shape riêng trên mỗi slide.
+
+Reusable patterns:
+- Slide 1: title cover, giữ toàn bộ ảnh/branding kế thừa.
+- Slide 10: full-width pipeline image.
+- Slide 12/14/18/19: title + một vùng nội dung chữ lớn.
+- Slide 13/15: title + text bên trái + hình bên phải.
+- Slide 16: title + hai cột nội dung.
+- Slide 17: title + native table.
+
+Insertion contract:
+- Chỉ duplicate slide nguồn đã map.
+- Rewrite các textbox/table được chỉ rõ; giữ image và brand chrome còn lại.
+- Không thêm overlay hoặc primitive mới.
+- Bỏ agenda, phần tổng quan/lý thuyết chung và thank-you khỏi output.
+- Giữ nền trắng và format thương hiệu; nội dung tập trung technical implementation.

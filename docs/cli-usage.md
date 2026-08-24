@@ -156,6 +156,11 @@ GPU            = B200
 Semgrep config = p/python + p/security-audit
 Gitleaks       = built-in config
 Module 2       = enabled
+Module 2 discovery = enabled
+Logic detector = python-idor-business-logic
+Decision cache = D:\Code\triage-cache\<repo>
+Cache TTL      = 168 hours
+Cost estimate  = 6.25 USD/B200 GPU-hour
 ```
 
 Mỗi lần chạy tạo output mới:
@@ -165,6 +170,10 @@ D:\Code\triage-runs\<repo>-qwen14b-YYYYMMDD-HHMMSSZ
 ```
 
 Do có timestamp, lệnh rút gọn không ghi đè run cũ.
+Decision cache dùng đường dẫn ổn định ngoài target repository nên các run sau có
+thể tái sử dụng quyết định hợp lệ. Mức 6,25 USD/GPU-giờ là snapshot giá B200 dùng
+cho ước tính, không bao gồm CPU/memory và không thay thế hóa đơn Modal. Có thể ghi
+đè bằng `--provider-cost-per-hour-usd` nếu bảng giá thay đổi.
 
 ### 3.3 Tiến trình bình thường
 
@@ -363,6 +372,11 @@ Với mục tiêu điều tra source-to-sink liên file, phải bật
 symbol/file/dòng, danh sách file đi qua, caller, guard/control và giới hạn còn
 thiếu. “Toàn bộ file” ở đây là toàn bộ file tham gia một đường dataflow đã được
 Joern chứng minh, không phải toàn bộ file không liên quan trong repository.
+
+Để tránh bốn đường CPG gần như giống nhau chiếm diện tích, HTML chỉ hiển thị một
+đường đại diện tốt nhất cho mỗi finding. Việc rút gọn này chỉ thuộc presentation:
+toàn bộ path có giới hạn vẫn nằm trong `report.json` và evidence đã đưa cho LLM.
+HTML ghi rõ số đường thay thế đã ẩn.
 
 ## 8. Output và cách đọc báo cáo
 

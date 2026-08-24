@@ -21,6 +21,7 @@ def test_repository_shortcut_builds_real_qwen_scan(tmp_path: Path) -> None:
     ]
     assert Path(arguments[4]).parent == expected_root
     assert Path(arguments[4]).name.startswith("sample-repo-qwen14b-")
+    expected_cache = tmp_path / "triage-cache" / "sample-repo"
     assert arguments[5:] == [
         "--provider",
         "real",
@@ -31,6 +32,12 @@ def test_repository_shortcut_builds_real_qwen_scan(tmp_path: Path) -> None:
         "--module2-discovery",
         "--logic-detector",
         "python-idor-business-logic",
+        "--decision-cache-dir",
+        str(expected_cache),
+        "--decision-cache-ttl-hours",
+        "168",
+        "--provider-cost-per-hour-usd",
+        "6.25",
     ]
 
 
@@ -61,6 +68,34 @@ def test_repository_shortcut_allows_disabling_full_analysis_defaults(
     assert arguments.count("--module2-discovery") == 0
     assert arguments.count("--logic-detector") == 1
     assert arguments[-3:] == ["--no-module2-discovery", "--logic-detector", "off"]
+
+
+def test_repository_shortcut_preserves_cache_and_cost_overrides(tmp_path: Path) -> None:
+    repository = tmp_path / "target-repos" / "sample-repo"
+
+    arguments = entrypoint._expand_repository_shortcut(
+        [
+            str(repository),
+            "--decision-cache-dir",
+            "custom-cache",
+            "--decision-cache-ttl-hours",
+            "24",
+            "--provider-cost-per-hour-usd",
+            "7.00",
+        ]
+    )
+
+    assert arguments.count("--decision-cache-dir") == 1
+    assert arguments.count("--decision-cache-ttl-hours") == 1
+    assert arguments.count("--provider-cost-per-hour-usd") == 1
+    assert arguments[-6:] == [
+        "--decision-cache-dir",
+        "custom-cache",
+        "--decision-cache-ttl-hours",
+        "24",
+        "--provider-cost-per-hour-usd",
+        "7.00",
+    ]
 
 
 def test_explicit_commands_are_not_rewritten() -> None:

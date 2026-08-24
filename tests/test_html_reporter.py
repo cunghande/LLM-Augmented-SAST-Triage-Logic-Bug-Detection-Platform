@@ -201,7 +201,7 @@ def test_html_report_uses_source_free_joern_summary_when_metadata_has_no_trace(
     assert "Điểm nguy hiểm: db/query.py:30" in report
 
 
-def test_html_report_renders_all_detailed_cross_file_paths(tmp_path: Path) -> None:
+def test_html_report_renders_one_representative_cross_file_path(tmp_path: Path) -> None:
     batch = _batch()
     result = batch.results[0].model_copy(
         update={
@@ -271,10 +271,11 @@ def test_html_report_renders_all_detailed_cross_file_paths(tmp_path: Path) -> No
     write_html_report(batch.model_copy(update={"results": [result]}), output)
     report = output.read_text(encoding="utf-8")
 
-    assert "Đường dữ liệu 1" in report
-    assert "Đường dữ liệu 2" in report
+    assert report.count("Đường dữ liệu đại diện") == 1
+    assert "1 đường thay thế vẫn được giữ" in report
     assert "shared/input.py:13" in report
     assert "Call chain / entrypoint" in report
+    assert len(result.evidence_details["paths"]) == 2
 
 
 def test_html_report_fails_closed_on_forbidden_value(tmp_path: Path) -> None:
