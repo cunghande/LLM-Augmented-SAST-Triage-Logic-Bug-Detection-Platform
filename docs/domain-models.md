@@ -371,6 +371,7 @@ mà không thay đổi chúng.
 |--------|------|----------|-------|
 | `finding` | `NormalizedFinding` | Có | Phát hiện gốc |
 | `context_summary` | `str \| None` | Không | Tóm tắt ngắn gọn chiến lược ngữ cảnh (ví dụ: "PYTHON_FUNCTION context, lines 10-25"). Null nếu không có ngữ cảnh |
+| `evidence_details` | `dict \| None` | Không | Projection source-free của source, sink, path, caller, control và completeness |
 | `triage_decision` | `TriageDecision \| None` | Không | Kết quả LLM. Null nếu provider lỗi |
 | `policy_decision` | `PolicyDecision` | Có | Quyết định hệ thống |
 | `processing_errors` | `list[ProcessingError]` | Có | Lỗi trong quá trình xử lý |
@@ -378,6 +379,16 @@ mà không thay đổi chúng.
 | `processing_duration_ms` | `int \| None` | Không | Thời gian xử lý (mili giây) |
 | `provider_duration_ms` | `int \| None` | Không | Thời gian dành cho provider (mili giây) |
 | `triage_input_digest` | `str \| None` | Không | SHA-256 của `TriageInput` đã sanitize để đối soát, không phải raw prompt |
+| `risk_score` / `risk_level` | `float \| None` / `str \| None` | Không | Điểm ưu tiên deterministic 0–5 và mức LOW/MEDIUM/HIGH/CRITICAL |
+| `risk_factors` | `dict[str, float]` | Có | Năm thành phần severity, reachability, exposure, data sensitivity và exploitability |
+| `risk_scoring_version` | `str \| None` | Không | Phiên bản công thức để audit và tái lập |
+| `remediation` | `str \| None` | Không | Hướng khắc phục an toàn, chỉ là đề xuất cần developer review |
+| `validation_checklist` | `list[str]` | Có | Các bước xác minh và regression test sau khi sửa |
+| `decision_cache_status` / `cache_hit` | `str` / `bool` | Có | `DISABLED`, `MISS` hoặc `HIT`; cờ hit phải nhất quán với trạng thái |
+| `input_tokens` / `output_tokens` | `int \| None` | Không | Token ước tính trên prompt an toàn và decision đã validate |
+| `token_count_method` | `str \| None` | Không | Phiên bản phương pháp ước tính token |
+| `estimated_cost_usd` | `float \| None` | Không | Chi phí provider ước tính; `None` khi chưa cấu hình đơn giá |
+| `cost_model_version` | `str \| None` | Không | Phiên bản công thức ước tính chi phí |
 
 **Ràng buộc:**
 
@@ -386,6 +397,8 @@ mà không thay đổi chúng.
 - `context_summary` là chuỗi tóm tắt ngắn, không chứa full source snippet, imports, decorators, hay bí mật.
 - Không lưu `SanitizedContext` trong `TriageResult` để tránh vô tình serialize toàn bộ mã nguồn ra report.
 - Không chứa raw source text hay traceback.
+- Risk assessment không đọc raw source và không dùng verdict LLM làm đầu vào;
+  cùng dữ kiện chuẩn hóa và structured evidence cho cùng kết quả.
 
 ### ProcessingError
 
@@ -460,6 +473,12 @@ Metadata cấp lần chạy. Không chứa đường dẫn tuyệt đối.
 | `total_findings_parsed` | `int` | Có | Tổng phát hiện từ parser |
 | `findings_triaged_ok` | `int` | Có | Phát hiện xử lý thành công |
 | `findings_with_errors` | `int` | Có | Phát hiện có lỗi |
+| `decision_cache_enabled` | `bool` | Có | Cache quyết định có được bật trong run hay không |
+| `decision_cache_hits` / `decision_cache_misses` | `int` | Có | Tổng hit/miss của cache trong run |
+| `provider_input_tokens` / `provider_output_tokens` | `int` | Có | Tổng token ước tính chỉ cho các lần thực sự gọi provider |
+| `estimated_cost_usd` | `float \| None` | Không | Tổng chi phí provider ước tính của run |
+| `cost_model_version` | `str \| None` | Không | Phiên bản công thức chi phí |
+| `provider_latency_p50_ms` / `provider_latency_p95_ms` | `int \| None` | Không | Phân vị latency của các lần thực sự gọi provider |
 
 **Ràng buộc:**
 

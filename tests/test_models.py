@@ -430,6 +430,69 @@ def test_triage_result_success_case(
     assert res.context_summary == "PYTHON_FUNCTION context, lines 10-25, function process_payment."
 
 
+def test_triage_result_accepts_complete_risk_assessment(
+    semgrep_finding: NormalizedFinding,
+    valid_triage_decision: TriageDecision,
+    valid_policy_decision: PolicyDecision,
+) -> None:
+    result = TriageResult(
+        finding=semgrep_finding,
+        triage_decision=valid_triage_decision,
+        policy_decision=valid_policy_decision,
+        processed_at=datetime.now(UTC),
+        risk_score=4.1,
+        risk_level="HIGH",
+        risk_factors={
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.0,
+            "data_sensitivity": 4.0,
+            "exploitability": 3.5,
+        },
+        risk_scoring_version="deterministic-risk-v1",
+        remediation="Use a parameterized query.",
+        validation_checklist=["Add a negative regression test."],
+    )
+
+    assert result.risk_score == 4.1
+    assert result.risk_level == "HIGH"
+
+
+def test_triage_result_rejects_partial_risk_assessment(
+    semgrep_finding: NormalizedFinding,
+    valid_triage_decision: TriageDecision,
+    valid_policy_decision: PolicyDecision,
+) -> None:
+    with pytest.raises(ValidationError, match="complete risk score"):
+        TriageResult(
+            finding=semgrep_finding,
+            triage_decision=valid_triage_decision,
+            policy_decision=valid_policy_decision,
+            processed_at=datetime.now(UTC),
+            risk_level="HIGH",
+        )
+
+
+def test_triage_result_validates_cache_and_telemetry_invariants(
+    semgrep_finding: NormalizedFinding,
+    valid_triage_decision: TriageDecision,
+    valid_policy_decision: PolicyDecision,
+) -> None:
+    base = {
+        "finding": semgrep_finding,
+        "triage_decision": valid_triage_decision,
+        "policy_decision": valid_policy_decision,
+        "processed_at": datetime.now(UTC),
+    }
+
+    with pytest.raises(ValidationError, match="cache_hit must match"):
+        TriageResult(**base, decision_cache_status="MISS", cache_hit=True)
+    with pytest.raises(ValidationError, match="token_count_method is required"):
+        TriageResult(**base, input_tokens=10)
+    with pytest.raises(ValidationError, match="cost_model_version is required"):
+        TriageResult(**base, estimated_cost_usd=0.01)
+
+
 def test_triage_result_no_sanitized_context_field(
     semgrep_finding: NormalizedFinding,
     valid_triage_decision: TriageDecision,
@@ -682,6 +745,26 @@ def test_run_metadata_allows_namespace_identifier() -> None:
         completed_at=now,
     )
     assert meta.repository_identifier == "team/payment-service"
+
+
+def test_run_metadata_rejects_cache_counters_when_cache_disabled() -> None:
+    now = datetime.now(UTC)
+    with pytest.raises(ValidationError, match="Cache counters require"):
+        RunMetadata(
+            run_id="run-cache-invalid",
+            repository_name="payment-service",
+            repository_identifier="team/payment-service",
+            artifact_repository_match=ArtifactRepositoryMatch.VERIFIED,
+            scanners_attempted=[ScannerType.SEMGREP],
+            scanners_succeeded=[ScannerType.SEMGREP],
+            policy_version="1.0.0",
+            triage_provider="fake",
+            tool_version="0.1.0",
+            cli_mode="triage",
+            started_at=now,
+            completed_at=now,
+            decision_cache_misses=1,
+        )
 
 
 def test_run_metadata_rejects_control_characters() -> None:

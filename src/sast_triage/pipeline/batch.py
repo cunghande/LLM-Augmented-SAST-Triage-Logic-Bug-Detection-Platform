@@ -15,9 +15,11 @@ import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+from statistics import median
 
 from sast_triage import __version__ as TOOL_VERSION
 from sast_triage.analysis.base import AnalysisBackend, AnalysisIdentity
+from sast_triage.cache.decision_cache import DecisionCache
 from sast_triage.context.sanitizer import KNOWN_PLACEHOLDERS
 from sast_triage.errors import SastTriageError
 from sast_triage.logic.index import LogicFindingIndex
@@ -37,6 +39,7 @@ from sast_triage.models import (
 )
 from sast_triage.pipeline.finding import triage_finding
 from sast_triage.policy.engine import POLICY_VERSION
+from sast_triage.triage.telemetry import COST_MODEL_VERSION
 
 # Mã lỗi parse cấp record KHÔNG làm scanner parse thất bại
 RECORD_LEVEL_PARSE_ERROR_CODES: set[str] = {
@@ -138,6 +141,8 @@ def triage_batch(
     progress_callback: Callable[[tuple[TriageResult, ...]], None] | None = None,
     triage_provider_name: str | None = None,
     model_version: str | None = None,
+    decision_cache: DecisionCache | None = None,
+    provider_cost_per_hour_usd: float | None = None,
 ) -> BatchResult:
     """Triage một batch finding tĩnh từ kết quả scanner Semgrep và Gitleaks.
 
@@ -226,6 +231,12 @@ def triage_batch(
             error_code="PIPELINE_INVALID_CONFIGURATION",
             retryable=False,
         )
+    if provider_cost_per_hour_usd is not None and provider_cost_per_hour_usd < 0:
+        raise SastTriageError(
+            safe_message="provider_cost_per_hour_usd must be non-negative.",
+            error_code="PIPELINE_INVALID_CONFIGURATION",
+            retryable=False,
+        )
 
     for fv in forbidden_values:
         if not fv or not fv.strip() or fv in KNOWN_PLACEHOLDERS or fv.startswith("<REDACTED_"):
@@ -311,6 +322,8 @@ def triage_batch(
             artifact_repository_match=artifact_repository_match,
             logic_index=logic_index,
             analysis_backend=analysis_backend,
+            decision_cache=decision_cache,
+            provider_cost_per_hour_usd=provider_cost_per_hour_usd,
         )
         result_by_id[finding.finding_instance_id] = result
         if progress_callback is not None:
@@ -352,6 +365,31 @@ def triage_batch(
     sc_versions = dict(scanner_versions) if scanner_versions is not None else {}
     sc_config_ids = dict(scanner_config_ids) if scanner_config_ids is not None else {}
     artifact_hashes = dict(input_artifact_hashes) if input_artifact_hashes is not None else {}
+    cache_hits = sum(result.cache_hit for result in triage_results)
+    cache_misses = sum(
+        result.decision_cache_status == "MISS" for result in triage_results
+    )
+    provider_results = [result for result in triage_results if not result.cache_hit]
+    provider_input_tokens = sum(result.input_tokens or 0 for result in provider_results)
+    provider_output_tokens = sum(result.output_tokens or 0 for result in provider_results)
+    provider_latencies = sorted(
+        result.provider_duration_ms
+        for result in provider_results
+        if result.provider_duration_ms is not None
+    )
+    latency_p50 = (
+        int(median(provider_latencies)) if provider_latencies else None
+    )
+    latency_p95 = (
+        provider_latencies[max(0, (95 * len(provider_latencies) + 99) // 100 - 1)]
+        if provider_latencies
+        else None
+    )
+    estimated_cost = (
+        round(sum(result.estimated_cost_usd or 0.0 for result in triage_results), 8)
+        if provider_cost_per_hour_usd is not None
+        else None
+    )
 
     run_metadata = RunMetadata(
         run_id=run_id,
@@ -389,6 +427,17 @@ def triage_batch(
         total_findings_parsed=total_findings_parsed,
         findings_triaged_ok=findings_triaged_ok,
         findings_with_errors=findings_with_errors,
+        decision_cache_enabled=decision_cache is not None,
+        decision_cache_hits=cache_hits,
+        decision_cache_misses=cache_misses,
+        provider_input_tokens=provider_input_tokens,
+        provider_output_tokens=provider_output_tokens,
+        estimated_cost_usd=estimated_cost,
+        cost_model_version=(
+            COST_MODEL_VERSION if estimated_cost is not None else None
+        ),
+        provider_latency_p50_ms=latency_p50,
+        provider_latency_p95_ms=latency_p95,
     )
 
     return BatchResult(

@@ -69,6 +69,12 @@ def test_explicit_commands_are_not_rewritten() -> None:
     assert entrypoint._expand_repository_shortcut(arguments) == arguments
 
 
+def test_cache_clear_command_is_not_rewritten() -> None:
+    arguments = ["cache-clear", "--cache-dir", ".cache"]
+
+    assert entrypoint._expand_repository_shortcut(arguments) == arguments
+
+
 def test_display_path_keeps_sibling_output_useful(
     tmp_path: Path, monkeypatch
 ) -> None:

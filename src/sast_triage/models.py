@@ -420,6 +420,19 @@ class TriageResult(BaseDomainModel):
     processing_duration_ms: int | None = None
     provider_duration_ms: int | None = None
     triage_input_digest: str | None = None
+    risk_score: float | None = Field(default=None, ge=0.0, le=5.0)
+    risk_level: str | None = None
+    risk_factors: dict[str, float] = Field(default_factory=dict)
+    risk_scoring_version: str | None = None
+    remediation: str | None = None
+    validation_checklist: list[str] = Field(default_factory=list)
+    decision_cache_status: str = "DISABLED"
+    cache_hit: bool = False
+    input_tokens: int | None = Field(default=None, ge=0)
+    output_tokens: int | None = Field(default=None, ge=0)
+    token_count_method: str | None = None
+    estimated_cost_usd: float | None = Field(default=None, ge=0.0)
+    cost_model_version: str | None = None
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
@@ -461,6 +474,57 @@ class TriageResult(BaseDomainModel):
                 raise ValueError(
                     "triage_input_digest must be a lowercase SHA-256 hex digest"
                 )
+
+        risk_fields_present = any(
+            (
+                self.risk_score is not None,
+                self.risk_level is not None,
+                bool(self.risk_factors),
+                self.risk_scoring_version is not None,
+                self.remediation is not None,
+                bool(self.validation_checklist),
+            )
+        )
+        if risk_fields_present:
+            required_factors = {
+                "severity",
+                "reachability",
+                "exposure",
+                "data_sensitivity",
+                "exploitability",
+            }
+            if self.risk_score is None or self.risk_level not in {
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL",
+            }:
+                raise ValueError("complete risk score and valid risk level are required")
+            if set(self.risk_factors) != required_factors or any(
+                isinstance(value, bool) or not 0.0 <= value <= 5.0
+                for value in self.risk_factors.values()
+            ):
+                raise ValueError("risk_factors must contain five scores from 0 to 5")
+            if not self.risk_scoring_version or not self.risk_scoring_version.strip():
+                raise ValueError("risk_scoring_version is required with risk assessment")
+            if self.remediation is None or not self.remediation.strip():
+                raise ValueError("remediation is required with risk assessment")
+            if not self.validation_checklist or any(
+                not item.strip() for item in self.validation_checklist
+            ):
+                raise ValueError("validation_checklist requires non-empty items")
+        if self.decision_cache_status not in {"DISABLED", "MISS", "HIT"}:
+            raise ValueError("decision_cache_status is invalid")
+        if self.cache_hit != (self.decision_cache_status == "HIT"):
+            raise ValueError("cache_hit must match decision_cache_status")
+        if (self.input_tokens is not None or self.output_tokens is not None) and (
+            self.token_count_method is None or not self.token_count_method.strip()
+        ):
+            raise ValueError("token_count_method is required with token telemetry")
+        if self.estimated_cost_usd is not None and (
+            self.cost_model_version is None or not self.cost_model_version.strip()
+        ):
+            raise ValueError("cost_model_version is required with estimated cost")
         return self
 
 
@@ -494,6 +558,15 @@ class RunMetadata(BaseDomainModel):
     total_findings_parsed: int = 0
     findings_triaged_ok: int = 0
     findings_with_errors: int = 0
+    decision_cache_enabled: bool = False
+    decision_cache_hits: int = 0
+    decision_cache_misses: int = 0
+    provider_input_tokens: int = 0
+    provider_output_tokens: int = 0
+    estimated_cost_usd: float | None = Field(default=None, ge=0.0)
+    cost_model_version: str | None = None
+    provider_latency_p50_ms: int | None = Field(default=None, ge=0)
+    provider_latency_p95_ms: int | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")
     def validate_invariants(self) -> Self:
@@ -544,6 +617,21 @@ class RunMetadata(BaseDomainModel):
             raise ValueError("cpg_build_status is invalid")
         if self.cpg_build_seconds < 0:
             raise ValueError("cpg_build_seconds cannot be negative")
+        if (
+            self.decision_cache_hits < 0
+            or self.decision_cache_misses < 0
+            or self.provider_input_tokens < 0
+            or self.provider_output_tokens < 0
+        ):
+            raise ValueError("Cache and token counters cannot be negative")
+        if not self.decision_cache_enabled and (
+            self.decision_cache_hits or self.decision_cache_misses
+        ):
+            raise ValueError("Cache counters require decision_cache_enabled")
+        if self.estimated_cost_usd is not None and (
+            self.cost_model_version is None or not self.cost_model_version.strip()
+        ):
+            raise ValueError("cost_model_version is required with estimated cost")
         return self
 
 

@@ -42,8 +42,10 @@ _SEVERITY_LABELS = {
 }
 _RISK_FACTOR_LABELS = {
     "confidence": "Độ tin cậy",
+    "data_sensitivity": "Độ nhạy dữ liệu/chức năng",
     "exploitability": "Khả năng khai thác",
     "exposure": "Mức độ phơi bày",
+    "reachability": "Khả năng đi tới sink",
     "severity": "Mức độ nghiêm trọng",
 }
 
@@ -84,15 +86,19 @@ def _row(label: str, value: object) -> str:
     return f"<tr><th>{_escape(label)}</th><td>{_escape(value)}</td></tr>"
 
 
-def _risk_value(metadata: dict[str, Any]) -> str:
-    score = metadata.get("risk_score")
+def _risk_value(result: TriageResult) -> str:
+    score = result.risk_score
+    if score is None:
+        score = result.finding.metadata.get("risk_score")
     if isinstance(score, (int, float)) and not isinstance(score, bool):
         return f"{score:.1f}/5.0"
     return "Chưa tính"
 
 
-def _risk_factors(metadata: dict[str, Any]) -> tuple[str, ...]:
-    factors = metadata.get("risk_factors")
+def _risk_factors(result: TriageResult) -> tuple[str, ...]:
+    factors: object = result.risk_factors
+    if not factors:
+        factors = result.finding.metadata.get("risk_factors")
     if not isinstance(factors, dict):
         return ()
     return tuple(
@@ -318,13 +324,15 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
     )
     evidence = () if decision is None else tuple(decision.evidence)
     missing = () if decision is None else tuple(decision.missing_information)
-    remediation = metadata.get("remediation")
+    remediation = result.remediation or metadata.get("remediation")
     if not isinstance(remediation, str) or not remediation.strip():
         remediation = (
             "Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện "
             "pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại."
         )
-    checklist = _string_list(metadata.get("validation_checklist"))
+    checklist = tuple(result.validation_checklist) or _string_list(
+        metadata.get("validation_checklist")
+    )
     if not checklist:
         checklist = (
             "Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.",
@@ -357,8 +365,14 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
 
       <table class="details"><tbody>
         {_row("Trạng thái", _ACTION_LABELS[policy.action])}
-        {_row("Điểm rủi ro", _risk_value(metadata))}
-        {_row("Mức rủi ro", metadata.get("risk_level", _SEVERITY_LABELS[severity]))}
+        {_row("Điểm rủi ro", _risk_value(result))}
+        {_row("Mức rủi ro", result.risk_level or metadata.get("risk_level", _SEVERITY_LABELS[severity]))}
+        {_row("Phiên bản chấm điểm", result.risk_scoring_version or "Chưa xác định")}
+        {_row("Decision cache", result.decision_cache_status)}
+        {_row("Input / output token ước tính", f"{result.input_tokens} / {result.output_tokens}")}
+        {_row("Phương pháp đếm token", result.token_count_method or "Chưa xác định")}
+        {_row("Provider latency", f"{result.provider_duration_ms} ms")}
+        {_row("Chi phí ước tính", f"{result.estimated_cost_usd} USD" if result.estimated_cost_usd is not None else "Chưa cấu hình đơn giá")}
         {_row("CWE", metadata.get("cwe", "Chưa ánh xạ"))}
         {_row("CVSS", metadata.get("cvss", "Chưa tính"))}
         {_row("Nhãn", ", ".join(labels))}
@@ -369,7 +383,7 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
         <div class="callout">{_escape(result.context_summary or "Không có tóm tắt ngữ cảnh an toàn.")}</div>
       </section>
       <section><h3>Tác động</h3><p>{_escape(summary)}</p>
-        {_list(_risk_factors(metadata), empty="Không có yếu tố rủi ro dạng cấu trúc.")}
+        {_list(_risk_factors(result), empty="Không có yếu tố rủi ro dạng cấu trúc.")}
       </section>
       <section><h3>Thành phần bị ảnh hưởng</h3>
         <p><code>{_escape(location)}</code></p>
@@ -465,6 +479,17 @@ def _render_report(batch_result: BatchResult) -> str:
     <div class="metric"><strong>{counts[PolicyAction.LIKELY_TP.value]}</strong>Có khả năng là lỗ hổng thật</div>
     <div class="metric"><strong>{counts[PolicyAction.MANUAL_REVIEW.value]}</strong>Cần đánh giá thủ công</div>
     <div class="metric"><strong>{counts[PolicyAction.TRIAGE_ERROR.value]}</strong>Lỗi phân loại</div>
+  </section>
+  <section class="finding" aria-label="Telemetry LLM và cache">
+    <p class="eyebrow">Khả năng vận hành</p><h2>Telemetry LLM và decision cache</h2>
+    <table class="details"><tbody>
+      {_row("Decision cache", "Bật" if metadata.decision_cache_enabled else "Tắt")}
+      {_row("Cache hit / miss", f"{metadata.decision_cache_hits} / {metadata.decision_cache_misses}")}
+      {_row("Provider input / output token ước tính", f"{metadata.provider_input_tokens} / {metadata.provider_output_tokens}")}
+      {_row("Provider latency P50 / P95", f"{metadata.provider_latency_p50_ms} / {metadata.provider_latency_p95_ms} ms")}
+      {_row("Chi phí ước tính", f"{metadata.estimated_cost_usd} USD" if metadata.estimated_cost_usd is not None else "Chưa cấu hình đơn giá")}
+      {_row("Cost model", metadata.cost_model_version or "Chưa cấu hình")}
+    </tbody></table>
   </section>
   <section aria-labelledby="details-heading"><p class="eyebrow">Chi tiết lỗ hổng được phát hiện</p><h2 id="details-heading">Các phát hiện</h2>{findings}</section>
   <section class="footer"><strong>Lỗi scanner</strong>{_list(scanner_errors, empty="Không có lỗi scanner.")}

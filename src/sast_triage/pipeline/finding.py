@@ -17,6 +17,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from sast_triage.analysis.base import AnalysisBackend
+from sast_triage.cache.decision_cache import DecisionCache, DecisionCacheKey
 from sast_triage.context.evidence_service import build_evidence_context
 from sast_triage.context.reader import read_repository_source
 from sast_triage.context.sanitizer import (
@@ -44,6 +45,14 @@ from sast_triage.models import (
     TriageResult,
 )
 from sast_triage.policy.engine import POLICY_VERSION, apply_policy
+from sast_triage.risk.scoring import RISK_SCORING_VERSION, assess_finding_risk
+from sast_triage.triage.telemetry import (
+    COST_MODEL_VERSION,
+    TOKEN_COUNT_METHOD,
+    estimate_input_tokens,
+    estimate_output_tokens,
+    estimate_provider_cost,
+)
 
 # --- Allowlist tường minh cho các lỗi context layer có thể phục hồi ---
 
@@ -189,6 +198,8 @@ def triage_finding(
     artifact_repository_match: ArtifactRepositoryMatch = ArtifactRepositoryMatch.VERIFIED,
     logic_index: LogicFindingIndex | None = None,
     analysis_backend: AnalysisBackend | None = None,
+    decision_cache: DecisionCache | None = None,
+    provider_cost_per_hour_usd: float | None = None,
 ) -> TriageResult:
     """Triage một NormalizedFinding qua trích xuất context, LLM triage và policy.
 
@@ -249,6 +260,12 @@ def triage_finding(
     if line_window_before < 0 or line_window_after < 0:
         raise SastTriageError(
             safe_message="line_window_before and line_window_after must be non-negative.",
+            error_code="PIPELINE_INVALID_CONFIGURATION",
+            retryable=False,
+        )
+    if provider_cost_per_hour_usd is not None and provider_cost_per_hour_usd < 0:
+        raise SastTriageError(
+            safe_message="provider_cost_per_hour_usd must be non-negative.",
             error_code="PIPELINE_INVALID_CONFIGURATION",
             retryable=False,
         )
@@ -371,31 +388,64 @@ def triage_finding(
     triage_input_digest = hashlib.sha256(
         triage_input.model_dump_json().encode("utf-8")
     ).hexdigest()
-
-    provider_start_perf = time.perf_counter()
-    try:
-        triage_dec = provider.triage(triage_input)
-    except SastTriageError as exc:
-        if exc.error_code in {
-            "TRIAGE_PROVIDER_RESOURCE_EXHAUSTED",
-            "TRIAGE_PROVIDER_MODAL_AUTH_ERROR",
-        }:
-            raise
-        processing_errors.append(
-            ProcessingError(
-                finding_id=finding.finding_instance_id,
-                scanner=finding.scanner,
-                stage=ProcessingStage.TRIAGE,
-                error_code=exc.error_code,
-                safe_message=exc.safe_message,
-                retryable=exc.retryable,
-            )
-        )
-        triage_dec = None
-    provider_duration_ms = max(
-        0,
-        int((time.perf_counter() - provider_start_perf) * 1000),
+    provider_name = str(
+        getattr(provider, "provider_name", provider.__class__.__name__)
     )
+    provider_model = str(getattr(provider, "model_version", "unknown"))
+    input_tokens = estimate_input_tokens(triage_input, provider_model)
+    cache_status = "DISABLED"
+    cache_identity: DecisionCacheKey | None = None
+    if decision_cache is not None:
+        cache_status = "MISS"
+        cache_identity = DecisionCacheKey(
+            triage_input_digest=triage_input_digest,
+            provider_name=provider_name,
+            model_version=provider_model,
+            prompt_version=prompt_version,
+            output_schema_version=output_schema_version,
+            policy_version=POLICY_VERSION,
+            risk_scoring_version=RISK_SCORING_VERSION,
+        )
+        triage_dec = decision_cache.get(cache_identity)
+        if triage_dec is not None:
+            cache_status = "HIT"
+
+    provider_duration_ms = 0
+    if triage_dec is None:
+        provider_start_perf = time.perf_counter()
+        try:
+            triage_dec = provider.triage(triage_input)
+        except SastTriageError as exc:
+            if exc.error_code in {
+                "TRIAGE_PROVIDER_RESOURCE_EXHAUSTED",
+                "TRIAGE_PROVIDER_MODAL_AUTH_ERROR",
+            }:
+                raise
+            processing_errors.append(
+                ProcessingError(
+                    finding_id=finding.finding_instance_id,
+                    scanner=finding.scanner,
+                    stage=ProcessingStage.TRIAGE,
+                    error_code=exc.error_code,
+                    safe_message=exc.safe_message,
+                    retryable=exc.retryable,
+                )
+            )
+            triage_dec = None
+        provider_duration_ms = max(
+            0,
+            int((time.perf_counter() - provider_start_perf) * 1000),
+        )
+        if (
+            decision_cache is not None
+            and cache_identity is not None
+            and triage_dec is not None
+        ):
+            decision_cache.put(
+                cache_identity,
+                triage_dec,
+                forbidden_values=forbidden_values,
+            )
 
     # 4. Đánh giá Policy
     policy_dec: PolicyDecision | None = None
@@ -430,6 +480,13 @@ def triage_finding(
     summary_str = _build_context_summary(sanitized)
     end_perf = time.perf_counter()
     duration_ms = max(0, int((end_perf - start_perf) * 1000))
+    risk = assess_finding_risk(finding, sanitized, evidence_details)
+    cache_hit = cache_status == "HIT"
+    estimated_cost = estimate_provider_cost(
+        provider_duration_ms,
+        provider_cost_per_hour_usd,
+        cache_hit=cache_hit,
+    )
 
     return TriageResult(
         finding=finding,
@@ -442,4 +499,19 @@ def triage_finding(
         processing_duration_ms=duration_ms,
         provider_duration_ms=provider_duration_ms,
         triage_input_digest=triage_input_digest,
+        risk_score=risk.score,
+        risk_level=risk.level,
+        risk_factors=risk.factors,
+        risk_scoring_version=risk.scoring_version,
+        remediation=risk.remediation,
+        validation_checklist=list(risk.validation_checklist),
+        decision_cache_status=cache_status,
+        cache_hit=cache_hit,
+        input_tokens=input_tokens,
+        output_tokens=estimate_output_tokens(triage_dec),
+        token_count_method=TOKEN_COUNT_METHOD,
+        estimated_cost_usd=estimated_cost,
+        cost_model_version=(
+            COST_MODEL_VERSION if estimated_cost is not None else None
+        ),
     )

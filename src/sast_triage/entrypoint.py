@@ -12,7 +12,7 @@ from sast_triage.application.console import configure_console_encoding
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, read_checkpoint_summary
 from sast_triage.cli import main as run_cli
 
-_COMMANDS = frozenset({"triage", "scan-and-triage"})
+_COMMANDS = frozenset({"triage", "scan-and-triage", "cache-clear"})
 
 
 def _automatic_output_dir(repository: Path, timestamp: str | None = None) -> Path:

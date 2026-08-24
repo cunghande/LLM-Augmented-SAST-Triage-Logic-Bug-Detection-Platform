@@ -79,6 +79,25 @@ def _batch(*, injected: str = "") -> BatchResult:
             escalated=False,
         ),
         processed_at=NOW,
+        risk_score=4.2,
+        risk_level="CRITICAL",
+        risk_factors={
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0,
+        },
+        risk_scoring_version="deterministic-risk-v1",
+        remediation="Allowlist writable fields before updating the model.",
+        validation_checklist=["Reject an unauthorized is_admin field."],
+        decision_cache_status="MISS",
+        cache_hit=False,
+        input_tokens=100,
+        output_tokens=20,
+        token_count_method="utf8-bytes-div-4-v1",
+        estimated_cost_usd=0.0001,
+        cost_model_version="provider-wall-time-v1",
     )
     metadata = RunMetadata(
         run_id="run-1",
@@ -98,6 +117,14 @@ def _batch(*, injected: str = "") -> BatchResult:
         completed_at=NOW,
         total_findings_parsed=1,
         findings_triaged_ok=1,
+        decision_cache_enabled=True,
+        decision_cache_misses=1,
+        provider_input_tokens=100,
+        provider_output_tokens=20,
+        estimated_cost_usd=0.0001,
+        cost_model_version="provider-wall-time-v1",
+        provider_latency_p50_ms=4,
+        provider_latency_p95_ms=4,
     )
     return BatchResult(run_metadata=metadata, results=[result])
 
@@ -125,6 +152,11 @@ def test_html_report_contains_security_sections_and_source_to_sink_trace(
         assert section in report
     assert "CWE-915" in report
     assert "4.2/5.0" in report
+    assert "deterministic-risk-v1" in report
+    assert "Khả năng đi tới sink: 5.0" in report
+    assert "Telemetry LLM và decision cache" in report
+    assert "100 / 20" in report
+    assert "provider-wall-time-v1" in report
     assert "Nguồn: request.json@20" in report
     assert "Kiểm soát: field_allowlist@21" in report
     assert "Điểm nguy hiểm: model.update@22" in report

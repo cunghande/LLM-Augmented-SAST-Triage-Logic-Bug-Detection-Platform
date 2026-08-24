@@ -288,6 +288,9 @@ Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây l�
 | `--logic-detector` | `off` (mặc định) hoặc `python-idor-business-logic` để phát hiện IDOR và business-rule bypass. |
 | `--overwrite` / `--no-overwrite` | Cho phép/chặn ghi đè file report. |
 | `--resume` | Dùng lại scanner artifact và checkpoint của cùng output dir. |
+| `--decision-cache-dir` | Bật cache quyết định LLM đã validate trong SQLite. Nếu không truyền thì cache tắt. |
+| `--decision-cache-ttl-hours` | Thời hạn cache; mặc định 168 giờ (7 ngày). |
+| `--provider-cost-per-hour-usd` | Đơn giá GPU/provider theo USD/giờ để ước tính chi phí từ thời gian gọi provider. |
 
 Xem toàn bộ option:
 
@@ -295,6 +298,35 @@ Xem toàn bộ option:
 python -m sast_triage scan-and-triage --help
 python -m sast_triage triage --help
 ```
+
+### 6.1 Decision cache và telemetry LLM
+
+Để dùng lại quyết định cho cùng finding, sanitized input, provider, model,
+prompt, output schema, policy và phiên bản risk scoring:
+
+```powershell
+python -m sast_triage scan-and-triage `
+  --repository "D:\Code\target-repos\MyRepo" `
+  --output-dir "D:\Code\triage-runs\MyRepo-cache-run" `
+  --provider real `
+  --decision-cache-dir "D:\Code\triage-cache\MyRepo" `
+  --decision-cache-ttl-hours 168 `
+  --provider-cost-per-hour-usd 4.00
+```
+
+Cache chỉ lưu `TriageDecision` đã qua Pydantic validation và metadata phiên bản;
+không lưu raw source, raw prompt hoặc raw response. Cache hit bỏ qua lời gọi provider.
+Với provider Modal, phiên GPU cũng không được khởi động nếu toàn bộ finding đều hit.
+
+Xóa các entry hết hạn hoặc xóa toàn bộ entry an toàn:
+
+```powershell
+python -m sast_triage cache-clear --cache-dir "D:\Code\triage-cache\MyRepo" --expired-only
+python -m sast_triage cache-clear --cache-dir "D:\Code\triage-cache\MyRepo"
+```
+
+Lệnh chỉ xóa row do cache quản lý, không xóa file khác trong thư mục. Xem chính sách
+lưu trữ tại [llm-cache-retention-policy.md](llm-cache-retention-policy.md).
 
 Thiết lập image, smoke test và troubleshooting của Joern được mô tả tại
 [joern-analysis.md](joern-analysis.md).
@@ -356,7 +388,7 @@ khi report và metadata được ghi thành công.
 - `report.json`: tích hợp chương trình hoặc benchmark.
 - `report.html`: báo cáo security trực quan, hỗ trợ in hoặc lưu thành PDF từ trình duyệt.
 - `run-metadata.json`: kiểm tra commit, trạng thái worktree, binding, model,
-  scanner version/config và số finding lỗi.
+  scanner version/config, số finding lỗi và telemetry cache/token/latency/chi phí.
 - `scanner-artifacts/`: dùng debug nội bộ, không gửi ra ngoài mặc định.
 
 ### 8.2 Model verdict

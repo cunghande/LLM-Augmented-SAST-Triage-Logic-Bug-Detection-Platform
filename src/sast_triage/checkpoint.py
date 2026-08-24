@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from sast_triage.errors import SastTriageError
 from sast_triage.models import NormalizedFinding, TriageResult
 
-CHECKPOINT_VERSION = "triage-checkpoint-v1"
+CHECKPOINT_VERSION = "triage-checkpoint-v2"
 CHECKPOINT_FILENAME = "triage-checkpoint.json"
 _REPLACE_ATTEMPTS = 8
 _REPLACE_INITIAL_DELAY_SECONDS = 0.05
@@ -63,6 +63,19 @@ def _safe_result_projection(result: TriageResult) -> dict[str, Any]:
         "processing_duration_ms": result.processing_duration_ms,
         "provider_duration_ms": result.provider_duration_ms,
         "triage_input_digest": result.triage_input_digest,
+        "risk_score": result.risk_score,
+        "risk_level": result.risk_level,
+        "risk_factors": result.risk_factors,
+        "risk_scoring_version": result.risk_scoring_version,
+        "remediation": result.remediation,
+        "validation_checklist": result.validation_checklist,
+        "decision_cache_status": result.decision_cache_status,
+        "cache_hit": result.cache_hit,
+        "input_tokens": result.input_tokens,
+        "output_tokens": result.output_tokens,
+        "token_count_method": result.token_count_method,
+        "estimated_cost_usd": result.estimated_cost_usd,
+        "cost_model_version": result.cost_model_version,
     }
 
 
@@ -163,6 +176,23 @@ class TriageCheckpointStore:
                             "processing_duration_ms": raw.get("processing_duration_ms"),
                             "provider_duration_ms": raw.get("provider_duration_ms"),
                             "triage_input_digest": raw.get("triage_input_digest"),
+                            "risk_score": raw.get("risk_score"),
+                            "risk_level": raw.get("risk_level"),
+                            "risk_factors": raw.get("risk_factors", {}),
+                            "risk_scoring_version": raw.get("risk_scoring_version"),
+                            "remediation": raw.get("remediation"),
+                            "validation_checklist": raw.get(
+                                "validation_checklist", []
+                            ),
+                            "decision_cache_status": raw.get(
+                                "decision_cache_status", "DISABLED"
+                            ),
+                            "cache_hit": raw.get("cache_hit", False),
+                            "input_tokens": raw.get("input_tokens"),
+                            "output_tokens": raw.get("output_tokens"),
+                            "token_count_method": raw.get("token_count_method"),
+                            "estimated_cost_usd": raw.get("estimated_cost_usd"),
+                            "cost_model_version": raw.get("cost_model_version"),
                         }
                     )
                 )

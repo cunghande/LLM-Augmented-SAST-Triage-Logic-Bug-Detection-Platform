@@ -146,6 +146,14 @@ _SEVERITY_PRIORITY: dict[str, int] = {
     "UNKNOWN": 5,
 }
 
+_RISK_FACTOR_LABELS: dict[str, str] = {
+    "severity": "Severity",
+    "reachability": "Khả năng đi tới sink",
+    "exposure": "Mức độ phơi bày",
+    "data_sensitivity": "Độ nhạy dữ liệu/chức năng",
+    "exploitability": "Khả năng khai thác",
+}
+
 
 def _safe_text(value: object) -> str:
     """Đưa dữ liệu không tin cậy về một dòng Markdown trung tính."""
@@ -172,6 +180,32 @@ def _safe_mapping(values: dict[str, Any] | None) -> str:
     return "; ".join(
         f"{_safe_text(key)}={_safe_text(value)}"
         for key, value in sorted(values.items())
+    )
+
+
+def _risk_score_text(result: object) -> str:
+    """Render a bounded score without trusting metadata formatting."""
+    score = getattr(result, "risk_score", None)
+    if score is None:
+        finding = getattr(result, "finding", None)
+        metadata = getattr(finding, "metadata", {})
+        score = metadata.get("risk_score") if isinstance(metadata, dict) else None
+    if isinstance(score, (int, float)) and not isinstance(score, bool):
+        return f"{float(score):.2f}/5.00"
+    return "Chưa tính"
+
+
+def _risk_factor_lines(result: object) -> tuple[str, ...]:
+    factors = getattr(result, "risk_factors", {})
+    if not factors:
+        finding = getattr(result, "finding", None)
+        metadata = getattr(finding, "metadata", {})
+        factors = metadata.get("risk_factors", {}) if isinstance(metadata, dict) else {}
+    if not isinstance(factors, dict):
+        return ()
+    return tuple(
+        f"{_RISK_FACTOR_LABELS.get(str(key), str(key))}: {value}/5"
+        for key, value in sorted(factors.items())
     )
 
 
@@ -356,6 +390,15 @@ def _project_run_metadata(batch_result: BatchResult) -> dict[str, Any]:
         "total_findings_parsed": metadata.total_findings_parsed,
         "findings_triaged_ok": metadata.findings_triaged_ok,
         "findings_with_errors": metadata.findings_with_errors,
+        "decision_cache_enabled": metadata.decision_cache_enabled,
+        "decision_cache_hits": metadata.decision_cache_hits,
+        "decision_cache_misses": metadata.decision_cache_misses,
+        "provider_input_tokens": metadata.provider_input_tokens,
+        "provider_output_tokens": metadata.provider_output_tokens,
+        "estimated_cost_usd": metadata.estimated_cost_usd,
+        "cost_model_version": metadata.cost_model_version,
+        "provider_latency_p50_ms": metadata.provider_latency_p50_ms,
+        "provider_latency_p95_ms": metadata.provider_latency_p95_ms,
     }
 
 
@@ -416,6 +459,10 @@ def _render_report(batch_result: BatchResult) -> str:
         f"| Finding có lỗi | {_safe_text(metadata['findings_with_errors'])} |",
         f"| Lỗi scanner | {_safe_text(len(batch_result.scanner_errors))} |",
         f"| Thời gian toàn run (giây) | {_safe_text(metadata['duration_seconds'])} |",
+        f"| Decision cache hit / miss | {_safe_text(metadata['decision_cache_hits'])} / {_safe_text(metadata['decision_cache_misses'])} |",
+        f"| Provider input / output token ước tính | {_safe_text(metadata['provider_input_tokens'])} / {_safe_text(metadata['provider_output_tokens'])} |",
+        f"| Provider latency P50 / P95 (ms) | {_safe_text(metadata['provider_latency_p50_ms'])} / {_safe_text(metadata['provider_latency_p95_ms'])} |",
+        f"| Chi phí ước tính (USD) | {_safe_text(metadata['estimated_cost_usd'])} |",
         "",
         "### Phân bố quyết định policy",
         "",
@@ -458,6 +505,8 @@ def _render_report(batch_result: BatchResult) -> str:
             f"| Policy version | {_safe_text(metadata['policy_version'])} |",
             f"| Tool version | {_safe_text(metadata['tool_version'])} |",
             f"| Chế độ CLI | {_safe_text(metadata['cli_mode'])} |",
+            f"| Decision cache | {_safe_text(metadata['decision_cache_enabled'])} |",
+            f"| Cost model | {_safe_text(metadata['cost_model_version'])} |",
             f"| Bắt đầu | {_safe_text(metadata['started_at'])} |",
             f"| Kết thúc | {_safe_text(metadata['completed_at'])} |",
             "",
@@ -493,8 +542,8 @@ def _render_report(batch_result: BatchResult) -> str:
     if ordered_results:
         lines.extend(
             [
-                "| STT | Action | Severity | Finding ID | Rule | Vị trí | Verdict / Confidence |",
-                "|---:|---|---|---|---|---|---|",
+                "| STT | Action | Severity | Risk | Finding ID | Rule | Vị trí | Verdict / Confidence |",
+                "|---:|---|---|---|---|---|---|---|",
             ]
         )
         for index, result in enumerate(ordered_results, start=1):
@@ -506,6 +555,7 @@ def _render_report(batch_result: BatchResult) -> str:
             lines.append(
                 f"| {index} | {_safe_text(result.policy_decision.action.value)} | "
                 f"{_safe_text(finding.severity.value)} | "
+                f"{_safe_text(_risk_score_text(result))} | "
                 f"{_safe_text(finding.finding_instance_id)} | {_safe_text(finding.rule_id)} | "
                 f"{_safe_text(location)} | {_safe_text(verdict)} / {_safe_text(confidence)} |"
             )
@@ -537,6 +587,11 @@ def _render_report(batch_result: BatchResult) -> str:
                 f"| Metadata an toàn | {_safe_mapping(finding.metadata)} |",
                 f"| Thời gian xử lý | {_safe_text(result.processing_duration_ms)} ms |",
                 f"| Thời gian provider | {_safe_text(result.provider_duration_ms)} ms |",
+                f"| Decision cache | {_safe_text(result.decision_cache_status)} |",
+                f"| Input / output token ước tính | {_safe_text(result.input_tokens)} / {_safe_text(result.output_tokens)} |",
+                f"| Phương pháp đếm token | {_safe_text(result.token_count_method)} |",
+                f"| Chi phí ước tính | {_safe_text(result.estimated_cost_usd)} USD |",
+                f"| Cost model | {_safe_text(result.cost_model_version)} |",
                 f"| SHA-256 đầu vào triage | {_safe_text(result.triage_input_digest)} |",
                 "",
                 "**Thông báo của scanner**",
@@ -549,6 +604,46 @@ def _render_report(batch_result: BatchResult) -> str:
             ]
         )
         lines.extend(_evidence_detail_lines(result.evidence_details))
+        remediation = result.remediation or finding.metadata.get("remediation")
+        checklist = tuple(result.validation_checklist)
+        if not checklist:
+            raw_checklist = finding.metadata.get("validation_checklist")
+            if isinstance(raw_checklist, list):
+                checklist = tuple(
+                    item for item in raw_checklist if isinstance(item, str) and item.strip()
+                )
+        lines.extend(
+            [
+                "",
+                "#### Đánh giá rủi ro và hướng khắc phục",
+                "",
+                f"- **Risk score:** {_safe_text(_risk_score_text(result))}",
+                f"- **Risk level:** {_safe_text(result.risk_level or finding.metadata.get('risk_level', 'Chưa tính'))}",
+                f"- **Scoring version:** {_safe_text(result.risk_scoring_version or 'Chưa xác định')}",
+                "- **Các thành phần điểm:**",
+            ]
+        )
+        factor_lines = _risk_factor_lines(result)
+        if factor_lines:
+            lines.extend(f"  - {_safe_text(item)}" for item in factor_lines)
+        else:
+            lines.append("  - Chưa có thành phần điểm dạng cấu trúc.")
+        lines.extend(
+            [
+                "",
+                "**Hướng khắc phục đề xuất**",
+                "",
+                f"> {_safe_text(remediation or 'Chưa có hướng khắc phục cụ thể.')}",
+                "",
+                "**Validation checklist**",
+                "",
+            ]
+        )
+        _append_safe_list(
+            lines,
+            checklist,
+            empty="Chưa có validation checklist.",
+        )
         lines.extend(
             [
                 "",

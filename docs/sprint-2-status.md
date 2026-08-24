@@ -18,6 +18,11 @@ Ngày xác minh: 2026-08-24.
 - Benchmark runner có runtime Docker để dùng đúng image Semgrep/Gitleaks đã pin.
 - Cache benchmark chỉ được tái sử dụng khi Semgrep, Gitleaks, Module 2 và Joern
   đều hoàn thành.
+- Risk assessment `deterministic-risk-v1` áp dụng cho mọi finding, xuất score,
+  level, năm thành phần, remediation và validation checklist trong
+  JSON/Markdown/HTML. LLM verdict không tham gia tính điểm.
+- Runbook debug an toàn bao phủ scanner, binding, context, Joern, LLM, policy,
+  risk scoring và reporter.
 
 ## Focused detector benchmark
 
@@ -39,7 +44,7 @@ adjudicate.
 
 ## Kiểm chứng chất lượng code
 
-- Full test suite: 453 passed, 2 skipped.
+- Full test suite: 459 passed, 2 skipped.
 - Ruff: tất cả check đạt.
 - Docker smoke: Semgrep, Gitleaks, Joern và pipeline reporter đều hoàn thành.
 - Docker/Joern benchmark hoàn tất 66/66 repository, không có run thiếu scanner

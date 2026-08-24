@@ -63,6 +63,14 @@ def _batch(results: list[TriageResult]) -> BatchResult:
         total_findings_parsed=len(results),
         findings_triaged_ok=sum(r.policy_decision.action != PolicyAction.TRIAGE_ERROR for r in results),
         findings_with_errors=sum(bool(r.processing_errors) for r in results),
+        decision_cache_enabled=True,
+        decision_cache_misses=len(results),
+        provider_input_tokens=sum(r.input_tokens or 0 for r in results),
+        provider_output_tokens=sum(r.output_tokens or 0 for r in results),
+        estimated_cost_usd=sum(r.estimated_cost_usd or 0.0 for r in results),
+        cost_model_version="provider-wall-time-v1",
+        provider_latency_p50_ms=4,
+        provider_latency_p95_ms=4,
     )
     return BatchResult(run_metadata=metadata, results=results, scanner_errors=[])
 
@@ -91,6 +99,25 @@ def _result(finding: NormalizedFinding, action: PolicyAction = PolicyAction.MANU
         processing_errors=[],
         processed_at=NOW,
         processing_duration_ms=4,
+        risk_score=4.1,
+        risk_level="HIGH",
+        risk_factors={
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.0,
+            "data_sensitivity": 4.0,
+            "exploitability": 3.5,
+        },
+        risk_scoring_version="deterministic-risk-v1",
+        remediation="Use a parameterized API.",
+        validation_checklist=["Add a negative regression test."],
+        decision_cache_status="MISS",
+        cache_hit=False,
+        input_tokens=100,
+        output_tokens=20,
+        token_count_method="utf8-bytes-div-4-v1",
+        estimated_cost_usd=0.0001,
+        cost_model_version="provider-wall-time-v1",
     )
 
 
@@ -122,6 +149,14 @@ def test_report_contains_required_sections_counts_and_safe_findings(tmp_path: Pa
     assert "| Finding ID | g\\-1 |" in text
     assert "safe context summary" in text
     assert "#### Phân tích của LLM" in text
+    assert "#### Đánh giá rủi ro và hướng khắc phục" in text
+    assert r"4\.10\/5\.00" in text
+    assert r"deterministic\-risk\-v1" in text
+    assert r"Use a parameterized API\." in text
+    assert r"Add a negative regression test\." in text
+    assert "Decision cache hit / miss" in text
+    assert "Provider latency P50 / P95" in text
+    assert r"utf8\-bytes\-div\-4\-v1" in text
     assert "Chưa đủ bằng chứng để xác nhận luồng dữ liệu" in text
     assert "Nguồn\\: dữ liệu đầu vào chưa xác định\\." in text
     assert "Cần xác minh caller truyền dữ liệu nào vào hàm\\." in text

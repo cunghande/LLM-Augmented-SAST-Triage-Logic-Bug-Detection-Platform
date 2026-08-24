@@ -17,6 +17,7 @@ from sast_triage.application.artifacts import (
 from sast_triage.application.console import show_progress
 from sast_triage.application.providers import provider_identity, provider_session
 from sast_triage.application.repository_state import read_repository_state
+from sast_triage.cache.decision_cache import DecisionCache
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, TriageCheckpointStore
 from sast_triage.errors import SastTriageError
 from sast_triage.logic.index import LOGIC_DETECTOR_CONFIG_ID
@@ -70,6 +71,29 @@ def _execute_run(args: argparse.Namespace) -> int:
     repository = validate_repository(args.repository)
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    cache_ttl_hours = getattr(args, "decision_cache_ttl_hours", 168)
+    if cache_ttl_hours <= 0:
+        raise SastTriageError(
+            "Decision cache TTL must be positive.",
+            "DECISION_CACHE_INVALID_CONFIGURATION",
+        )
+    cache_directory = getattr(args, "decision_cache_dir", None)
+    decision_cache = (
+        DecisionCache(
+            Path(cache_directory),
+            ttl_seconds=cache_ttl_hours * 3600,
+        )
+        if cache_directory
+        else None
+    )
+    provider_cost_per_hour_usd = getattr(
+        args, "provider_cost_per_hour_usd", None
+    )
+    if provider_cost_per_hour_usd is not None and provider_cost_per_hour_usd < 0:
+        raise SastTriageError(
+            "Provider hourly cost must be non-negative.",
+            "PIPELINE_INVALID_CONFIGURATION",
+        )
 
     artifacts = collect_artifacts(
         command=args.command,
@@ -197,6 +221,8 @@ def _execute_run(args: argparse.Namespace) -> int:
                 model_version=(
                     " -> ".join(model for _, model in provider_history if model) or None
                 ),
+                decision_cache=decision_cache,
+                provider_cost_per_hour_usd=provider_cost_per_hour_usd,
             )
     except SastTriageError as exc:
         if exc.error_code == "TRIAGE_PROVIDER_RESOURCE_EXHAUSTED":

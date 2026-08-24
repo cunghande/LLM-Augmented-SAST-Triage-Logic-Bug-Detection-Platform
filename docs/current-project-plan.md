@@ -27,6 +27,10 @@ tiên: tài liệu khác chủ sở hữu, tính giá giỏ hàng và giới h�
 8. Detector Sprint 2 hỗ trợ missing authz/IDOR và business-rule bypass.
 9. Logic finding đi qua đúng pipeline triage chung và có evidence, risk factors,
    remediation cùng validation checklist.
+10. Mọi finding được chấm điểm rủi ro deterministic, có phiên bản công thức,
+    remediation và validation checklist; điểm không thay thế verdict/policy.
+11. Có runbook debug an toàn xuyên suốt scanner, binding, Joern, LLM, policy và
+    reporter.
 
 ## Stage gate
 
@@ -60,5 +64,11 @@ tiên: tài liệu khác chủ sở hữu, tính giá giỏ hàng và giới h�
 7. [x] Chạy lại focused detector benchmark trên repository và ground truth hiện có.
 8. [x] Xác minh pipeline Joern 66 repository bằng runtime Docker; aggregate
    summary ngoài phạm vi focused đã được loại khỏi kết quả Sprint 2.
+9. [x] Chuẩn hóa risk assessment cho mọi finding và xuất đầy đủ qua ba reporter.
+10. [x] Viết runbook debug an toàn cho toàn pipeline.
+11. [x] Hoàn thành phần S3-07 trong phạm vi CLI: decision cache đã validate, TTL,
+    telemetry token/latency/chi phí, retention policy và cache-clear an toàn.
+12. [ ] Chọn phạm vi Sprint 3 tiếp theo: feedback/adjudication + stable fingerprint,
+    hoặc CI gate/dashboard; không triển khai auto-suppression khi chưa có acceptance.
 
 Chi tiết phạm vi, lệnh demo và benchmark: [`sprint-2-scope.md`](sprint-2-scope.md).

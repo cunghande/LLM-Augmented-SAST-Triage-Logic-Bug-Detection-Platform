@@ -83,6 +83,18 @@ def test_pipeline_semgrep_ast_success_tp(tmp_path: Path) -> None:
     assert res.context_summary is not None
     assert "LINE_WINDOW" in res.context_summary
     assert res.processing_errors == []
+    assert res.risk_score is not None
+    assert res.risk_level in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+    assert set(res.risk_factors) == {
+        "severity",
+        "reachability",
+        "exposure",
+        "data_sensitivity",
+        "exploitability",
+    }
+    assert res.risk_scoring_version == "deterministic-risk-v1"
+    assert res.remediation
+    assert len(res.validation_checklist) == 3
 
 
 def test_pipeline_semgrep_ast_fallback_manual_review(tmp_path: Path) -> None:
@@ -127,6 +139,8 @@ def test_pipeline_gitleaks_fixture_path_fp_candidate(tmp_path: Path) -> None:
 
     assert res.policy_decision.action == PolicyAction.FP_CANDIDATE
     assert "REDACTED_LINE_WINDOW" in res.context_summary
+    assert res.risk_factors["exposure"] == 1.25
+    assert "credential" in (res.remediation or "")
 
 
 def test_pipeline_triage_result_has_no_sanitized_context_field(tmp_path: Path) -> None:

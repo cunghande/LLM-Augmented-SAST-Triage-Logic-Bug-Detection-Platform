@@ -70,6 +70,14 @@ def _make_run_metadata(**overrides: Any) -> RunMetadata:
         "total_findings_parsed": 1,
         "findings_triaged_ok": 1,
         "findings_with_errors": 0,
+        "decision_cache_enabled": True,
+        "decision_cache_misses": 1,
+        "provider_input_tokens": 100,
+        "provider_output_tokens": 20,
+        "estimated_cost_usd": 0.0001,
+        "cost_model_version": "provider-wall-time-v1",
+        "provider_latency_p50_ms": 42,
+        "provider_latency_p95_ms": 42,
     }
     defaults.update(overrides)
     return RunMetadata(**defaults)
@@ -133,6 +141,25 @@ def _make_triage_result(
         processing_errors=[],
         processed_at=_LATER,
         processing_duration_ms=42,
+        risk_score=4.1,
+        risk_level="HIGH",
+        risk_factors={
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.0,
+            "data_sensitivity": 4.0,
+            "exploitability": 3.5,
+        },
+        risk_scoring_version="deterministic-risk-v1",
+        remediation="Use a parameterized API.",
+        validation_checklist=["Add a negative regression test."],
+        decision_cache_status="MISS",
+        cache_hit=False,
+        input_tokens=100,
+        output_tokens=20,
+        token_count_method="utf8-bytes-div-4-v1",
+        estimated_cost_usd=0.0001,
+        cost_model_version="provider-wall-time-v1",
     )
 
 
@@ -249,6 +276,32 @@ def test_happy_path_results_present(tmp_path: Path) -> None:
     assert "results" in parsed
     assert isinstance(parsed["results"], list)
     assert len(parsed["results"]) == 1
+
+
+def test_json_report_exports_complete_risk_assessment(tmp_path: Path) -> None:
+    batch = _make_batch_result()
+    out = tmp_path / "report.json"
+
+    write_json_report(batch, out)
+    result = json.loads(out.read_text(encoding="utf-8"))["results"][0]
+
+    assert result["risk_score"] == 4.1
+    assert result["risk_level"] == "HIGH"
+    assert result["risk_scoring_version"] == "deterministic-risk-v1"
+    assert set(result["risk_factors"]) == {
+        "severity",
+        "reachability",
+        "exposure",
+        "data_sensitivity",
+        "exploitability",
+    }
+    assert result["remediation"] == "Use a parameterized API."
+    assert result["validation_checklist"] == ["Add a negative regression test."]
+    assert result["decision_cache_status"] == "MISS"
+    assert result["cache_hit"] is False
+    assert result["input_tokens"] == 100
+    assert result["output_tokens"] == 20
+    assert result["estimated_cost_usd"] == 0.0001
 
 
 def test_happy_path_scanner_errors_present(tmp_path: Path) -> None:

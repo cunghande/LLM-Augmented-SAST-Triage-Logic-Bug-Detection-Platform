@@ -1,6 +1,7 @@
 """Giao diện dòng lệnh cho SAST Triage."""
 
 import argparse
+from pathlib import Path
 
 from sast_triage.application.console import show_error
 from sast_triage.application.run import (
@@ -11,6 +12,7 @@ from sast_triage.application.run import (
     EXIT_SUCCESS,
     execute_run,
 )
+from sast_triage.cache.decision_cache import DecisionCache
 from sast_triage.errors import SastTriageError
 
 __all__ = [
@@ -45,6 +47,16 @@ def build_parser() -> argparse.ArgumentParser:
         "scan-and-triage", help="Chạy scanner rồi phân loại kết quả"
     )
     _add_common_arguments(scan)
+    cache_clear = commands.add_parser(
+        "cache-clear",
+        help="Xóa validated decision cache mà không chạy scanner",
+    )
+    cache_clear.add_argument("--cache-dir", required=True)
+    cache_clear.add_argument(
+        "--expired-only",
+        action="store_true",
+        help="Chỉ xóa entry đã hết hạn",
+    )
     return parser
 
 
@@ -110,12 +122,34 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Tiếp tục các finding đã lưu trong checkpoint",
     )
+    parser.add_argument(
+        "--decision-cache-dir",
+        default=None,
+        help="Thư mục cache TriageDecision đã validate; bỏ qua để tắt cache",
+    )
+    parser.add_argument(
+        "--decision-cache-ttl-hours",
+        type=int,
+        default=168,
+        help="Thời hạn cache theo giờ (mặc định: 168)",
+    )
+    parser.add_argument(
+        "--provider-cost-per-hour-usd",
+        type=float,
+        default=None,
+        help="Đơn giá provider USD/giờ để ước tính chi phí; mặc định không tính",
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
     """Parse tham số, chạy ứng dụng và trả exit code ổn định."""
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "cache-clear":
+            cache = DecisionCache(Path(args.cache_dir), ttl_seconds=1)
+            removed = cache.clear(expired_only=args.expired_only)
+            print(f"Đã xóa {removed} decision cache entr{'y' if removed == 1 else 'ies'}.")
+            return EXIT_SUCCESS
         return execute_run(args)
     except SastTriageError as exc:
         show_error(exc.error_code)
