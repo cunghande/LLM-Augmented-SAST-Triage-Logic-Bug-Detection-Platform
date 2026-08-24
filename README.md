@@ -292,6 +292,7 @@ nơi.
 
 - [Hướng dẫn CLI đầy đủ](docs/cli-usage.md)
 - [Phạm vi và benchmark Sprint 2](docs/sprint-2-scope.md)
+- [Trạng thái triển khai Sprint 2](docs/sprint-2-status.md)
 - [Kế hoạch triển khai hiện tại](docs/current-project-plan.md)
 - [Threat model](docs/threat-model.md)
 - [Thiết lập và chạy Joern CPG](docs/joern-analysis.md)

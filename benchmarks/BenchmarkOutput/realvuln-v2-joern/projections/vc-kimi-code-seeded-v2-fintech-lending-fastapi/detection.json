@@ -1,0 +1,424 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "backend/app/loan_operations.py",
+      "start": {
+        "line": 40,
+        "col": 1
+      },
+      "end": {
+        "line": 40,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.eval-detected.eval-detected",
+      "path": "backend/app/loan_operations.py",
+      "start": {
+        "line": 66,
+        "col": 1
+      },
+      "end": {
+        "line": 66,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.unverified-ssl-context.unverified-ssl-context",
+      "path": "backend/app/loan_operations.py",
+      "start": {
+        "line": 144,
+        "col": 1
+      },
+      "end": {
+        "line": 144,
+        "col": 1
+      },
+      "extra": {
+        "message": "Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use 'ssl.create_default_context' instead.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-295"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "backend/app/loan_operations.py",
+      "start": {
+        "line": 145,
+        "col": 1
+      },
+      "end": {
+        "line": 145,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/admin.py",
+      "start": {
+        "line": 26,
+        "col": 1
+      },
+      "end": {
+        "line": 26,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/admin.py",
+      "start": {
+        "line": 59,
+        "col": 1
+      },
+      "end": {
+        "line": 59,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/api_keys.py",
+      "start": {
+        "line": 21,
+        "col": 1
+      },
+      "end": {
+        "line": 21,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/api_keys.py",
+      "start": {
+        "line": 53,
+        "col": 1
+      },
+      "end": {
+        "line": 53,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "backend/app/routers/api_keys.py",
+      "start": {
+        "line": 84,
+        "col": 1
+      },
+      "end": {
+        "line": 84,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "backend/app/routers/auth.py",
+      "start": {
+        "line": 76,
+        "col": 1
+      },
+      "end": {
+        "line": 76,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/users.py",
+      "start": {
+        "line": 33,
+        "col": 1
+      },
+      "end": {
+        "line": 33,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "backend/app/loan_operations.py",
+      "start": {
+        "line": 25,
+        "col": 1
+      },
+      "end": {
+        "line": 25,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/loan_operations.py",
+      "start": {
+        "line": 49,
+        "col": 1
+      },
+      "end": {
+        "line": 49,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/applications.py",
+      "start": {
+        "line": 65,
+        "col": 1
+      },
+      "end": {
+        "line": 65,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/audit.py",
+      "start": {
+        "line": 42,
+        "col": 1
+      },
+      "end": {
+        "line": 42,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/documents.py",
+      "start": {
+        "line": 30,
+        "col": 1
+      },
+      "end": {
+        "line": 30,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/documents.py",
+      "start": {
+        "line": 55,
+        "col": 1
+      },
+      "end": {
+        "line": 55,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/messages.py",
+      "start": {
+        "line": 29,
+        "col": 1
+      },
+      "end": {
+        "line": 29,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/routers/notes.py",
+      "start": {
+        "line": 34,
+        "col": 1
+      },
+      "end": {
+        "line": 34,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

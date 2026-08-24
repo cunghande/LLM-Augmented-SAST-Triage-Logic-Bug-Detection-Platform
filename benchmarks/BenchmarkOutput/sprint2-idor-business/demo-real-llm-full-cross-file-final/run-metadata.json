@@ -1,0 +1,48 @@
+{
+  "run_id": "52510782-7400-4257-8535-b0c843a0e85d",
+  "repository_name": "realvuln-damn-vulnerable-graphql-application",
+  "repository_identifier": "realvuln-damn-vulnerable-graphql-application",
+  "commit_sha": "a961308c02d1fb462b192681c336b0739e432da7",
+  "working_tree_state": "clean",
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.170.0",
+    "GITLEAKS": "8.30.1",
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "local-sha256:12585eff45ce0a7481b2118bbfdf04141da09764c93763b0b2a783f759598279",
+    "GITLEAKS": "gitleaks-built-in",
+    "MODULE2": "python-idor-business-logic-v3"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "e1c11e83e36f5b2eae13848a3305f43cc54322490c1ba81627fec67c3098c70f",
+    "gitleaks": "8f8588dd47129b4b4d2706c4642379c15324ee0a4c5bc6e2fc2c4189be31da5a"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v3",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 18.473118,
+  "prompt_version": "triage-prompt-v14",
+  "model_version": "Qwen/Qwen3-14B-AWQ",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "real-modal-qwen",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-24T07:28:34.334720Z",
+  "completed_at": "2026-08-24T07:31:46.389595Z",
+  "total_findings_parsed": 30,
+  "findings_triaged_ok": 30,
+  "findings_with_errors": 0
+}

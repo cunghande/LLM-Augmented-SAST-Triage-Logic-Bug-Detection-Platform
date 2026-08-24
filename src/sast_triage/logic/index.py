@@ -11,7 +11,7 @@ from sast_triage.logic.analyzer import analyze_python_module
 from sast_triage.logic.models import LogicCandidate
 from sast_triage.models import FindingType, NormalizedFinding, ScannerType
 
-LOGIC_DETECTOR_CONFIG_ID = "python-idor-business-logic-v1"
+LOGIC_DETECTOR_CONFIG_ID = "python-idor-business-logic-v3"
 _PROJECT_MARKERS = ("pyproject.toml", "setup.cfg", "setup.py")
 _SKIPPED_PARTS = frozenset(
     {".git", ".venv", "venv", "node_modules", "__pycache__", ".tox"}

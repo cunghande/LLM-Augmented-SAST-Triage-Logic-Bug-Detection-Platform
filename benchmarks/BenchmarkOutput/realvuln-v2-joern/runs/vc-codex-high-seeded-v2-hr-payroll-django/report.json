@@ -1,0 +1,1286 @@
+{
+  "run_metadata": {
+    "run_id": "58ad4f95-9f8f-4f04-8d5a-cbd3f5a3628d",
+    "repository_name": "repository",
+    "repository_identifier": "vc-codex-high-seeded-v2-hr-payroll-django",
+    "commit_sha": "df6fdd151c2f4c4811acfeaaddedc2d3f512d5f9",
+    "working_tree_state": "dirty",
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0",
+      "GITLEAKS": "8.30.1",
+      "MODULE2": "0.1.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python+p/security-audit",
+      "GITLEAKS": "gitleaks-built-in",
+      "MODULE2": "python-idor-business-logic-v1"
+    },
+    "input_artifact_hashes": {
+      "semgrep": "9f483a7b80dd79729973c5d2e2be04bd165c3fc9aa00d4e7a27dd46e608405f1",
+      "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "analysis_backend": "joern",
+    "analysis_backend_version": "4.0.600",
+    "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+    "cpg_build_status": "complete",
+    "cpg_build_seconds": 21.352149,
+    "prompt_version": "triage-prompt-v13",
+    "model_version": "fake-triage-v1",
+    "policy_version": "conservative-policy-v2",
+    "triage_provider": "fake",
+    "tool_version": "0.1.0",
+    "cli_mode": "scan-and-triage",
+    "started_at": "2026-08-24T02:38:50.881639Z",
+    "completed_at": "2026-08-24T02:38:58.998823Z",
+    "total_findings_parsed": 19,
+    "findings_triaged_ok": 19,
+    "findings_with_errors": 0
+  },
+  "results": [
+    {
+      "finding": {
+        "finding_instance_id": "1219b772d950c24d",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.nan-injection.nan-injection",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 21,
+        "end_line": 21,
+        "severity": "HIGH",
+        "message": "Found user input going directly into typecast for bool(), float(), or complex(). This allows an attacker to inject Python's not-a-number (NaN) into the typecast. This results in undefind behavior, particularly when doing comparisons. Either cast to a different type, or add a guard checking for all capitalizations of the string 'nan'.",
+        "metadata": {
+          "references": [
+            "https://discuss.python.org/t/nan-breaks-min-max-and-sorting-functions-a-solution/2868",
+            "https://blog.bitdiscovery.com/2021/12/python-nan-injection/"
+          ],
+          "category": "security",
+          "cwe": [
+            "CWE-704: Incorrect Type Conversion or Cast"
+          ],
+          "technology": [
+            "django"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:50.881662+00:00",
+      "processing_duration_ms": 985,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "745a5551020fb71c011d823ac0a7c65cc411069f5a9dc82aa740c0ecbc2f8340"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "8b61da4cd2448b1e",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 52,
+        "end_line": 52,
+        "severity": "MEDIUM",
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "metadata": {
+          "cwe": [
+            "CWE-939: Improper Authorization in Handler for Custom URL Scheme"
+          ],
+          "owasp": "A01:2017 - Injection",
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "references": [
+            "https://cwe.mitre.org/data/definitions/939.html"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source hr_portal/payroll_operations.py:21; sink hr_portal/payroll_operations.py:52; đường source–sink hr_portal/payroll_operations.py:21 → hr_portal/payroll_operations.py:49 → hr_portal/payroll_operations.py:51 → hr_portal/payroll_operations.py:51 → hr_portal/payroll_operations.py:51 → hr_portal/payroll_operations.py:51 → hr_portal/payroll_operations.py:51 → hr_portal/payroll_operations.py:52 → hr_portal/payroll_operations.py:52 → hr_portal/payroll_operations.py:52; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:51.875454+00:00",
+      "processing_duration_ms": 1093,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "260d6e5fcd9adc370d166ac40ce3880a768b7a9588e201df0bd4c4ccf3b0fb0e"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "6dcbbecf2f624df3",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 79,
+        "end_line": 79,
+        "severity": "HIGH",
+        "message": "Avoid using insecure deserialization library, backed by `pickle`, `_pickle`, `cpickle`, `dill`, `shelve`, or `yaml`, which are known to lead to remote code execution vulnerabilities.",
+        "metadata": {
+          "owasp": [
+            "A08:2017 - Insecure Deserialization",
+            "A08:2021 - Software and Data Integrity Failures",
+            "A08:2025 - Software or Data Integrity Failures"
+          ],
+          "cwe": [
+            "CWE-502: Deserialization of Untrusted Data"
+          ],
+          "references": [
+            "https://docs.python.org/3/library/pickle.html"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source hr_portal/payroll_operations.py:74; sink hr_portal/payroll_operations.py:79; đường source–sink hr_portal/payroll_operations.py:74 → hr_portal/payroll_operations.py:74 → hr_portal/payroll_operations.py:74 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:77 → hr_portal/payroll_operations.py:79 → hr_portal/payroll_operations.py:79; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:52.976321+00:00",
+      "processing_duration_ms": 796,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "19311e491d40f9643b7bba3dcf809ba28693c7f508b70e479081105bce005c88"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "161839988380a00b",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 79,
+        "end_line": 79,
+        "severity": "MEDIUM",
+        "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "metadata": {
+          "owasp": [
+            "A08:2017 - Insecure Deserialization",
+            "A08:2021 - Software and Data Integrity Failures",
+            "A08:2025 - Software or Data Integrity Failures"
+          ],
+          "cwe": [
+            "CWE-502: Deserialization of Untrusted Data"
+          ],
+          "references": [
+            "https://docs.python.org/3/library/pickle.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source hr_portal/payroll_operations.py:74; sink hr_portal/payroll_operations.py:79; đường source–sink hr_portal/payroll_operations.py:74 → hr_portal/payroll_operations.py:74 → hr_portal/payroll_operations.py:74 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:76 → hr_portal/payroll_operations.py:77 → hr_portal/payroll_operations.py:79 → hr_portal/payroll_operations.py:79; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:53.780227+00:00",
+      "processing_duration_ms": 815,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "6c526d788cff09f0cb03527975ebafd060540930a0047bf129a94fa9d1f689de"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "eb088a6dfa843aa1",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.injection.code.user-eval.user-eval",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 92,
+        "end_line": 93,
+        "severity": "MEDIUM",
+        "message": "Found user data in a call to 'eval'. This is extremely dangerous because it can enable an attacker to execute arbitrary remote code on the system. Instead, refactor your code to not use 'eval' and instead use a safe library for the specific functionality you need.",
+        "metadata": {
+          "cwe": [
+            "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+          ],
+          "owasp": [
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html",
+            "https://owasp.org/www-community/attacks/Code_Injection"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source hr_portal/payroll_operations.py:21; sink hr_portal/payroll_operations.py:93; đường source–sink hr_portal/payroll_operations.py:21 → hr_portal/payroll_operations.py:90 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:93 → hr_portal/payroll_operations.py:93; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:54.605325+00:00",
+      "processing_duration_ms": 708,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "6836675ec3294684bb39d35b4abf18f282ae3f8cbd29552d1120a5eb1c585480"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "15cad380fb558e5f",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 93,
+        "end_line": 93,
+        "severity": "MEDIUM",
+        "message": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "metadata": {
+          "cwe": [
+            "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+          ],
+          "owasp": [
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A03_2021-Injection"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source hr_portal/payroll_operations.py:21; sink hr_portal/payroll_operations.py:93; đường source–sink hr_portal/payroll_operations.py:21 → hr_portal/payroll_operations.py:90 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:92 → hr_portal/payroll_operations.py:93 → hr_portal/payroll_operations.py:93; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:55.321635+00:00",
+      "processing_duration_ms": 652,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "a0e5c0dea6bd61adee49d34d0273c940ae85e10fd34f90fddbb8de9e8596d354"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "c7d0c4a74128b51b",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.audit.secure-cookies.django-secure-set-cookie",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 101,
+        "end_line": 101,
+        "severity": "MEDIUM",
+        "message": "Django cookies should be handled securely by setting secure=True, httponly=True, and samesite='Lax' in response.set_cookie(...). If your situation calls for different settings, explicitly disable the setting. If you want to send the cookie over http, set secure=False. If you want to let client-side JavaScript read the cookie, set httponly=False. If you want to attach cookies to requests for external sites, set samesite=None.",
+        "metadata": {
+          "cwe": [
+            "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+          ],
+          "owasp": [
+            "A05:2021 - Security Misconfiguration",
+            "A02:2025 - Security Misconfiguration"
+          ],
+          "references": [
+            "https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpResponse.set_cookie",
+            "https://semgrep.dev/blog/2020/bento-check-keeping-cookies-safe-in-flask/",
+            "https://bento.dev/checks/flask/secure-set-cookie/"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source không áp dụng; sink hr_portal/payroll_operations.py:101; đường source–sink không yêu cầu cho cơ chế này; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:55.983407+00:00",
+      "processing_duration_ms": 119,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "bb6161636b3073659abe9264a99c3e5f82a73c955a0204eb054cfd8bf06f63c2"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "a4dd5ee0ec447fe2",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.unverified-ssl-context.unverified-ssl-context",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 196,
+        "end_line": 196,
+        "severity": "HIGH",
+        "message": "Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use 'ssl.create_default_context' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A07:2021 - Identification and Authentication Failures",
+            "A07:2025 - Authentication Failures"
+          ],
+          "cwe": [
+            "CWE-295: Improper Certificate Validation"
+          ],
+          "references": [
+            "https://docs.python.org/3/library/ssl.html#ssl-security",
+            "https://docs.python.org/3/library/http.client.html#http.client.HTTPSConnection"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:56.111100+00:00",
+      "processing_duration_ms": 632,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "7580f965cda50dd85cdf362b3c96dbc289919eb835f1d5434ed617e1ce6c0a8f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "d4f85d54dea2cff9",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+        "rule_name": null,
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 197,
+        "end_line": 197,
+        "severity": "MEDIUM",
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "metadata": {
+          "cwe": [
+            "CWE-939: Improper Authorization in Handler for Custom URL Scheme"
+          ],
+          "owasp": "A01:2017 - Injection",
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "references": [
+            "https://cwe.mitre.org/data/definitions/939.html"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink hr_portal/payroll_operations.py:197; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:56.751592+00:00",
+      "processing_duration_ms": 538,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "d6e4c9834ba4d28d078a4b87674e89fb25142a286980fbb499163b02a5449d1a"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "f01dcb4a540d15b9",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.audit.unvalidated-password.unvalidated-password",
+        "rule_name": null,
+        "file_path": "portal/management/commands/seed_demo.py",
+        "start_line": 144,
+        "end_line": 144,
+        "severity": "MEDIUM",
+        "message": "The password on 'user' is being set without validating the password. Call django.contrib.auth.password_validation.validate_password() with validation functions before setting the password. See https://docs.djangoproject.com/en/3.0/topics/auth/passwords/ for more information.",
+        "metadata": {
+          "cwe": [
+            "CWE-521: Weak Password Requirements"
+          ],
+          "owasp": [
+            "A07:2021 - Identification and Authentication Failures",
+            "A07:2025 - Authentication Failures"
+          ],
+          "references": [
+            "https://docs.djangoproject.com/en/3.0/topics/auth/passwords/#module-django.contrib.auth.password_validation"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:57.298202+00:00",
+      "processing_duration_ms": 485,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "35ece0527a174e4ba9353c5459712b24bc508f5dabd4b6eb5e18ef3f88debfd6"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "030ce74fcf99fccf",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "generic.html-templates.security.var-in-href.var-in-href",
+        "rule_name": null,
+        "file_path": "portal/templates/portal/confirm_delete.html",
+        "start_line": 10,
+        "end_line": 10,
+        "severity": "MEDIUM",
+        "message": "Detected a template variable used in an anchor tag with the 'href' attribute. This allows a malicious actor to input the 'javascript:' URI and is subject to cross- site scripting (XSS) attacks. If using Flask, use 'url_for()' to safely generate a URL. If using Django, use the 'url' filter to safely generate a URL. If using Mustache, use a URL encoding library, or prepend a slash '/' to the variable for relative links (`href=\"/{{link}}\"`). You may also consider setting the Content Security Policy (CSP) header.",
+        "metadata": {
+          "cwe": [
+            "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          ],
+          "owasp": [
+            "A07:2017 - Cross-Site Scripting (XSS)",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://flask.palletsprojects.com/en/1.1.x/security/#cross-site-scripting-xss#:~:text=javascript:%20URI",
+            "https://docs.djangoproject.com/en/3.1/ref/templates/builtins/#url",
+            "https://github.com/pugjs/pug/issues/2952",
+            "https://content-security-policy.com/"
+          ],
+          "category": "security",
+          "technology": [
+            "html-templates"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1-13, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:57.791493+00:00",
+      "processing_duration_ms": 23,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "199fac0bc5815410a66c21ab372006c6addaa28d9b428b095bea0863b33ca841"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "47f61bbbd9742914",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "generic.html-templates.security.var-in-href.var-in-href",
+        "rule_name": null,
+        "file_path": "portal/templates/portal/form.html",
+        "start_line": 23,
+        "end_line": 23,
+        "severity": "MEDIUM",
+        "message": "Detected a template variable used in an anchor tag with the 'href' attribute. This allows a malicious actor to input the 'javascript:' URI and is subject to cross- site scripting (XSS) attacks. If using Flask, use 'url_for()' to safely generate a URL. If using Django, use the 'url' filter to safely generate a URL. If using Mustache, use a URL encoding library, or prepend a slash '/' to the variable for relative links (`href=\"/{{link}}\"`). You may also consider setting the Content Security Policy (CSP) header.",
+        "metadata": {
+          "cwe": [
+            "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          ],
+          "owasp": [
+            "A07:2017 - Cross-Site Scripting (XSS)",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://flask.palletsprojects.com/en/1.1.x/security/#cross-site-scripting-xss#:~:text=javascript:%20URI",
+            "https://docs.djangoproject.com/en/3.1/ref/templates/builtins/#url",
+            "https://github.com/pugjs/pug/issues/2952",
+            "https://content-security-policy.com/"
+          ],
+          "category": "security",
+          "technology": [
+            "html-templates"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1-27, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:57.823986+00:00",
+      "processing_duration_ms": 28,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "073e63c83cb553d9de56d8866afc4247a501026264b19d8f073085695a244e61"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "777a7adc9b53d58c",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.injection.csv-writer-injection.csv-writer-injection",
+        "rule_name": null,
+        "file_path": "portal/views.py",
+        "start_line": 1005,
+        "end_line": 1015,
+        "severity": "HIGH",
+        "message": "Detected user input into a generated CSV file using the built-in `csv` module. If user data is used to generate the data in this file, it is possible that an attacker could inject a formula when the CSV is imported into a spreadsheet application that runs an attacker script, which could steal data from the importing user or, at worst, install malware on the user's computer. `defusedcsv` is a drop-in replacement with the same API that will attempt to mitigate formula injection attempts. You can use `defusedcsv` instead of `csv` to safely generate CSVs.",
+        "metadata": {
+          "category": "security",
+          "confidence": "MEDIUM",
+          "cwe": [
+            "CWE-1236: Improper Neutralization of Formula Elements in a CSV File"
+          ],
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://github.com/raphaelm/defusedcsv",
+            "https://owasp.org/www-community/attacks/CSV_Injection",
+            "https://web.archive.org/web/20220516052229/https://www.contextis.com/us/blog/comma-separated-vulnerabilities"
+          ],
+          "technology": [
+            "django",
+            "python"
+          ]
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:57.860140+00:00",
+      "processing_duration_ms": 508,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "51981515005abb1b275490647926506bf00b56e6b2c7df753cff70f7a1362ff3"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "62e0f1882bc80352",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.injection.csv-writer-injection.csv-writer-injection",
+        "rule_name": null,
+        "file_path": "portal/views.py",
+        "start_line": 1031,
+        "end_line": 1040,
+        "severity": "HIGH",
+        "message": "Detected user input into a generated CSV file using the built-in `csv` module. If user data is used to generate the data in this file, it is possible that an attacker could inject a formula when the CSV is imported into a spreadsheet application that runs an attacker script, which could steal data from the importing user or, at worst, install malware on the user's computer. `defusedcsv` is a drop-in replacement with the same API that will attempt to mitigate formula injection attempts. You can use `defusedcsv` instead of `csv` to safely generate CSVs.",
+        "metadata": {
+          "category": "security",
+          "confidence": "MEDIUM",
+          "cwe": [
+            "CWE-1236: Improper Neutralization of Formula Elements in a CSV File"
+          ],
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "references": [
+            "https://github.com/raphaelm/defusedcsv",
+            "https://owasp.org/www-community/attacks/CSV_Injection",
+            "https://web.archive.org/web/20220516052229/https://www.contextis.com/us/blog/comma-separated-vulnerabilities"
+          ],
+          "technology": [
+            "django",
+            "python"
+          ]
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:58.375924+00:00",
+      "processing_duration_ms": 506,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "269252ebb03a67e643fa843624e73192216fafe4cab6848c078fa1b3d0e37521"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "9c4f842712eb28f8bd8a53960bdad2e61b5c9fd8dcf49d06498dbd627eb0e75d",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "portal/views.py",
+        "start_line": 379,
+        "end_line": 379,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "document_list",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:document_list@371",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@379"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 319-439.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:58.889568+00:00",
+      "processing_duration_ms": 14,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "a242061e2440c3143b1500f27bcc016b3cf53fb478cdaeb7bab55b182335d630"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "aa62468731d0da7739369f96e31ab7696d16d93ed67cd1add004886bb5a68075",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "portal/views.py",
+        "start_line": 457,
+        "end_line": 457,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "task_list",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:task_list@450",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@457"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 397-517.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:58.911564+00:00",
+      "processing_duration_ms": 13,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "c1b7fd42fc7d3ce9fff28c13af146b0c83cc9d03b5c25c83c5c85b00f36f7c05"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "c92abfa6166c314b8141977e90ccbc71f260d0c24f6fa75a2af2195269eb83a7",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "portal/views.py",
+        "start_line": 841,
+        "end_line": 841,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "department_list",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [
+            "require_role"
+          ],
+          "trace": [
+            "entrypoint:department_list@839",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@841"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 781-901.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:58.932332+00:00",
+      "processing_duration_ms": 14,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "b9b88d4053c9716c5385acabb4fb814aa1fa500041e70e218429cc6f843b3942"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "1b78784c98ab6befaa30681b59a153ac74b5c4ebbb9c2d862bfd849a36d232d1",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "portal/views.py",
+        "start_line": 1129,
+        "end_line": 1129,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "webhook_list",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [
+            "require_role"
+          ],
+          "trace": [
+            "entrypoint:webhook_list@1119",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@1129"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1069-1189.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:58.955566+00:00",
+      "processing_duration_ms": 12,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "30b061a9bc9ede951a9c53613450db27cfd8e2c65b553c65267a9f2d0bedeba5"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "9bc49daf58a3dc6064c05bae0c52c03f589a0d48f81c6d68ff1c06a5e28caa96",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "hr_portal/payroll_operations.py",
+        "start_line": 65,
+        "end_line": 65,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "payroll_delta_136",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "unvalidated_domain_value_operation",
+          "guards": [],
+          "trace": [
+            "entrypoint:payroll_delta_136@56",
+            "source:http_request_parameter",
+            "sink:unvalidated_domain_value_operation@65"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 5-125.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:38:58.975987+00:00",
+      "processing_duration_ms": 14,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "00d79e15462d0b7c318c9510465d8cb9abae77b751faf5939d52a0c657f72a4a"
+    }
+  ],
+  "scanner_errors": []
+}

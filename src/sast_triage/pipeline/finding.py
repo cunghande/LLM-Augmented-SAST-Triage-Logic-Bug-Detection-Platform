@@ -128,9 +128,7 @@ def _build_context_summary(context: SanitizedContext) -> str:
                         if isinstance(item, dict) and item.get("symbol")
                     )
         mechanism = (
-            verification.get("mechanism")
-            if isinstance(verification, dict)
-            else None
+            verification.get("mechanism") if isinstance(verification, dict) else None
         )
         if mechanism in {"configuration", "intrinsic_usage"}:
             source_location = "không áp dụng"
@@ -179,7 +177,7 @@ def triage_finding(
     repository_root: Path,
     provider: object,
     *,
-    prompt_version: str = "triage-prompt-v13",
+    prompt_version: str = "triage-prompt-v14",
     output_schema_version: str = "triage-decision-v1",
     prompt_type: str = "fake.default",
     line_window_before: int = 60,
@@ -256,7 +254,12 @@ def triage_finding(
         )
 
     for fv in forbidden_values:
-        if not fv or not fv.strip() or fv in KNOWN_PLACEHOLDERS or fv.startswith("<REDACTED_"):
+        if (
+            not fv
+            or not fv.strip()
+            or fv in KNOWN_PLACEHOLDERS
+            or fv.startswith("<REDACTED_")
+        ):
             raise SastTriageError(
                 safe_message="forbidden_values elements must be valid non-placeholder strings.",
                 error_code="PIPELINE_INVALID_CONFIGURATION",
@@ -279,6 +282,7 @@ def triage_finding(
 
     processing_errors: list[ProcessingError] = list(initial_processing_errors)
     sanitized: SanitizedContext | None = None
+    evidence_details: dict[str, object] | None = None
 
     # 2. Các bước trích xuất context
     try:
@@ -305,17 +309,20 @@ def triage_finding(
             forbidden_values=forbidden_values,
         )
         if finding.finding_type == FindingType.SAST and sanitized.context_available:
-            sanitized = build_evidence_context(
+            evidence_result = build_evidence_context(
                 finding,
                 sanitized,
                 logic_index=logic_index,
                 analysis_backend=analysis_backend,
-            ).context
+            )
+            sanitized = evidence_result.context
+            evidence_details = evidence_result.report_evidence
 
         # Kiểm tra sanitizer có tạo context không khả dụng với CONTEXT_SANITIZATION_FAILED không
         if (
             not sanitized.context_available
-            and MissingContextReason.CONTEXT_SANITIZATION_FAILED in sanitized.missing_context_reasons
+            and MissingContextReason.CONTEXT_SANITIZATION_FAILED
+            in sanitized.missing_context_reasons
         ):
             processing_errors.append(
                 ProcessingError(
@@ -348,7 +355,9 @@ def triage_finding(
 
     # Bảo đảm sanitized luôn tồn tại
     if sanitized is None:
-        sanitized = _make_unavailable_context(finding, MissingContextReason.SOURCE_FILE_NOT_FOUND)
+        sanitized = _make_unavailable_context(
+            finding, MissingContextReason.SOURCE_FILE_NOT_FOUND
+        )
 
     # 3. Đóng gói Triage Input và chạy Provider
     triage_dec: TriageDecision | None = None
@@ -425,6 +434,7 @@ def triage_finding(
     return TriageResult(
         finding=finding,
         context_summary=summary_str,
+        evidence_details=evidence_details,
         triage_decision=triage_dec,
         policy_decision=policy_dec,
         processing_errors=processing_errors,

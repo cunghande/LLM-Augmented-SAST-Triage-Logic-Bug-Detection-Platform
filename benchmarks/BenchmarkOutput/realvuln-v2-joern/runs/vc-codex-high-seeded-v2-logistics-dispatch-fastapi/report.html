@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Báo cáo đánh giá bảo mật — repository</title>
+  <style>
+    :root { --blue:#2474e5; --ink:#1f2937; --muted:#667085; --line:#d9e2ef; --paper:#fff; --bg:#f2f6fb; --critical:#b42318; --high:#d92d20; --medium:#dc6803; --low:#027a48; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:14px/1.55 Inter,Segoe UI,Arial,sans-serif; }
+    main { max-width:1040px; margin:32px auto; padding:0 20px 48px; }
+    .cover,.summary,.finding,.footer { background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:0 5px 18px rgba(31,41,55,.06); }
+    .cover { padding:48px; border-top:6px solid var(--blue); }
+    .eyebrow { margin:0 0 5px; color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:0; font-size:34px; } h2 { margin:0; font-size:22px; color:#175fb8; } h3 { margin:30px 0 10px; color:var(--blue); font-size:19px; } h4 { margin:18px 0 8px; }
+    .muted,.provenance { color:var(--muted); } .provenance { font-size:12px; }
+    .summary { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; margin:18px 0; overflow:hidden; background:var(--line); }
+    .metric { padding:18px; background:#fff; } .metric strong { display:block; font-size:25px; color:#175fb8; }
+    .finding { margin:26px 0; padding:32px 38px; page-break-before:always; }
+    .finding-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+    .severity { color:#fff; border-radius:999px; padding:5px 11px; font-weight:700; font-size:12px; }
+    .severity-critical { background:var(--critical); } .severity-high { background:var(--high); } .severity-medium { background:var(--medium); } .severity-low { background:var(--low); } .severity-unknown { background:#667085; }
+    table { width:100%; border-collapse:collapse; margin:18px 0; } th,td { padding:8px 10px; border:1px solid var(--line); text-align:left; vertical-align:top; } th { width:170px; color:#175fb8; background:#edf4ff; }
+    .callout { margin:12px 0; padding:13px 15px; border-left:4px solid var(--blue); background:#f5f9ff; }
+    code { padding:2px 6px; border-radius:4px; background:#eef2f6; overflow-wrap:anywhere; }
+    .flow { display:flex; align-items:stretch; gap:8px; overflow-x:auto; padding:10px 0; }
+    .flow-step { min-width:150px; padding:12px; border:1px solid #9cbce6; border-radius:7px; background:#eef6ff; }
+    .flow-step span { display:block; color:var(--muted); font-size:11px; } .flow-step.source { border-color:#12b76a; background:#ecfdf3; } .flow-step.guard { border-color:#f79009; background:#fffaeb; } .flow-step.sink { border-color:#f04438; background:#fef3f2; }
+    .arrow { align-self:center; color:var(--blue); font-size:20px; }
+    .empty,.footer { padding:24px; } .footer { color:var(--muted); margin-top:24px; font-size:12px; }
+    @media(max-width:720px) { .summary { grid-template-columns:1fr 1fr; } .cover,.finding { padding:24px; } .flow { flex-direction:column; } .arrow { transform:rotate(90deg); } }
+    @media print { body { background:#fff; } main { max-width:none; margin:0; padding:0; } .cover,.summary,.finding,.footer { box-shadow:none; } .finding { border:none; padding:20mm 12mm; } }
+  </style>
+</head>
+<body><main>
+  <header class="cover">
+    <p class="eyebrow">SAST Triage Platform</p>
+    <h1>Báo cáo đánh giá bảo mật</h1>
+    <p>Repository: <strong>repository</strong></p>
+    <p class="muted">Lần chạy 0a159437-3da4-4e0c-aef9-d49119e7cb8b · 2026-08-24T02:40:26.746658+00:00 · Backend phân tích: joern</p>
+  </header>
+  <section class="summary" aria-label="Tóm tắt kết quả">
+    <div class="metric"><strong>27</strong>Tổng số phát hiện</div>
+    <div class="metric"><strong>0</strong>Có khả năng là lỗ hổng thật</div>
+    <div class="metric"><strong>27</strong>Cần đánh giá thủ công</div>
+    <div class="metric"><strong>0</strong>Lỗi phân loại</div>
+  </section>
+  <section aria-labelledby="details-heading"><p class="eyebrow">Chi tiết lỗ hổng được phát hiện</p><h2 id="details-heading">Các phát hiện</h2>
+    <article class="finding" id="finding-1">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 1</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:1591. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1531-1651.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1591</code></p>
+        <p>Thành phần: .; điểm vào: list_webhooks</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_webhooks@1589</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@1591</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-2">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 2</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:709. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 649-769.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:709</code></p>
+        <p>Thành phần: .; điểm vào: list_jobs</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_jobs@668</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_pagination_parameter@709</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-3">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 3</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:701-708. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 641-768, đã bị cắt bớt.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:701-708</code></p>
+        <p>Thành phần: .; điểm vào: list_jobs</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_jobs@668</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@701</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-4">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 4</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:1636. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1576-1696.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1636</code></p>
+        <p>Thành phần: .; điểm vào: list_api_keys</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_api_keys@1634</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@1636</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-5">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 5</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:128. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 68-188.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:128</code></p>
+        <p>Thành phần: .; điểm vào: get_current_session</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:get_current_session@124</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_request_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@128</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-6">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 6</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:1297. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1237-1357.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1297</code></p>
+        <p>Thành phần: .; điểm vào: admin_audit</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:admin_audit@1281</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_pagination_parameter@1297</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-7">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 7</p>
+          <h2>python.lang.security.unverified-ssl-context.unverified-ssl-context</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>Chưa tính</td></tr>
+        <tr><th>Mức rủi ro</th><td>CAO</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-295: Improper Certificate Validation&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>SEMGREP, SAST, python.lang.security.unverified-ssl-context.unverified-ssl-context</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>SEMGREP phát hiện dấu hiệu liên quan đến rule “python.lang.security.unverified-ssl-context.unverified-ssl-context” tại backend/app/dispatch_operations.py:158. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use &#x27;ssl.create_default_context&#x27; instead.</p></details>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">Không có yếu tố rủi ro dạng cấu trúc.</p>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/dispatch_operations.py:158</code></p>
+        <p>Thành phần: Chưa xác định; điểm vào: Chưa xác định</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <p class="muted">Chưa có đường đi source-to-sink được xuất cho phát hiện này. Backend phân tích: joern.</p>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.</li><li>Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.</li><li>Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-8">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 8</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/dispatch_operations.py:46. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1-106.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/dispatch_operations.py:46</code></p>
+        <p>Thành phần: .; điểm vào: dispatch_delta_138</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:dispatch_delta_138@42</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_request_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unvalidated_domain_value_operation@46</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-9">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 9</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:1618. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1558-1678.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1618</code></p>
+        <p>Thành phần: .; điểm vào: test_webhook</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:test_webhook@1611</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@1618</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-10">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 10</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:520. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 460-580, đã bị cắt bớt.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:520</code></p>
+        <p>Thành phần: .; điểm vào: confirm_password_reset</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:confirm_password_reset@518</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@520</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-11">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 11</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:1675. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1615-1704.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1675</code></p>
+        <p>Thành phần: .; điểm vào: integration_status_update</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:integration_status_update@1663</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@1675</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-12">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 12</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:688. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 628-748.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:688</code></p>
+        <p>Thành phần: .; điểm vào: list_jobs</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_jobs@668</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@688</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-13">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 13</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:802. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 742-862.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:802</code></p>
+        <p>Thành phần: .; điểm vào: delete_job</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:delete_job@795</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@802</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-14">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 14</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:686. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 626-746.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:686</code></p>
+        <p>Thành phần: .; điểm vào: list_jobs</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_jobs@668</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@686</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-15">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 15</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:684. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 624-744.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:684</code></p>
+        <p>Thành phần: .; điểm vào: list_jobs</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_jobs@668</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@684</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-16">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 16</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:1207. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1147-1267.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1207</code></p>
+        <p>Thành phần: .; điểm vào: admin_users</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:admin_users@1205</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@1207</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-17">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 17</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:914. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 854-974, đã bị cắt bớt.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:914</code></p>
+        <p>Thành phần: .; điểm vào: list_messages</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_messages@909</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@914</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-18">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 18</p>
+          <h2>python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>Chưa tính</td></tr>
+        <tr><th>Mức rủi ro</th><td>CAO</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-502: Deserialization of Untrusted Data&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>SEMGREP, SAST, python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>SEMGREP phát hiện dấu hiệu liên quan đến rule “python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization” tại backend/app/dispatch_operations.py:61. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>Avoid using insecure deserialization library, backed by `pickle`, `_pickle`, `cpickle`, `dill`, `shelve`, or `yaml`, which are known to lead to remote code execution vulnerabilities.</p></details>
+        <div class="callout">Joern CPG evidence complete; source backend/app/dispatch_operations.py:56; sink backend/app/dispatch_operations.py:61; đường source–sink backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:58 → backend/app/dispatch_operations.py:58; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">Không có yếu tố rủi ro dạng cấu trúc.</p>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/dispatch_operations.py:61</code></p>
+        <p>Thành phần: Chưa xác định; điểm vào: Chưa xác định</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step source"><span>1</span><strong>Nguồn: backend/app/dispatch_operations.py:56</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>2</span><strong>Luồng: backend/app/dispatch_operations.py:58</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>3</span><strong>Luồng: backend/app/dispatch_operations.py:58</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>4</span><strong>Điểm nguy hiểm: backend/app/dispatch_operations.py:61</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.</li><li>Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.</li><li>Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-19">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 19</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:625. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 565-685, đã bị cắt bớt.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:625</code></p>
+        <p>Thành phần: .; điểm vào: list_customers</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:list_customers@623</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@625</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-20">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 20</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:1672. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1612-1704.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1672</code></p>
+        <p>Thành phần: .; điểm vào: integration_status_update</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:integration_status_update@1663</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@1672</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-21">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 21</p>
+          <h2>Bounded AST candidate for missing authz idor</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.5/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-639</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.missing-authz-idor, missing_authz_idor</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for missing authz idor” tại backend/app/main.py:1296. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1236-1356.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.5</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1296</code></p>
+        <p>Thành phần: .; điểm vào: admin_audit</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:admin_audit@1281</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_route_parameter</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: object_lookup_without_subject_scope@1296</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Bind the requested object to the authenticated subject or tenant before reading or mutating it.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-22">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 22</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:1326. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1266-1386.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1326</code></p>
+        <p>Thành phần: .; điểm vào: admin_service_types</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:admin_service_types@1324</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@1326</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-23">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 23</p>
+          <h2>Bounded AST candidate for business rule bypass</h2>
+        </div>
+        <span class="severity severity-high">CAO</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>4.3/5.0</td></tr>
+        <tr><th>Mức rủi ro</th><td>CRITICAL</td></tr>
+        <tr><th>CWE</th><td>CWE-840</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>MODULE2, SAST, module2.logic.business-rule-bypass, business_rule_bypass</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>MODULE2 phát hiện dấu hiệu liên quan đến rule “Bounded AST candidate for business rule bypass” tại backend/app/main.py:1304. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.</p></details>
+        <div class="callout">Ngữ cảnh LINE_WINDOW, dòng 1244-1364.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <ul><li>data_sensitivity: 4.0</li><li>Khả năng khai thác: 4.0</li><li>Mức độ phơi bày: 4.5</li><li>reachability: 5.0</li><li>Mức độ nghiêm trọng: 4.0</li></ul>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/main.py:1304</code></p>
+        <p>Thành phần: .; điểm vào: admin_regions</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step"><span>1</span><strong>entrypoint:admin_regions@1302</strong></div><div class="arrow">&rarr;</div><div class="flow-step source"><span>2</span><strong>Nguồn: http_endpoint</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>3</span><strong>Điểm nguy hiểm: unbounded_collection_query@1304</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Add a negative authorization or boundary test for the exact sink.</li><li>Add a positive test for the intended authorized or bounded flow.</li><li>Review the complete source-to-guard-to-sink trace.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Recompute trusted values on the server and enforce domain and resource bounds before the operation.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-24">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 24</p>
+          <h2>python.lang.security.audit.eval-detected.eval-detected</h2>
+        </div>
+        <span class="severity severity-medium">TRUNG BÌNH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>Chưa tính</td></tr>
+        <tr><th>Mức rủi ro</th><td>TRUNG BÌNH</td></tr>
+        <tr><th>CWE</th><td>[&quot;CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code (&#x27;Eval Injection&#x27;)&quot;]</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>SEMGREP, SAST, python.lang.security.audit.eval-detected.eval-detected</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>SEMGREP phát hiện dấu hiệu liên quan đến rule “python.lang.security.audit.eval-detected.eval-detected” tại backend/app/dispatch_operations.py:76. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.</p></details>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink backend/app/dispatch_operations.py:76; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">Không có yếu tố rủi ro dạng cấu trúc.</p>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/dispatch_operations.py:76</code></p>
+        <p>Thành phần: Chưa xác định; điểm vào: Chưa xác định</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step sink"><span>1</span><strong>Điểm nguy hiểm: backend/app/dispatch_operations.py:76</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.</li><li>Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.</li><li>Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-25">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 25</p>
+          <h2>python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected</h2>
+        </div>
+        <span class="severity severity-medium">TRUNG BÌNH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>Chưa tính</td></tr>
+        <tr><th>Mức rủi ro</th><td>TRUNG BÌNH</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-939: Improper Authorization in Handler for Custom URL Scheme&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>SEMGREP, SAST, python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>SEMGREP phát hiện dấu hiệu liên quan đến rule “python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected” tại backend/app/dispatch_operations.py:159. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>Detected a dynamic value being used with urllib. urllib supports &#x27;file://&#x27; schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the &#x27;requests&#x27; library instead.</p></details>
+        <div class="callout">Joern CPG evidence partial; source chưa xác định; sink backend/app/dispatch_operations.py:159; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">Không có yếu tố rủi ro dạng cấu trúc.</p>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/dispatch_operations.py:159</code></p>
+        <p>Thành phần: Chưa xác định; điểm vào: Chưa xác định</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step sink"><span>1</span><strong>Điểm nguy hiểm: backend/app/dispatch_operations.py:159</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.</li><li>Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.</li><li>Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>Context evidence is incomplete after bounded expansion.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-26">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 26</p>
+          <h2>python.lang.security.deserialization.pickle.avoid-pickle</h2>
+        </div>
+        <span class="severity severity-medium">TRUNG BÌNH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>Chưa tính</td></tr>
+        <tr><th>Mức rủi ro</th><td>TRUNG BÌNH</td></tr>
+        <tr><th>CWE</th><td>[&#x27;CWE-502: Deserialization of Untrusted Data&#x27;]</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>SEMGREP, SAST, python.lang.security.deserialization.pickle.avoid-pickle</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>SEMGREP phát hiện dấu hiệu liên quan đến rule “python.lang.security.deserialization.pickle.avoid-pickle” tại backend/app/dispatch_operations.py:61. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.</p></details>
+        <div class="callout">Joern CPG evidence complete; source backend/app/dispatch_operations.py:56; sink backend/app/dispatch_operations.py:61; đường source–sink backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:58 → backend/app/dispatch_operations.py:58; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">Không có yếu tố rủi ro dạng cấu trúc.</p>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>backend/app/dispatch_operations.py:61</code></p>
+        <p>Thành phần: Chưa xác định; điểm vào: Chưa xác định</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <div class="flow"><div class="flow-step source"><span>1</span><strong>Nguồn: backend/app/dispatch_operations.py:56</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>2</span><strong>Luồng: backend/app/dispatch_operations.py:58</strong></div><div class="arrow">&rarr;</div><div class="flow-step"><span>3</span><strong>Luồng: backend/app/dispatch_operations.py:58</strong></div><div class="arrow">&rarr;</div><div class="flow-step sink"><span>4</span><strong>Điểm nguy hiểm: backend/app/dispatch_operations.py:61</strong></div></div>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.</li><li>Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.</li><li>Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    
+    <article class="finding" id="finding-27">
+      <div class="finding-heading">
+        <div>
+          <p class="eyebrow">Phát hiện 27</p>
+          <h2>Discovered a potential authorization token provided in a curl command header, which could compromise the curl accessed resource.</h2>
+        </div>
+        <span class="severity severity-unknown">CHƯA XÁC ĐỊNH</span>
+      </div>
+
+      <table class="details"><tbody>
+        <tr><th>Trạng thái</th><td>Cần đánh giá thủ công</td></tr>
+        <tr><th>Điểm rủi ro</th><td>Chưa tính</td></tr>
+        <tr><th>Mức rủi ro</th><td>CHƯA XÁC ĐỊNH</td></tr>
+        <tr><th>CWE</th><td>Chưa ánh xạ</td></tr>
+        <tr><th>CVSS</th><td>Chưa tính</td></tr>
+        <tr><th>Nhãn</th><td>GITLEAKS, SECRET, curl-auth-header</td></tr>
+      </tbody></table>
+
+      <section><h3>Mô tả</h3><p>GITLEAKS phát hiện dấu hiệu liên quan đến rule “Discovered a potential authorization token provided in a curl command header, which could compromise the curl accessed resource.” tại README.md:153-155. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu.</p>
+        <details><summary>Thông báo gốc từ scanner</summary><p>Discovered a potential authorization token provided in a curl command header, which could compromise the curl accessed resource.</p></details>
+        <div class="callout">Ngữ cảnh REDACTED_LINE_WINDOW, dòng 93-180.</div>
+      </section>
+      <section><h3>Tác động</h3><p>Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.</p>
+        <p class="muted">Không có yếu tố rủi ro dạng cấu trúc.</p>
+      </section>
+      <section><h3>Thành phần bị ảnh hưởng</h3>
+        <p><code>README.md:153-155</code></p>
+        <p>Thành phần: Chưa xác định; điểm vào: Chưa xác định</p>
+      </section>
+      <section><h3>Bằng chứng Source-to-Sink</h3>
+        <p class="provenance">Backend: joern. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+        <p class="muted">Chưa có đường đi source-to-sink được xuất cho phát hiện này. Backend phân tích: joern.</p>
+        <h4>Bằng chứng đã xác thực</h4><ul><li>Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định.</li></ul>
+      </section>
+      <section><h3>Tái hiện và xác minh an toàn</h3>
+        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+        <ul><li>Xác nhận nguồn, ranh giới tin cậy, điểm kiểm soát và sink với chuyên gia bảo mật.</li><li>Thêm regression test cho hành vi có lỗ hổng và hành vi an toàn mong đợi.</li><li>Kiểm thử lại sau khi sửa mà không sử dụng dữ liệu hoặc secret thật.</li></ul>
+        <h4>Thông tin còn thiếu</h4><p class="muted">Không yêu cầu thêm thông tin.</p>
+      </section>
+      <section><h3>Hướng khắc phục đề xuất</h3><p>Kiểm tra toàn bộ luồng dữ liệu, xác nhận ranh giới tin cậy và áp dụng biện pháp kiểm soát do rule của scanner đề xuất trước khi kiểm thử lại.</p></section>
+      <section><h3>Quyết định chính sách</h3>
+        <p><strong>Cần đánh giá thủ công</strong> — chính sách conservative-policy-v2</p>
+        <ul><li>LLM provider requested manual review.</li></ul>
+      </section>
+      <section><h3>Lỗi xử lý</h3><p class="muted">Phát hiện này không có lỗi xử lý.</p></section>
+    </article>
+    </section>
+  <section class="footer"><strong>Lỗi scanner</strong><p class="muted">Không có lỗi scanner.</p>
+    <p>Báo cáo không chứa mã nguồn thô, prompt thô, phản hồi thô từ model, traceback hoặc đường dẫn tuyệt đối của repository. Không phát hiện nào bị tự động loại bỏ.</p>
+  </section>
+</main></body></html>

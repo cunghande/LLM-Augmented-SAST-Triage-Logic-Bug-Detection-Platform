@@ -179,7 +179,7 @@ def test_focused_logic_detector_is_explicit_and_uses_prompt_v13() -> None:
     )
 
     assert default_args.logic_detector == "off"
-    assert default_args.prompt_version == "triage-prompt-v13"
+    assert default_args.prompt_version == "triage-prompt-v14"
     assert enabled_args.logic_detector == "python-idor-business-logic"
 
 

@@ -162,7 +162,7 @@ class ModalQwenProvider:
     ) -> bool:
         """Retry one v13 abstention when bounded static evidence is complete."""
         logic_evidence = (
-            triage_input.prompt_version == "triage-prompt-v13"
+            triage_input.prompt_version in {"triage-prompt-v13", "triage-prompt-v14"}
             and decision.model_verdict == ModelVerdict.NEEDS_REVIEW
             and triage_input.finding.metadata.get("logic_class")
             in {bug_class.value for bug_class in LogicBugClass}
@@ -170,7 +170,7 @@ class ModalQwenProvider:
         if logic_evidence:
             return True
         if (
-            triage_input.prompt_version != "triage-prompt-v13"
+            triage_input.prompt_version not in {"triage-prompt-v13", "triage-prompt-v14"}
             or decision.model_verdict != ModelVerdict.NEEDS_REVIEW
         ):
             return False

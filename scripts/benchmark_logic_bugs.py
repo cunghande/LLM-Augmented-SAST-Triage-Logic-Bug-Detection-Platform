@@ -8,6 +8,7 @@ not silently counted as either true or false positives.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import defaultdict
 from datetime import UTC, datetime
@@ -30,6 +31,17 @@ _NEGATIVE_CLASS_MAP: dict[str, LogicBugClass] = {
     "idor_false_positive": LogicBugClass.MISSING_AUTHZ_IDOR,
     "insecure_direct_object_reference_false_positive": LogicBugClass.MISSING_AUTHZ_IDOR,
 }
+_SPLIT_POLICY = "repository-sha256-v1-retrospective"
+
+
+def _split_for_repository(repo_id: str) -> str:
+    """Assign a stable repository-level split without cross-repo case leakage."""
+    bucket = int.from_bytes(hashlib.sha256(repo_id.encode("utf-8")).digest()[:4]) % 10
+    if bucket < 6:
+        return "development"
+    if bucket < 8:
+        return "calibration"
+    return "held_out"
 
 
 def _arguments() -> argparse.Namespace:
@@ -165,6 +177,7 @@ def run_benchmark(
                 {
                     "case_id": str(finding.get("id", "")),
                     "repository": repo_id,
+                    "split": _split_for_repository(repo_id),
                     "logic_class": logic_class.value,
                     "accepted_logic_classes": sorted(
                         item.value for item in accepted_classes
@@ -202,6 +215,10 @@ def run_benchmark(
     by_class: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         by_class[row["logic_class"]].append(row)
+    metrics_by_split = {
+        split: _metrics([row for row in rows if row["split"] == split])
+        for split in ("development", "calibration", "held_out")
+    }
     return {
         "schema_version": "idor-business-logic-benchmark-v1",
         "generated_at": datetime.now(UTC).isoformat(),
@@ -212,8 +229,16 @@ def run_benchmark(
             "Only explicitly mapped reviewed positive/negative locations contribute "
             "to metrics; unmatched predictions remain unreviewed."
         ),
+        "split_policy": _SPLIT_POLICY,
+        "split_note": (
+            "This repository-level split was frozen after detector development. It is "
+            "reported for reproducibility and leakage control, but it is retrospective "
+            "and does not support a new held-out quality claim."
+        ),
+        "quality_claim_supported": False,
         "repositories": analyzed_repositories,
         "overall": _metrics(rows),
+        "metrics_by_split": metrics_by_split,
         "by_class": {
             logic_class.value: _metrics(by_class[logic_class.value])
             for logic_class in LogicBugClass

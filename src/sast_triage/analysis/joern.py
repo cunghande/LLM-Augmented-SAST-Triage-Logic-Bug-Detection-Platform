@@ -34,7 +34,7 @@ from sast_triage.models import (
 
 JOERN_VERSION = "4.0.600"
 JOERN_IMAGE = "sast-triage-joern:4.0.600"
-JOERN_CONFIG_ID = "joern-pysrc2cpg-v4.0.600-evidence-v2"
+JOERN_CONFIG_ID = "joern-pysrc2cpg-v4.0.600-evidence-v3"
 _CONTAINER_REPOSITORY = "/workspace/repository"
 _SOURCE_CALL_REGEX = (
     "(?i)(input|read|recv|get|getlist|get_all|get_json|get_data|keys|"
@@ -47,7 +47,7 @@ _SINK_CALL_REGEX = (
 )
 _CONTROL_CALL_REGEX = (
     "(?i)(sanitize|clean|escape|quote|validate|allow|safe|basename|normpath|"
-    "resolve|literal_eval)"
+    "resolve|strip|literal_eval)"
 )
 _ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -61,6 +61,10 @@ _SPECIFIC_SOURCE_NAMES = (
     "get_header",
     "get_cookie",
 )
+_SOURCE_PARAMETER_REGEX = (
+    "(?i)(id|.*_id|input|data|payload|query|search|filter|name|username|email|"
+    "path|url|filename|command|token|value|content|body|message)"
+)
 
 
 def _scala_string(value: str) -> str:
@@ -72,6 +76,7 @@ def _sink_type(finding: NormalizedFinding) -> str:
     """Classify the target rule without reading source text."""
     text = f"{finding.rule_id} {finding.rule_name or ''} {finding.message}".lower()
     mappings = (
+        (("unverified-jwt-decode",), "jwt_verification"),
         (("command", "subprocess", "os-system"), "command_execution"),
         (("sql",), "sql_query"),
         (("ssrf", "urllib", "urlopen"), "network_request"),
@@ -110,6 +115,7 @@ def _sink_call_regex(finding: NormalizedFinding) -> str:
         "weak_cryptography": "(?i)(md5|sha1|new)",
         "weak_randomness": "(?i)(random|randint|randrange|choice)",
         "cookie_configuration": "(?i)(set_cookie)",
+        "jwt_verification": "(?i)(decode)",
     }
     return mapping.get(sink_type, _SINK_CALL_REGEX)
 
@@ -226,7 +232,9 @@ class JoernAnalysisBackend:
         self._image = image
         self._container_name = f"sast-triage-joern-{uuid.uuid4().hex[:12]}"
         self._docker_network = os.getenv("SAST_TRIAGE_DOCKER_NETWORK", "").strip()
-        if self._docker_network and not re.fullmatch(r"[A-Za-z0-9_.-]+", self._docker_network):
+        if self._docker_network and not re.fullmatch(
+            r"[A-Za-z0-9_.-]+", self._docker_network
+        ):
             raise SastTriageError(
                 safe_message="The configured Docker network name is invalid.",
                 error_code="ANALYSIS_JOERN_INVALID_CONFIGURATION",
@@ -255,6 +263,7 @@ class JoernAnalysisBackend:
         self._closed = False
         self._query_durations: list[float] = []
         self._tool_counts: Counter[str] = Counter()
+        self._discovered_evidence: dict[tuple[str, int], GraphEvidence] = {}
         started = time.perf_counter()
         failure_stage = "preflight"
         try:
@@ -264,9 +273,10 @@ class JoernAnalysisBackend:
             failure_stage = "server_readiness"
             self._wait_until_ready()
             failure_stage = "cpg_import"
-            project = "repo_" + hashlib.sha256(
-                repository_identifier.encode("utf-8")
-            ).hexdigest()[:16]
+            project = (
+                "repo_"
+                + hashlib.sha256(repository_identifier.encode("utf-8")).hexdigest()[:16]
+            )
             result = self._build_client.execute(
                 "importCode(inputPath="
                 f"{_scala_string(_CONTAINER_REPOSITORY)}, projectName={_scala_string(project)}, "
@@ -291,7 +301,9 @@ class JoernAnalysisBackend:
             build_seconds=round(time.perf_counter() - started, 6),
         )
 
-    def _docker(self, *arguments: str, timeout: float = 120.0) -> subprocess.CompletedProcess[str]:
+    def _docker(
+        self, *arguments: str, timeout: float = 120.0
+    ) -> subprocess.CompletedProcess[str]:
         try:
             return subprocess.run(
                 ("docker", *arguments),
@@ -437,23 +449,36 @@ class JoernAnalysisBackend:
         same_file: bool,
     ) -> str:
         """Build a receiver-aware source traversal without exporting call code."""
-        specific_names = ", ".join(_scala_string(name) for name in _SPECIFIC_SOURCE_NAMES)
-        file_filter = ""
+        specific_names = ", ".join(
+            _scala_string(name) for name in _SPECIFIC_SOURCE_NAMES
+        )
+        call_file_filter = ""
+        parameter_file_filter = ""
         if same_file:
             if finding is None:
-                raise ValueError("A finding is required for same-file source selection.")
+                raise ValueError(
+                    "A finding is required for same-file source selection."
+                )
             path = _scala_string(finding.file_path.replace("\\", "/"))
-            file_filter = (
+            call_file_filter = (
                 ".filter(c => c.file.name.headOption.exists(n => "
                 f"n.replace('\\\\', '/').endsWith({path})))"
             )
+            parameter_file_filter = (
+                ".filter(p => p.file.name.headOption.exists(n => "
+                f"n.replace('\\\\', '/').endsWith({path})))"
+            )
         return (
+            "{ val sourceCalls="
             f"cpg.call.name({_scala_string(_SOURCE_CALL_REGEX)}).filter(c => {{ "
             "val lowered=c.name.toLowerCase; "
             f"Set({specific_names}).contains(lowered) || "
             'Set("input","read","recv").contains(lowered) || '
             f"c.ast.isIdentifier.name({_scala_string(_SOURCE_RECEIVER_REGEX)}).nonEmpty "
-            f"}}){file_filter}"
+            f"}}){call_file_filter}; "
+            "val endpointParameters=cpg.method.parameter"
+            f".name({_scala_string(_SOURCE_PARAMETER_REGEX)}){parameter_file_filter}; "
+            "sourceCalls ++ endpointParameters }"
         )
 
     def _query_json(self, query: str) -> Any:
@@ -500,7 +525,11 @@ class JoernAnalysisBackend:
             '"file" -> c.file.name.headOption.getOrElse(""))).toJsonPretty'
         )
         raw = self._query_json(query)
-        first = raw[0] if isinstance(raw, list) and raw and isinstance(raw[0], dict) else None
+        first = (
+            raw[0]
+            if isinstance(raw, list) and raw and isinstance(raw[0], dict)
+            else None
+        )
         if first is None:
             return GraphEvidence(
                 sink_type=_sink_type(finding),
@@ -512,11 +541,20 @@ class JoernAnalysisBackend:
             sink_type=_sink_type(finding),
             sink_symbol=str(first.get("symbol", "unknown")),
             sink_file=_relative_cpg_path(first.get("file", finding.file_path)),
-            sink_line=line if isinstance(line, int) and line > 0 else finding.start_line,
+            sink_line=line
+            if isinstance(line, int) and line > 0
+            else finding.start_line,
             provenance=("JOERN_CPG", "JOERN_AST"),
         )
 
-    def _trace(self, finding: NormalizedFinding, *, same_file: bool, max_paths: int, max_nodes: int) -> GraphEvidence:
+    def _trace(
+        self,
+        finding: NormalizedFinding,
+        *,
+        same_file: bool,
+        max_paths: int,
+        max_nodes: int,
+    ) -> GraphEvidence:
         target = self._target_expression(finding)
         sources = self._source_expression(finding, same_file=same_file)
         query = (
@@ -524,9 +562,9 @@ class JoernAnalysisBackend:
             "import io.shiftleft.codepropertygraph.generated.nodes; "
             f"val targets={target}; val sources={sources}; "
             f"targets.reachableByFlows(sources).take({max_paths}).map(p => "
-            "p.elements.filter(n => Set(\"CALL\",\"IDENTIFIER\",\"METHOD_PARAMETER_IN\","
-            "\"METHOD_RETURN\").contains(n.label)).take("
-            f"{max_nodes}).map(n => Map(\"label\" -> n.label, \"symbol\" -> (n match {{ "
+            'p.elements.filter(n => Set("CALL","IDENTIFIER","METHOD_PARAMETER_IN",'
+            '"METHOD_RETURN").contains(n.label)).take('
+            f'{max_nodes}).map(n => Map("label" -> n.label, "symbol" -> (n match {{ '
             "case x: nodes.Call => x.name; case x: nodes.Identifier => x.name; "
             "case x: nodes.MethodParameterIn => x.name; case _ => n.label }), "
             '"line" -> n.lineNumber.getOrElse(-1), "file" -> '
@@ -537,7 +575,13 @@ class JoernAnalysisBackend:
             return GraphEvidence(
                 source_reaches_sink=None,
                 path_complete=False,
-                limitations=(("JOERN_LOCAL_FLOW_NOT_FOUND" if same_file else "JOERN_CROSS_FILE_FLOW_NOT_FOUND"),),
+                limitations=(
+                    (
+                        "JOERN_LOCAL_FLOW_NOT_FOUND"
+                        if same_file
+                        else "JOERN_CROSS_FILE_FLOW_NOT_FOUND"
+                    ),
+                ),
                 provenance=("JOERN_CPG", "JOERN_DATAFLOW"),
             )
         first = paths[0]
@@ -556,11 +600,13 @@ class JoernAnalysisBackend:
             provenance=("JOERN_CPG", "JOERN_DATAFLOW"),
         )
 
-    def _reachability(self, finding: NormalizedFinding, *, max_depth: int) -> GraphEvidence:
+    def _reachability(
+        self, finding: NormalizedFinding, *, max_depth: int
+    ) -> GraphEvidence:
         target = self._target_expression(finding)
         query = (
             f"val targets={target}; targets.method.repeat(_.caller)(_.emit.maxDepth({max_depth}))"
-            ".map(m => Map(\"name\" -> m.name, \"line\" -> m.lineNumber.getOrElse(-1), "
+            '.map(m => Map("name" -> m.name, "line" -> m.lineNumber.getOrElse(-1), '
             '"file" -> m.file.name.headOption.getOrElse(""))).dedup.toJsonPretty'
         )
         raw = self._query_json(query)
@@ -585,11 +631,13 @@ class JoernAnalysisBackend:
             provenance=("JOERN_CPG", "JOERN_CALL_GRAPH"),
         )
 
-    def _controls(self, finding: NormalizedFinding, evidence: GraphEvidence) -> GraphEvidence:
+    def _controls(
+        self, finding: NormalizedFinding, evidence: GraphEvidence
+    ) -> GraphEvidence:
         target = self._target_expression(finding)
         query = (
             f"val targets={target}; targets.method.ast.isCall.name({_scala_string(_CONTROL_CALL_REGEX)})"
-            ".take(20).map(c => Map(\"symbol\" -> c.name, "
+            '.take(20).map(c => Map("symbol" -> c.name, '
             '"line" -> c.lineNumber.getOrElse(-1), "file" -> '
             'c.file.name.headOption.getOrElse(""))).toJsonPretty'
         )
@@ -602,6 +650,11 @@ class JoernAnalysisBackend:
                     continue
                 symbol = str(item.get("symbol", "unknown"))
                 on_path = symbol in path_symbols
+                line = item.get("line")
+                try:
+                    file_path = _relative_cpg_path(item.get("file"))
+                except ValueError:
+                    file_path = None
                 controls.append(
                     GraphControl(
                         symbol=symbol,
@@ -610,6 +663,8 @@ class JoernAnalysisBackend:
                         # A matching name is only a candidate; it is not proof
                         # that the control protects this particular flow.
                         effective=None,
+                        file_path=file_path,
+                        line=line if isinstance(line, int) and line > 0 else None,
                     )
                 )
         return GraphEvidence(
@@ -621,6 +676,11 @@ class JoernAnalysisBackend:
     def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence:
         """Query the target and same-file dataflow from the repository CPG."""
         try:
+            discovered = getattr(self, "_discovered_evidence", {}).get(
+                (finding.file_path, finding.start_line)
+            )
+            if discovered is not None:
+                return discovered
             evidence = self._sink_evidence(finding)
             if _intrinsic_usage(finding) and evidence.sink_symbol is not None:
                 return evidence.merge(
@@ -631,7 +691,7 @@ class JoernAnalysisBackend:
                     )
                 )
             return evidence.merge(
-                self._trace(finding, same_file=True, max_paths=10, max_nodes=500)
+                self._trace(finding, same_file=True, max_paths=50, max_nodes=1_000)
             )
         except Exception:  # noqa: BLE001 - fail closed at the backend boundary
             return GraphEvidence(
@@ -701,14 +761,21 @@ class JoernAnalysisBackend:
         sources = self._source_expression(None, same_file=False)
         query = (
             "import io.joern.dataflowengineoss.language.*; "
+            "import io.shiftleft.codepropertygraph.generated.nodes; "
             f"val sources={sources}; "
             f"val sinks=cpg.call.name({_scala_string(_SINK_CALL_REGEX)}); "
             "sinks.reachableByFlows(sources).take(1000).map(p => Map("
-            '"sourceFile" -> p.elements.head.file.name.headOption.getOrElse(""), '
             '"sinkFile" -> p.elements.last.file.name.headOption.getOrElse(""), '
             '"sinkLine" -> p.elements.last.lineNumber.getOrElse(-1), '
             '"sinkSymbol" -> (p.elements.last match { case c: '
-            'io.shiftleft.codepropertygraph.generated.nodes.Call => c.name; case _ => "unknown" })'
+            'nodes.Call => c.name; case _ => "unknown" }), '
+            '"path" -> p.elements.filter(n => Set("CALL","IDENTIFIER",'
+            '"METHOD_PARAMETER_IN","METHOD_RETURN").contains(n.label)).take(100)'
+            '.map(n => Map("label" -> n.label, "symbol" -> (n match { '
+            "case x: nodes.Call => x.name; case x: nodes.Identifier => x.name; "
+            "case x: nodes.MethodParameterIn => x.name; case _ => n.label }), "
+            '"line" -> n.lineNumber.getOrElse(-1), "file" -> '
+            'n.file.name.headOption.getOrElse("")))'
             ")).toJsonPretty"
         )
         try:
@@ -719,25 +786,56 @@ class JoernAnalysisBackend:
         findings: list[NormalizedFinding] = []
         if not isinstance(raw, list):
             return ()
+        grouped: dict[tuple[str, int, str], list[tuple[GraphStep, ...]]] = {}
         for item in raw:
             if not isinstance(item, dict):
                 continue
             try:
-                source_file = _relative_cpg_path(item.get("sourceFile"))
                 sink_file = _relative_cpg_path(item.get("sinkFile"))
             except ValueError:
                 continue
             sink_line = item.get("sinkLine")
-            if (
-                not source_file
-                or not sink_file
-                or source_file == sink_file
-                or not isinstance(sink_line, int)
-                or sink_line <= 0
-                or (sink_file, sink_line) in occupied
-            ):
+            if not sink_file or not isinstance(sink_line, int) or sink_line <= 0:
                 continue
             symbol = str(item.get("sinkSymbol", "unknown"))
+            parsed = self._parse_steps([item.get("path")], max_nodes=100)
+            if not parsed:
+                continue
+            path = parsed[0]
+            if len({step.file_path for step in path}) <= 1:
+                continue
+            grouped.setdefault((sink_file, sink_line, symbol), []).append(path)
+
+        for (sink_file, sink_line, symbol), discovered_paths in grouped.items():
+            paths = tuple(dict.fromkeys(discovered_paths))[:50]
+            first_source = paths[0][0]
+            evidence = GraphEvidence(
+                source_type=(
+                    "endpoint_parameter"
+                    if first_source.kind == "method_parameter_in"
+                    else "user_controlled_call"
+                ),
+                source_file=first_source.file_path,
+                source_line=first_source.line,
+                source_user_controlled=True,
+                sink_type="rule_specific_sink",
+                sink_symbol=symbol,
+                sink_file=sink_file,
+                sink_line=sink_line,
+                paths=paths,
+                source_reaches_sink=True,
+                path_complete=True,
+                reachability_resolved=first_source.kind == "method_parameter_in",
+                provenance=(
+                    "JOERN_CPG",
+                    "JOERN_DATAFLOW",
+                    "JOERN_CROSS_FILE_DISCOVERY",
+                    "JOERN_ENTRYPOINT_PARAMETER",
+                ),
+            )
+            self._discovered_evidence[(sink_file, sink_line)] = evidence
+            if (sink_file, sink_line) in occupied:
+                continue
             digest = hashlib.sha256(
                 f"JOERN:{sink_file}:{sink_line}:{symbol}".encode()
             ).hexdigest()
@@ -753,7 +851,10 @@ class JoernAnalysisBackend:
                     end_line=sink_line,
                     severity=Severity.HIGH,
                     message="Joern found a bounded cross-file source-to-sink path.",
-                    metadata={"analysis_scope": "cross_file", "analysis_backend": "joern"},
+                    metadata={
+                        "analysis_scope": "cross_file",
+                        "analysis_backend": "joern",
+                    },
                 )
             )
             occupied.add((sink_file, sink_line))

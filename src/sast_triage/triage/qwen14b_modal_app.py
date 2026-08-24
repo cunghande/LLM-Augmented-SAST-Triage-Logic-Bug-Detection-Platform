@@ -10,7 +10,7 @@ import modal
 APP_NAME = "qwen3-14b-awq"
 MODEL_ID = os.getenv("MODAL_MODEL_ID", "Qwen/Qwen3-14B-AWQ")
 GPU = os.getenv("MODAL_GPU", "B200").upper()
-MAX_MODEL_LEN = int(os.getenv("MODAL_MAX_MODEL_LEN", "4096"))
+MAX_MODEL_LEN = int(os.getenv("MODAL_MAX_MODEL_LEN", "8192"))
 DEFAULT_MAX_TOKENS = int(os.getenv("MODAL_MAX_TOKENS", "256"))
 SCALEDOWN_WINDOW = int(os.getenv("MODAL_SCALEDOWN_WINDOW", "300"))
 DEFAULT_THINKING = os.getenv("MODAL_THINKING", "false").strip().lower() in {
@@ -34,8 +34,8 @@ def _validate_configuration() -> None:
             "MODAL_GPU must be L4, L40S, A100, H100, H200, or B200; "
             "the default is B200."
         )
-    if not 1 <= MAX_MODEL_LEN <= 4096:
-        raise ValueError("MODAL_MAX_MODEL_LEN must be between 1 and 4096.")
+    if not 1 <= MAX_MODEL_LEN <= 32_768:
+        raise ValueError("MODAL_MAX_MODEL_LEN must be between 1 and 32768.")
     if not 1 <= DEFAULT_MAX_TOKENS <= 1536:
         raise ValueError("MODAL_MAX_TOKENS must be between 1 and 1536.")
     if SCALEDOWN_WINDOW < 0:

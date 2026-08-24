@@ -77,7 +77,14 @@ python -m sast_triage scan-and-triage `
 Joern tạo một CPG cho toàn repository. Module 1 truy vấn AST/CFG/call/dataflow
 quanh finding; Evidence Agent chỉ mở rộng cross-file bằng ba tool cố định:
 `trace_dataflow`, `find_reachability`, `inspect_security_control`. Agent chạy tối
-đa 5 vòng, 5 tool call, depth 5, 10 path, 500 node và 60 giây/finding.
+đa 5 vòng, 5 tool call, depth 5, 50 path, 1.000 node/path và 60 giây/finding.
+
+Khi bật `--module2-discovery`, discovery lưu lại chính xác các path cross-file đã
+tìm thấy và bước triage tái sử dụng các path đó thay vì query lại theo sink. Báo
+cáo JSON, Markdown và HTML hiển thị từng node gồm loại node, symbol, file tương
+đối và dòng; đồng thời liệt kê caller, control, provenance, limitation và trạng
+thái completeness. Chỉ các file thực sự xuất hiện trên đường dataflow được liệt
+kê, không phải mọi file trong repository.
 
 Repository được mount read-only. Server chỉ publish trên `127.0.0.1`, có thông
 tin xác thực ngẫu nhiên theo session. Container và workspace CPG trong container

@@ -1,0 +1,402 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.django.security.audit.unvalidated-password.unvalidated-password",
+      "path": "accounts/views.py",
+      "start": {
+        "line": 86,
+        "col": 1
+      },
+      "end": {
+        "line": 86,
+        "col": 1
+      },
+      "extra": {
+        "message": "The password on 'user' is being set without validating the password. Call django.contrib.auth.password_validation.validate_password() with validation functions before setting the password. See https://docs.djangoproject.com/en/3.0/topics/auth/passwords/ for more information.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-521"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.nan-injection.nan-injection",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 21,
+        "col": 1
+      },
+      "end": {
+        "line": 21,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user input going directly into typecast for bool(), float(), or complex(). This allows an attacker to inject Python's not-a-number (NaN) into the typecast. This results in undefind behavior, particularly when doing comparisons. Either cast to a different type, or add a guard checking for all capitalizations of the string 'nan'.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-704"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 70,
+        "col": 1
+      },
+      "end": {
+        "line": 70,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using insecure deserialization library, backed by `pickle`, `_pickle`, `cpickle`, `dill`, `shelve`, or `yaml`, which are known to lead to remote code execution vulnerabilities.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 70,
+        "col": 1
+      },
+      "end": {
+        "line": 70,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.code.user-eval.user-eval",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 83,
+        "col": 1
+      },
+      "end": {
+        "line": 84,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user data in a call to 'eval'. This is extremely dangerous because it can enable an attacker to execute arbitrary remote code on the system. Instead, refactor your code to not use 'eval' and instead use a safe library for the specific functionality you need.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.eval-detected.eval-detected",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 84,
+        "col": 1
+      },
+      "end": {
+        "line": 84,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.command.command-injection-os-system.command-injection-os-system",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 144,
+        "col": 1
+      },
+      "end": {
+        "line": 145,
+        "col": 1
+      },
+      "extra": {
+        "message": "Request data detected in os.system. This could be vulnerable to a command injection and should be avoided. If this must be done, use the 'subprocess' module instead and pass the arguments as a list. See https://owasp.org/www-community/attacks/Command_Injection for more information.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-78"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.dangerous-system-call.dangerous-system-call",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 145,
+        "col": 1
+      },
+      "end": {
+        "line": 145,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user-controlled data used in a system call. This could allow a malicious actor to execute commands. Use the 'subprocess' module instead, which is easier to use without accidentally exposing a command injection vulnerability.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-78"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.unverified-ssl-context.unverified-ssl-context",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 171,
+        "col": 1
+      },
+      "end": {
+        "line": 171,
+        "col": 1
+      },
+      "extra": {
+        "message": "Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use 'ssl.create_default_context' instead.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-295"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "legalcase/case_operations.py",
+      "start": {
+        "line": 172,
+        "col": 1
+      },
+      "end": {
+        "line": 172,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic.html-templates.security.var-in-href.var-in-href",
+      "path": "templates/accounts/notifications.html",
+      "start": {
+        "line": 21,
+        "col": 1
+      },
+      "end": {
+        "line": 21,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a template variable used in an anchor tag with the 'href' attribute. This allows a malicious actor to input the 'javascript:' URI and is subject to cross- site scripting (XSS) attacks. If using Flask, use 'url_for()' to safely generate a URL. If using Django, use the 'url' filter to safely generate a URL. If using Mustache, use a URL encoding library, or prepend a slash '/' to the variable for relative links (`href=\"/{{link}}\"`). You may also consider setting the Content Security Policy (CSP) header.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "accounts/views.py",
+      "start": {
+        "line": 67,
+        "col": 1
+      },
+      "end": {
+        "line": 67,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "clients/views.py",
+      "start": {
+        "line": 15,
+        "col": 1
+      },
+      "end": {
+        "line": 15,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "deadlines/views.py",
+      "start": {
+        "line": 16,
+        "col": 1
+      },
+      "end": {
+        "line": 16,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "documents/views.py",
+      "start": {
+        "line": 20,
+        "col": 1
+      },
+      "end": {
+        "line": 20,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "matters/views.py",
+      "start": {
+        "line": 15,
+        "col": 1
+      },
+      "end": {
+        "line": 15,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "matters/views.py",
+      "start": {
+        "line": 111,
+        "col": 1
+      },
+      "end": {
+        "line": 111,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "tasks/views.py",
+      "start": {
+        "line": 17,
+        "col": 1
+      },
+      "end": {
+        "line": 17,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

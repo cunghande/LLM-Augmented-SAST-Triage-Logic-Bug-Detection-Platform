@@ -1,0 +1,48 @@
+{
+  "run_id": "1a9f603b-934a-4f10-b785-67eb5e11224b",
+  "repository_name": "repository",
+  "repository_identifier": "vc-kimi-code-seeded-v2-hr-payroll-django",
+  "commit_sha": "5a2a6d42919c9f991490ffb0bcbe75108371fe2c",
+  "working_tree_state": "dirty",
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.170.0",
+    "GITLEAKS": "8.30.1",
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "p/python+p/security-audit",
+    "GITLEAKS": "gitleaks-built-in",
+    "MODULE2": "python-idor-business-logic-v1"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "8afdffddffca01475864238ad6dae1d4672fb413b301dcbe8c4d9723d844debf",
+    "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 20.666159,
+  "prompt_version": "triage-prompt-v13",
+  "model_version": "fake-triage-v1",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "fake",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-24T02:52:58.618608Z",
+  "completed_at": "2026-08-24T02:53:14.868463Z",
+  "total_findings_parsed": 20,
+  "findings_triaged_ok": 20,
+  "findings_with_errors": 0
+}

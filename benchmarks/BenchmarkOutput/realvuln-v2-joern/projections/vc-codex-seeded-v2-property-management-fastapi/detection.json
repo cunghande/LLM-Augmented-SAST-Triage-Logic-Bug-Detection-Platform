@@ -1,0 +1,402 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization",
+      "path": "backend/app/tenant_operations.py",
+      "start": {
+        "line": 52,
+        "col": 1
+      },
+      "end": {
+        "line": 52,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using insecure deserialization library, backed by `pickle`, `_pickle`, `cpickle`, `dill`, `shelve`, or `yaml`, which are known to lead to remote code execution vulnerabilities.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "path": "backend/app/tenant_operations.py",
+      "start": {
+        "line": 52,
+        "col": 1
+      },
+      "end": {
+        "line": 52,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "backend/app/tenant_operations.py",
+      "start": {
+        "line": 77,
+        "col": 1
+      },
+      "end": {
+        "line": 77,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "backend/app/tenant_operations.py",
+      "start": {
+        "line": 87,
+        "col": 1
+      },
+      "end": {
+        "line": 87,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 318,
+        "col": 1
+      },
+      "end": {
+        "line": 318,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 342,
+        "col": 1
+      },
+      "end": {
+        "line": 342,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 366,
+        "col": 1
+      },
+      "end": {
+        "line": 366,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 383,
+        "col": 1
+      },
+      "end": {
+        "line": 383,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 428,
+        "col": 1
+      },
+      "end": {
+        "line": 428,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 452,
+        "col": 1
+      },
+      "end": {
+        "line": 452,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 505,
+        "col": 1
+      },
+      "end": {
+        "line": 505,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 610,
+        "col": 1
+      },
+      "end": {
+        "line": 610,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 643,
+        "col": 1
+      },
+      "end": {
+        "line": 643,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 688,
+        "col": 1
+      },
+      "end": {
+        "line": 688,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 712,
+        "col": 1
+      },
+      "end": {
+        "line": 712,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 717,
+        "col": 1
+      },
+      "end": {
+        "line": 717,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 723,
+        "col": 1
+      },
+      "end": {
+        "line": 723,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "backend/app/main.py",
+      "start": {
+        "line": 851,
+        "col": 1
+      },
+      "end": {
+        "line": 851,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

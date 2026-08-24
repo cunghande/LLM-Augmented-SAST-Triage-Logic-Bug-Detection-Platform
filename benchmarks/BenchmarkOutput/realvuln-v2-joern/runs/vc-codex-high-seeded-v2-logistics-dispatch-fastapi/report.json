@@ -1,0 +1,1994 @@
+{
+  "run_metadata": {
+    "run_id": "0a159437-3da4-4e0c-aef9-d49119e7cb8b",
+    "repository_name": "repository",
+    "repository_identifier": "vc-codex-high-seeded-v2-logistics-dispatch-fastapi",
+    "commit_sha": "5bafe528a2a15f3e4dbf87aaa0eae79d3421957c",
+    "working_tree_state": "dirty",
+    "artifact_repository_match": "VERIFIED",
+    "scanners_attempted": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanners_succeeded": [
+      "SEMGREP",
+      "GITLEAKS",
+      "MODULE2"
+    ],
+    "scanner_versions": {
+      "SEMGREP": "1.170.0",
+      "GITLEAKS": "8.30.1",
+      "MODULE2": "0.1.0"
+    },
+    "scanner_config_ids": {
+      "SEMGREP": "p/python+p/security-audit",
+      "GITLEAKS": "gitleaks-built-in",
+      "MODULE2": "python-idor-business-logic-v1"
+    },
+    "input_artifact_hashes": {
+      "semgrep": "2fb138b850db769f59de906fa658178cb46f4c232ec7518bf9732b55ee73e737",
+      "gitleaks": "6b53361aefa9e728c6b44288f06c6008cbef4f74efd623805d0dcbc578299db3"
+    },
+    "analysis_backend": "joern",
+    "analysis_backend_version": "4.0.600",
+    "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+    "cpg_build_status": "complete",
+    "cpg_build_seconds": 16.364219,
+    "prompt_version": "triage-prompt-v13",
+    "model_version": "fake-triage-v1",
+    "policy_version": "conservative-policy-v2",
+    "triage_provider": "fake",
+    "tool_version": "0.1.0",
+    "cli_mode": "scan-and-triage",
+    "started_at": "2026-08-24T02:40:20.461211Z",
+    "completed_at": "2026-08-24T02:40:26.746658Z",
+    "total_findings_parsed": 27,
+    "findings_triaged_ok": 27,
+    "findings_with_errors": 0
+  },
+  "results": [
+    {
+      "finding": {
+        "finding_instance_id": "cccd2474d3706d61",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization",
+        "rule_name": null,
+        "file_path": "backend/app/dispatch_operations.py",
+        "start_line": 61,
+        "end_line": 61,
+        "severity": "HIGH",
+        "message": "Avoid using insecure deserialization library, backed by `pickle`, `_pickle`, `cpickle`, `dill`, `shelve`, or `yaml`, which are known to lead to remote code execution vulnerabilities.",
+        "metadata": {
+          "owasp": [
+            "A08:2017 - Insecure Deserialization",
+            "A08:2021 - Software and Data Integrity Failures",
+            "A08:2025 - Software or Data Integrity Failures"
+          ],
+          "cwe": [
+            "CWE-502: Deserialization of Untrusted Data"
+          ],
+          "references": [
+            "https://docs.python.org/3/library/pickle.html"
+          ],
+          "category": "security",
+          "technology": [
+            "django"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source backend/app/dispatch_operations.py:56; sink backend/app/dispatch_operations.py:61; đường source–sink backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:58 → backend/app/dispatch_operations.py:58; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:20.461238+00:00",
+      "processing_duration_ms": 1173,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "bbcb860ddb5d99528393105917243a02a2e849bf41e259741fafb7c17fbae204"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "fb070eec83a94b4e",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+        "rule_name": null,
+        "file_path": "backend/app/dispatch_operations.py",
+        "start_line": 61,
+        "end_line": 61,
+        "severity": "MEDIUM",
+        "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "metadata": {
+          "owasp": [
+            "A08:2017 - Insecure Deserialization",
+            "A08:2021 - Software and Data Integrity Failures",
+            "A08:2025 - Software or Data Integrity Failures"
+          ],
+          "cwe": [
+            "CWE-502: Deserialization of Untrusted Data"
+          ],
+          "references": [
+            "https://docs.python.org/3/library/pickle.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence complete; source backend/app/dispatch_operations.py:56; sink backend/app/dispatch_operations.py:61; đường source–sink backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:56 → backend/app/dispatch_operations.py:58 → backend/app/dispatch_operations.py:58; control không tìm thấy; Agent dừng vì EVIDENCE_SUFFICIENT.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:21.644036+00:00",
+      "processing_duration_ms": 1232,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "ed73b752ec6d410a51c102c7f55abc5a37ebf935eec640497ed7f3e1eec69fbd"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "26fd55fb8c1c5265",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
+        "rule_name": null,
+        "file_path": "backend/app/dispatch_operations.py",
+        "start_line": 76,
+        "end_line": 76,
+        "severity": "MEDIUM",
+        "message": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "metadata": {
+          "cwe": [
+            "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+          ],
+          "owasp": [
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A03_2021-Injection"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink backend/app/dispatch_operations.py:76; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:22.885519+00:00",
+      "processing_duration_ms": 1105,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "92dbff4b039f9a16abaadd48cd4743f1b21c971c4bba49213794355bd4ebe61f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "45b66e9f8cd48e5f",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.unverified-ssl-context.unverified-ssl-context",
+        "rule_name": null,
+        "file_path": "backend/app/dispatch_operations.py",
+        "start_line": 158,
+        "end_line": 158,
+        "severity": "HIGH",
+        "message": "Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use 'ssl.create_default_context' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A07:2021 - Identification and Authentication Failures",
+            "A07:2025 - Authentication Failures"
+          ],
+          "cwe": [
+            "CWE-295: Improper Certificate Validation"
+          ],
+          "references": [
+            "https://docs.python.org/3/library/ssl.html#ssl-security",
+            "https://docs.python.org/3/library/http.client.html#http.client.HTTPSConnection"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "confidence": "MEDIUM"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink chưa xác định; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:24.007034+00:00",
+      "processing_duration_ms": 973,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "ae6ca48001a0fc4c417259cc1a4edbeeca8eb9377872c89ef35170b5b59926b7"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "9718dd44a252f666",
+        "scanner": "SEMGREP",
+        "finding_type": "SAST",
+        "rule_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+        "rule_name": null,
+        "file_path": "backend/app/dispatch_operations.py",
+        "start_line": 159,
+        "end_line": 159,
+        "severity": "MEDIUM",
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "metadata": {
+          "cwe": [
+            "CWE-939: Improper Authorization in Handler for Custom URL Scheme"
+          ],
+          "owasp": "A01:2017 - Injection",
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "references": [
+            "https://cwe.mitre.org/data/definitions/939.html"
+          ],
+          "confidence": "LOW"
+        }
+      },
+      "context_summary": "Joern CPG evidence partial; source chưa xác định; sink backend/app/dispatch_operations.py:159; đường source–sink chưa có đường đi đầy đủ; control không tìm thấy; Agent dừng vì AGENT_NO_PROGRESS.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:24.989531+00:00",
+      "processing_duration_ms": 1016,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "cdffaf6f0d6f0059da3cd851fa03d360cc338901607fb2a7891e3fdd4495f094"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "284d0ffe9085b482",
+        "scanner": "GITLEAKS",
+        "finding_type": "SECRET",
+        "rule_id": "curl-auth-header",
+        "rule_name": "Discovered a potential authorization token provided in a curl command header, which could compromise the curl accessed resource.",
+        "file_path": "README.md",
+        "start_line": 153,
+        "end_line": 155,
+        "severity": "UNKNOWN",
+        "message": "Discovered a potential authorization token provided in a curl command header, which could compromise the curl accessed resource.",
+        "metadata": {
+          "rule_description": "Discovered a potential authorization token provided in a curl command header, which could compromise the curl accessed resource.",
+          "entropy": 3.602217
+        }
+      },
+      "context_summary": "Ngữ cảnh REDACTED_LINE_WINDOW, dòng 93-180.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.015559+00:00",
+      "processing_duration_ms": 14,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "96798c8b6058311076ffeeefc6c7119292cc2f2258b04598310e0154e6ea3905"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "4f22a7873bdce8a9c0a84965679c2eeda7f36357e1f5364c7ed77c03207a6603",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/dispatch_operations.py",
+        "start_line": 46,
+        "end_line": 46,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "dispatch_delta_138",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "unvalidated_domain_value_operation",
+          "guards": [],
+          "trace": [
+            "entrypoint:dispatch_delta_138@42",
+            "source:http_request_parameter",
+            "sink:unvalidated_domain_value_operation@46"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1-106.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.039970+00:00",
+      "processing_duration_ms": 24,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "81601acef0a57c67c5e1d2637bcc467d7dd9bb7a6644b31a4853e3404fca412f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "21093b5a631a6cc1034b64f31dc9081a5ee25d2916e1e00566ea9992480e1109",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 128,
+        "end_line": 128,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "get_current_session",
+          "entrypoint_exposed": true,
+          "source_kind": "http_request_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:get_current_session@124",
+            "source:http_request_parameter",
+            "sink:object_lookup_without_subject_scope@128"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 68-188.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.075556+00:00",
+      "processing_duration_ms": 21,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "5c25d2b7669e1469b77f0e906da3902fb539e6c26bb5ec0740314127a9fae770"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "5ebe0bd0b31e16e222b6c6736a5c8ccc7a0e922d31b05b312e1fe8c3b2afbbeb",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 520,
+        "end_line": 520,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "confirm_password_reset",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [
+            "user",
+            "user.reset_expires_at"
+          ],
+          "trace": [
+            "entrypoint:confirm_password_reset@518",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@520"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 460-580, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.107390+00:00",
+      "processing_duration_ms": 23,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "c1b07a967b34884fc96bd25ec5d7e0aa2db25d0b6a48651fe786aec17381c9bd"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "dced326436f7d4caea69764336b9876f7e6c447543e57de63d7a07415a64b69b",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 625,
+        "end_line": 625,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "list_customers",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [
+            "models.role_customer",
+            "models.role_dispatcher",
+            "models.role_ops_admin",
+            "user",
+            "user.role"
+          ],
+          "trace": [
+            "entrypoint:list_customers@623",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@625"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 565-685, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.140347+00:00",
+      "processing_duration_ms": 24,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "66c8da8a4895c8709933c3ecd86fdf2606650ae3777634d50c909802a26ee92c"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "abe9701e73732c75c9ad053957bd001331195ed2c255876a7ac44b5763e9dff4",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 684,
+        "end_line": 684,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "list_jobs",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_jobs@668",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@684"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 624-744.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.175642+00:00",
+      "processing_duration_ms": 27,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "595f8340b8c362f4dd6de6dd1d609fa4bcfc971621e51cee3422e0393a722c7d"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "945457c92af607465e3dc5fe7f308f46e403cee79da90de99fc17259880ee6fb",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 686,
+        "end_line": 686,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "list_jobs",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_jobs@668",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@686"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 626-746.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.211281+00:00",
+      "processing_duration_ms": 21,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "896b0e9f13b99fa488191d523ce856e0fd90ea7f59e4cbb1ecc72d28b87147dd"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "75c57e67ed705d09f649ec89fa4721349a898ec4f3df07ada5346670913d316d",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 688,
+        "end_line": 688,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "list_jobs",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_jobs@668",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@688"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 628-748.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.241468+00:00",
+      "processing_duration_ms": 22,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "71ddc427752ad14abd8c1aa518cb0f22fbcc2b727482d5a37f0afaf26ba1c26d"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "1f41622f5d0b9f0a48528131f0d7a3cc6950724c687e749ee1faf1cc9aa7e84c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 701,
+        "end_line": 708,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "list_jobs",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_jobs@668",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@701"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 641-768, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.273461+00:00",
+      "processing_duration_ms": 22,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "669988ef07f49020732219958e630b5b40a50974cb2cffbf6a10e09b9cf05824"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "1a6a251b59e08deb8c4d3223ee03d581ea15d10732a54477abc2de0c32b7270a",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 709,
+        "end_line": 709,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "list_jobs",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "unbounded_pagination_parameter",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_jobs@668",
+            "source:http_route_parameter",
+            "sink:unbounded_pagination_parameter@709"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 649-769.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.304963+00:00",
+      "processing_duration_ms": 21,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "4e314175a638ee96fbbcd4bec9926d1d564b32eb0330f4624c76f2cfb5fefd8f"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "794ec750e5ae838b6c9948662dcbc5023191528fa4358795f7fe2bcecb14516d",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 802,
+        "end_line": 802,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "delete_job",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:delete_job@795",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@802"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 742-862.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.336393+00:00",
+      "processing_duration_ms": 23,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "28d3e75c1cdd648c3c88e8572afbf6bc2a018a5c07a70a465bec3a95895806b1"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "cb8ca5147fead2c9ea8ff9518216bdbf60e4b37db07687171f629395fb48da27",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 914,
+        "end_line": 914,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "list_messages",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [
+            "authz.load_job_for_view",
+            "models.role_customer",
+            "user",
+            "user.role"
+          ],
+          "trace": [
+            "entrypoint:list_messages@909",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@914"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 854-974, đã bị cắt bớt.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "Context evidence is incomplete after bounded expansion."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.369541+00:00",
+      "processing_duration_ms": 21,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "b436443153fb3ba28b6bdfed03a53bf909434e591c19ce4c62cda9a9a81f0a2e"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "bb7f107c584f741ec7300ed2890a9e2c7dd42c7253eea16559b30aed4c227ed4",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 1207,
+        "end_line": 1207,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "admin_users",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [],
+          "trace": [
+            "entrypoint:admin_users@1205",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@1207"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1147-1267.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.400906+00:00",
+      "processing_duration_ms": 20,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "11c2906670df422ec371b22fd93b647071a4a1cbb369e2d4c8586de445e06b66"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "f85042021b39baf9ae5f5d6588fe0ce68b5074716da18efe48151f108da1f19c",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 1296,
+        "end_line": 1296,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "admin_audit",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [
+            "actor_id"
+          ],
+          "trace": [
+            "entrypoint:admin_audit@1281",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@1296"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1236-1356.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.431855+00:00",
+      "processing_duration_ms": 26,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "ed4a4f24f94c5e30eff7c965a45418fc3b2faceffcf75418fb1f63a691477716"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "2ccf62700285ebd7c11a67233f4f122c715febd80ef3ed63905ce213853e05ee",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 1297,
+        "end_line": 1297,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "admin_audit",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "unbounded_pagination_parameter",
+          "guards": [
+            "actor_id"
+          ],
+          "trace": [
+            "entrypoint:admin_audit@1281",
+            "source:http_route_parameter",
+            "sink:unbounded_pagination_parameter@1297"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1237-1357.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.468907+00:00",
+      "processing_duration_ms": 23,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "a5a66b6b94c18aea78998b98e664a3797a5ac4528e1407e2005d21b4f299a4cc"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "fcd7dc3931f9c4c859c459b5665fc2d3414e28d4a9951a8714544279fff95ea7",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 1304,
+        "end_line": 1304,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "admin_regions",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [],
+          "trace": [
+            "entrypoint:admin_regions@1302",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@1304"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1244-1364.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.502752+00:00",
+      "processing_duration_ms": 22,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "3887864274448795f2fc839d149e0b091a731d55f60cf60130d5c937728b5228"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "f918160912b084dd37c8b590cf549cd8b1b74539fd6ed5c74955fd702657d492",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 1326,
+        "end_line": 1326,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "admin_service_types",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [],
+          "trace": [
+            "entrypoint:admin_service_types@1324",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@1326"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1266-1386.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.536852+00:00",
+      "processing_duration_ms": 24,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "b0bcb9ae285df73e2ef151336c8b56b667954238131ed8bdd2a78459e277af72"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "19b99bdfff0bd3c59de360c56ed97a44702db257127fa3a3a20091aed0ebcf29",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 1591,
+        "end_line": 1591,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "list_webhooks",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_webhooks@1589",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@1591"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1531-1651.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.570719+00:00",
+      "processing_duration_ms": 25,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "31feb4948c9127641f4e000ea9bfcbb4a4c91548b241619746e2ca542307365a"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "577c2265a6768c5623b93081f18ec7d723d36f6499d26a3e24f796230518d065",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 1618,
+        "end_line": 1618,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "test_webhook",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:test_webhook@1611",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@1618"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1558-1678.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.607281+00:00",
+      "processing_duration_ms": 25,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "ce063459977d9b2060e829c30c2b1628bb0113e762b916f121db7469563f46dd"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "1f61ecff010140caf6a8371dc7719e324dd4f5244019ea0109f9290466c0a72b",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.business-rule-bypass",
+        "rule_name": "Bounded AST candidate for business rule bypass",
+        "file_path": "backend/app/main.py",
+        "start_line": 1636,
+        "end_line": 1636,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "business_rule_bypass",
+          "entrypoint": "list_api_keys",
+          "entrypoint_exposed": true,
+          "source_kind": "http_endpoint",
+          "sink_kind": "unbounded_collection_query",
+          "guards": [],
+          "trace": [
+            "entrypoint:list_api_keys@1634",
+            "source:http_endpoint",
+            "sink:unbounded_collection_query@1636"
+          ],
+          "cwe": "CWE-840",
+          "risk_score": 4.35,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.0,
+            "exploitability": 4.0
+          },
+          "remediation": "Recompute trusted values on the server and enforce domain and resource bounds before the operation.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1576-1696.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.643317+00:00",
+      "processing_duration_ms": 25,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "190da84e1b3fa81f84932da85dca83e5b760b6a624099a69e45fe0ffc4cfa186"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "f75dd9e37d9269f498cd6b3c765e305a45b10f5536f07a5efa689a2cba41e872",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 1672,
+        "end_line": 1672,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "integration_status_update",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:integration_status_update@1663",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@1672"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1612-1704.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.679827+00:00",
+      "processing_duration_ms": 20,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "4b574ec1acfdac0614368f1cd7d8a49e01397409b75ff75ad8c23489ba7337e6"
+    },
+    {
+      "finding": {
+        "finding_instance_id": "60e6bfced5aa9f44b4abe1a29f4d53b6c19a06a72544dd9a5ec832f3e880999f",
+        "scanner": "MODULE2",
+        "finding_type": "SAST",
+        "rule_id": "module2.logic.missing-authz-idor",
+        "rule_name": "Bounded AST candidate for missing authz idor",
+        "file_path": "backend/app/main.py",
+        "start_line": 1675,
+        "end_line": 1675,
+        "severity": "HIGH",
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "metadata": {
+          "analysis_scope": "bounded_python_ast",
+          "analysis_complete": true,
+          "component": ".",
+          "logic_class": "missing_authz_idor",
+          "entrypoint": "integration_status_update",
+          "entrypoint_exposed": true,
+          "source_kind": "http_route_parameter",
+          "sink_kind": "object_lookup_without_subject_scope",
+          "guards": [],
+          "trace": [
+            "entrypoint:integration_status_update@1663",
+            "source:http_route_parameter",
+            "sink:object_lookup_without_subject_scope@1675"
+          ],
+          "cwe": "CWE-639",
+          "risk_score": 4.45,
+          "risk_level": "CRITICAL",
+          "risk_factors": {
+            "severity": 4.0,
+            "reachability": 5.0,
+            "exposure": 4.5,
+            "data_sensitivity": 4.5,
+            "exploitability": 4.0
+          },
+          "remediation": "Bind the requested object to the authenticated subject or tenant before reading or mutating it.",
+          "validation_checklist": [
+            "Add a negative authorization or boundary test for the exact sink.",
+            "Add a positive test for the intended authorized or bounded flow.",
+            "Review the complete source-to-guard-to-sink trace."
+          ]
+        }
+      },
+      "context_summary": "Ngữ cảnh LINE_WINDOW, dòng 1615-1704.",
+      "triage_decision": {
+        "model_verdict": "NEEDS_REVIEW",
+        "model_confidence": "MEDIUM",
+        "summary": "Provider giả lập sử dụng quyết định mặc định và chuyển finding sang review thủ công.",
+        "evidence": [
+          "Không có kịch bản prompt_type chuyên biệt nên provider dùng nhánh mặc định."
+        ],
+        "missing_information": [],
+        "assumptions": [
+          "Kết quả này chỉ được tạo bởi FakeTriageProvider để kiểm thử."
+        ],
+        "model_version": "fake-triage-v1",
+        "prompt_version": "triage-prompt-v13"
+      },
+      "policy_decision": {
+        "action": "MANUAL_REVIEW",
+        "reasons": [
+          "LLM provider requested manual review."
+        ],
+        "policy_version": "conservative-policy-v2",
+        "escalated": false,
+        "escalation_reason": null
+      },
+      "processing_errors": [],
+      "processed_at": "2026-08-24T02:40:26.713308+00:00",
+      "processing_duration_ms": 22,
+      "provider_duration_ms": 0,
+      "triage_input_digest": "0b185a0400cd4aae3ed8b72bebce2ce4d8b68c20a236a4fe7808b0db04741aaf"
+    }
+  ],
+  "scanner_errors": []
+}

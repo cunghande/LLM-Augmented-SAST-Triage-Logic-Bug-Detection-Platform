@@ -170,7 +170,8 @@ def _safe_mapping(values: dict[str, Any] | None) -> str:
     if not values:
         return "Không có"
     return "; ".join(
-        f"{_safe_text(key)}={_safe_text(value)}" for key, value in sorted(values.items())
+        f"{_safe_text(key)}={_safe_text(value)}"
+        for key, value in sorted(values.items())
     )
 
 
@@ -179,6 +180,91 @@ def _line_range(start_line: int, end_line: int | None) -> str:
     if end_line is None or end_line == start_line:
         return str(start_line)
     return f"{start_line}–{end_line}"
+
+
+def _evidence_detail_lines(details: dict[str, Any] | None) -> list[str]:
+    """Render all bounded source-free Joern paths in reviewer-friendly Markdown."""
+    if not isinstance(details, dict):
+        return []
+    lines = ["", "#### Evidence Source-to-Sink chi tiết", ""]
+    paths = details.get("paths")
+    path_count = 0
+    if isinstance(paths, list):
+        for path_index, path in enumerate(paths, start=1):
+            if not isinstance(path, dict) or not isinstance(path.get("steps"), list):
+                continue
+            path_count += 1
+            files = path.get("files")
+            lines.extend(
+                [
+                    f"**Đường {path_index} — {_safe_text(path.get('path_type', 'unknown'))}**",
+                    "",
+                    f"- File đi qua: {_safe_values(files if isinstance(files, list) else None)}",
+                ]
+            )
+            for step in path["steps"]:
+                if not isinstance(step, dict):
+                    continue
+                location = f"{step.get('file_path', '?')}:{step.get('line', '?')}"
+                lines.append(
+                    f"- Bước {_safe_text(step.get('order', '?'))}: "
+                    f"`{_safe_text(step.get('kind', 'flow'))}` "
+                    f"`{_safe_text(step.get('symbol', 'unknown'))}` tại "
+                    f"`{_safe_text(location)}`"
+                )
+            lines.append("")
+    if path_count == 0:
+        lines.extend(
+            ["Chưa có đường source-to-sink hoàn chỉnh được Joern chứng minh.", ""]
+        )
+
+    callers = details.get("callers")
+    if isinstance(callers, list) and callers:
+        lines.extend(["**Call chain / entrypoint**", ""])
+        for caller in callers:
+            if isinstance(caller, dict):
+                lines.append(
+                    f"- `{_safe_text(caller.get('symbol', 'unknown'))}` tại "
+                    f"`{_safe_text(caller.get('file_path', '?'))}:"
+                    f"{_safe_text(caller.get('line', '?'))}`"
+                )
+        lines.append("")
+
+    controls = details.get("controls")
+    if isinstance(controls, list) and controls:
+        lines.extend(["**Guard / sanitizer / control**", ""])
+        for control in controls:
+            if isinstance(control, dict):
+                location = ""
+                if control.get("file_path") is not None:
+                    location = (
+                        f" tại `{_safe_text(control.get('file_path'))}:"
+                        f"{_safe_text(control.get('line', '?'))}`"
+                    )
+                lines.append(
+                    f"- `{_safe_text(control.get('symbol', 'unknown'))}` "
+                    f"[{_safe_text(control.get('control_type', 'control'))}], "
+                    f"on_path={_safe_text(control.get('on_path'))}, "
+                    f"effective={_safe_text(control.get('effective'))}{location}"
+                )
+        lines.append("")
+
+    completeness = details.get("completeness")
+    if isinstance(completeness, dict):
+        limitations = completeness.get("limitations")
+        missing = completeness.get("missing_information")
+        lines.extend(
+            [
+                f"- Trạng thái evidence: {_safe_text(completeness.get('status', 'unknown'))}",
+                f"- Source resolved: {_safe_text(completeness.get('source_resolved', False))}",
+                f"- Sink resolved: {_safe_text(completeness.get('sink_resolved', False))}",
+                f"- Taint path complete: {_safe_text(completeness.get('taint_path_complete', False))}",
+                f"- Reachability resolved: {_safe_text(completeness.get('reachability_resolved', False))}",
+                f"- Giới hạn: {_safe_values(limitations if isinstance(limitations, list) else None)}",
+                f"- Còn thiếu: {_safe_values(missing if isinstance(missing, list) else None)}",
+            ]
+        )
+    return lines
 
 
 def _rule_text(rule_id: str, rule_name: str | None) -> str:
@@ -242,8 +328,12 @@ def _project_run_metadata(batch_result: BatchResult) -> dict[str, Any]:
         "commit_sha": metadata.commit_sha,
         "working_tree_state": metadata.working_tree_state,
         "artifact_repository_match": metadata.artifact_repository_match.value,
-        "scanners_attempted": [scanner.value for scanner in metadata.scanners_attempted],
-        "scanners_succeeded": [scanner.value for scanner in metadata.scanners_succeeded],
+        "scanners_attempted": [
+            scanner.value for scanner in metadata.scanners_attempted
+        ],
+        "scanners_succeeded": [
+            scanner.value for scanner in metadata.scanners_succeeded
+        ],
         "scanner_versions": metadata.scanner_versions,
         "scanner_config_ids": metadata.scanner_config_ids,
         "input_artifact_hashes": metadata.input_artifact_hashes,
@@ -456,6 +546,11 @@ def _render_report(batch_result: BatchResult) -> str:
                 "**Tóm tắt ngữ cảnh an toàn**",
                 "",
                 f"> {_safe_text(result.context_summary or 'Không có tóm tắt ngữ cảnh.')}",
+            ]
+        )
+        lines.extend(_evidence_detail_lines(result.evidence_details))
+        lines.extend(
+            [
                 "",
                 "#### Phân tích của LLM",
                 "",
@@ -489,7 +584,9 @@ def _render_report(batch_result: BatchResult) -> str:
                 decision.evidence,
                 empty="LLM không cung cấp bằng chứng cụ thể.",
             )
-            lines.extend(["", "**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**", ""])
+            lines.extend(
+                ["", "**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**", ""]
+            )
             _append_safe_list(
                 lines,
                 decision.missing_information,
@@ -530,13 +627,17 @@ def _render_report(batch_result: BatchResult) -> str:
         )
         lines.extend(["", "#### Lỗi xử lý", ""])
         if result.processing_errors:
-            lines.extend(_render_processing_error(error) for error in result.processing_errors)
+            lines.extend(
+                _render_processing_error(error) for error in result.processing_errors
+            )
         else:
             lines.append("- Không có lỗi xử lý cho finding này.")
 
     lines.extend(["", "## 6. Lỗi scanner"])
     if batch_result.scanner_errors:
-        lines.extend(_render_processing_error(error) for error in batch_result.scanner_errors)
+        lines.extend(
+            _render_processing_error(error) for error in batch_result.scanner_errors
+        )
     else:
         lines.append("- Không có lỗi scanner.")
     lines.extend(
@@ -565,7 +666,11 @@ def _validate_input(
         raise SastTriageError(
             "Đầu vào báo cáo Markdown không hợp lệ.", error_code=_EC_INVALID_INPUT
         )
-    if output_path.is_dir() or not output_path.parent.exists() or not output_path.parent.is_dir():
+    if (
+        output_path.is_dir()
+        or not output_path.parent.exists()
+        or not output_path.parent.is_dir()
+    ):
         raise SastTriageError(
             "Đường dẫn báo cáo Markdown không hợp lệ.", error_code=_EC_INVALID_INPUT
         )

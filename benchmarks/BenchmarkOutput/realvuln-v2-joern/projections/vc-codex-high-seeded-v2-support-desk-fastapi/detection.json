@@ -1,0 +1,336 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "app/support_operations.py",
+      "start": {
+        "line": 65,
+        "col": 1
+      },
+      "end": {
+        "line": 65,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 51,
+        "col": 1
+      },
+      "end": {
+        "line": 51,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 110,
+        "col": 1
+      },
+      "end": {
+        "line": 110,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 115,
+        "col": 1
+      },
+      "end": {
+        "line": 115,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 132,
+        "col": 1
+      },
+      "end": {
+        "line": 132,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 142,
+        "col": 1
+      },
+      "end": {
+        "line": 142,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 153,
+        "col": 1
+      },
+      "end": {
+        "line": 153,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 170,
+        "col": 1
+      },
+      "end": {
+        "line": 170,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 316,
+        "col": 1
+      },
+      "end": {
+        "line": 316,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 332,
+        "col": 1
+      },
+      "end": {
+        "line": 332,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 344,
+        "col": 1
+      },
+      "end": {
+        "line": 344,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "app/routers/admin.py",
+      "start": {
+        "line": 360,
+        "col": 1
+      },
+      "end": {
+        "line": 360,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "app/routers/integrations.py",
+      "start": {
+        "line": 72,
+        "col": 1
+      },
+      "end": {
+        "line": 72,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "app/deps.py",
+      "start": {
+        "line": 32,
+        "col": 1
+      },
+      "end": {
+        "line": 32,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "app/deps.py",
+      "start": {
+        "line": 54,
+        "col": 1
+      },
+      "end": {
+        "line": 54,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

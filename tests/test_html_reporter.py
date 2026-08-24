@@ -169,6 +169,82 @@ def test_html_report_uses_source_free_joern_summary_when_metadata_has_no_trace(
     assert "Điểm nguy hiểm: db/query.py:30" in report
 
 
+def test_html_report_renders_all_detailed_cross_file_paths(tmp_path: Path) -> None:
+    batch = _batch()
+    result = batch.results[0].model_copy(
+        update={
+            "evidence_details": {
+                "paths": [
+                    {
+                        "path_type": "cross_file",
+                        "files": ["api/routes.py", "db/query.py"],
+                        "steps": [
+                            {
+                                "order": 1,
+                                "kind": "source",
+                                "symbol": "user_id",
+                                "file_path": "api/routes.py",
+                                "line": 8,
+                            },
+                            {
+                                "order": 2,
+                                "kind": "sink",
+                                "symbol": "execute",
+                                "file_path": "db/query.py",
+                                "line": 44,
+                            },
+                        ],
+                    },
+                    {
+                        "path_type": "cross_file",
+                        "files": ["api/routes.py", "shared/input.py", "db/query.py"],
+                        "steps": [
+                            {
+                                "order": 1,
+                                "kind": "source",
+                                "symbol": "user_id",
+                                "file_path": "api/routes.py",
+                                "line": 8,
+                            },
+                            {
+                                "order": 2,
+                                "kind": "flow",
+                                "symbol": "normalize",
+                                "file_path": "shared/input.py",
+                                "line": 13,
+                            },
+                            {
+                                "order": 3,
+                                "kind": "sink",
+                                "symbol": "execute",
+                                "file_path": "db/query.py",
+                                "line": 44,
+                            },
+                        ],
+                    },
+                ],
+                "callers": [
+                    {"symbol": "route", "file_path": "api/routes.py", "line": 7}
+                ],
+                "completeness": {
+                    "status": "complete",
+                    "limitations": [],
+                    "missing_information": [],
+                },
+            }
+        }
+    )
+    output = tmp_path / "report.html"
+
+    write_html_report(batch.model_copy(update={"results": [result]}), output)
+    report = output.read_text(encoding="utf-8")
+
+    assert "Đường dữ liệu 1" in report
+    assert "Đường dữ liệu 2" in report
+    assert "shared/input.py:13" in report
+    assert "Call chain / entrypoint" in report
+
+
 def test_html_report_fails_closed_on_forbidden_value(tmp_path: Path) -> None:
     canary = "HTML_REPORT_SECRET_CANARY"
     output = tmp_path / "report.html"

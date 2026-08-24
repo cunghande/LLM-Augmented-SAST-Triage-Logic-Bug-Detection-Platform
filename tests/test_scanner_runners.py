@@ -19,8 +19,15 @@ def test_semgrep_runner_uses_safe_arguments_and_writes_artifact(tmp_path: Path) 
     assert result.artifact_path is not None and result.artifact_path.read_bytes() == b'{"results": []}'
     args = run.call_args.args[0]
     assert isinstance(args, list)
-    assert args[:5] == ["semgrep", "scan", "--config", "p/python", "--json"]
-    assert args[-1] == str(repo.resolve())
+    assert args[:6] == [
+        "semgrep",
+        "scan",
+        "--no-rewrite-rule-ids",
+        "--config",
+        "p/python",
+        "--json",
+    ]
+    assert args[-1] == "."
     assert run.call_args.kwargs["shell"] is False
     assert run.call_args.kwargs["cwd"] == repo.resolve()
 

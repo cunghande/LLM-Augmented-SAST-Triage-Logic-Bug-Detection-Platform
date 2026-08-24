@@ -9,6 +9,7 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "triage-prompt-v11",
         "triage-prompt-v12",
         "triage-prompt-v13",
+        "triage-prompt-v14",
     }:
         evidence_calibration = (
             f"\n\nSTRICT EVIDENCE CALIBRATION ({prompt_version.rsplit('-', 1)[-1]}):\n"
@@ -38,7 +39,12 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "pagination for collection queries. A detected guard counts only when it "
                 "protects the exact object or business value in the trace.\n"
                 if prompt_version
-                in {"triage-prompt-v11", "triage-prompt-v12", "triage-prompt-v13"}
+                in {
+                    "triage-prompt-v11",
+                    "triage-prompt-v12",
+                    "triage-prompt-v13",
+                    "triage-prompt-v14",
+                }
                 else ""
             )
             + (
@@ -51,7 +57,8 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "specific unresolved symbol, truncated path, missing obligation, or evidence "
                 "conflict. Choose LIKELY_FP only when an exact effective control or negative "
                 "path is established.\n"
-                if prompt_version in {"triage-prompt-v12", "triage-prompt-v13"}
+                if prompt_version
+                in {"triage-prompt-v12", "triage-prompt-v13", "triage-prompt-v14"}
                 else ""
             )
             + (
@@ -60,7 +67,18 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "static evidence. Do not repeat a missing-information claim that an explicit "
                 "resolved fact answers. Preserve NEEDS_REVIEW when a genuinely unresolved "
                 "dynamic dispatch, external policy, or truncated path could change the result.\n"
-                if prompt_version == "triage-prompt-v13"
+                if prompt_version in {"triage-prompt-v13", "triage-prompt-v14"}
+                else ""
+            )
+            + (
+                "16. For Module 2 v3 evidence, use the exact source_symbol, source_line, "
+                "sink_symbol, sink_line, sink_argument, and function-scoped relevant_code. "
+                "For privileged_endpoint_without_authorization, evaluate the authorization "
+                "boundary rather than requiring an object identifier. When the bounded "
+                "function search and proof obligations are complete, this mechanism-specific "
+                "rule overrides the generic absent-configuration warning in rule 10; do not "
+                "invent unseen middleware as an effective control.\n"
+                if prompt_version == "triage-prompt-v14"
                 else ""
             )
         )

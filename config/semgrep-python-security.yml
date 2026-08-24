@@ -1,0 +1,59 @@
+rules:
+  - id: python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY
+    message: Flask SECRET_KEY is assigned a hardcoded string literal.
+    severity: WARNING
+    languages: [python]
+    metadata:
+      category: security
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+      technology: [flask]
+      confidence: HIGH
+    patterns:
+      - pattern: $APP.config[$KEY] = $VALUE
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: "(?i)^['\"]SECRET_KEY['\"]$"
+      - metavariable-regex:
+          metavariable: $VALUE
+          regex: "^(['\"]).+\\1$"
+
+  - id: python.jwt.security.unverified-jwt-decode.unverified-jwt-decode
+    message: JWT signature verification is explicitly disabled.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      category: security
+      cwe: "CWE-287: Improper Authentication"
+      technology: [jwt]
+      confidence: HIGH
+    patterns:
+      - pattern: $DECODE(..., options=$OPTIONS, ...)
+      - metavariable-pattern:
+          metavariable: $OPTIONS
+          pattern: '{..., "verify_signature": False, ...}'
+
+  - id: python.sqlalchemy.security.audit.avoid-sqlalchemy-text.avoid-sqlalchemy-text
+    message: SQLAlchemy text() receives a dynamically constructed SQL expression.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      category: security
+      cwe: "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+      technology: [sqlalchemy]
+      confidence: MEDIUM
+    patterns:
+      - pattern: text($QUERY)
+      - pattern-not: text("...")
+
+  - id: python.flask.security.audit.secure-set-cookie.secure-set-cookie
+    message: Flask response cookie is set without secure=True.
+    severity: WARNING
+    languages: [python]
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without Secure Attribute"
+      technology: [flask]
+      confidence: HIGH
+    patterns:
+      - pattern: $RESPONSE.set_cookie(...)
+      - pattern-not: $RESPONSE.set_cookie(..., secure=True, ...)

@@ -38,3 +38,10 @@ class LogicCandidate:
     remediation: str
     validation_checklist: tuple[str, ...]
     analysis_complete: bool = True
+    function_start_line: int | None = None
+    function_end_line: int | None = None
+    source_symbol: str | None = None
+    source_line: int | None = None
+    sink_symbol: str | None = None
+    sink_line: int | None = None
+    sink_argument: str | None = None

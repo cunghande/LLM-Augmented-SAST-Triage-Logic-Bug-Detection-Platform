@@ -75,9 +75,13 @@ def _normalize_artifact_paths(
                 else (repository_root / candidate).resolve(strict=False)
             )
         except OSError:
-            return _artifact_path_error(scanner, "Scanner result path could not be resolved safely.")
+            return _artifact_path_error(
+                scanner, "Scanner result path could not be resolved safely."
+            )
         if not resolved.is_relative_to(repository_root):
-            return _artifact_path_error(scanner, "Scanner result path is outside the target repository.")
+            return _artifact_path_error(
+                scanner, "Scanner result path is outside the target repository."
+            )
         normalized = resolved.relative_to(repository_root).as_posix()
         if normalized != raw_path:
             record[path_key] = normalized
@@ -96,13 +100,17 @@ def _normalize_artifact_paths(
             delete=False,
         ) as handle:
             temporary = Path(handle.name)
-            handle.write(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n")
+            handle.write(
+                json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+            )
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, artifact_path)
         temporary = None
     except OSError:
-        return _artifact_path_error(scanner, "Normalized scanner artifact could not be written.")
+        return _artifact_path_error(
+            scanner, "Normalized scanner artifact could not be written."
+        )
     finally:
         if temporary is not None and temporary.exists():
             try:
@@ -138,9 +146,13 @@ class _ScannerRunner:
         config: str | None = None,
     ) -> None:
         if timeout_seconds <= 0:
-            raise SastTriageError("Scanner timeout must be positive.", "SCANNER_INVALID_CONFIGURATION")
+            raise SastTriageError(
+                "Scanner timeout must be positive.", "SCANNER_INVALID_CONFIGURATION"
+            )
         if executable is not None and not executable.strip():
-            raise SastTriageError("Scanner executable must not be empty.", "SCANNER_INVALID_CONFIGURATION")
+            raise SastTriageError(
+                "Scanner executable must not be empty.", "SCANNER_INVALID_CONFIGURATION"
+            )
         self._executable = executable or self.executable
         self._timeout_seconds = timeout_seconds
         self._config = config
@@ -150,12 +162,19 @@ class _ScannerRunner:
         """Chạy scanner an toàn và ghi stdout vào artifact cùng lần chạy."""
         root = repository_root.resolve()
         if not root.is_dir():
-            return self._failure("SCANNER_REPOSITORY_INVALID", "Scanner repository path is invalid.")
+            return self._failure(
+                "SCANNER_REPOSITORY_INVALID", "Scanner repository path is invalid."
+            )
         destination = output_dir.resolve()
         destination.mkdir(parents=True, exist_ok=True)
         artifact_path = destination / self.output_filename
-        if shutil.which(self._executable) is None and not Path(self._executable).is_file():
-            return self._failure("SCANNER_EXECUTABLE_NOT_FOUND", "Scanner executable was not found.")
+        if (
+            shutil.which(self._executable) is None
+            and not Path(self._executable).is_file()
+        ):
+            return self._failure(
+                "SCANNER_EXECUTABLE_NOT_FOUND", "Scanner executable was not found."
+            )
         version = self._version()
         command = self._command(root, artifact_path)
         try:
@@ -168,17 +187,26 @@ class _ScannerRunner:
                 timeout=self._timeout_seconds,
             )
         except FileNotFoundError:
-            return self._failure("SCANNER_EXECUTABLE_NOT_FOUND", "Scanner executable was not found.")
+            return self._failure(
+                "SCANNER_EXECUTABLE_NOT_FOUND", "Scanner executable was not found."
+            )
         except subprocess.TimeoutExpired:
-            return self._failure("SCANNER_TIMEOUT", "Scanner process timed out.", retryable=True)
+            return self._failure(
+                "SCANNER_TIMEOUT", "Scanner process timed out.", retryable=True
+            )
         except OSError:
-            return self._failure("SCANNER_PROCESS_ERROR", "Scanner process could not be started.")
+            return self._failure(
+                "SCANNER_PROCESS_ERROR", "Scanner process could not be started."
+            )
 
         if not artifact_path.exists():
             try:
                 artifact_path.write_bytes(completed.stdout)
             except OSError:
-                return self._failure("SCANNER_ARTIFACT_WRITE_ERROR", "Scanner artifact could not be written.")
+                return self._failure(
+                    "SCANNER_ARTIFACT_WRITE_ERROR",
+                    "Scanner artifact could not be written.",
+                )
         if completed.returncode not in self.finding_exit_codes:
             return ScannerRunResult(
                 scanner=self.scanner,
@@ -213,7 +241,9 @@ class _ScannerRunner:
         return self._config_identifier
 
     @staticmethod
-    def _safe_config_identifier(config: str | None, root: Path | None = None) -> str | None:
+    def _safe_config_identifier(
+        config: str | None, root: Path | None = None
+    ) -> str | None:
         """Return a report-safe registry ID or local config content hash."""
         if config is None:
             return None
@@ -229,7 +259,11 @@ class _ScannerRunner:
             except OSError:
                 return "local-config-unreadable"
             return f"local-sha256:{digest}"
-        if raw_candidate.is_absolute() or raw_candidate.suffix.lower() in {".yml", ".yaml", ".json"}:
+        if raw_candidate.is_absolute() or raw_candidate.suffix.lower() in {
+            ".yml",
+            ".yaml",
+            ".json",
+        }:
             return "local-config-unresolved"
         return config
 
@@ -248,8 +282,16 @@ class _ScannerRunner:
             return None
         raw_stdout = getattr(completed, "stdout", "")
         raw_stderr = getattr(completed, "stderr", "")
-        stdout = raw_stdout.decode("utf-8", errors="ignore") if isinstance(raw_stdout, bytes) else raw_stdout
-        stderr = raw_stderr.decode("utf-8", errors="ignore") if isinstance(raw_stderr, bytes) else raw_stderr
+        stdout = (
+            raw_stdout.decode("utf-8", errors="ignore")
+            if isinstance(raw_stdout, bytes)
+            else raw_stdout
+        )
+        stderr = (
+            raw_stderr.decode("utf-8", errors="ignore")
+            if isinstance(raw_stderr, bytes)
+            else raw_stderr
+        )
         combined = f"{stdout or ''}\n{stderr or ''}"
         match = re.search(r"\b\d+\.\d+(?:\.\d+)?\b", combined)
         return match.group(0) if match else None
@@ -258,12 +300,22 @@ class _ScannerRunner:
         """Return scanner-specific version command arguments."""
         return ["--version"]
 
-    def _failure(self, code: str, message: str, retryable: bool = False) -> ScannerRunResult:
+    def _failure(
+        self, code: str, message: str, retryable: bool = False
+    ) -> ScannerRunResult:
         """Tạo lỗi vận hành mà không có chi tiết subprocess thô."""
         return ScannerRunResult(
             scanner=self.scanner,
             artifact_path=None,
-            errors=(ProcessingError(scanner=self.scanner, stage=ProcessingStage.PARSE, error_code=code, safe_message=message, retryable=retryable),),
+            errors=(
+                ProcessingError(
+                    scanner=self.scanner,
+                    stage=ProcessingStage.PARSE,
+                    error_code=code,
+                    safe_message=message,
+                    retryable=retryable,
+                ),
+            ),
             succeeded=False,
             exit_code=None,
             version=None,
@@ -296,7 +348,9 @@ class SemgrepRunner(_ScannerRunner):
         """Create a Semgrep runner with an explicit ruleset."""
         configs = (config,) if isinstance(config, str) else config
         if not configs or any(not item.strip() for item in configs):
-            raise SastTriageError("Semgrep config must not be empty.", "SCANNER_INVALID_CONFIGURATION")
+            raise SastTriageError(
+                "Semgrep config must not be empty.", "SCANNER_INVALID_CONFIGURATION"
+            )
         self._configs = configs
         super().__init__(executable, timeout_seconds, "+".join(configs))
 
@@ -325,7 +379,10 @@ class SemgrepRunner(_ScannerRunner):
         )
 
     def _command(self, repository_root: Path, artifact_path: Path) -> list[str]:
-        safe_ids = [self._safe_config_identifier(item, repository_root) or "unknown" for item in self._configs]
+        safe_ids = [
+            self._safe_config_identifier(item, repository_root) or "unknown"
+            for item in self._configs
+        ]
         self._config_identifier = "+".join(safe_ids)
         command = [
             self._executable,
@@ -333,7 +390,11 @@ class SemgrepRunner(_ScannerRunner):
         ]
         for config in self._configs:
             command.extend(["--config", config])
-        command.extend(["--json", "--output", str(artifact_path), str(repository_root)])
+        # The process already runs with ``cwd=repository_root``.  A relative
+        # target keeps Semgrep's auxiliary ``paths.scanned`` metadata free of
+        # host-specific absolute repository paths.
+        command.extend(["--json", "--output", str(artifact_path), "."])
+        command.insert(2, "--no-rewrite-rule-ids")
         return command
 
 
@@ -394,6 +455,8 @@ class GitleaksRunner(_ScannerRunner):
             str(repository_root),
         ]
         if self._config and self._config != "gitleaks-built-in":
-            self._config_identifier = self._safe_config_identifier(self._config, repository_root)
+            self._config_identifier = self._safe_config_identifier(
+                self._config, repository_root
+            )
             command.extend(["--config", self._config])
         return command

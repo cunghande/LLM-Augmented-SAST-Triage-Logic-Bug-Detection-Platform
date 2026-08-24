@@ -38,10 +38,12 @@ _NON_INPUT_PARAMETERS = {
     "current_user",
     "user",
     "db",
+    "info",
     "session",
 }
 _ID_TOKENS = ("id", "uuid", "slug", "key", "reference", "token")
 _LOOKUP_CALLS = (
+    "execute",
     "get",
     "get_or_404",
     "get_object_or_404",
@@ -77,6 +79,7 @@ _AUTHZ_CALL_TOKENS = (
     "has_permission",
     "is_owner",
     "ownership",
+    "owning",
     "permission",
     "require_role",
     "tenant_scope",
@@ -86,6 +89,7 @@ _DOMAIN_VALUE_TOKENS = (
     "balance",
     "credit",
     "discount",
+    "delta",
     "inventory",
     "limit",
     "price",
@@ -143,6 +147,14 @@ def _is_endpoint(function: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
     ):
         return True
     parameters = (*function.args.posonlyargs, *function.args.args)
+    if function.name == "mutate" or function.name.startswith("resolve_"):
+        return True
+    if (
+        parameters
+        and parameters[0].arg in {"self", "cls"}
+        and function.name.lower() in {"get", "post", "put", "patch", "delete"}
+    ):
+        return True
     return bool(parameters and parameters[0].arg in _REQUEST_ROOTS)
 
 
@@ -215,11 +227,19 @@ def _is_authz_call(name: str | None) -> bool:
             for token in ("for_access", "for_manage", "for_update", "for_view")
         )
     )
-    return semantic_prefix and semantic_target or "visible_to" in last or verified_authz_lookup
+    scoped_helper = last.endswith(("_access", "_allowed", "_permission"))
+    return (
+        semantic_prefix and semantic_target
+        or "visible_to" in last
+        or verified_authz_lookup
+        or scoped_helper
+    )
 
 
 def _is_identifier_name(name: str) -> bool:
     lowered = name.lower()
+    if lowered.endswith(("id", "ref")):
+        return True
     return any(
         lowered == token
         or lowered.endswith(f"_{token}")
@@ -344,15 +364,47 @@ def _has_object_authz_guard(nodes: tuple[ast.AST, ...]) -> bool:
             continue
         names = _node_names(node.test)
         has_actor = any(
-            actor == name or name.endswith(f".{actor}") or actor in name
+            actor == name or name.endswith(f".{actor}")
             for actor in _ACTOR_NAMES
             for name in names
         )
         has_scope = any(
-            any(token in name for token in ("owner", "tenant", "user_id", "sender_id", "receiver_id", "role", "scope"))
+            any(
+                token in name
+                for token in (
+                    "admin",
+                    "assistant",
+                    "employee",
+                    "instructor",
+                    "manager",
+                    "owner",
+                    "patient",
+                    "provider",
+                    "receiver_id",
+                    "role",
+                    "scope",
+                    "sender_id",
+                    "student_id",
+                    "tenant",
+                    "user_id",
+                )
+            )
             for name in names
         )
-        if has_actor and has_scope:
+        has_authz_boolean = any(
+            _last_name(name).startswith("can_")
+            or any(
+                token in _last_name(name)
+                for token in ("allowed", "authorized", "permission")
+            )
+            for name in names
+        )
+        denies_access = isinstance(node, ast.Assert) or any(
+            isinstance(child, (ast.Raise, ast.Return))
+            for statement in node.body
+            for child in ast.walk(statement)
+        )
+        if denies_access and (has_actor and has_scope or has_authz_boolean):
             return True
     return False
 
@@ -364,7 +416,7 @@ def _lookup_is_subject_scoped(node: ast.Call) -> bool:
         for name in _node_names(argument)
     }
     has_actor = any(
-        name == actor or name.endswith(f".{actor}") or actor in name
+        name == actor or name.endswith(f".{actor}")
         for actor in _ACTOR_NAMES
         for name in names
     )
@@ -573,6 +625,11 @@ def _candidate(
     source_kind: str,
     sink_kind: str,
     guards: tuple[str, ...],
+    source_symbol: str | None = None,
+    source_line: int | None = None,
+    sink_symbol: str | None = None,
+    sink_line: int | None = None,
+    sink_argument: str | None = None,
 ) -> LogicCandidate:
     cwe, severity, remediation = _CLASS_FACTS[bug_class]
     score, level, factors = _risk(bug_class, entrypoint=entrypoint)
@@ -603,6 +660,13 @@ def _candidate(
             "Add a positive test for the intended authorized or bounded flow.",
             "Review the complete source-to-guard-to-sink trace.",
         ),
+        function_start_line=function.lineno,
+        function_end_line=function.end_lineno or function.lineno,
+        source_symbol=source_symbol,
+        source_line=source_line or function.lineno,
+        sink_symbol=sink_symbol,
+        sink_line=sink_line or line,
+        sink_argument=sink_argument,
     )
 
 
@@ -622,10 +686,24 @@ def _idor_candidates(
         if _lookup_is_subject_scoped(node):
             continue
         arguments = (*node.args, *(item.value for item in node.keywords))
-        source_kind = next((_source_for(item, sources) for item in arguments if _source_for(item, sources)), None)
+        source_argument = next(
+            (item for item in arguments if _source_for(item, sources)),
+            None,
+        )
+        source_kind = _source_for(source_argument, sources)
         names = {name.rsplit(".", 1)[-1] for item in arguments for name in _node_names(item)}
-        if source_kind is None or not any(_is_identifier_name(name) for name in names):
+        route_identifier = source_kind == "http_route_parameter"
+        if source_kind is None or not (
+            route_identifier or any(_is_identifier_name(name) for name in names)
+        ):
             continue
+        source_symbols = sorted(
+            name
+            for name in names
+            if name in sources and sources[name] == source_kind
+        )
+        source_symbol = source_symbols[0] if source_symbols else None
+        sink_symbol = _qualified_name(node.func)
         results.append(
             _candidate(
                 LogicBugClass.MISSING_AUTHZ_IDOR,
@@ -635,10 +713,126 @@ def _idor_candidates(
                 source_kind=source_kind,
                 sink_kind="object_lookup_without_subject_scope",
                 guards=guards,
+                source_symbol=source_symbol,
+                source_line=(
+                    source_argument.lineno
+                    if source_argument is not None
+                    and hasattr(source_argument, "lineno")
+                    else function.lineno
+                ),
+                sink_symbol=sink_symbol,
+                sink_line=node.lineno,
+                sink_argument=source_symbol,
                 **common,
             )
         )
     return results
+
+
+def _missing_authorization_candidates(
+    function: ast.FunctionDef | ast.AsyncFunctionDef,
+    nodes: tuple[ast.AST, ...],
+    sources: dict[str, str],
+    **common: object,
+) -> list[LogicCandidate]:
+    """Detect narrowly named privileged endpoints without an authorization gate."""
+    del sources
+    if not bool(common.get("entrypoint")):
+        return []
+    if _has_object_authz_guard(nodes):
+        return []
+    name = function.name.lower()
+    privileged_tokens = (
+        "audit",
+        "delete_all",
+        "difficulty",
+        "secret",
+        "reset",
+        "start_over",
+        "all_users",
+    )
+    if not any(token in name for token in privileged_tokens):
+        return []
+    calls = [node for node in nodes if isinstance(node, ast.Call)]
+    preferred_tokens = {
+        "audit": ("query", "order_by", "all"),
+        "delete_all": ("delete",),
+        "difficulty": ("set_mode",),
+        "secret": ("secret", "token", "key"),
+        "reset": ("reset", "initialize"),
+        "start_over": ("initialize", "reset"),
+        "all_users": ("all", "query"),
+    }
+    active_tokens = next(
+        (tokens for token, tokens in preferred_tokens.items() if token in name),
+        (),
+    )
+    sink = next(
+        (
+            node
+            for node in calls
+            if any(token in _qualified_name(node.func).lower() for token in active_tokens)
+        ),
+        calls[0] if calls else None,
+    )
+    return [
+        _candidate(
+            LogicBugClass.MISSING_AUTHZ_IDOR,
+            function=function,
+            line=function.lineno,
+            end_line=function.end_lineno or function.lineno,
+            source_kind="http_or_graphql_endpoint",
+            sink_kind="privileged_endpoint_without_authorization",
+            guards=_guard_names(nodes),
+            source_symbol=function.name,
+            source_line=function.lineno,
+            sink_symbol=_qualified_name(sink.func) if sink is not None else function.name,
+            sink_line=sink.lineno if sink is not None else function.lineno,
+            sink_argument="authorization_boundary",
+            **common,
+        )
+    ]
+
+
+def _actor_binding_override_candidates(
+    function: ast.FunctionDef | ast.AsyncFunctionDef,
+    nodes: tuple[ast.AST, ...],
+    sources: dict[str, str],
+    **common: object,
+) -> list[LogicCandidate]:
+    """Detect blanket request-map updates that can overwrite an actor binding."""
+    del sources
+    if _has_object_authz_guard(nodes):
+        return []
+    for node in nodes:
+        if not isinstance(node, ast.Call):
+            continue
+        name = _qualified_name(node.func)
+        if _last_name(name) != "update" or not node.args:
+            continue
+        if _request_source_kind(node.args[0]) is None:
+            continue
+        receiver = _qualified_name(node.func.value) if isinstance(node.func, ast.Attribute) else None
+        if receiver is None:
+            continue
+        return [
+            _candidate(
+                LogicBugClass.MISSING_AUTHZ_IDOR,
+                function=function,
+                line=node.lineno,
+                end_line=node.end_lineno or node.lineno,
+                source_kind="http_request_body",
+                sink_kind="request_mapping_overwrites_actor_binding",
+                guards=_guard_names(nodes),
+                source_symbol="request_body",
+                source_line=node.args[0].lineno,
+                sink_symbol=name,
+                sink_line=node.lineno,
+                sink_argument=receiver,
+                **common,
+            )
+        ]
+    return []
 
 
 def _business_rule_candidates(
@@ -652,6 +846,11 @@ def _business_rule_candidates(
     results: list[LogicCandidate] = []
     for variable, source_kind in sources.items():
         last = variable.rsplit(".", 1)[-1].lower()
+        if any(
+            token == last or last.endswith(f"_{token}")
+            for token in _PAGINATION_TOKENS
+        ):
+            continue
         if not any(token in last for token in _DOMAIN_VALUE_TOKENS):
             continue
         roots = _source_roots(variable, assignments)
@@ -714,6 +913,25 @@ def _business_rule_candidates(
                     else "unvalidated_domain_value_operation"
                 ),
                 guards=guards,
+                source_symbol=variable,
+                source_line=min(
+                    (
+                        node.lineno
+                        for node in nodes
+                        if isinstance(node, (ast.Assign, ast.AnnAssign))
+                        and variable.lower() in _node_names(node)
+                    ),
+                    default=function.lineno,
+                ),
+                sink_symbol=(
+                    _qualified_name(sink.func)
+                    if isinstance(sink, ast.Call)
+                    else "return"
+                    if isinstance(sink, ast.Return)
+                    else "augmented_assignment"
+                ),
+                sink_line=sink.lineno,
+                sink_argument=variable,
                 **common,
             )
         )
@@ -766,6 +984,11 @@ def _pagination_candidates(
                 source_kind=source_kind,
                 sink_kind="unbounded_pagination_parameter",
                 guards=guards,
+                source_symbol=variable,
+                source_line=function.lineno,
+                sink_symbol=_qualified_name(sink.func),
+                sink_line=sink.lineno,
+                sink_argument=variable,
                 **common,
             )
         )
@@ -796,6 +1019,11 @@ def _pagination_candidates(
                 source_kind="http_endpoint",
                 sink_kind="unbounded_collection_query",
                 guards=guards,
+                source_symbol=function.name,
+                source_line=function.lineno,
+                sink_symbol=_qualified_name(unbounded_query.func),
+                sink_line=unbounded_query.lineno,
+                sink_argument="collection",
                 **common,
             )
         )
@@ -833,6 +1061,12 @@ def analyze_python_module(
             "entrypoint": entrypoint,
         }
         results.extend(_idor_candidates(function, nodes, sources, **common))
+        results.extend(
+            _missing_authorization_candidates(function, nodes, sources, **common)
+        )
+        results.extend(
+            _actor_binding_override_candidates(function, nodes, sources, **common)
+        )
         results.extend(_business_rule_candidates(function, nodes, sources, **common))
         results.extend(_pagination_candidates(function, nodes, sources, **common))
 

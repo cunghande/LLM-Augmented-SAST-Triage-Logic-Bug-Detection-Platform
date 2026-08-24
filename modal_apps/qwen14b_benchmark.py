@@ -53,7 +53,7 @@ OUTPUT_JSON = (
     / "BenchmarkOutput"
     / "qwen3-14b-awq-triage-benchmark-v13-joern-b200.json"
 )
-PROMPT_VERSION = "triage-prompt-v13"
+PROMPT_VERSION = "triage-prompt-v14"
 OUTPUT_SCHEMA_VERSION = "triage-decision-v1"
 _TEST_NAME = re.compile(r"BenchmarkTest\d{5}")
 

@@ -49,11 +49,16 @@ tiên: tài liệu khác chủ sở hữu, tính giá giỏ hàng và giới h�
 
 ## Thứ tự hoàn thiện
 
-1. Bảo vệ domain boundary và kiểm tra rò rỉ.
-2. Hoàn thiện benchmark held-out và quy trình adjudication.
-3. Thêm adversarial/metamorphic prompt-injection evaluation.
-4. Review candidate ngoài vùng ground truth và xác thực trên ba service được phép.
-5. Đo độ ổn định, failure rate và calibration của provider thật.
-6. Chạy lại benchmark Joern trên repository và ground truth mới.
+1. [x] Bảo vệ domain boundary và kiểm tra rò rỉ.
+2. [x] Thêm split-level metric cho benchmark; split hiện tại là retrospective,
+   chưa phải claim-bearing held-out evaluation.
+3. [x] Thêm adversarial/metamorphic prompt-injection regression evaluation.
+4. [ ] Hoàn thiện quy trình adjudication và đóng băng một held-out dataset mới
+   trước khi tiếp tục tinh chỉnh detector/prompt.
+5. [ ] Review candidate ngoài vùng ground truth và xác thực trên ba service được phép.
+6. [ ] Đo độ ổn định, failure rate và calibration của provider thật trên held-out mới.
+7. [x] Chạy lại focused detector benchmark trên repository và ground truth hiện có.
+8. [x] Xác minh pipeline Joern 66 repository bằng runtime Docker; aggregate
+   summary ngoài phạm vi focused đã được loại khỏi kết quả Sprint 2.
 
 Chi tiết phạm vi, lệnh demo và benchmark: [`sprint-2-scope.md`](sprint-2-scope.md).

@@ -142,7 +142,9 @@ def test_graph_agent_hard_stops_after_five_tool_calls() -> None:
         nonlocal call_number
         call_number += 1
         return GraphEvidence(
-            callers=(GraphStep("candidate", f"caller_{call_number}", "app.py", call_number),)
+            callers=(
+                GraphStep("candidate", f"caller_{call_number}", "app.py", call_number),
+            )
         )
 
     backend.run_tool = incomplete_progress  # type: ignore[method-assign]
@@ -181,7 +183,10 @@ def test_joern_target_uses_rule_scoped_sink_and_full_finding_range() -> None:
         ("python.lang.security.audit.dynamic-urllib-use-detected", "urlopen"),
         ("python.flask.security.audit.secure-set-cookie", "set_cookie"),
         ("python.lang.security.deserialization.pickle.avoid-pickle", "dumps"),
-        ("python.flask.security.audit.render-template-string", "render_template_string"),
+        (
+            "python.flask.security.audit.render-template-string",
+            "render_template_string",
+        ),
     ),
 )
 def test_joern_sink_mapping_covers_framework_rules(
@@ -198,11 +203,25 @@ def test_joern_sink_mapping_covers_framework_rules(
 @pytest.mark.parametrize(
     ("rule_id", "expected"),
     (
-        ("python.flask.security.audit.render-template-string", RuleMechanism.TAINT_FLOW),
-        ("python.sqlalchemy.security.audit.avoid-sqlalchemy-text", RuleMechanism.TAINT_FLOW),
-        ("python.lang.security.deserialization.pickle.avoid-pickle", RuleMechanism.TAINT_FLOW),
-        ("python.lang.security.audit.dynamic-urllib-use-detected", RuleMechanism.TAINT_FLOW),
+        (
+            "python.flask.security.audit.render-template-string",
+            RuleMechanism.TAINT_FLOW,
+        ),
+        (
+            "python.sqlalchemy.security.audit.avoid-sqlalchemy-text",
+            RuleMechanism.TAINT_FLOW,
+        ),
+        (
+            "python.lang.security.deserialization.pickle.avoid-pickle",
+            RuleMechanism.TAINT_FLOW,
+        ),
+        (
+            "python.lang.security.audit.dynamic-urllib-use-detected",
+            RuleMechanism.TAINT_FLOW,
+        ),
         ("python.flask.security.audit.secure-set-cookie", RuleMechanism.CONFIGURATION),
+        ("python.flask.security.audit.hardcoded-config", RuleMechanism.CONFIGURATION),
+        ("python.jwt.security.unverified-jwt-decode", RuleMechanism.INTRINSIC_USAGE),
     ),
 )
 def test_rule_semantics_cover_target_frameworks(
@@ -243,6 +262,98 @@ def test_complete_ssti_graph_projects_taint_mechanism() -> None:
     assert projection["deterministic_verification"]["source_reaches_sink"] is True
 
 
+def test_report_projection_preserves_every_cross_file_path_and_caller() -> None:
+    class MultiPathBackend(_SequenceBackend):
+        def run_tool(
+            self,
+            tool_name: str,
+            finding: NormalizedFinding,
+            evidence: GraphEvidence,
+            *,
+            max_depth: int,
+            max_paths: int,
+            max_nodes: int,
+        ) -> GraphEvidence:
+            if tool_name == "trace_dataflow":
+                return GraphEvidence(
+                    source_type="endpoint_parameter",
+                    source_file="api/routes.py",
+                    source_line=8,
+                    source_user_controlled=True,
+                    paths=(
+                        (
+                            GraphStep(
+                                "method_parameter_in", "user_id", "api/routes.py", 8
+                            ),
+                            GraphStep("call", "load_user", "services/users.py", 21),
+                            GraphStep("call", "execute", "db/query.py", 44),
+                        ),
+                        (
+                            GraphStep(
+                                "method_parameter_in", "user_id", "api/routes.py", 8
+                            ),
+                            GraphStep("call", "normalize", "shared/input.py", 13),
+                            GraphStep("call", "execute", "db/query.py", 44),
+                        ),
+                    ),
+                    source_reaches_sink=True,
+                    path_complete=True,
+                    provenance=("JOERN_DATAFLOW",),
+                )
+            return super().run_tool(
+                tool_name,
+                finding,
+                evidence,
+                max_depth=max_depth,
+                max_paths=max_paths,
+                max_nodes=max_nodes,
+            )
+
+    finding = _finding()
+    context = SanitizedContext(
+        finding_id=finding.finding_instance_id,
+        sanitized_snippet="sanitized code",
+        context_strategy=ContextStrategy.LINE_WINDOW,
+        context_start_line=1,
+        context_end_line=5,
+        finding_start_line=5,
+        finding_end_line=5,
+        path_category=PathCategory.PRODUCTION,
+        source_kind=SourceKind.WORKTREE,
+        context_available=True,
+    )
+
+    result = build_evidence_context(
+        finding,
+        context,
+        analysis_backend=MultiPathBackend(),
+    )
+
+    assert len(result.report_evidence["paths"]) == 2
+    assert result.report_evidence["files"] == [
+        "api/routes.py",
+        "services/users.py",
+        "db/query.py",
+        "shared/input.py",
+    ]
+    assert result.report_evidence["callers"] == [
+        {
+            "kind": "caller",
+            "symbol": "route",
+            "file_path": "routes.py",
+            "line": 4,
+        }
+    ]
+
+
+def test_joern_source_selector_includes_endpoint_parameters() -> None:
+    selector = JoernAnalysisBackend._source_expression(None, same_file=False)
+
+    assert "endpointParameters" in selector
+    assert "method.parameter" in selector
+    assert ".*_id" in selector
+
+
 def test_template_finding_uses_safe_fallback_instead_of_python_cpg() -> None:
     finding = _finding().model_copy(
         update={
@@ -273,9 +384,10 @@ def test_template_finding_uses_safe_fallback_instead_of_python_cpg() -> None:
     assert result.complete is False
     assert result.tool_names == ("template_context_projection",)
     assert projection["sink"]["sink_type"] == "html_rendering"
-    assert "NON_PYTHON_TEMPLATE_DATAFLOW_UNSUPPORTED" in projection[
-        "context_completeness"
-    ]["limitations"]
+    assert (
+        "NON_PYTHON_TEMPLATE_DATAFLOW_UNSUPPORTED"
+        in projection["context_completeness"]["limitations"]
+    )
 
 
 def test_joern_source_selector_excludes_deserialization_sinks() -> None:
@@ -346,7 +458,9 @@ def test_containerized_joern_reuses_daemon_mount_and_network(
             )
         return CompletedProcess(arguments, 0, stdout="container-id", stderr="")
 
-    monkeypatch.setattr("sast_triage.analysis.joern.socket.gethostname", lambda: "app-id")
+    monkeypatch.setattr(
+        "sast_triage.analysis.joern.socket.gethostname", lambda: "app-id"
+    )
     backend._docker = docker  # type: ignore[method-assign]
 
     backend._start_container()
@@ -355,8 +469,7 @@ def test_containerized_joern_reuses_daemon_mount_and_network(
     assert ("--network", "sast-triage-runtime") == run[5:7]
     assert "--publish" not in run
     assert (
-        "type=bind,source=/daemon/target-repo,"
-        "target=/workspace/repository,readonly"
+        "type=bind,source=/daemon/target-repo,target=/workspace/repository,readonly"
     ) in run
 
 

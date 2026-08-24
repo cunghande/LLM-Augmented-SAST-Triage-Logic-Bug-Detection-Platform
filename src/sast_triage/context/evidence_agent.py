@@ -31,8 +31,8 @@ class GraphEvidenceExpansionAgent:
         max_iterations: int = 5,
         max_tool_calls: int = 5,
         max_depth: int = 5,
-        max_paths: int = 10,
-        max_nodes: int = 500,
+        max_paths: int = 50,
+        max_nodes: int = 1_000,
         timeout_seconds: float = 60.0,
     ) -> None:
         if not 1 <= max_iterations <= 5:

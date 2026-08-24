@@ -40,6 +40,8 @@ class GraphControl:
     control_type: str
     on_path: bool
     effective: bool | None
+    file_path: str | None = None
+    line: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,7 +70,9 @@ class GraphEvidence:
         return GraphEvidence(
             source_type=other.source_type or self.source_type,
             source_file=other.source_file or self.source_file,
-            source_line=(other.source_line if other.source_line is not None else self.source_line),
+            source_line=(
+                other.source_line if other.source_line is not None else self.source_line
+            ),
             source_user_controlled=(
                 other.source_user_controlled
                 if other.source_user_controlled is not None
@@ -77,7 +81,9 @@ class GraphEvidence:
             sink_type=other.sink_type or self.sink_type,
             sink_symbol=other.sink_symbol or self.sink_symbol,
             sink_file=other.sink_file or self.sink_file,
-            sink_line=other.sink_line if other.sink_line is not None else self.sink_line,
+            sink_line=other.sink_line
+            if other.sink_line is not None
+            else self.sink_line,
             paths=tuple(dict.fromkeys((*self.paths, *other.paths))),
             callers=tuple(dict.fromkeys((*self.callers, *other.callers))),
             controls=tuple(dict.fromkeys((*self.controls, *other.controls))),
@@ -87,7 +93,8 @@ class GraphEvidence:
                 else self.source_reaches_sink
             ),
             path_complete=self.path_complete or other.path_complete,
-            reachability_resolved=self.reachability_resolved or other.reachability_resolved,
+            reachability_resolved=self.reachability_resolved
+            or other.reachability_resolved,
             limitations=tuple(dict.fromkeys((*self.limitations, *other.limitations))),
             provenance=tuple(dict.fromkeys((*self.provenance, *other.provenance))),
         )

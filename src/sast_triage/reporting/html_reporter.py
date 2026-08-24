@@ -68,7 +68,9 @@ def _line_range(start: int, end: int | None) -> str:
 def _string_list(value: object) -> tuple[str, ...]:
     if not isinstance(value, (list, tuple)):
         return ()
-    return tuple(str(item) for item in value if isinstance(item, (str, int, float, bool)))
+    return tuple(
+        str(item) for item in value if isinstance(item, (str, int, float, bool))
+    )
 
 
 def _list(items: Iterable[object], *, empty: str) -> str:
@@ -157,9 +159,7 @@ def _joern_summary_trace(context_summary: str | None) -> tuple[str, ...]:
     control = fields.get("control")
     if control and control != "không tìm thấy":
         steps.extend(
-            f"Kiểm soát: {item.strip()}"
-            for item in control.split(",")
-            if item.strip()
+            f"Kiểm soát: {item.strip()}" for item in control.split(",") if item.strip()
         )
     sink = fields.get("sink")
     if sink and sink != "chưa xác định":
@@ -171,7 +171,11 @@ def _trace_html(
     metadata: dict[str, Any],
     backend: str,
     context_summary: str | None,
+    evidence_details: dict[str, Any] | None = None,
 ) -> str:
+    detailed = _detailed_evidence_html(evidence_details)
+    if detailed:
+        return detailed
     steps = _trace(metadata)
     if not steps and backend == "joern":
         steps = _joern_summary_trace(context_summary)
@@ -194,7 +198,106 @@ def _trace_html(
         cards.append(
             f'<div class="{kind}"><span>{index}</span><strong>{_escape(step)}</strong></div>'
         )
-    return '<div class="flow">' + '<div class="arrow">&rarr;</div>'.join(cards) + "</div>"
+    return (
+        '<div class="flow">' + '<div class="arrow">&rarr;</div>'.join(cards) + "</div>"
+    )
+
+
+def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
+    """Render every safe bounded path, caller and limitation exported by Joern."""
+    if not isinstance(details, dict):
+        return ""
+    paths = details.get("paths")
+    sections: list[str] = []
+    if isinstance(paths, list):
+        for path_number, path in enumerate(paths, start=1):
+            if not isinstance(path, dict) or not isinstance(path.get("steps"), list):
+                continue
+            cards: list[str] = []
+            for step_number, step in enumerate(path["steps"], start=1):
+                if not isinstance(step, dict):
+                    continue
+                kind = str(step.get("kind", "flow"))
+                css_class = "flow-step"
+                if step_number == 1:
+                    css_class += " source"
+                elif step_number == len(path["steps"]):
+                    css_class += " sink"
+                location = f"{step.get('file_path', '?')}:{step.get('line', '?')}"
+                label = f"{kind}: {step.get('symbol', 'unknown')} — {location}"
+                cards.append(
+                    f'<div class="{css_class}"><span>{step_number}</span>'
+                    f"<strong>{_escape(label)}</strong></div>"
+                )
+            if not cards:
+                continue
+            files = _string_list(path.get("files"))
+            path_type = str(path.get("path_type", "unknown"))
+            sections.append(
+                f"<h4>Đường dữ liệu {path_number} — {_escape(path_type)}</h4>"
+                f'<p class="provenance">File đi qua: {_escape(", ".join(files))}</p>'
+                '<div class="flow">'
+                + '<div class="arrow">&rarr;</div>'.join(cards)
+                + "</div>"
+            )
+
+    callers = details.get("callers")
+    if isinstance(callers, list) and callers:
+        caller_lines = []
+        for caller in callers:
+            if isinstance(caller, dict):
+                caller_lines.append(
+                    f"{caller.get('symbol', 'unknown')} — "
+                    f"{caller.get('file_path', '?')}:{caller.get('line', '?')}"
+                )
+        if caller_lines:
+            sections.append(
+                "<h4>Call chain / entrypoint</h4>" + _list(caller_lines, empty="")
+            )
+
+    controls = details.get("controls")
+    if isinstance(controls, list) and controls:
+        control_lines = []
+        for control in controls:
+            if isinstance(control, dict):
+                location = ""
+                if control.get("file_path") is not None:
+                    location = (
+                        f" — {control.get('file_path')}:{control.get('line', '?')}"
+                    )
+                control_lines.append(
+                    f"{control.get('symbol', 'unknown')} "
+                    f"[{control.get('control_type', 'control')}]; "
+                    f"on_path={control.get('on_path')}; "
+                    f"effective={control.get('effective')}{location}"
+                )
+        if control_lines:
+            sections.append(
+                "<h4>Guard / sanitizer / control</h4>" + _list(control_lines, empty="")
+            )
+
+    completeness = details.get("completeness")
+    if isinstance(completeness, dict):
+        limitations = _string_list(completeness.get("limitations"))
+        missing = _string_list(completeness.get("missing_information"))
+        sections.append(
+            "<h4>Độ đầy đủ evidence</h4>"
+            + '<table class="details"><tbody>'
+            + _row("Trạng thái", completeness.get("status", "unknown"))
+            + _row("Source resolved", completeness.get("source_resolved", False))
+            + _row("Sink resolved", completeness.get("sink_resolved", False))
+            + _row(
+                "Taint path complete", completeness.get("taint_path_complete", False)
+            )
+            + _row(
+                "Reachability resolved",
+                completeness.get("reachability_resolved", False),
+            )
+            + "</tbody></table>"
+            + _list(limitations, empty="Không có giới hạn được ghi nhận.")
+            + _list(missing, empty="Không có thông tin bắt buộc còn thiếu.")
+        )
+    return "".join(sections)
 
 
 def _finding_html(index: int, result: TriageResult, backend: str) -> str:
@@ -230,7 +333,9 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
         )
 
     title = finding.rule_name or finding.rule_id
-    location = f"{finding.file_path}:{_line_range(finding.start_line, finding.end_line)}"
+    location = (
+        f"{finding.file_path}:{_line_range(finding.start_line, finding.end_line)}"
+    )
     description = (
         f"{finding.scanner.value} phát hiện dấu hiệu liên quan đến rule “{title}” tại "
         f"{location}. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay "
@@ -272,7 +377,7 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
       </section>
       <section><h3>Bằng chứng Source-to-Sink</h3>
         <p class="provenance">Backend: {_escape(backend)}. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
-        {_trace_html(metadata, backend, result.context_summary)}
+        {_trace_html(metadata, backend, result.context_summary, result.evidence_details)}
         <h4>Bằng chứng đã xác thực</h4>{_list(evidence, empty="Không có thêm bằng chứng đã được LLM xác thực.")}
       </section>
       <section><h3>Tái hiện và xác minh an toàn</h3>
@@ -376,14 +481,24 @@ def _validate_input(
     overwrite: bool,
 ) -> None:
     if not isinstance(batch_result, BatchResult) or not isinstance(output_path, Path):
-        raise SastTriageError("Invalid HTML report input.", error_code=_EC_INVALID_INPUT)
+        raise SastTriageError(
+            "Invalid HTML report input.", error_code=_EC_INVALID_INPUT
+        )
     if output_path.is_dir() or not output_path.parent.is_dir():
         raise SastTriageError("Invalid HTML report path.", error_code=_EC_INVALID_INPUT)
     if not overwrite and output_path.exists():
-        raise SastTriageError("HTML report already exists.", error_code=_EC_OUTPUT_EXISTS)
+        raise SastTriageError(
+            "HTML report already exists.", error_code=_EC_OUTPUT_EXISTS
+        )
     for value in forbidden_values:
-        if not isinstance(value, str) or not value.strip() or value in _KNOWN_SAFE_PLACEHOLDERS:
-            raise SastTriageError("Invalid forbidden report value.", error_code=_EC_INVALID_INPUT)
+        if (
+            not isinstance(value, str)
+            or not value.strip()
+            or value in _KNOWN_SAFE_PLACEHOLDERS
+        ):
+            raise SastTriageError(
+                "Invalid forbidden report value.", error_code=_EC_INVALID_INPUT
+            )
 
 
 def write_html_report(

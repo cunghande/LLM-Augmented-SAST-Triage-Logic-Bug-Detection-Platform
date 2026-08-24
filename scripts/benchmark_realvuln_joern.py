@@ -50,6 +50,26 @@ def _arguments() -> argparse.Namespace:
         default=Path("benchmarks/BenchmarkOutput/realvuln-v2-joern"),
     )
     parser.add_argument("--provider", choices=("fake", "ollama", "real"), default="fake")
+    parser.add_argument(
+        "--runtime",
+        choices=("host", "docker"),
+        default="host",
+        help=(
+            "Run the CLI with the current Python environment or the pinned "
+            "sast-triage-app Docker image. Docker is recommended for reproducible "
+            "Semgrep/Gitleaks versions."
+        ),
+    )
+    parser.add_argument(
+        "--app-image",
+        default="sast-triage-app:0.1.0",
+        help="Application image used when --runtime=docker.",
+    )
+    parser.add_argument(
+        "--docker-network",
+        default="sast-triage-runtime",
+        help="Docker network shared by the application and Joern containers.",
+    )
     parser.add_argument("--repo-id", action="append", default=[])
     parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args()
@@ -66,12 +86,75 @@ def _report_is_current(report: Path, commit_sha: str, provider: str) -> bool:
         metadata = _load_json(report)["run_metadata"]
     except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
         return False
+    succeeded = set(metadata.get("scanners_succeeded", []))
     return (
         metadata.get("commit_sha") == commit_sha
         and metadata.get("analysis_backend") == "joern"
+        and metadata.get("cpg_build_status") == "complete"
+        and {"SEMGREP", "GITLEAKS", "MODULE2"}.issubset(succeeded)
         and metadata.get("triage_provider")
         == {"fake": "fake", "ollama": "ollama", "real": "modal-qwen-structured"}[provider]
     )
+
+
+def _pipeline_command(
+    *,
+    runtime: str,
+    app_image: str,
+    docker_network: str,
+    repository: Path,
+    run_dir: Path,
+    repo_id: str,
+    provider: str,
+) -> list[str]:
+    """Build a host or container command for one reproducible pipeline run."""
+    cli_arguments = [
+        "scan-and-triage",
+        "--repository",
+        str(repository),
+        "--output-dir",
+        str(run_dir),
+        "--repository-identifier",
+        repo_id,
+        "--provider",
+        provider,
+        "--semgrep-config",
+        "p/python",
+        "--semgrep-config",
+        "p/security-audit",
+        "--module2",
+        "--module2-discovery",
+        "--logic-detector",
+        "python-idor-business-logic",
+        "--overwrite",
+    ]
+    if runtime == "host":
+        return [sys.executable, "-m", "sast_triage", *cli_arguments]
+
+    container_arguments = cli_arguments.copy()
+    container_arguments[2] = "/workspace/repository"
+    container_arguments[4] = "/workspace/output"
+    command = [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        docker_network,
+        "--volume",
+        f"{repository.resolve()}:/workspace/repository:ro",
+        "--volume",
+        f"{run_dir.resolve()}:/workspace/output",
+        "--volume",
+        "/var/run/docker.sock:/var/run/docker.sock",
+        "--env",
+        f"SAST_TRIAGE_DOCKER_NETWORK={docker_network}",
+        "--env",
+        "SAST_TRIAGE_REPOSITORY=/workspace/repository",
+    ]
+    if provider == "real":
+        command.extend(("--env", "MODAL_TOKEN_ID", "--env", "MODAL_TOKEN_SECRET"))
+    command.extend((app_image, *container_arguments))
+    return command
 
 
 def _cwe_for_finding(finding: dict[str, Any]) -> str | None:
@@ -226,29 +309,16 @@ def main() -> int:
         print(f"[{position}/{len(ground_truth_paths)}] {repo_id}", flush=True)
 
         if args.overwrite or not _report_is_current(report_path, commit_sha, args.provider):
-            command = [
-                sys.executable,
-                "-m",
-                "sast_triage",
-                "scan-and-triage",
-                "--repository",
-                str(repository),
-                "--output-dir",
-                str(run_dir),
-                "--repository-identifier",
-                repo_id,
-                "--provider",
-                args.provider,
-                "--semgrep-config",
-                "p/python",
-                "--semgrep-config",
-                "p/security-audit",
-                "--module2",
-                "--module2-discovery",
-                "--logic-detector",
-                "python-idor-business-logic",
-                "--overwrite",
-            ]
+            run_dir.mkdir(parents=True, exist_ok=True)
+            command = _pipeline_command(
+                runtime=args.runtime,
+                app_image=args.app_image,
+                docker_network=args.docker_network,
+                repository=repository,
+                run_dir=run_dir,
+                repo_id=repo_id,
+                provider=args.provider,
+            )
             completed = subprocess.run(command, check=False)
             if completed.returncode != 0:
                 failures.append({"repository": repo_id, "exit_code": completed.returncode})

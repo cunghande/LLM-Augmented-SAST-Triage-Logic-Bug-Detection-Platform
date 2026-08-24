@@ -56,12 +56,28 @@ python -m sast_triage scan-and-triage --repository .\<TEN_REPO> --output-dir ..\
 Lệnh tái lập detector benchmark:
 
 ```powershell
-python scripts\benchmark_logic_bugs.py --ground-truth-root benchmarks\ExternalTargets\Real-Vuln-Benchmark\ground-truth --repos-root benchmarks\ExternalTargets\Real-Vuln-Benchmark\repos --output benchmarks\BenchmarkOutput\sprint2-idor-business\realvuln-focused-v1.json
+python scripts\benchmark_logic_bugs.py --ground-truth-root benchmarks\Real-Vuln-Benchmark\ground-truth --repos-root benchmarks\Real-Vuln-Benchmark\repos --output benchmarks\BenchmarkOutput\sprint2-idor-business\realvuln-focused-v5.json
 ```
 
-Các artifact và số liệu benchmark cũ đã được xóa trước khi chuyển sang Joern-only.
-Chưa có kết quả chất lượng hiện hành cho tới khi chạy lại trên repository và
-ground truth mới.
+Benchmark focused gán split ổn định ở cấp repository và báo cáo metric riêng
+cho `development`, `calibration`, `held_out`. Split hiện tại được tạo sau quá
+trình phát triển detector nên chỉ phục vụ tái lập và kiểm soát leakage; không
+được dùng để tuyên bố một kết quả held-out mới.
+
+Lệnh kiểm chứng Joern đầy đủ, dùng image ứng dụng đã pin Semgrep/Gitleaks:
+
+```powershell
+python scripts\benchmark_realvuln_joern.py --benchmark-root benchmarks\Real-Vuln-Benchmark --output-root benchmarks\BenchmarkOutput\realvuln-v2-joern --provider fake --runtime docker
+```
+
+Focused result mới nhất được ghi tại
+[`sprint-2-status.md`](sprint-2-status.md). Fake provider chỉ xác minh pipeline,
+không hỗ trợ tuyên bố chất lượng model.
+
+Lượt kiểm chứng real-provider gần nhất dùng Qwen3-14B-AWQ trên Modal và Joern
+4.0.600, có evidence source–sink chi tiết và cross-file, được lưu tại
+`benchmarks/BenchmarkOutput/sprint2-idor-business/demo-real-llm-full-cross-file-final/`.
+Xem trạng thái Sprint 2 để biết coverage và giới hạn diễn giải.
 
 ## Điều kiện kết thúc
 

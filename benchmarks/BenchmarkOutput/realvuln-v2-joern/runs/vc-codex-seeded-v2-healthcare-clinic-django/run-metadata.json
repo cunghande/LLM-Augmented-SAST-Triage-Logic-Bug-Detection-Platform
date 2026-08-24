@@ -1,0 +1,48 @@
+{
+  "run_id": "a59e2def-d613-491e-a122-ac140f522dae",
+  "repository_name": "repository",
+  "repository_identifier": "vc-codex-seeded-v2-healthcare-clinic-django",
+  "commit_sha": "8512a7e9297ec9c2655a0969391630fcc23924fe",
+  "working_tree_state": "dirty",
+  "artifact_repository_match": "VERIFIED",
+  "scanners_attempted": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanners_succeeded": [
+    "SEMGREP",
+    "GITLEAKS",
+    "MODULE2"
+  ],
+  "scanner_versions": {
+    "SEMGREP": "1.170.0",
+    "GITLEAKS": "8.30.1",
+    "MODULE2": "0.1.0"
+  },
+  "scanner_config_ids": {
+    "SEMGREP": "p/python+p/security-audit",
+    "GITLEAKS": "gitleaks-built-in",
+    "MODULE2": "python-idor-business-logic-v1"
+  },
+  "input_artifact_hashes": {
+    "semgrep": "7da20eb90249e31d8308ded30d0a3e92a8ea59ea8ef71ae146788e7249789d40",
+    "gitleaks": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "analysis_backend": "joern",
+  "analysis_backend_version": "4.0.600",
+  "analysis_config_id": "joern-pysrc2cpg-v4.0.600-evidence-v2",
+  "cpg_build_status": "complete",
+  "cpg_build_seconds": 15.922394,
+  "prompt_version": "triage-prompt-v13",
+  "model_version": "fake-triage-v1",
+  "policy_version": "conservative-policy-v2",
+  "triage_provider": "fake",
+  "tool_version": "0.1.0",
+  "cli_mode": "scan-and-triage",
+  "started_at": "2026-08-24T02:44:51.396759Z",
+  "completed_at": "2026-08-24T02:44:57.547381Z",
+  "total_findings_parsed": 12,
+  "findings_triaged_ok": 12,
+  "findings_with_errors": 0
+}

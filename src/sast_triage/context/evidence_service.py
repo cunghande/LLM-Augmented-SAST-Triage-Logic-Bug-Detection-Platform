@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, replace
 
-from sast_triage.analysis.base import AnalysisBackend, GraphEvidence
+from sast_triage.analysis.base import AnalysisBackend, GraphEvidence, GraphStep
 from sast_triage.analysis.rule_semantics import (
     RuleMechanism,
     mechanism_for_rule_id,
@@ -27,7 +27,7 @@ from sast_triage.context.evidence_models import (
 )
 from sast_triage.logic import LogicBugClass, LogicCandidate
 from sast_triage.logic.index import LogicFindingIndex
-from sast_triage.models import NormalizedFinding, SanitizedContext
+from sast_triage.models import ContextStrategy, NormalizedFinding, SanitizedContext
 
 MAX_EVIDENCE_CODE_CHARACTERS = 6_000
 MAX_EVIDENCE_JSON_CHARACTERS = 12_000
@@ -43,6 +43,113 @@ class EvidenceContextResult:
     complete: bool
     tool_calls: int
     tool_names: tuple[str, ...]
+    report_evidence: dict[str, object]
+
+
+def _report_evidence_projection(
+    evidence: EvidencePackage,
+    graph: GraphEvidence | None = None,
+) -> dict[str, object]:
+    """Build a source-free report projection with every bounded graph path."""
+    if graph is not None and graph.paths:
+        raw_paths = graph.paths
+    elif evidence.taint_path.steps:
+        raw_paths = (
+            tuple(
+                GraphStep(
+                    kind=step.kind,
+                    symbol=step.function_id or step.expression,
+                    file_path=step.file_path,
+                    line=step.line,
+                )
+                for step in evidence.taint_path.steps
+            ),
+        )
+    else:
+        raw_paths = ()
+
+    paths: list[dict[str, object]] = []
+    for path_index, path in enumerate(raw_paths, start=1):
+        files = tuple(dict.fromkeys(step.file_path for step in path))
+        paths.append(
+            {
+                "path_index": path_index,
+                "path_type": "cross_file" if len(files) > 1 else "same_file",
+                "files": list(files),
+                "steps": [
+                    {
+                        "order": order,
+                        "kind": step.kind,
+                        "symbol": step.symbol,
+                        "file_path": step.file_path,
+                        "line": step.line,
+                    }
+                    for order, step in enumerate(path, start=1)
+                ],
+            }
+        )
+
+    callers = () if graph is None else graph.callers
+    graph_controls = () if graph is None else graph.controls
+    return {
+        "backend": (
+            "joern"
+            if graph is not None and "JOERN_CPG" in graph.provenance
+            else "scanner_projection"
+            if graph is not None
+            else "logic_projection"
+        ),
+        "source": _source_projection(evidence),
+        "sink": (
+            None
+            if evidence.sink is None
+            else {
+                "symbol": evidence.sink.expression,
+                "sink_type": evidence.sink.sink_type,
+                "file_path": evidence.sink.file_path,
+                "line": evidence.sink.line,
+            }
+        ),
+        "source_reaches_sink": evidence.taint_path.source_reaches_sink,
+        "complete": evidence.taint_path.complete,
+        "paths": paths,
+        "callers": [
+            {
+                "kind": caller.kind,
+                "symbol": caller.symbol,
+                "file_path": caller.file_path,
+                "line": caller.line,
+            }
+            for caller in callers
+        ],
+        "controls": [
+            {
+                "symbol": control.symbol,
+                "control_type": control.control_type,
+                "on_path": control.on_path,
+                "effective": control.effective,
+                "file_path": control.file_path,
+                "line": control.line,
+            }
+            for control in graph_controls
+        ],
+        "files": list(
+            dict.fromkeys(step.file_path for path in raw_paths for step in path)
+        ),
+        "completeness": {
+            "status": evidence.context_completeness.status.value,
+            "source_resolved": evidence.context_completeness.source_resolved,
+            "sink_resolved": evidence.context_completeness.sink_resolved,
+            "taint_path_complete": evidence.context_completeness.taint_path_complete,
+            "call_chain_complete": evidence.context_completeness.call_chain_complete,
+            "reachability_resolved": evidence.context_completeness.reachability_resolved,
+            "missing_information": list(
+                evidence.context_completeness.missing_information
+            ),
+            "limitations": list(evidence.context_completeness.limitations),
+        },
+        "provenance": list(evidence.provenance),
+    }
 
 
 def _template_fallback_graph(finding: NormalizedFinding) -> GraphEvidence | None:
@@ -60,6 +167,24 @@ def _template_fallback_graph(finding: NormalizedFinding) -> GraphEvidence | None
         sink_line=finding.start_line,
         limitations=("NON_PYTHON_TEMPLATE_DATAFLOW_UNSUPPORTED",),
         provenance=("SCANNER_MATCH", "SANITIZED_TEMPLATE_CONTEXT"),
+    )
+
+
+def _scanner_structural_fallback_graph(
+    finding: NormalizedFinding,
+) -> GraphEvidence | None:
+    """Represent scanner-proven non-call configuration assignments safely."""
+    rule = finding.rule_id.lower()
+    if "hardcoded-config" not in rule:
+        return None
+    return GraphEvidence(
+        sink_type="hardcoded_configuration",
+        sink_symbol="scanner_reported_configuration_assignment",
+        sink_file=finding.file_path,
+        sink_line=finding.start_line,
+        path_complete=True,
+        reachability_resolved=True,
+        provenance=("SCANNER_MATCH", "SANITIZED_CONTEXT", "CONFIGURATION_ASSIGNMENT"),
     )
 
 
@@ -125,18 +250,15 @@ def _graph_evidence_package(
         and graph.reachability_resolved
         and "BOUNDED_LOCAL_NEGATIVE_PROOF" in graph.provenance
     )
-    complete = (
-        sink_resolved
-        and (
-            sink_only
-            or negative_proven
-            or (
-                source_resolved
-                and graph.source_reaches_sink is True
-                and graph.path_complete
-                and graph.reachability_resolved
-                and "JOERN_CONTROL_FLOW" in graph.provenance
-            )
+    complete = sink_resolved and (
+        sink_only
+        or negative_proven
+        or (
+            source_resolved
+            and graph.source_reaches_sink is True
+            and graph.path_complete
+            and graph.reachability_resolved
+            and "JOERN_CONTROL_FLOW" in graph.provenance
         )
     )
     missing: list[str] = []
@@ -159,7 +281,11 @@ def _graph_evidence_package(
         finding_id=finding.finding_instance_id,
         finding=FindingEvidence(
             rule_id=finding.rule_id,
-            category=(str(finding.metadata.get("category")) if finding.metadata.get("category") else None),
+            category=(
+                str(finding.metadata.get("category"))
+                if finding.metadata.get("category")
+                else None
+            ),
             severity=finding.severity.value,
             message=finding.message,
             file_path=finding.file_path,
@@ -173,7 +299,8 @@ def _graph_evidence_package(
             # The graph backend never exports code. This text is the existing
             # SafeContextService line window after credential redaction, kept
             # so prompt v9 can still evaluate guards and benign traps.
-            code=sanitized_context.sanitized_snippet or "<SANITIZED_CONTEXT_UNAVAILABLE>",
+            code=sanitized_context.sanitized_snippet
+            or "<SANITIZED_CONTEXT_UNAVAILABLE>",
             start_line=sanitized_context.context_start_line or finding.start_line,
             end_line=sanitized_context.context_end_line or finding.start_line,
         ),
@@ -205,7 +332,9 @@ def _graph_evidence_package(
             missing_information=tuple(missing),
             limitations=graph.limitations,
         ),
-        provenance=tuple(dict.fromkeys((*graph.provenance, "JOERN_SOURCE_FREE_PROJECTION"))),
+        provenance=tuple(
+            dict.fromkeys((*graph.provenance, "JOERN_SOURCE_FREE_PROJECTION"))
+        ),
     )
 
 
@@ -223,7 +352,9 @@ def _source_projection(evidence: EvidencePackage) -> dict[str, object] | None:
     }
 
 
-def _security_control_projection(evidence: EvidencePackage) -> dict[str, list[dict[str, object]]]:
+def _security_control_projection(
+    evidence: EvidencePackage,
+) -> dict[str, list[dict[str, object]]]:
     groups: dict[str, list[dict[str, object]]] = {
         "guards": [],
         "validations": [],
@@ -243,7 +374,10 @@ def _security_control_projection(evidence: EvidencePackage) -> dict[str, list[di
             group = "guards"
         elif "validation" in control.control_type:
             group = "validations"
-        elif "safe_api" in control.control_type or "parameterized" in control.control_type:
+        elif (
+            "safe_api" in control.control_type
+            or "parameterized" in control.control_type
+        ):
             group = "safe_api_usage"
         else:
             group = "sanitizers"
@@ -293,7 +427,9 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
             "code": evidence.relevant_code.code,
         },
         "source": _source_projection(evidence),
-        "sink": None if sink is None else {
+        "sink": None
+        if sink is None
+        else {
             "expression": sink.expression,
             "sink_type": sink.sink_type,
             "dangerous_argument": sink.dangerous_argument,
@@ -338,7 +474,9 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
             "source_user_controlled": (
                 None
                 if intrinsic_usage or configuration
-                else True if source_user_controlled is True else None
+                else True
+                if source_user_controlled is True
+                else None
             ),
             "source_reaches_sink": (
                 None
@@ -368,13 +506,81 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
     }
 
 
+def _logic_relevant_code(
+    sanitized_context: SanitizedContext,
+    candidate: LogicCandidate,
+) -> tuple[str, int | None, int | None, bool]:
+    """Select the candidate's sanitized function body from a wider safe context."""
+    snippet = sanitized_context.sanitized_snippet or "<SANITIZED_CONTEXT_UNAVAILABLE>"
+    context_start = sanitized_context.context_start_line
+    context_end = sanitized_context.context_end_line
+    function_start = candidate.function_start_line
+    function_end = candidate.function_end_line
+    if (
+        context_start is None
+        or context_end is None
+        or function_start is None
+        or function_end is None
+        or function_start < context_start
+        or function_end > context_end
+    ):
+        return snippet, context_start, context_end, False
+
+    lines = snippet.splitlines(keepends=True)
+    start_offset = function_start - context_start
+    end_offset = function_end - context_start + 1
+    selected = "".join(lines[start_offset:end_offset])
+    if not selected.strip():
+        return snippet, context_start, context_end, False
+    return selected, function_start, function_end, True
+
+
 def _logic_evidence_package(
     finding: NormalizedFinding,
     sanitized_context: SanitizedContext,
     candidate: LogicCandidate,
 ) -> EvidencePackage:
     """Build a complete source-free trace for one bounded logic pattern."""
-    complete = candidate.analysis_complete
+    relevant_code, code_start, code_end, function_scope_complete = _logic_relevant_code(
+        sanitized_context,
+        candidate,
+    )
+    complete = candidate.analysis_complete and function_scope_complete
+    source_expression = candidate.source_symbol or candidate.source_kind
+    sink_expression = candidate.sink_symbol or candidate.sink_kind
+    source_line = candidate.source_line or candidate.line
+    sink_line = candidate.sink_line or candidate.line
+    trace_steps = [
+        TaintStep(
+            order=1,
+            kind="source",
+            expression=source_expression,
+            function_id=candidate.function,
+            file_path=candidate.file_path,
+            line=source_line,
+        )
+    ]
+    for guard in candidate.guards:
+        trace_steps.append(
+            TaintStep(
+                order=len(trace_steps) + 1,
+                kind="guard",
+                expression=guard,
+                function_id=candidate.function,
+                file_path=candidate.file_path,
+                line=sink_line,
+            )
+        )
+    trace_steps.append(
+        TaintStep(
+            order=len(trace_steps) + 1,
+            kind="sink",
+            expression=sink_expression,
+            function_id=candidate.function,
+            file_path=candidate.file_path,
+            line=sink_line,
+        )
+    )
     return EvidencePackage(
         finding_id=finding.finding_instance_id,
         finding=FindingEvidence(
@@ -387,49 +593,40 @@ def _logic_evidence_package(
             end_line=finding.end_line,
         ),
         relevant_code=RelevantCodeEvidence(
-            scope_type=sanitized_context.context_strategy.value,
-            function_name=sanitized_context.enclosing_function,
+            scope_type=(
+                ContextStrategy.PYTHON_FUNCTION.value
+                if function_scope_complete
+                else sanitized_context.context_strategy.value
+            ),
+            function_name=candidate.function,
             class_name=sanitized_context.enclosing_class,
-            start_line=sanitized_context.context_start_line,
-            end_line=sanitized_context.context_end_line,
-            code=sanitized_context.sanitized_snippet
-            or "<SANITIZED_CONTEXT_UNAVAILABLE>",
+            start_line=code_start,
+            end_line=code_end,
+            code=relevant_code,
         ),
         source=SourceEvidence(
-            expression="<logic_candidate_source>",
+            expression=source_expression,
             source_type=candidate.source_kind,
             user_controlled=candidate.source_kind.startswith("http_"),
             file_path=candidate.file_path,
-            line=candidate.line,
+            line=source_line,
             confidence="high" if complete else "medium",
         ),
         sink=SinkEvidence(
-            expression="<logic_candidate_sink>",
+            expression=sink_expression,
             sink_type=candidate.sink_kind,
-            dangerous_argument="<logic_sensitive_target>",
+            dangerous_argument=candidate.sink_argument or source_expression,
             dangerous_conditions=(candidate.bug_class.value,),
             file_path=candidate.file_path,
-            line=candidate.line,
+            line=sink_line,
         ),
         taint_path=TaintPathEvidence(
-            path_type="source_guard_sink_logic_trace",
-            steps=tuple(
-                TaintStep(
-                    order=index,
-                    kind=(
-                        "source"
-                        if index == 1
-                        else "sink"
-                        if index == len(candidate.trace)
-                        else "flow"
-                    ),
-                    expression=f"<{step}>",
-                    function_id=candidate.function,
-                    file_path=candidate.file_path,
-                    line=candidate.line,
-                )
-                for index, step in enumerate(candidate.trace, start=1)
+            path_type=(
+                "authorization_boundary_logic_trace"
+                if candidate.sink_kind == "privileged_endpoint_without_authorization"
+                else "source_guard_sink_logic_trace"
             ),
+            steps=tuple(trace_steps),
             source_reaches_sink=True,
             complete=complete,
         ),
@@ -455,13 +652,33 @@ def _logic_evidence_package(
             missing_information=() if complete else ("LOGIC_TRACE_INCOMPLETE",),
             limitations=() if complete else ("BOUNDED_LOGIC_ANALYSIS_PARTIAL",),
         ),
-        provenance=("python_idor_business_logic_v1", "bounded_ast_pattern"),
+        provenance=("python_idor_business_logic_v2", "bounded_ast_pattern"),
     )
 
 
 def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
     """Return class-specific proof and counter-evidence facts without raw source."""
-    if candidate.bug_class == LogicBugClass.MISSING_AUTHZ_IDOR:
+    if candidate.sink_kind == "privileged_endpoint_without_authorization":
+        hypothesis = (
+            "An exposed HTTP or GraphQL endpoint reaches a privileged operation "
+            "without an authorization gate in the containing function."
+        )
+        proof_obligations = (
+            "privileged_endpoint_is_exposed",
+            "sensitive_operation_is_reachable",
+            "no_effective_endpoint_authorization_guard_observed",
+        )
+        reproduction = (
+            "Call the endpoint as an authenticated low-privilege user in a test environment.",
+            "The privileged operation must be denied before its sensitive side effect occurs.",
+        )
+        class_resolution = {
+            "privileged_endpoint_exposed": candidate.entrypoint,
+            "sensitive_operation_observed": True,
+            "endpoint_authorization_guard_observed": False,
+            "mechanism_is_object_idor": False,
+        }
+    elif candidate.bug_class == LogicBugClass.MISSING_AUTHZ_IDOR:
         hypothesis = (
             "A caller-controlled object identifier reaches a lookup without "
             "object- or tenant-level authorization."
@@ -480,10 +697,10 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
             "lookup_subject_or_tenant_scoped": False,
             "exact_object_authorization_guard_observed": False,
         }
-    elif "pagination" in candidate.sink_kind or "collection_query" in candidate.sink_kind:
-        hypothesis = (
-            "An endpoint can request or return an unbounded collection without enforced server-side pagination limits."
-        )
+    elif (
+        "pagination" in candidate.sink_kind or "collection_query" in candidate.sink_kind
+    ):
+        hypothesis = "An endpoint can request or return an unbounded collection without enforced server-side pagination limits."
         proof_obligations = (
             "collection_query_or_pagination_input_observed",
             "resource_consuming_query_is_reachable",
@@ -499,9 +716,7 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
             "resource_exhaustion_test_required": True,
         }
     elif candidate.sink_kind == "client_controlled_price_or_total":
-        hypothesis = (
-            "A caller-controlled price, discount, subtotal, or total influences a cart operation instead of a server-trusted value."
-        )
+        hypothesis = "A caller-controlled price, discount, subtotal, or total influences a cart operation instead of a server-trusted value."
         proof_obligations = (
             "caller_controlled_price_component_observed",
             "price_component_reaches_cart_result_or_state_change",
@@ -517,9 +732,7 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
             "boundary_tests_required": True,
         }
     else:
-        hypothesis = (
-            "A caller-controlled domain value reaches a business operation without server-side bounds."
-        )
+        hypothesis = "A caller-controlled domain value reaches a business operation without server-side bounds."
         proof_obligations = (
             "caller_controlled_domain_value_observed",
             "domain_value_reaches_business_operation",
@@ -540,6 +753,11 @@ def _logic_proof_obligations(candidate: LogicCandidate) -> dict[str, object]:
         "containing_function_search_complete": candidate.analysis_complete,
         "effective_control_for_exact_target_observed": False,
         "runtime_poc_executed": False,
+        "source_symbol": candidate.source_symbol,
+        "source_line": candidate.source_line,
+        "sink_symbol": candidate.sink_symbol,
+        "sink_line": candidate.sink_line,
+        "sink_argument": candidate.sink_argument,
     }
     return {
         "attack_hypothesis": hypothesis,
@@ -590,6 +808,11 @@ def _project_logic_evidence(
         "entrypoint_exposed": candidate.entrypoint,
         "source_kind": candidate.source_kind,
         "sink_kind": candidate.sink_kind,
+        "source_symbol": candidate.source_symbol,
+        "source_line": candidate.source_line,
+        "sink_symbol": candidate.sink_symbol,
+        "sink_line": candidate.sink_line,
+        "sink_argument": candidate.sink_argument,
         "guards": list(candidate.guards),
         "trace": list(candidate.trace),
         "cwe": candidate.cwe,
@@ -604,6 +827,7 @@ def _project_logic_evidence(
         "safe_reproduction_plan": obligations["safe_reproduction_plan"],
         "retrieval_resolution": obligations["retrieval_resolution"],
     }
+    projected["retrieval_resolution"] = obligations["retrieval_resolution"]
     projected["deterministic_verification"] = {
         "mechanism": "logic_pattern",
         "evidence_complete": candidate.analysis_complete,
@@ -636,10 +860,9 @@ def build_evidence_context(
 ) -> EvidenceContextResult:
     """Phân tích mã nguồn và thay snippet gửi provider bằng JSON bằng chứng an toàn."""
     logic_candidate = (
-        logic_index.candidate_for(finding)
-        if logic_index is not None
-        else None
+        logic_index.candidate_for(finding) if logic_index is not None else None
     )
+    report_graph: GraphEvidence | None = None
     if logic_candidate is not None:
         evidence = _logic_evidence_package(
             finding,
@@ -649,6 +872,7 @@ def build_evidence_context(
         expansion_tool_calls = 0
         expansion_tool_names = ("logic_candidate_projection",)
     elif (template_graph := _template_fallback_graph(finding)) is not None:
+        report_graph = template_graph
         evidence = _graph_evidence_package(
             finding,
             sanitized_context,
@@ -656,6 +880,15 @@ def build_evidence_context(
         )
         expansion_tool_calls = 0
         expansion_tool_names = ("template_context_projection",)
+    elif (structural_graph := _scanner_structural_fallback_graph(finding)) is not None:
+        report_graph = structural_graph
+        evidence = _graph_evidence_package(
+            finding,
+            sanitized_context,
+            structural_graph,
+        )
+        expansion_tool_calls = 0
+        expansion_tool_names = ("scanner_structural_projection",)
     elif analysis_backend is not None:
         initial = analysis_backend.initial_evidence(finding)
         graph_expansion = GraphEvidenceExpansionAgent(
@@ -670,24 +903,26 @@ def build_evidence_context(
             sanitized_context,
             graph_expansion.evidence,
         )
+        report_graph = graph_expansion.evidence
         expansion_tool_calls = graph_expansion.tool_calls
         expansion_tool_names = graph_expansion.tool_names
     else:
+        report_graph = GraphEvidence(
+            sink_type="rule_specific_sink",
+            sink_symbol=(
+                "<scanner_reported_intrinsic>"
+                if sink_only_evidence_is_sufficient(finding)
+                else None
+            ),
+            sink_file=finding.file_path,
+            sink_line=finding.start_line,
+            limitations=("JOERN_BACKEND_UNAVAILABLE",),
+            provenance=("JOERN_REQUIRED",),
+        )
         evidence = _graph_evidence_package(
             finding,
             sanitized_context,
-            GraphEvidence(
-                sink_type="rule_specific_sink",
-                sink_symbol=(
-                    "<scanner_reported_intrinsic>"
-                    if sink_only_evidence_is_sufficient(finding)
-                    else None
-                ),
-                sink_file=finding.file_path,
-                sink_line=finding.start_line,
-                limitations=("JOERN_BACKEND_UNAVAILABLE",),
-                provenance=("JOERN_REQUIRED",),
-            ),
+            report_graph,
         )
         expansion_tool_calls = 0
         expansion_tool_names = ()
@@ -702,13 +937,25 @@ def build_evidence_context(
             evidence.context_completeness,
             status=EvidenceStatus.PARTIAL,
             missing_information=tuple(
-                dict.fromkeys((*evidence.context_completeness.missing_information, "EVIDENCE_CODE_TRUNCATED"))
+                dict.fromkeys(
+                    (
+                        *evidence.context_completeness.missing_information,
+                        "EVIDENCE_CODE_TRUNCATED",
+                    )
+                )
             ),
             limitations=tuple(
-                dict.fromkeys((*evidence.context_completeness.limitations, "MAX_EVIDENCE_CODE_CHARACTERS"))
+                dict.fromkeys(
+                    (
+                        *evidence.context_completeness.limitations,
+                        "MAX_EVIDENCE_CODE_CHARACTERS",
+                    )
+                )
             ),
         )
-        evidence = replace(evidence, relevant_code=relevant, context_completeness=completeness)
+        evidence = replace(
+            evidence, relevant_code=relevant, context_completeness=completeness
+        )
 
     projection = (
         _project_logic_evidence(evidence, logic_candidate)
@@ -722,18 +969,32 @@ def build_evidence_context(
         separators=(",", ":"),
     )
     if len(rendered) > MAX_EVIDENCE_JSON_CHARACTERS:
-        relevant = replace(evidence.relevant_code, code="<EVIDENCE_CODE_OMITTED_DUE_TO_LIMIT>")
+        relevant = replace(
+            evidence.relevant_code, code="<EVIDENCE_CODE_OMITTED_DUE_TO_LIMIT>"
+        )
         completeness = replace(
             evidence.context_completeness,
             status=EvidenceStatus.PARTIAL,
             missing_information=tuple(
-                dict.fromkeys((*evidence.context_completeness.missing_information, "EVIDENCE_SIZE_LIMIT_REACHED"))
+                dict.fromkeys(
+                    (
+                        *evidence.context_completeness.missing_information,
+                        "EVIDENCE_SIZE_LIMIT_REACHED",
+                    )
+                )
             ),
             limitations=tuple(
-                dict.fromkeys((*evidence.context_completeness.limitations, "MAX_EVIDENCE_JSON_CHARACTERS"))
+                dict.fromkeys(
+                    (
+                        *evidence.context_completeness.limitations,
+                        "MAX_EVIDENCE_JSON_CHARACTERS",
+                    )
+                )
             ),
         )
-        evidence = replace(evidence, relevant_code=relevant, context_completeness=completeness)
+        evidence = replace(
+            evidence, relevant_code=relevant, context_completeness=completeness
+        )
         projection = (
             _project_logic_evidence(evidence, logic_candidate)
             if logic_candidate is not None
@@ -762,4 +1023,5 @@ def build_evidence_context(
         complete=complete,
         tool_calls=expansion_tool_calls,
         tool_names=expansion_tool_names,
+        report_evidence=_report_evidence_projection(evidence, report_graph),
     )

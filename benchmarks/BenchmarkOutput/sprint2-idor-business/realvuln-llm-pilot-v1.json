@@ -1,0 +1,332 @@
+{
+  "schema_version": "logic-llm-pilot-v1",
+  "generated_at": "2026-08-24T04:18:07.177969+00:00",
+  "dataset": "Real-Vuln-Benchmark reviewed ground truth",
+  "detector_config_id": "python-idor-business-logic-v2",
+  "model": "Qwen/Qwen3-14B-AWQ",
+  "prompt_version": "triage-prompt-v13",
+  "logic_verification_retries": 10,
+  "selection": {
+    "positive_per_class": 5,
+    "negative_limit": 0,
+    "policy": "Detected candidates only: one reviewed positive per class plus reviewed detector false positives. NEEDS_REVIEW is abstention."
+  },
+  "metrics": {
+    "cases": 10,
+    "positive_cases": 10,
+    "negative_cases": 0,
+    "completed": 10,
+    "triage_errors": 0,
+    "decisive": 0,
+    "abstentions": 10,
+    "correct_decisive": 0,
+    "wrong_decisive": 0,
+    "selective_accuracy": null,
+    "coverage": 0.0,
+    "provider_duration_total_ms": 214007,
+    "provider_duration_max_ms": 177054,
+    "warm_provider_duration_median_ms": 4120
+  },
+  "cases": [
+    {
+      "case_id": "dvga-012",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 385,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "The finding indicates a missing authorization check for the 'resolve_delete_all_pastes' function, which deletes all pastes. However, the relevant code does not show any object or tenant-level authorization checks, and the function does not use any user-specific identifiers. The function appears to be a privileged endpoint that deletes all pastes without any access control.",
+      "model_evidence": [
+        "The 'resolve_delete_all_pastes' function calls 'Paste.query.delete()' without any user-specific filtering or authorization checks.",
+        "The function does not use any user identifiers or session information to scope the deletion to a specific user or tenant.",
+        "The 'Audit.create_audit_entry(info)' call is present but does not enforce authorization or access control.",
+        "The function is exposed as an entrypoint and is reachable from an HTTP or GraphQL endpoint."
+      ],
+      "missing_information": [
+        "Whether the 'resolve_delete_all_pastes' function is intended to be a privileged endpoint accessible only to specific users or roles.",
+        "Whether there are other authorization checks or guards in the codebase that are not shown in the provided context."
+      ],
+      "assumptions": [
+        "The 'resolve_delete_all_pastes' function is intended to be a privileged endpoint that deletes all pastes, and no user-specific authorization is required for this action.",
+        "The function is not intended to be used by unauthenticated or unauthorized users."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 177054
+    },
+    {
+      "case_id": "dvga-013",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 141,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "The finding indicates a potential missing authorization check for an object lookup, but the relevant code does not show an explicit guard or binding of the requested object to an authenticated subject or tenant. The source is a HTTP route parameter, and the sink is an object lookup without subject or tenant scope. The code does not show any authorization logic for the object being accessed.",
+      "model_evidence": [
+        "The source is a HTTP route parameter, which is caller-controlled.",
+        "The sink is an object lookup without subject or tenant scope.",
+        "The code does not show any authorization logic for the object being accessed.",
+        "The relevant code does not show any effective control or guard for the object lookup."
+      ],
+      "missing_information": [
+        "The exact object being accessed and its relationship to the authenticated subject or tenant."
+      ],
+      "assumptions": [
+        "The HTTP route parameter is used to identify the object being accessed.",
+        "The object lookup is not bound to an authenticated subject or tenant."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4061
+    },
+    {
+      "case_id": "dvga-014",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 141,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "The finding indicates a potential missing authorization check for an object lookup, but the relevant code does not show an explicit guard or binding of the requested object to an authenticated subject or tenant. The source is a HTTP route parameter, and the sink is an object lookup without subject or tenant scope. The code does not show any authorization logic for the object being accessed.",
+      "model_evidence": [
+        "The source is a HTTP route parameter, which is caller-controlled.",
+        "The sink is an object lookup without subject or tenant scope.",
+        "The code does not show any authorization logic for the object being accessed.",
+        "The relevant code does not show any effective control or guard for the object lookup."
+      ],
+      "missing_information": [
+        "The exact object being accessed and its relationship to the authenticated subject or tenant."
+      ],
+      "assumptions": [
+        "The HTTP route parameter is used to identify the object being accessed.",
+        "The object lookup is not bound to an authenticated subject or tenant."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 3656
+    },
+    {
+      "case_id": "dvga-022",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 427,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "The finding indicates a potential missing authorization check for an IDOR vulnerability, but the relevant code does not show a direct source-to-sink path involving an object identifier. The sink is a privileged endpoint, but the source is not clearly defined in the code. More information is needed to confirm the vulnerability.",
+      "model_evidence": [
+        "The sink is a privileged endpoint without authorization, but the exact dangerous argument is not specified in the code.",
+        "The source is identified as an HTTP or GraphQL endpoint, but the specific object identifier is not clearly defined in the code.",
+        "The code does not show a direct source-to-sink path involving an object identifier that could be exploited for IDOR.",
+        "The relevant code does not show any authorization checks or guards that could prevent unauthorized access to the endpoint."
+      ],
+      "missing_information": [
+        "The exact object identifier that could be exploited for IDOR is not clearly defined in the code.",
+        "The specific authorization checks or guards that could prevent unauthorized access to the endpoint are not shown in the code."
+      ],
+      "assumptions": [
+        "The code may have other authorization checks or guards that are not shown in the provided context.",
+        "The exact object identifier that could be exploited for IDOR may be defined elsewhere in the code."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4047
+    },
+    {
+      "case_id": "dvga-023",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 432,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "The finding indicates a potential missing authorization check for an IDOR vulnerability, but the relevant code does not show a clear source-to-sink path involving an object identifier that could be exploited. The sink is not clearly defined, and no effective authorization guard is observed.",
+      "model_evidence": [
+        "The sink is identified as a 'privileged_endpoint_without_authorization', but the exact dangerous argument is not specified in the code context.",
+        "The source is identified as an 'http_or_graphql_endpoint', but the specific object identifier that could be exploited is not clearly defined in the code context.",
+        "The code context does not show a clear path where a caller-controlled identifier reaches a lookup without proper authorization checks.",
+        "No effective authorization guard is observed in the code context that would prevent unauthorized access to the object."
+      ],
+      "missing_information": [
+        "The exact dangerous argument for the sink is not specified in the code context.",
+        "The specific object identifier that could be exploited is not clearly defined in the code context."
+      ],
+      "assumptions": [
+        "The code context provided does not show a clear source-to-sink path involving an object identifier that could be exploited.",
+        "The sink is not clearly defined, and no effective authorization guard is observed in the code context."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4120
+    },
+    {
+      "case_id": "dvblab-018",
+      "repository": "dvblab",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "backend/routes/transaction_routes.py",
+      "line": 33,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "The finding suggests a business rule bypass pattern where an unvalidated domain value reaches a business operation. However, the exact sink and source are not clearly identified in the provided code, and the presence of guards like 'current_user' and 'current_user.balance' may provide some protection. Further review is needed to confirm the vulnerability.",
+      "model_evidence": [
+        "The code includes a transfer function that processes an 'amount' parameter from the HTTP request.",
+        "The 'amount' is converted to a Decimal type, but no explicit validation or boundary checks are applied before using it in business logic.",
+        "The 'current_user.balance' is checked for sufficiency, but this is a guard that may not fully prevent bypassing of domain rules.",
+        "The relevant code does not show a direct source-to-sink path for the business rule bypass, making it unclear if the vulnerability is present."
+      ],
+      "missing_information": [
+        "The exact line and expression of the sink in the code are not clearly identified.",
+        "The specific business rule that is being bypassed is not explicitly stated."
+      ],
+      "assumptions": [
+        "The 'current_user.balance' check may not be sufficient to prevent all forms of business rule bypasses.",
+        "The 'amount' parameter is considered a domain value that could be manipulated by an attacker."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4194
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-121",
+      "repository": "vc-claude-code-seeded-v2-crm-saas-django",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "crm_project/partner_console.py",
+      "line": 65,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "Tồn tại một lỗ hổng có thể bỏ qua quy tắc kinh doanh do giá trị miền không được kiểm tra trước khi thực hiện thao tác. Tuy nhiên, không có thông tin đầy đủ về việc giá trị miền cụ thể được kiểm soát bởi người dùng hay không, cũng như không có kiểm tra biên nào được áp dụng.",
+      "model_evidence": [
+        "Giá trị 'amount' được lấy từ tham số yêu cầu HTTP và được sử dụng trực tiếp trong thao tác cập nhật sổ cái.",
+        "Không có kiểm tra biên nào được áp dụng cho giá trị 'amount' trước khi thao tác được thực hiện.",
+        "Không có kiểm soát hiệu quả nào được phát hiện trong đoạn mã liên quan đến việc kiểm tra giá trị miền."
+      ],
+      "missing_information": [
+        "Không có thông tin cụ thể về giá trị miền được kiểm soát bởi người dùng hay không.",
+        "Không có thông tin về việc có kiểm tra biên nào được áp dụng cho giá trị 'amount' hay không."
+      ],
+      "assumptions": [
+        "Giả sử rằng giá trị 'amount' có thể được kiểm soát bởi người dùng."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4260
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-122",
+      "repository": "vc-claude-code-seeded-v2-education-lms-django",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "lms/course_operations.py",
+      "line": 59,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "Tồn tại một lỗ hổng có thể bỏ qua quy tắc kinh doanh do giá trị miền không được kiểm tra trước khi thực hiện thao tác. Tuy nhiên, không có thông tin đầy đủ về việc giá trị miền cụ thể được sử dụng như thế nào trong thao tác. Cần xem xét lại toàn bộ đường dẫn từ nguồn đến điểm đến để xác minh.",
+      "model_evidence": [
+        "Giá trị miền không được kiểm tra trước khi thực hiện thao tác.",
+        "Không có kiểm soát hiệu quả nào được phát hiện trong đường dẫn từ nguồn đến điểm đến.",
+        "Không có kiểm tra biên hoặc kiểm tra giá trị âm được thực hiện trước khi thao tác được thực hiện."
+      ],
+      "missing_information": [
+        "Không có thông tin về cách giá trị miền cụ thể được sử dụng trong thao tác."
+      ],
+      "assumptions": [
+        "Giả sử rằng giá trị miền có thể ảnh hưởng đến kết quả của thao tác."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4110
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-123",
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "line": 46,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "Tồn tại một lỗ hổng có thể bỏ qua quy tắc kinh doanh, nhưng không có kiểm soát hiệu quả được xác nhận trong đoạn mã. Cần xem xét lại toàn bộ đường dẫn từ nguồn đến điểm đến để xác minh.",
+      "model_evidence": [
+        "Một giá trị miền không được xác minh từ tham số yêu cầu HTTP đã được quan sát.",
+        "Không có kiểm soát hiệu quả nào được phát hiện để ngăn chặn giá trị miền không hợp lệ.",
+        "Đoạn mã không có kiểm tra biên hoặc kiểm tra giá trị số học cụ thể cho tham số 'amount'."
+      ],
+      "missing_information": [
+        "Không có thông tin về các kiểm soát an ninh hoặc kiểm tra biên được thực hiện trước khi thao tác được thực hiện."
+      ],
+      "assumptions": [
+        "Giả sử rằng giá trị 'amount' có thể bị kiểm soát bởi người gọi và có thể vượt qua các giới hạn miền."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4147
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-011",
+      "repository": "vc-claude-code-seeded-v2-healthcare-clinic-django",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "clinic_portal/patient_operations.py",
+      "line": 47,
+      "model_verdict": "NEEDS_REVIEW",
+      "model_confidence": "HIGH",
+      "model_summary": "Tồn tại một đường dẫn từ nguồn HTTP request body đến hoạt động không được kiểm tra giá trị miền (unvalidated_domain_value_operation) mà không có kiểm soát nào được phát hiện. Tuy nhiên, không có thông tin cụ thể về giá trị miền được truyền vào và không có kiểm tra giới hạn nào được xác nhận trong đoạn mã cung cấp.",
+      "model_evidence": [
+        "Nguồn dữ liệu được xác định là HTTP request body, một giá trị do người dùng kiểm soát.",
+        "Đoạn mã không có bất kỳ kiểm tra nào đối với giá trị miền trước khi sử dụng nó trong hoạt động.",
+        "Không có kiểm soát nào được phát hiện trong danh sách 'guards' hoặc 'security_controls' trong ngữ cảnh.",
+        "Không có thông tin cụ thể về giá trị miền được truyền vào trong đoạn mã."
+      ],
+      "missing_information": [
+        "Thông tin cụ thể về giá trị miền được truyền vào từ HTTP request body.",
+        "Thông tin về các kiểm tra giới hạn hoặc kiểm soát miền được thực hiện trước khi sử dụng giá trị miền."
+      ],
+      "assumptions": [
+        "Giá trị miền được truyền vào có thể là một giá trị không an toàn.",
+        "Không có kiểm soát nào được thực hiện để kiểm tra giá trị miền trước khi sử dụng."
+      ],
+      "policy_action": "MANUAL_REVIEW",
+      "abstained": true,
+      "correct": null,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4358
+    }
+  ]
+}

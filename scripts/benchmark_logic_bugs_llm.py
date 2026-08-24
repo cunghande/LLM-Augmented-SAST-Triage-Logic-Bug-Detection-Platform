@@ -29,7 +29,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--positive-per-class", type=int, default=1)
     parser.add_argument("--negative-limit", type=int, default=2)
-    parser.add_argument("--prompt-version", default="triage-prompt-v13")
+    parser.add_argument("--prompt-version", default="triage-prompt-v14")
     return parser.parse_args()
 
 
@@ -82,6 +82,28 @@ def _metric(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _repository_checkout(repos_root: Path, repository_id: str) -> Path:
+    """Resolve a benchmark repo ID to its checkout without guessing URL slugs."""
+    direct_candidates = (
+        repos_root / repository_id,
+        repos_root / f"realvuln-{repository_id}",
+    )
+    for candidate in direct_candidates:
+        if candidate.is_dir():
+            return candidate
+
+    ground_truth_root = repos_root.parent / "ground-truth"
+    for ground_truth_path in sorted(ground_truth_root.glob("*/ground-truth.json")):
+        document = json.loads(ground_truth_path.read_text(encoding="utf-8"))
+        if str(document.get("repo_id", "")) != repository_id:
+            continue
+        candidate = repos_root / ground_truth_path.parent.name
+        if candidate.is_dir():
+            return candidate
+
+    raise FileNotFoundError(f"Repository checkout unavailable: {repository_id}")
+
+
 def run_pilot(
     detector_report: Path,
     repos_root: Path,
@@ -105,15 +127,7 @@ def run_pilot(
     rows: list[dict[str, Any]] = []
     with modal_qwen_provider_session() as provider:
         for repository_id, cases in grouped.items():
-            direct_repository = repos_root / repository_id
-            prefixed_repository = repos_root / f"realvuln-{repository_id}"
-            repository = (
-                direct_repository
-                if direct_repository.is_dir()
-                else prefixed_repository
-            )
-            if not repository.is_dir():
-                raise FileNotFoundError(f"Repository checkout unavailable: {repository_id}")
+            repository = _repository_checkout(repos_root, repository_id)
             logic_index = build_logic_index(repository)
             findings = logic_index.discover_findings(())
             for case in cases:

@@ -17,6 +17,7 @@ class RuleMechanism(str, Enum):
 
 
 _CONFIGURATION_TOKENS = (
+    "hardcoded-config",
     "secure-cookie",
     "secure-set-cookie",
     "cookie-secure",
@@ -25,6 +26,7 @@ _CONFIGURATION_TOKENS = (
 )
 _INTRINSIC_TOKENS = (
     "insecure-hash",
+    "unverified-jwt-decode",
     "weak-random",
 )
 _TAINT_TOKENS = (

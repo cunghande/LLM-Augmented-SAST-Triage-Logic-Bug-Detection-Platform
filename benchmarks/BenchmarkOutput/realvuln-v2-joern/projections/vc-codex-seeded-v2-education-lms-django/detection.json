@@ -1,0 +1,314 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.django.security.nan-injection.nan-injection",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 21,
+        "col": 1
+      },
+      "end": {
+        "line": 21,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user input going directly into typecast for bool(), float(), or complex(). This allows an attacker to inject Python's not-a-number (NaN) into the typecast. This results in undefind behavior, particularly when doing comparisons. Either cast to a different type, or add a guard checking for all capitalizations of the string 'nan'.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-704"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.audit.avoid-insecure-deserialization.avoid-insecure-deserialization",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 70,
+        "col": 1
+      },
+      "end": {
+        "line": 70,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using insecure deserialization library, backed by `pickle`, `_pickle`, `cpickle`, `dill`, `shelve`, or `yaml`, which are known to lead to remote code execution vulnerabilities.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 70,
+        "col": 1
+      },
+      "end": {
+        "line": 70,
+        "col": 1
+      },
+      "extra": {
+        "message": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 96,
+        "col": 1
+      },
+      "end": {
+        "line": 96,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.command.command-injection-os-system.command-injection-os-system",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 145,
+        "col": 1
+      },
+      "end": {
+        "line": 146,
+        "col": 1
+      },
+      "extra": {
+        "message": "Request data detected in os.system. This could be vulnerable to a command injection and should be avoided. If this must be done, use the 'subprocess' module instead and pass the arguments as a list. See https://owasp.org/www-community/attacks/Command_Injection for more information.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-78"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.dangerous-system-call.dangerous-system-call",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 146,
+        "col": 1
+      },
+      "end": {
+        "line": 146,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user-controlled data used in a system call. This could allow a malicious actor to execute commands. Use the 'subprocess' module instead, which is easier to use without accidentally exposing a command injection vulnerability.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-78"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.unverified-ssl-context.unverified-ssl-context",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 186,
+        "col": 1
+      },
+      "end": {
+        "line": 186,
+        "col": 1
+      },
+      "extra": {
+        "message": "Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use 'ssl.create_default_context' instead.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-295"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "config/course_operations.py",
+      "start": {
+        "line": 187,
+        "col": 1
+      },
+      "end": {
+        "line": 187,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.csv-writer-injection.csv-writer-injection",
+      "path": "lms/views.py",
+      "start": {
+        "line": 544,
+        "col": 1
+      },
+      "end": {
+        "line": 544,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected user input into a generated CSV file using the built-in `csv` module. If user data is used to generate the data in this file, it is possible that an attacker could inject a formula when the CSV is imported into a spreadsheet application that runs an attacker script, which could steal data from the importing user or, at worst, install malware on the user's computer. `defusedcsv` is a drop-in replacement with the same API that will attempt to mitigate formula injection attempts. You can use `defusedcsv` instead of `csv` to safely generate CSVs.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-1236"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic.html-templates.security.var-in-href.var-in-href",
+      "path": "templates/lms/notifications.html",
+      "start": {
+        "line": 2,
+        "col": 1
+      },
+      "end": {
+        "line": 2,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a template variable used in an anchor tag with the 'href' attribute. This allows a malicious actor to input the 'javascript:' URI and is subject to cross- site scripting (XSS) attacks. If using Flask, use 'url_for()' to safely generate a URL. If using Django, use the 'url' filter to safely generate a URL. If using Mustache, use a URL encoding library, or prepend a slash '/' to the variable for relative links (`href=\"/{{link}}\"`). You may also consider setting the Content Security Policy (CSP) header.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "lms/views.py",
+      "start": {
+        "line": 158,
+        "col": 1
+      },
+      "end": {
+        "line": 158,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "lms/views.py",
+      "start": {
+        "line": 476,
+        "col": 1
+      },
+      "end": {
+        "line": 476,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "lms/views.py",
+      "start": {
+        "line": 676,
+        "col": 1
+      },
+      "end": {
+        "line": 676,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "lms/views.py",
+      "start": {
+        "line": 679,
+        "col": 1
+      },
+      "end": {
+        "line": 679,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

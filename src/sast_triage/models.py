@@ -179,17 +179,28 @@ class NormalizedFinding(BaseDomainModel):
         if not self.finding_instance_id or not self.finding_instance_id.strip():
             raise ValueError("finding_instance_id must not be empty")
 
-        if self.scanner == ScannerType.SEMGREP and self.finding_type != FindingType.SAST:
+        if (
+            self.scanner == ScannerType.SEMGREP
+            and self.finding_type != FindingType.SAST
+        ):
             raise ValueError("SEMGREP scanner findings must have SAST finding_type")
-        if self.scanner == ScannerType.GITLEAKS and self.finding_type != FindingType.SECRET:
+        if (
+            self.scanner == ScannerType.GITLEAKS
+            and self.finding_type != FindingType.SECRET
+        ):
             raise ValueError("GITLEAKS scanner findings must have SECRET finding_type")
-        if self.scanner == ScannerType.MODULE2 and self.finding_type != FindingType.SAST:
+        if (
+            self.scanner == ScannerType.MODULE2
+            and self.finding_type != FindingType.SAST
+        ):
             raise ValueError("MODULE2 findings must have SAST finding_type")
 
         if not self.file_path or not self.file_path.strip():
             raise ValueError("file_path must not be empty")
         if _is_absolute_path(self.file_path):
-            raise ValueError("file_path must be a relative path, absolute paths are prohibited")
+            raise ValueError(
+                "file_path must be a relative path, absolute paths are prohibited"
+            )
 
         if not self.rule_id or not self.rule_id.strip():
             raise ValueError("rule_id must not be empty")
@@ -249,7 +260,10 @@ class SanitizedContext(BaseDomainModel):
         if self.finding_start_line <= 0:
             raise ValueError("finding_start_line must be greater than 0")
 
-        if self.finding_end_line is not None and self.finding_end_line < self.finding_start_line:
+        if (
+            self.finding_end_line is not None
+            and self.finding_end_line < self.finding_start_line
+        ):
             raise ValueError("finding_end_line must be >= finding_start_line")
 
         if self.redactions_applied < 0:
@@ -261,25 +275,40 @@ class SanitizedContext(BaseDomainModel):
 
         if self.context_strategy == ContextStrategy.UNAVAILABLE:
             if self.context_available:
-                raise ValueError("context_available must be False when context_strategy is UNAVAILABLE")
+                raise ValueError(
+                    "context_available must be False when context_strategy is UNAVAILABLE"
+                )
             if self.sanitized_snippet is not None:
-                raise ValueError("sanitized_snippet must be None when context_strategy is UNAVAILABLE")
+                raise ValueError(
+                    "sanitized_snippet must be None when context_strategy is UNAVAILABLE"
+                )
             if not self.missing_context_reasons:
-                raise ValueError("missing_context_reasons must not be empty when context_strategy is UNAVAILABLE")
+                raise ValueError(
+                    "missing_context_reasons must not be empty when context_strategy is UNAVAILABLE"
+                )
         else:
             if not self.context_available:
-                raise ValueError("context_available must be True for active context strategy")
+                raise ValueError(
+                    "context_available must be True for active context strategy"
+                )
             if self.sanitized_snippet is None or not self.sanitized_snippet.strip():
-                raise ValueError("sanitized_snippet must be a non-empty string for active context strategy")
+                raise ValueError(
+                    "sanitized_snippet must be a non-empty string for active context strategy"
+                )
             if self.context_start_line is None or self.context_end_line is None:
-                raise ValueError("context_start_line and context_end_line are required for active context strategy")
+                raise ValueError(
+                    "context_start_line and context_end_line are required for active context strategy"
+                )
             if self.context_start_line <= 0:
                 raise ValueError("context_start_line must be greater than 0")
             if self.context_end_line < self.context_start_line:
                 raise ValueError("context_end_line must be >= context_start_line")
             if self.context_start_line > self.finding_start_line:
                 raise ValueError("context_start_line must be <= finding_start_line")
-            if self.finding_end_line is not None and self.finding_end_line > self.context_end_line:
+            if (
+                self.finding_end_line is not None
+                and self.finding_end_line > self.context_end_line
+            ):
                 raise ValueError("finding_end_line must be <= context_end_line")
 
         return self
@@ -351,7 +380,9 @@ class PolicyDecision(BaseDomainModel):
             raise ValueError("reasons must not be empty")
         if not self.policy_version or not self.policy_version.strip():
             raise ValueError("policy_version must not be empty")
-        if self.escalated and (self.escalation_reason is None or not self.escalation_reason.strip()):
+        if self.escalated and (
+            self.escalation_reason is None or not self.escalation_reason.strip()
+        ):
             raise ValueError("escalation_reason is required when escalated is True")
         return self
 
@@ -381,6 +412,7 @@ class TriageResult(BaseDomainModel):
 
     finding: NormalizedFinding
     context_summary: str | None = None
+    evidence_details: dict[str, Any] | None = None
     triage_decision: TriageDecision | None = None
     policy_decision: PolicyDecision
     processing_errors: list[ProcessingError] = Field(default_factory=list)
@@ -393,17 +425,26 @@ class TriageResult(BaseDomainModel):
     def validate_invariants(self) -> Self:
         """Thực thi các invariant domain của TriageResult."""
         if self.context_summary is not None and not self.context_summary.strip():
-            raise ValueError("context_summary must not be empty or whitespace only when provided")
+            raise ValueError(
+                "context_summary must not be empty or whitespace only when provided"
+            )
 
         if self.triage_decision is None:
             if self.policy_decision.action != PolicyAction.TRIAGE_ERROR:
-                raise ValueError("policy_decision.action must be TRIAGE_ERROR when triage_decision is None")
-            if not any(err.stage == ProcessingStage.TRIAGE for err in self.processing_errors):
+                raise ValueError(
+                    "policy_decision.action must be TRIAGE_ERROR when triage_decision is None"
+                )
+            if not any(
+                err.stage == ProcessingStage.TRIAGE for err in self.processing_errors
+            ):
                 raise ValueError(
                     "processing_errors must contain at least one ProcessingError with stage=TRIAGE when triage_decision is None"
                 )
 
-        if self.policy_decision.action == PolicyAction.TRIAGE_ERROR and not self.processing_errors:
+        if (
+            self.policy_decision.action == PolicyAction.TRIAGE_ERROR
+            and not self.processing_errors
+        ):
             raise ValueError(
                 "processing_errors must not be empty when policy_decision.action is TRIAGE_ERROR"
             )
@@ -414,8 +455,12 @@ class TriageResult(BaseDomainModel):
             raise ValueError("provider_duration_ms cannot be negative")
         if self.triage_input_digest is not None:
             digest = self.triage_input_digest
-            if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
-                raise ValueError("triage_input_digest must be a lowercase SHA-256 hex digest")
+            if len(digest) != 64 or any(
+                char not in "0123456789abcdef" for char in digest
+            ):
+                raise ValueError(
+                    "triage_input_digest must be a lowercase SHA-256 hex digest"
+                )
         return self
 
 
@@ -468,9 +513,13 @@ class RunMetadata(BaseDomainModel):
 
         for ctrl_char in ("\n", "\r", "\t", "\0"):
             if ctrl_char in self.repository_name:
-                raise ValueError("repository_name must not contain newlines or control characters")
+                raise ValueError(
+                    "repository_name must not contain newlines or control characters"
+                )
             if ctrl_char in self.repository_identifier:
-                raise ValueError("repository_identifier must not contain newlines or control characters")
+                raise ValueError(
+                    "repository_identifier must not contain newlines or control characters"
+                )
 
         if self.completed_at < self.started_at:
             raise ValueError("completed_at cannot be earlier than started_at")
@@ -481,10 +530,17 @@ class RunMetadata(BaseDomainModel):
         ):
             raise ValueError("Finding counts cannot be negative")
         if not set(self.scanners_succeeded).issubset(set(self.scanners_attempted)):
-            raise ValueError("scanners_succeeded must be a subset of scanners_attempted")
+            raise ValueError(
+                "scanners_succeeded must be a subset of scanners_attempted"
+            )
         if self.analysis_backend != "joern":
             raise ValueError("analysis_backend must be joern")
-        if self.cpg_build_status not in {"not_applicable", "complete", "partial", "failed"}:
+        if self.cpg_build_status not in {
+            "not_applicable",
+            "complete",
+            "partial",
+            "failed",
+        }:
             raise ValueError("cpg_build_status is invalid")
         if self.cpg_build_seconds < 0:
             raise ValueError("cpg_build_seconds cannot be negative")

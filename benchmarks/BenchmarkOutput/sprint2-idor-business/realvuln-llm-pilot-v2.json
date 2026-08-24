@@ -1,0 +1,300 @@
+{
+  "schema_version": "logic-llm-pilot-v1",
+  "generated_at": "2026-08-24T04:42:27.902371+00:00",
+  "dataset": "Real-Vuln-Benchmark reviewed ground truth",
+  "detector_config_id": "python-idor-business-logic-v3",
+  "model": "Qwen/Qwen3-14B-AWQ",
+  "prompt_version": "triage-prompt-v14",
+  "logic_verification_retries": 1,
+  "selection": {
+    "positive_per_class": 5,
+    "negative_limit": 0,
+    "policy": "Detected candidates only: one reviewed positive per class plus reviewed detector false positives. NEEDS_REVIEW is abstention."
+  },
+  "metrics": {
+    "cases": 10,
+    "positive_cases": 10,
+    "negative_cases": 0,
+    "completed": 10,
+    "triage_errors": 0,
+    "decisive": 10,
+    "abstentions": 0,
+    "correct_decisive": 10,
+    "wrong_decisive": 0,
+    "selective_accuracy": 1.0,
+    "coverage": 1.0,
+    "provider_duration_total_ms": 154718,
+    "provider_duration_max_ms": 134685,
+    "warm_provider_duration_median_ms": 1959
+  },
+  "cases": [
+    {
+      "case_id": "dvga-012",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 385,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Đoạn mã cho thấy một điểm cuối được phơi bày (exposed endpoint) thực hiện một thao tác đặc quyền (privileged operation) mà không có kiểm soát xác thực nào. Không có bất kỳ cơ chế kiểm soát nào được phát hiện trong hàm chứa, cho phép người dùng không được xác thực thực hiện hành động xóa tất cả các bản ghi. Điều này là một lỗ hổng xác thực thiếu (missing authz idor).",
+      "model_evidence": [
+        "Điểm cuối được phơi bày (exposed endpoint) là 'resolve_delete_all_pastes' và có thể được truy cập bởi người dùng không được xác thực.",
+        "Không có cơ chế kiểm soát xác thực nào được phát hiện trong hàm 'resolve_delete_all_pastes' trước khi thực hiện thao tác xóa (Paste.query.delete()).",
+        "Thao tác xóa (Paste.query.delete()) là một thao tác đặc quyền (privileged operation) và không có kiểm soát nào để xác minh quyền của người dùng.",
+        "Đường dẫn từ điểm cuối đến thao tác đặc quyền là hoàn chỉnh và không có bất kỳ kiểm soát nào được áp dụng."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có cơ chế kiểm soát xác thực nào được áp dụng trong hàm 'resolve_delete_all_pastes' trước khi thực hiện thao tác xóa."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 134685
+    },
+    {
+      "case_id": "dvga-013",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 141,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Tìm thấy một lỗ hổng IDOR (Insecure Direct Object Reference) trong hàm mutate. Một tham số đường dẫn HTTP (id) được sử dụng trực tiếp để truy vấn đối tượng Paste mà không có kiểm tra xác thực chủ thể hoặc thuê bao. Điều này cho phép người dùng không được ủy quyền truy cập hoặc sửa đổi đối tượng không thuộc về họ.",
+      "model_evidence": [
+        "Tham số 'id' từ đường dẫn HTTP được truyền trực tiếp vào hàm filter_by của truy vấn Paste.query.",
+        "Không có kiểm tra xác thực chủ thể hoặc thuê bao trước khi truy vấn hoặc cập nhật đối tượng.",
+        "Đường dẫn từ tham số HTTP đến điểm truy vấn đối tượng là hoàn chỉnh và không bị chặn bởi bất kỳ điều kiện nào.",
+        "Không có cơ chế kiểm soát xác thực nào được phát hiện trong đoạn mã."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát xác thực nào được thực hiện trong các hàm khác hoặc middleware không được hiển thị trong đoạn mã."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1858
+    },
+    {
+      "case_id": "dvga-014",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 141,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Tìm thấy một lỗ hổng IDOR (Insecure Direct Object Reference) trong hàm mutate. Một tham số đường dẫn HTTP (id) được sử dụng trực tiếp để truy vấn đối tượng Paste mà không có kiểm tra xác thực chủ thể hoặc thuê bao. Điều này cho phép người dùng không được ủy quyền truy cập hoặc sửa đổi đối tượng không thuộc về họ.",
+      "model_evidence": [
+        "Tham số 'id' từ đường dẫn HTTP được truyền trực tiếp vào hàm filter_by của truy vấn Paste.query.",
+        "Không có kiểm tra xác thực chủ thể hoặc thuê bao trước khi truy vấn hoặc cập nhật đối tượng.",
+        "Đường dẫn từ tham số HTTP đến điểm truy vấn đối tượng là hoàn chỉnh và không bị chặn bởi bất kỳ điều kiện nào.",
+        "Không có cơ chế kiểm soát xác thực nào được phát hiện trong đoạn mã."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát xác thực nào được thực hiện trong các hàm khác hoặc middleware không được hiển thị trong đoạn mã."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1716
+    },
+    {
+      "case_id": "dvga-022",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 427,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Tìm thấy một lỗ hổng xác thực thiếu (missing authz idor) trong hàm 'audit' khi một endpoint HTTP/GraphQL không được kiểm soát quyền truy cập trước khi thực hiện thao tác nhạy cảm. Không có kiểm soát xác thực nào được phát hiện trong hàm chứa, dẫn đến khả năng truy cập trái phép.",
+      "model_evidence": [
+        "Endpoint 'audit' được xác định là nguồn gốc (source) và có thể bị người dùng kiểm soát (user-controlled).",
+        "Hàm 'audit' gọi đến 'Audit.query.order_by' mà không có kiểm soát xác thực (authorization guard) nào được áp dụng.",
+        "Không có kiểm soát xác thực nào được tìm thấy trong hàm 'audit' để đảm bảo người dùng được xác thực và có quyền truy cập.",
+        "Đường dẫn từ nguồn đến điểm nhạy cảm (sink) được xác nhận hoàn chỉnh và không có kiểm soát nào được áp dụng.",
+        "Phân tích tĩnh xác nhận rằng không có kiểm soát xác thực nào được áp dụng cho điểm nhạy cảm."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát xác thực nào được áp dụng trong hàm 'audit' để xác minh quyền truy cập của người dùng."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 2032
+    },
+    {
+      "case_id": "dvga-023",
+      "repository": "dvga",
+      "logic_class": "missing_authz_idor",
+      "expected": true,
+      "file_path": "core/views.py",
+      "line": 432,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một điểm cuối được phơi bày (exposed HTTP endpoint) truy cập trực tiếp đến một điểm nhạy cảm (privileged operation) mà không có kiểm soát xác thực nào trong hàm chứa. Điều này cho phép người dùng không được xác thực thực hiện hành động nhạy cảm.",
+      "model_evidence": [
+        "Điểm nguồn (source) là một endpoint HTTP/GraphQL được xác định là do người dùng kiểm soát (user-controlled).",
+        "Điểm đích (sink) là một hàm gọi `helpers.initialize()` mà không có kiểm soát xác thực nào được phát hiện trong hàm chứa.",
+        "Không có kiểm soát xác thực nào được tìm thấy trong hàm `start_over()` trước khi gọi đến `helpers.initialize()`.",
+        "Một đường dẫn đầy đủ từ điểm nguồn đến điểm đích được xác nhận là hoàn chỉnh và không có kiểm soát nào được áp dụng."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát xác thực nào được áp dụng trong hàm `start_over()` trước khi gọi đến `helpers.initialize()`."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 4424
+    },
+    {
+      "case_id": "dvblab-018",
+      "repository": "dvblab",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "backend/routes/transaction_routes.py",
+      "line": 33,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một giá trị miền do người gọi kiểm soát (amount) được truyền trực tiếp đến thao tác cập nhật tài khoản mà không có kiểm tra giới hạn miền nào. Điều này có thể cho phép người tấn công thao túng số tiền chuyển khoản, vượt qua kiểm soát về số dư tài khoản.",
+      "model_evidence": [
+        "Giá trị 'amount' được lấy từ http_request_body và được chuyển trực tiếp vào thao tác cập nhật tài khoản.",
+        "Không có kiểm tra giới hạn miền nào được áp dụng cho 'amount' trước khi cập nhật tài khoản.",
+        "Các kiểm soát 'current_user' và 'current_user.balance' không ngăn chặn việc thao túng giá trị 'amount' trong thao tác cập nhật."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm tra giới hạn miền nào được thực hiện trên 'amount' trước khi cập nhật tài khoản."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1959
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-121",
+      "repository": "vc-claude-code-seeded-v2-crm-saas-django",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "crm_project/partner_console.py",
+      "line": 65,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một giá trị miền do người gọi kiểm soát (amount) được truyền trực tiếp đến một thao tác cập nhật trạng thái tài khoản mà không có kiểm tra miền hoặc ràng buộc số học nào. Điều này cho phép người tấn công gửi các giá trị âm, lớn hoặc không hợp lệ để thay đổi trạng thái tài khoản một cách không an toàn.",
+      "model_evidence": [
+        "Giá trị 'amount' được trích xuất từ tham số yêu cầu HTTP và được chuyển đổi thành kiểu int mà không có kiểm tra miền.",
+        "Giá trị 'amount' được sử dụng trực tiếp trong thao tác 'ledger['balance'] -= amount' mà không có kiểm tra ràng buộc số học.",
+        "Không có kiểm tra hoặc ràng buộc nào được áp dụng cho 'amount' trước khi thao tác cập nhật trạng thái tài khoản.",
+        "Không có kiểm soát hiệu quả nào được phát hiện trong toàn bộ đường dẫn từ nguồn đến điểm tiếp nhận."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát hiệu quả nào được áp dụng cho 'amount' trước khi thao tác cập nhật trạng thái tài khoản."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 2133
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-122",
+      "repository": "vc-claude-code-seeded-v2-education-lms-django",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "lms/course_operations.py",
+      "line": 59,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một giá trị miền do người gọi kiểm soát (amount) được truyền trực tiếp đến một thao tác cập nhật trạng thái tài khoản mà không có kiểm tra miền hoặc ràng buộc số học nào. Điều này cho phép người tấn công gửi các giá trị âm, lớn hoặc không hợp lệ để thay đổi trạng thái tài khoản một cách không an toàn.",
+      "model_evidence": [
+        "Giá trị 'amount' được trích xuất từ tham số yêu cầu HTTP và được chuyển đổi thành số nguyên mà không có kiểm tra miền.",
+        "Giá trị 'amount' sau đó được sử dụng trực tiếp trong thao tác 'ledger[\"balance\"] -= amount', ảnh hưởng đến trạng thái tài khoản.",
+        "Không có kiểm tra hoặc ràng buộc nào được áp dụng để đảm bảo giá trị 'amount' nằm trong khoảng hợp lệ.",
+        "Không có cơ chế kiểm soát nào được phát hiện trong đoạn mã để ngăn chặn việc thay đổi trạng thái tài khoản một cách không hợp lệ."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm tra miền hoặc ràng buộc số học nào được áp dụng cho 'amount' trước khi thao tác cập nhật trạng thái tài khoản."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 2186
+    },
+    {
+      "case_id": "seeded-v2-campaign-2-123",
+      "repository": "vc-claude-code-seeded-v2-fintech-lending-fastapi",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "backend/app/loan_operations.py",
+      "line": 46,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Tìm thấy một lỗ hổng có thể bỏ qua quy tắc kinh doanh, khi giá trị miền do người gọi kiểm soát được truyền trực tiếp đến thao tác kinh doanh mà không có kiểm tra giới hạn nào. Không có kiểm soát hiệu quả nào được phát hiện trong đoạn mã cung cấp.",
+      "model_evidence": [
+        "Giá trị 'amount' được lấy từ http_request_body và được chuyển đổi thành int mà không có kiểm tra giới hạn.",
+        "Giá trị 'amount' được sử dụng trực tiếp trong thao tác 'ledger[\"balance\"] -= amount' mà không có kiểm tra bảo vệ miền.",
+        "Không có kiểm soát hiệu quả nào được phát hiện trong đoạn mã cung cấp để ngăn chặn giá trị miền không hợp lệ.",
+        "Đoạn mã không có bất kỳ kiểm tra nào để đảm bảo giá trị 'amount' nằm trong khoảng hợp lệ trước khi thực hiện thao tác."
+      ],
+      "missing_information": [],
+      "assumptions": [
+        "Không có kiểm soát hiệu quả nào được áp dụng trong đoạn mã cung cấp."
+      ],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1837
+    },
+    {
+      "case_id": "seeded-v2-campaign-1-011",
+      "repository": "vc-claude-code-seeded-v2-healthcare-clinic-django",
+      "logic_class": "business_rule_bypass",
+      "expected": true,
+      "file_path": "clinic_portal/patient_operations.py",
+      "line": 47,
+      "model_verdict": "LIKELY_TP",
+      "model_confidence": "HIGH",
+      "model_summary": "Một giá trị miền do người gọi kiểm soát được truyền trực tiếp đến hoạt động kinh doanh mà không có kiểm tra hoặc ràng buộc miền nào được thực hiện. Điều này có thể cho phép người tấn công thao túng giá trị miền để vượt qua kiểm soát kinh doanh.",
+      "model_evidence": [
+        "Giá trị miền do người gọi kiểm soát được xác định từ yêu cầu HTTP (http_request_body).",
+        "Giá trị miền này được truyền trực tiếp đến hoạt động kinh doanh mà không có kiểm tra hoặc ràng buộc miền nào được thực hiện.",
+        "Không có kiểm soát hiệu quả nào được quan sát thấy để bảo vệ hoạt động kinh doanh cụ thể.",
+        "Đường truyền từ nguồn đến điểm cuối được xác định đầy đủ và không có điểm kiểm soát nào được áp dụng."
+      ],
+      "missing_information": [],
+      "assumptions": [],
+      "policy_action": "LIKELY_TP",
+      "abstained": false,
+      "correct": true,
+      "triage_error": false,
+      "processing_error_codes": [],
+      "provider_duration_ms": 1888
+    }
+  ]
+}

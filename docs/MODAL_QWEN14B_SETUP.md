@@ -148,7 +148,7 @@ Không cần file `.env`. Đặt biến trong session PowerShell trước khi ch
 ```powershell
 $env:MODAL_MODEL_ID = "Qwen/Qwen3-14B-AWQ"
 $env:MODAL_GPU = "B200"
-$env:MODAL_MAX_MODEL_LEN = "4096"
+$env:MODAL_MAX_MODEL_LEN = "8192"
 $env:MODAL_MAX_TOKENS = "256"
 $env:MODAL_THINKING = "false"
 $env:MODAL_SCALEDOWN_WINDOW = "300"

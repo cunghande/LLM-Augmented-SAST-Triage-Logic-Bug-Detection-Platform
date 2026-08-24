@@ -279,7 +279,7 @@ Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây l�
 | `--repository` | Đường dẫn target repository. |
 | `--output-dir` | Thư mục riêng của một run đầy đủ. |
 | `--provider` | `fake`, `ollama` hoặc `real`. |
-| `--prompt-version` | Mặc định `triage-prompt-v13`; v13 thêm retrieval-resolution, rubric riêng theo lớp và một verifier pass có giới hạn cho logic finding còn abstain. Dùng v12/v11/v10/v9 chỉ để tái lập baseline cũ. |
+| `--prompt-version` | Mặc định `triage-prompt-v14`; v14 thêm source/sink symbol chính xác, function-scoped evidence và phân biệt endpoint-level authorization với object IDOR. Dùng v13/v12/v11/v10/v9 chỉ để tái lập baseline cũ. |
 | `--repository-identifier` | ID tương đối ghi vào metadata; mặc định là tên repo. |
 | `--semgrep-config` | Có thể lặp nhiều lần để thêm ruleset/YAML. |
 | `--gitleaks-config` | Config Gitleaks tùy chọn. |
@@ -324,6 +324,13 @@ hoặc framework wiring phức tạp vẫn có thể cần review thủ công.
 Mặc định, Module 2 chỉ tạo index/evidence cho finding Semgrep và Gitleaks. Nó
 không làm thay đổi tập finding của scanner. Chỉ dùng `--module2-discovery` khi
 muốn thử nghiệm discovery Sprint 3 và báo cáo riêng kết quả đó.
+
+Với mục tiêu điều tra source-to-sink liên file, phải bật
+`--module2-discovery`. Mỗi finding sẽ có `evidence_details` trong `report.json`;
+`report.md` và `report.html` hiển thị toàn bộ path trong ngân sách, từng bước
+symbol/file/dòng, danh sách file đi qua, caller, guard/control và giới hạn còn
+thiếu. “Toàn bộ file” ở đây là toàn bộ file tham gia một đường dataflow đã được
+Joern chứng minh, không phải toàn bộ file không liên quan trong repository.
 
 ## 8. Output và cách đọc báo cáo
 

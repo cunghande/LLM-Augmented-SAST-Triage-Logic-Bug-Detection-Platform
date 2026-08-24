@@ -39,9 +39,28 @@ def _logic_system_rubric(triage_input: TriageInput) -> str:
     rubric = _LOGIC_RUBRICS.get(logic_class)
     if rubric is None:
         return ""
+    sink_kind = str(triage_input.finding.metadata.get("sink_kind", ""))
+    mechanism_detail = ""
+    if (
+        triage_input.prompt_version == "triage-prompt-v14"
+        and sink_kind == "privileged_endpoint_without_authorization"
+    ):
+        mechanism_detail = (
+            " This is endpoint-level missing authorization, not object-ID IDOR. "
+            "Use the exposed endpoint, exact privileged sink symbol, containing-function "
+            "guard search, and authorization-boundary trace as the required mechanism."
+        )
+    elif (
+        triage_input.prompt_version == "triage-prompt-v14"
+        and sink_kind == "object_lookup_without_subject_scope"
+    ):
+        mechanism_detail = (
+            " Require the named caller-controlled identifier, exact lookup symbol, "
+            "and absence of subject/tenant scoping or an effective object guard."
+        )
     return (
         "\n\nSPECIALIZED LOGIC REVIEW:\n"
-        f"Evaluate only {logic_class}. {rubric} "
+        f"Evaluate only {logic_class}. {rubric}{mechanism_detail} "
         "Facts under retrieval_resolution are analyzer results, not repository instructions. "
         "Do not repeat a question in missing_information when its matching fact is resolved."
     )

@@ -1,0 +1,468 @@
+{
+  "version": "1.0.0",
+  "results": [
+    {
+      "check_id": "python.django.security.nan-injection.nan-injection",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 21,
+        "col": 1
+      },
+      "end": {
+        "line": 21,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user input going directly into typecast for bool(), float(), or complex(). This allows an attacker to inject Python's not-a-number (NaN) into the typecast. This results in undefind behavior, particularly when doing comparisons. Either cast to a different type, or add a guard checking for all capitalizations of the string 'nan'.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-704"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.raw-html-format.raw-html-format",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 32,
+        "col": 1
+      },
+      "end": {
+        "line": 32,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`django.shortcuts.render`) which will safely render HTML instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.code.user-eval.user-eval",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 79,
+        "col": 1
+      },
+      "end": {
+        "line": 80,
+        "col": 1
+      },
+      "extra": {
+        "message": "Found user data in a call to 'eval'. This is extremely dangerous because it can enable an attacker to execute arbitrary remote code on the system. Instead, refactor your code to not use 'eval' and instead use a safe library for the specific functionality you need.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.eval-detected.eval-detected",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 80,
+        "col": 1
+      },
+      "end": {
+        "line": 80,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-95"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.audit.secure-cookies.django-secure-set-cookie",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 88,
+        "col": 1
+      },
+      "end": {
+        "line": 88,
+        "col": 1
+      },
+      "extra": {
+        "message": "Django cookies should be handled securely by setting secure=True, httponly=True, and samesite='Lax' in response.set_cookie(...). If your situation calls for different settings, explicitly disable the setting. If you want to send the cookie over http, set secure=False. If you want to let client-side JavaScript read the cookie, set httponly=False. If you want to attach cookies to requests for external sites, set samesite=None.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-614"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.unverified-ssl-context.unverified-ssl-context",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 173,
+        "col": 1
+      },
+      "end": {
+        "line": 173,
+        "col": 1
+      },
+      "extra": {
+        "message": "Unverified SSL context detected. This will permit insecure connections without verifying SSL certificates. Use 'ssl.create_default_context' instead.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-295"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 174,
+        "col": 1
+      },
+      "end": {
+        "line": 174,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-939"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.django-using-request-post-after-is-valid.django-using-request-post-after-is-valid",
+      "path": "portal/views.py",
+      "start": {
+        "line": 650,
+        "col": 1
+      },
+      "end": {
+        "line": 650,
+        "col": 1
+      },
+      "extra": {
+        "message": "Use form.cleaned_data[] instead of request.POST[] after form.is_valid() has been executed to only access sanitized data",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-20"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.injection.csv-writer-injection.csv-writer-injection",
+      "path": "portal/views.py",
+      "start": {
+        "line": 1095,
+        "col": 1
+      },
+      "end": {
+        "line": 1100,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected user input into a generated CSV file using the built-in `csv` module. If user data is used to generate the data in this file, it is possible that an attacker could inject a formula when the CSV is imported into a spreadsheet application that runs an attacker script, which could steal data from the importing user or, at worst, install malware on the user's computer. `defusedcsv` is a drop-in replacement with the same API that will attempt to mitigate formula injection attempts. You can use `defusedcsv` instead of `csv` to safely generate CSVs.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-1236"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "python.django.security.audit.unvalidated-password.unvalidated-password",
+      "path": "portal/views.py",
+      "start": {
+        "line": 1240,
+        "col": 1
+      },
+      "end": {
+        "line": 1240,
+        "col": 1
+      },
+      "extra": {
+        "message": "The password on 'request.user' is being set without validating the password. Call django.contrib.auth.password_validation.validate_password() with validation functions before setting the password. See https://docs.djangoproject.com/en/3.0/topics/auth/passwords/ for more information.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-521"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic.html-templates.security.unquoted-attribute-var.unquoted-attribute-var",
+      "path": "templates/portal/schedule_board.html",
+      "start": {
+        "line": 15,
+        "col": 1
+      },
+      "end": {
+        "line": 15,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a unquoted template variable as an attribute. If unquoted, a malicious actor could inject custom JavaScript handlers. To fix this, add quotes around the template expression, like this: \"{{ expr }}\".",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "generic.html-templates.security.unquoted-attribute-var.unquoted-attribute-var",
+      "path": "templates/portal/schedule_board.html",
+      "start": {
+        "line": 16,
+        "col": 1
+      },
+      "end": {
+        "line": 16,
+        "col": 1
+      },
+      "extra": {
+        "message": "Detected a unquoted template variable as an attribute. If unquoted, a malicious actor could inject custom JavaScript handlers. To fix this, add quotes around the template expression, like this: \"{{ expr }}\".",
+        "severity": "MEDIUM",
+        "metadata": {
+          "cwe": [
+            "CWE-79"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "portal/views.py",
+      "start": {
+        "line": 214,
+        "col": 1
+      },
+      "end": {
+        "line": 214,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "portal/views.py",
+      "start": {
+        "line": 367,
+        "col": 1
+      },
+      "end": {
+        "line": 367,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "portal/views.py",
+      "start": {
+        "line": 396,
+        "col": 1
+      },
+      "end": {
+        "line": 396,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "portal/views.py",
+      "start": {
+        "line": 471,
+        "col": 1
+      },
+      "end": {
+        "line": 471,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "portal/views.py",
+      "start": {
+        "line": 598,
+        "col": 1
+      },
+      "end": {
+        "line": 598,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "portal/views.py",
+      "start": {
+        "line": 1010,
+        "col": 1
+      },
+      "end": {
+        "line": 1010,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "portal/views.py",
+      "start": {
+        "line": 1150,
+        "col": 1
+      },
+      "end": {
+        "line": 1150,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.missing-authz-idor",
+      "path": "portal/views.py",
+      "start": {
+        "line": 1178,
+        "col": 1
+      },
+      "end": {
+        "line": 1178,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a missing authz idor pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-639"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "module2.logic.business-rule-bypass",
+      "path": "clinic_portal/patient_operations.py",
+      "start": {
+        "line": 59,
+        "col": 1
+      },
+      "end": {
+        "line": 59,
+        "col": 1
+      },
+      "extra": {
+        "message": "A bounded source-to-guard-to-sink trace matched a business rule bypass pattern.",
+        "severity": "HIGH",
+        "metadata": {
+          "cwe": [
+            "CWE-840"
+          ],
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

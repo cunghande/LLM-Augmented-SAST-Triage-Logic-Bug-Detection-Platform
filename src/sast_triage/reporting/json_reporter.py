@@ -112,6 +112,7 @@ def _project_batch_result(batch_result: BatchResult) -> dict[str, Any]:
                     mode="json", include=_SAFE_FINDING_FIELDS
                 ),
                 "context_summary": result.context_summary,
+                "evidence_details": result.evidence_details,
                 "triage_decision": (
                     result.triage_decision.model_dump(mode="json")
                     if result.triage_decision is not None
