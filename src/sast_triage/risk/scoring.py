@@ -216,6 +216,23 @@ def _guidance(finding: NormalizedFinding) -> tuple[str, tuple[str, ...]]:
             "Tránh shell command ghép chuỗi; dùng API đối số tách rời và allowlist giá trị nghiệp vụ ở trust boundary.",
             common,
         )
+    if any(token in text for token in ("urllib", "urlopen", "ssrf", "dynamic-url")):
+        return (
+            (
+                "Không truyền trực tiếp URL do người dùng cung cấp vào urlopen. Parse URL và chỉ "
+                "cho phép scheme HTTP/HTTPS cùng hostname, port và đích nghiệp vụ trong allowlist; "
+                "từ chối userinfo, fragment và mọi scheme như file, ftp hoặc data. Resolve DNS rồi "
+                "chặn loopback, private, link-local, multicast, địa chỉ cloud metadata và kiểm tra "
+                "lại đích sau mỗi redirect để chống DNS rebinding/redirect bypass. Đặt timeout, giới "
+                "hạn kích thước phản hồi, số redirect và content type; áp dụng egress firewall khi có thể."
+            ),
+            (
+                "Unit test phải từ chối file://, localhost, IP private/link-local, hostname resolve về mạng nội bộ và redirect từ host hợp lệ sang đích bị chặn.",
+                "Unit test phải chấp nhận đúng các hostname/scheme/port nghiệp vụ trong allowlist và không làm thay đổi chức năng tải ảnh hợp lệ.",
+                "Integration test giới hạn timeout, kích thước phản hồi, số redirect và xác nhận response lỗi không chứa nội dung nội bộ.",
+                "Chạy lại scanner, Joern và test suite trên đúng commit; bắt buộc security/developer review trước khi đóng finding.",
+            ),
+        )
     if "open" in text or "path" in text:
         return (
             "Chuẩn hóa đường dẫn, allowlist tài nguyên hợp lệ và kiểm tra containment sau khi resolve trước khi truy cập file.",

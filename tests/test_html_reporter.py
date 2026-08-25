@@ -141,26 +141,29 @@ def test_html_report_contains_security_sections_and_source_to_sink_trace(
     assert '<html lang="vi">' in report
     for section in (
         "Chi tiết lỗ hổng được phát hiện",
-        "Mô tả",
-        "Tác động",
-        "Thành phần bị ảnh hưởng",
-        "Bằng chứng Source-to-Sink",
-        "Tái hiện và xác minh an toàn",
-        "Hướng khắc phục đề xuất",
-        "Thông báo gốc từ scanner",
+        "Mô tả kỹ thuật",
+        "Tác động bảo mật",
+        "Luồng dữ liệu từ nguồn đến điểm nguy hiểm",
+        "Hướng khắc phục",
+        "Kiểm thử và xác minh sau khi sửa",
     ):
         assert section in report
+    for removed in (
+        "Thành phần bị ảnh hưởng",
+        "Thông báo gốc từ scanner",
+        "Quyết định chính sách",
+        "Lỗi xử lý",
+        "Telemetry LLM và decision cache",
+    ):
+        assert removed not in report
     assert "CWE-915" in report
     assert "4.2/5.0" in report
-    assert "deterministic-risk-v1" in report
-    assert "Khả năng đi tới sink: 5.0" in report
-    assert "Telemetry LLM và decision cache" in report
-    assert "100 / 20" in report
-    assert "provider-wall-time-v1" in report
+    assert "Kết luận / độ tin cậy" in report
+    assert "Độ đầy đủ luồng" in report
     assert "Nguồn: request.json@20" in report
     assert "Kiểm soát: field_allowlist@21" in report
     assert "Điểm nguy hiểm: model.update@22" in report
-    assert "Backend: joern" in report
+    assert "Backend phân tích: joern" in report
 
 
 def test_html_report_escapes_untrusted_values(tmp_path: Path) -> None:
@@ -170,7 +173,7 @@ def test_html_report_escapes_untrusted_values(tmp_path: Path) -> None:
     report = output.read_text(encoding="utf-8")
 
     assert '<script>alert("x")</script>' not in report
-    assert "&lt;script&gt;alert(&quot;" in report
+    assert "&lt;script&gt;alert(&quot;" not in report
 
 
 def test_html_report_uses_source_free_joern_summary_when_metadata_has_no_trace(
@@ -271,28 +274,24 @@ def test_html_report_renders_one_representative_cross_file_path(tmp_path: Path) 
     write_html_report(batch.model_copy(update={"results": [result]}), output)
     report = output.read_text(encoding="utf-8")
 
-    assert report.count("Đường dữ liệu đại diện") == 1
+    assert report.count("Luồng đại diện") == 1
     assert "1 đường thay thế vẫn được giữ" in report
     assert "shared/input.py:13" in report
     assert "Call chain / entrypoint" in report
     assert len(result.evidence_details["paths"]) == 2
 
 
-def test_html_report_fails_closed_on_forbidden_value(tmp_path: Path) -> None:
+def test_html_report_omits_forbidden_scanner_message_value(tmp_path: Path) -> None:
     canary = "HTML_REPORT_SECRET_CANARY"
     output = tmp_path / "report.html"
 
-    with pytest.raises(SastTriageError) as raised:
-        write_html_report(
-            _batch(injected=canary),
-            output,
-            forbidden_values=(canary,),
-        )
+    write_html_report(
+        _batch(injected=canary),
+        output,
+        forbidden_values=(canary,),
+    )
 
-    assert raised.value.error_code == "REPORT_LEAK_CHECK_FAILED"
-    assert canary not in str(raised.value)
-    assert not output.exists()
-    assert list(tmp_path.glob("*.tmp")) == []
+    assert canary not in output.read_text(encoding="utf-8")
 
 
 def test_html_report_respects_overwrite_false(tmp_path: Path) -> None:

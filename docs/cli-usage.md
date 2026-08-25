@@ -288,7 +288,7 @@ Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây l�
 | `--repository` | Đường dẫn target repository. |
 | `--output-dir` | Thư mục riêng của một run đầy đủ. |
 | `--provider` | `fake`, `ollama` hoặc `real`. |
-| `--prompt-version` | Mặc định `triage-prompt-v14`; v14 thêm source/sink symbol chính xác, function-scoped evidence và phân biệt endpoint-level authorization với object IDOR. Dùng v13/v12/v11/v10/v9 chỉ để tái lập baseline cũ. |
+| `--prompt-version` | Mặc định `triage-prompt-v15`; v15 yêu cầu phần giải thích theo chuẩn báo cáo Security Engineering: vị trí/hàm/biến cụ thể, luồng source-to-sink, điều kiện khai thác, tác động, control và bước khắc phục/kiểm thử có thể hành động. v14 thêm source/sink symbol chính xác, function-scoped evidence và phân biệt endpoint-level authorization với object IDOR. Dùng các phiên bản cũ chỉ để tái lập baseline. |
 | `--repository-identifier` | ID tương đối ghi vào metadata; mặc định là tên repo. |
 | `--semgrep-config` | Có thể lặp nhiều lần để thêm ruleset/YAML. |
 | `--gitleaks-config` | Config Gitleaks tùy chọn. |

@@ -11,6 +11,11 @@ from typing import Any
 
 from sast_triage.errors import SastTriageError
 from sast_triage.models import BatchResult, PolicyAction, TriageResult
+from sast_triage.reporting.finding_content import (
+    evidence_overview,
+    finding_description,
+    finding_impact,
+)
 
 _KNOWN_SAFE_PLACEHOLDERS = frozenset(
     {
@@ -191,22 +196,9 @@ def _trace_html(
             f"Backend phân tích: {backend}."
         )
         return f'<p class="muted">{_escape(note)}</p>'
-    cards = []
-    for index, step in enumerate(steps, start=1):
-        kind = "flow-step"
-        lowered = step.lower()
-        if "source" in lowered or "nguồn" in lowered:
-            kind += " source"
-        elif "sink" in lowered or "điểm nguy hiểm" in lowered:
-            kind += " sink"
-        elif "guard" in lowered or "control" in lowered or "kiểm soát" in lowered:
-            kind += " guard"
-        cards.append(
-            f'<div class="{kind}"><span>{index}</span><strong>{_escape(step)}</strong></div>'
-        )
-    return (
-        '<div class="flow">' + '<div class="arrow">&rarr;</div>'.join(cards) + "</div>"
-    )
+    return '<ol class="data-flow">' + "".join(
+        f"<li>{_escape(step)}</li>" for step in steps
+    ) + "</ol>"
 
 
 def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
@@ -225,23 +217,17 @@ def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
         ]
         if valid_paths:
             path = max(valid_paths, key=_display_path_score)
-            cards: list[str] = []
+            flow_lines: list[str] = []
             for step_number, step in enumerate(path["steps"], start=1):
                 if not isinstance(step, dict):
                     continue
                 kind = str(step.get("kind", "flow"))
-                css_class = "flow-step"
-                if step_number == 1:
-                    css_class += " source"
-                elif step_number == len(path["steps"]):
-                    css_class += " sink"
                 location = f"{step.get('file_path', '?')}:{step.get('line', '?')}"
-                label = f"{kind}: {step.get('symbol', 'unknown')} — {location}"
-                cards.append(
-                    f'<div class="{css_class}"><span>{step_number}</span>'
-                    f"<strong>{_escape(label)}</strong></div>"
+                flow_lines.append(
+                    f"<li>{_escape(kind)}: {_escape(step.get('symbol', 'unknown'))} "
+                    f"— {_escape(location)}</li>"
                 )
-            if not cards:
+            if not flow_lines:
                 valid_paths = []
             else:
                 files = _string_list(path.get("files"))
@@ -255,11 +241,11 @@ def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
                         "cho LLM và report.json.</p>"
                     )
                 sections.append(
-                    f"<h4>Đường dữ liệu đại diện — {_escape(path_type)}</h4>"
+                    f"<h4>Luồng đại diện — {_escape(path_type)}</h4>"
                     f'<p class="provenance">File đi qua: {_escape(", ".join(files))}</p>'
-                    '<div class="flow">'
-                    + '<div class="arrow">&rarr;</div>'.join(cards)
-                    + "</div>"
+                    '<ol class="data-flow">'
+                    + "".join(flow_lines)
+                    + "</ol>"
                     + hidden_note
                 )
 
@@ -277,48 +263,6 @@ def _detailed_evidence_html(details: dict[str, Any] | None) -> str:
                 "<h4>Call chain / entrypoint</h4>" + _list(caller_lines, empty="")
             )
 
-    controls = details.get("controls")
-    if isinstance(controls, list) and controls:
-        control_lines = []
-        for control in controls:
-            if isinstance(control, dict):
-                location = ""
-                if control.get("file_path") is not None:
-                    location = (
-                        f" — {control.get('file_path')}:{control.get('line', '?')}"
-                    )
-                control_lines.append(
-                    f"{control.get('symbol', 'unknown')} "
-                    f"[{control.get('control_type', 'control')}]; "
-                    f"on_path={control.get('on_path')}; "
-                    f"effective={control.get('effective')}{location}"
-                )
-        if control_lines:
-            sections.append(
-                "<h4>Guard / sanitizer / control</h4>" + _list(control_lines, empty="")
-            )
-
-    completeness = details.get("completeness")
-    if isinstance(completeness, dict):
-        limitations = _string_list(completeness.get("limitations"))
-        missing = _string_list(completeness.get("missing_information"))
-        sections.append(
-            "<h4>Độ đầy đủ evidence</h4>"
-            + '<table class="details"><tbody>'
-            + _row("Trạng thái", completeness.get("status", "unknown"))
-            + _row("Source resolved", completeness.get("source_resolved", False))
-            + _row("Sink resolved", completeness.get("sink_resolved", False))
-            + _row(
-                "Taint path complete", completeness.get("taint_path_complete", False)
-            )
-            + _row(
-                "Reachability resolved",
-                completeness.get("reachability_resolved", False),
-            )
-            + "</tbody></table>"
-            + _list(limitations, empty="Không có giới hạn được ghi nhận.")
-            + _list(missing, empty="Không có thông tin bắt buộc còn thiếu.")
-        )
     return "".join(sections)
 
 
@@ -351,13 +295,8 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
     if logic_class is not None:
         labels.append(str(logic_class))
 
-    summary = (
-        decision.summary
-        if decision is not None
-        else "Provider không trả về quyết định hợp lệ; phát hiện này cần được đánh giá thủ công."
-    )
-    evidence = () if decision is None else tuple(decision.evidence)
     missing = () if decision is None else tuple(decision.missing_information)
+    overview = evidence_overview(result)
     remediation = result.remediation or metadata.get("remediation")
     if not isinstance(remediation, str) or not remediation.strip():
         remediation = (
@@ -378,14 +317,11 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
     location = (
         f"{finding.file_path}:{_line_range(finding.start_line, finding.end_line)}"
     )
-    description = (
-        f"{finding.scanner.value} phát hiện dấu hiệu liên quan đến rule “{title}” tại "
-        f"{location}. Cần xác minh dữ liệu đầu vào có thể đi đến thao tác nhạy cảm hay "
-        "không, đồng thời kiểm tra các biện pháp kiểm soát trên toàn bộ luồng dữ liệu."
-    )
-    errors = tuple(
-        f"{error.stage.value} / {error.error_code}: {error.safe_message}"
-        for error in result.processing_errors
+    description = finding_description(result)
+    verdict = (
+        f"{decision.model_verdict.value} / {decision.model_confidence.value}"
+        if decision is not None
+        else "Không có quyết định LLM hợp lệ"
     )
     return f"""
     <article class="finding" id="finding-{index}">
@@ -401,44 +337,30 @@ def _finding_html(index: int, result: TriageResult, backend: str) -> str:
         {_row("Trạng thái", _ACTION_LABELS[policy.action])}
         {_row("Điểm rủi ro", _risk_value(result))}
         {_row("Mức rủi ro", result.risk_level or metadata.get("risk_level", _SEVERITY_LABELS[severity]))}
-        {_row("Phiên bản chấm điểm", result.risk_scoring_version or "Chưa xác định")}
-        {_row("Decision cache", result.decision_cache_status)}
-        {_row("Input / output token ước tính", f"{result.input_tokens} / {result.output_tokens}")}
-        {_row("Phương pháp đếm token", result.token_count_method or "Chưa xác định")}
-        {_row("Provider latency", f"{result.provider_duration_ms} ms")}
-        {_row("Chi phí ước tính", f"{result.estimated_cost_usd} USD" if result.estimated_cost_usd is not None else "Chưa cấu hình đơn giá")}
+        {_row("Vị trí", location)}
+        {_row("Điểm vào", metadata.get("entrypoint", "Chưa xác định"))}
+        {_row("Kết luận / độ tin cậy", verdict)}
+        {_row("Độ đầy đủ luồng", overview["completeness"])}
+        {_row("Nguồn", overview["source"])}
+        {_row("Điểm nguy hiểm", overview["sink"])}
+        {_row("Kiểm soát", overview["controls"])}
         {_row("CWE", metadata.get("cwe", "Chưa ánh xạ"))}
         {_row("CVSS", metadata.get("cvss", "Chưa tính"))}
         {_row("Nhãn", ", ".join(labels))}
       </tbody></table>
 
-      <section><h3>Mô tả</h3><p>{_escape(description)}</p>
-        <details><summary>Thông báo gốc từ scanner</summary><p>{_escape(finding.message)}</p></details>
-        <div class="callout">{_escape(result.context_summary or "Không có tóm tắt ngữ cảnh an toàn.")}</div>
-      </section>
-      <section><h3>Tác động</h3><p>{_escape(summary)}</p>
-        {_list(_risk_factors(result), empty="Không có yếu tố rủi ro dạng cấu trúc.")}
-      </section>
-      <section><h3>Thành phần bị ảnh hưởng</h3>
-        <p><code>{_escape(location)}</code></p>
-        <p>Thành phần: {_escape(metadata.get("component", "Chưa xác định"))}; điểm vào: {_escape(metadata.get("entrypoint", "Chưa xác định"))}</p>
-      </section>
-      <section><h3>Bằng chứng Source-to-Sink</h3>
-        <p class="provenance">Backend: {_escape(backend)}. Khi backend phân tích xuất được luồng, báo cáo sẽ hiển thị Nguồn &rarr; Kiểm soát &rarr; Điểm nguy hiểm.</p>
+      <section><h3>Mô tả kỹ thuật</h3><p>{_escape(description)}</p></section>
+      <section><h3>Tác động bảo mật</h3><div class="warning">{_escape(finding_impact(finding))}</div></section>
+      <section><h3>Luồng dữ liệu từ nguồn đến điểm nguy hiểm</h3>
+        <p class="provenance">Trình bày theo thứ tự thực thi, từ trên xuống. Backend phân tích: {_escape(backend)}.</p>
         {_trace_html(metadata, backend, result.context_summary, result.evidence_details)}
-        <h4>Bằng chứng đã xác thực</h4>{_list(evidence, empty="Không có thêm bằng chứng đã được LLM xác thực.")}
       </section>
-      <section><h3>Tái hiện và xác minh an toàn</h3>
-        <p>Chỉ tái hiện trong môi trường kiểm thử được cho phép. Không sử dụng secret thật hoặc payload có tính phá hoại.</p>
+      <section><h3>Hướng khắc phục</h3><p>{_escape(remediation)}</p>
+        <h4>Kiểm thử và xác minh sau khi sửa</h4>
+        <p class="provenance">Chỉ kiểm thử trong môi trường được cho phép; không dùng secret thật hoặc payload phá hoại.</p>
         {_list(checklist, empty="Không có danh sách bước xác minh.")}
-        <h4>Thông tin còn thiếu</h4>{_list(missing, empty="Không yêu cầu thêm thông tin.")}
+        <h4>Điểm cần reviewer xác minh</h4>{_list(missing, empty="Không còn thông tin bắt buộc cần bổ sung theo evidence hiện tại.")}
       </section>
-      <section><h3>Hướng khắc phục đề xuất</h3><p>{_escape(remediation)}</p></section>
-      <section><h3>Quyết định chính sách</h3>
-        <p><strong>{_escape(_ACTION_LABELS[policy.action])}</strong> — chính sách {_escape(policy.policy_version)}</p>
-        {_list(policy.reasons, empty="Không có lý do từ chính sách.")}
-      </section>
-      <section><h3>Lỗi xử lý</h3>{_list(errors, empty="Phát hiện này không có lỗi xử lý.")}</section>
     </article>
     """
 
@@ -462,10 +384,6 @@ def _render_report(batch_result: BatchResult) -> str:
     )
     if not findings:
         findings = '<div class="empty">Lần chạy này không tạo ra phát hiện nào.</div>'
-    scanner_errors = tuple(
-        f"{error.stage.value} / {error.error_code}: {error.safe_message}"
-        for error in batch_result.scanner_errors
-    )
     return f"""<!doctype html>
 <html lang="vi">
 <head>
@@ -490,14 +408,11 @@ def _render_report(batch_result: BatchResult) -> str:
     .severity {{ color:#fff; border-radius:999px; padding:5px 11px; font-weight:700; font-size:12px; }}
     .severity-critical {{ background:var(--critical); }} .severity-high {{ background:var(--high); }} .severity-medium {{ background:var(--medium); }} .severity-low {{ background:var(--low); }} .severity-unknown {{ background:#667085; }}
     table {{ width:100%; border-collapse:collapse; margin:18px 0; }} th,td {{ padding:8px 10px; border:1px solid var(--line); text-align:left; vertical-align:top; }} th {{ width:170px; color:#175fb8; background:#edf4ff; }}
-    .callout {{ margin:12px 0; padding:13px 15px; border-left:4px solid var(--blue); background:#f5f9ff; }}
+    .warning {{ margin:12px 0; padding:14px 16px; border-left:4px solid var(--high); background:#fff4f2; }}
     code {{ padding:2px 6px; border-radius:4px; background:#eef2f6; overflow-wrap:anywhere; }}
-    .flow {{ display:flex; align-items:stretch; gap:8px; overflow-x:auto; padding:10px 0; }}
-    .flow-step {{ min-width:150px; padding:12px; border:1px solid #9cbce6; border-radius:7px; background:#eef6ff; }}
-    .flow-step span {{ display:block; color:var(--muted); font-size:11px; }} .flow-step.source {{ border-color:#12b76a; background:#ecfdf3; }} .flow-step.guard {{ border-color:#f79009; background:#fffaeb; }} .flow-step.sink {{ border-color:#f04438; background:#fef3f2; }}
-    .arrow {{ align-self:center; color:var(--blue); font-size:20px; }}
+    .data-flow {{ margin:10px 0; padding-left:26px; }} .data-flow li {{ padding:4px 0; }}
     .empty,.footer {{ padding:24px; }} .footer {{ color:var(--muted); margin-top:24px; font-size:12px; }}
-    @media(max-width:720px) {{ .summary {{ grid-template-columns:1fr 1fr; }} .cover,.finding {{ padding:24px; }} .flow {{ flex-direction:column; }} .arrow {{ transform:rotate(90deg); }} }}
+    @media(max-width:720px) {{ .summary {{ grid-template-columns:1fr 1fr; }} .cover,.finding {{ padding:24px; }} }}
     @media print {{ body {{ background:#fff; }} main {{ max-width:none; margin:0; padding:0; }} .cover,.summary,.finding,.footer {{ box-shadow:none; }} .finding {{ border:none; padding:20mm 12mm; }} }}
   </style>
 </head>
@@ -514,21 +429,8 @@ def _render_report(batch_result: BatchResult) -> str:
     <div class="metric"><strong>{counts[PolicyAction.MANUAL_REVIEW.value]}</strong>Cần đánh giá thủ công</div>
     <div class="metric"><strong>{counts[PolicyAction.TRIAGE_ERROR.value]}</strong>Lỗi phân loại</div>
   </section>
-  <section class="finding" aria-label="Telemetry LLM và cache">
-    <p class="eyebrow">Khả năng vận hành</p><h2>Telemetry LLM và decision cache</h2>
-    <table class="details"><tbody>
-      {_row("Decision cache", "Bật" if metadata.decision_cache_enabled else "Tắt")}
-      {_row("Cache hit / miss", f"{metadata.decision_cache_hits} / {metadata.decision_cache_misses}")}
-      {_row("Provider input / output token ước tính", f"{metadata.provider_input_tokens} / {metadata.provider_output_tokens}")}
-      {_row("Provider latency P50 / P95", f"{metadata.provider_latency_p50_ms} / {metadata.provider_latency_p95_ms} ms")}
-      {_row("Chi phí ước tính", f"{metadata.estimated_cost_usd} USD" if metadata.estimated_cost_usd is not None else "Chưa cấu hình đơn giá")}
-      {_row("Cost model", metadata.cost_model_version or "Chưa cấu hình")}
-    </tbody></table>
-  </section>
   <section aria-labelledby="details-heading"><p class="eyebrow">Chi tiết lỗ hổng được phát hiện</p><h2 id="details-heading">Các phát hiện</h2>{findings}</section>
-  <section class="footer"><strong>Lỗi scanner</strong>{_list(scanner_errors, empty="Không có lỗi scanner.")}
-    <p>Báo cáo không chứa mã nguồn thô, prompt thô, phản hồi thô từ model, traceback hoặc đường dẫn tuyệt đối của repository. Không phát hiện nào bị tự động loại bỏ.</p>
-  </section>
+  <section class="footer">Báo cáo không chứa mã nguồn thô, prompt thô, phản hồi thô từ model, traceback hoặc đường dẫn tuyệt đối của repository. Không phát hiện nào bị tự động loại bỏ.</section>
 </main></body></html>
 """
 

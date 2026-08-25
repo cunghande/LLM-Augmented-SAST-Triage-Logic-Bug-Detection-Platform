@@ -46,9 +46,6 @@ precision. The race and workflow sample sizes are especially small.
   exact local and authorization-namespace object guards.
 - `realvuln-full-v5-retrieval.json`: regression run after adding safe
   retrieval-resolution facts; detector metrics remain unchanged.
-- `realvuln-pilot-v1.json`: early two-repository pilot; not used as final metric.
-- `realvuln-llm-pilot-v1.json`: seven-case pilot using the real Modal
-  `Qwen/Qwen3-14B-AWQ` provider and prompt v11.
 - `realvuln-llm-pilot-v2-strix-evidence.json`: five-positive-case rerun using
   proof-obligation evidence and prompt v12.
 - `realvuln-llm-pilot-v3-retrieval.json`: the same five-positive-case rerun

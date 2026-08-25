@@ -85,6 +85,24 @@ def test_test_secret_gets_lower_exposure_without_losing_sensitivity() -> None:
     assert "xoay vòng credential" in assessment.remediation
 
 
+def test_dynamic_urllib_guidance_is_specific_and_testable() -> None:
+    finding = _finding(
+        rule_id="python.lang.security.audit.dynamic-urllib-use-detected"
+    )
+
+    assessment = assess_finding_risk(
+        finding,
+        _context(PathCategory.PRODUCTION),
+        evidence={"source_reaches_sink": True, "complete": True, "sink": {}},
+    )
+
+    assert "scheme HTTP/HTTPS" in assessment.remediation
+    assert "cloud metadata" in assessment.remediation
+    assert "redirect" in assessment.remediation
+    assert any("file://" in item for item in assessment.validation_checklist)
+    assert any("kích thước phản hồi" in item for item in assessment.validation_checklist)
+
+
 def test_complete_logic_detector_assessment_is_preserved() -> None:
     metadata: dict[str, object] = {
         "risk_score": 4.2,

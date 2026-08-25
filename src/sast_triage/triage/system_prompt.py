@@ -10,6 +10,7 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "triage-prompt-v12",
         "triage-prompt-v13",
         "triage-prompt-v14",
+        "triage-prompt-v15",
     }:
         evidence_calibration = (
             f"\n\nSTRICT EVIDENCE CALIBRATION ({prompt_version.rsplit('-', 1)[-1]}):\n"
@@ -44,6 +45,7 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                     "triage-prompt-v12",
                     "triage-prompt-v13",
                     "triage-prompt-v14",
+                    "triage-prompt-v15",
                 }
                 else ""
             )
@@ -58,7 +60,12 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "conflict. Choose LIKELY_FP only when an exact effective control or negative "
                 "path is established.\n"
                 if prompt_version
-                in {"triage-prompt-v12", "triage-prompt-v13", "triage-prompt-v14"}
+                in {
+                    "triage-prompt-v12",
+                    "triage-prompt-v13",
+                    "triage-prompt-v14",
+                    "triage-prompt-v15",
+                }
                 else ""
             )
             + (
@@ -67,7 +74,8 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "static evidence. Do not repeat a missing-information claim that an explicit "
                 "resolved fact answers. Preserve NEEDS_REVIEW when a genuinely unresolved "
                 "dynamic dispatch, external policy, or truncated path could change the result.\n"
-                if prompt_version in {"triage-prompt-v13", "triage-prompt-v14"}
+                if prompt_version
+                in {"triage-prompt-v13", "triage-prompt-v14", "triage-prompt-v15"}
                 else ""
             )
             + (
@@ -78,7 +86,25 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
                 "function search and proof obligations are complete, this mechanism-specific "
                 "rule overrides the generic absent-configuration warning in rule 10; do not "
                 "invent unseen middleware as an effective control.\n"
-                if prompt_version == "triage-prompt-v14"
+                if prompt_version in {"triage-prompt-v14", "triage-prompt-v15"}
+                else ""
+            )
+            + (
+                "17. Write for a security engineer who must validate and remediate the "
+                "finding. In summary, name the relative file, enclosing function or "
+                "entrypoint when known, source variable or expression, exact sensitive "
+                "sink and dangerous argument, and every relevant guard or the verified "
+                "absence of one. Explain the trust boundary and the top-down data flow in "
+                "execution order. State concrete exploit preconditions and plausible "
+                "confidentiality, integrity, availability, authorization, or credential "
+                "impact for this mechanism; use conditional wording when exploitability "
+                "is not proven. End with specific controls and regression checks a "
+                "developer can implement. Never repeat numeric risk-factor scores, scanner "
+                "boilerplate, or generic advice such as merely 'validate input' or 'follow "
+                "the rule recommendation'. Do not invent symbols, callers, controls, data "
+                "assets, or framework behavior absent from the Evidence Card; identify "
+                "those gaps in missing_information instead."
+                if prompt_version == "triage-prompt-v15"
                 else ""
             )
         )
@@ -125,8 +151,9 @@ def build_system_message(model_version: str, prompt_version: str) -> str:
         "missing_information, and assumptions in clear Vietnamese; keep enums and technical "
         "identifiers unchanged. Do not output Markdown, code fences, policy actions, or hidden "
         "reasoning such as <think>. Use the exact fields model_verdict and model_confidence, "
-        "never verdict/confidence aliases. summary must be 3-5 short sentences and evidence "
-        "should contain 2-6 verifiable observations. Use [] when no information or assumptions "
+        "never verdict/confidence aliases. summary must be 5-8 concise, connected sentences "
+        "for v15 (3-5 short sentences for older prompt versions); evidence should contain 2-6 "
+        "verifiable observations written in source-to-sink order. Use [] when no information or assumptions "
         f"are missing. model_version must be {model_version!r}; "
         f"prompt_version must be {prompt_version!r}."
         + evidence_calibration

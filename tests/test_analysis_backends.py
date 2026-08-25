@@ -430,6 +430,38 @@ def test_joern_fails_fast_when_docker_is_unavailable(
     assert captured.value.error_code == "ANALYSIS_JOERN_DOCKER_UNAVAILABLE"
 
 
+@pytest.mark.parametrize(
+    ("stderr", "expected_code"),
+    [
+        ("Error: No such image: sast-triage-joern:4.0.600", "ANALYSIS_JOERN_IMAGE_MISSING"),
+        ("permission denied while connecting to Docker", "ANALYSIS_JOERN_DOCKER_UNAVAILABLE"),
+    ],
+)
+def test_joern_preflight_distinguishes_missing_image_from_docker_failure(
+    stderr: str,
+    expected_code: str,
+) -> None:
+    backend = object.__new__(JoernAnalysisBackend)
+    backend._image = "sast-triage-joern:4.0.600"  # type: ignore[attr-defined]
+
+    def docker(
+        *arguments: str,
+        timeout: float = 120.0,
+        check: bool = True,
+    ) -> CompletedProcess[str]:
+        del timeout, check
+        if arguments[0] == "info":
+            return CompletedProcess(arguments, 0, "27.0.0", "")
+        return CompletedProcess(arguments, 1, "", stderr)
+
+    backend._docker = docker  # type: ignore[method-assign]
+
+    with pytest.raises(SastTriageError) as captured:
+        backend._preflight()
+
+    assert captured.value.error_code == expected_code
+
+
 def test_containerized_joern_reuses_daemon_mount_and_network(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

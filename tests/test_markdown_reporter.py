@@ -138,8 +138,7 @@ def test_report_contains_required_sections_counts_and_safe_findings(tmp_path: Pa
         "## 3. Cách đọc verdict và action",
         "## 4. Hàng đợi review",
         "## 5. Chi tiết từng finding",
-        "## 6. Lỗi scanner",
-        "## 7. Ghi chú bảo mật và giới hạn",
+        "## 6. Ghi chú bảo mật và giới hạn",
     ):
         assert section in text
     assert "| LIKELY\\_TP — Có khả năng là lỗ hổng thật | 0 |" in text
@@ -147,20 +146,17 @@ def test_report_contains_required_sections_counts_and_safe_findings(tmp_path: Pa
     assert "| MANUAL\\_REVIEW — Cần chuyên gia review thủ công | 1 |" in text
     assert "| Finding ID | s\\-1 |" in text
     assert "| Finding ID | g\\-1 |" in text
-    assert "safe context summary" in text
-    assert "#### Phân tích của LLM" in text
-    assert "#### Đánh giá rủi ro và hướng khắc phục" in text
+    assert "safe context summary" not in text
+    assert "#### Mô tả kỹ thuật" in text
+    assert "#### Tác động bảo mật" in text
+    assert "#### Hướng khắc phục" in text
     assert r"4\.10\/5\.00" in text
-    assert r"deterministic\-risk\-v1" in text
     assert r"Use a parameterized API\." in text
     assert r"Add a negative regression test\." in text
-    assert "Decision cache hit / miss" in text
-    assert "Provider latency P50 / P95" in text
-    assert r"utf8\-bytes\-div\-4\-v1" in text
+    assert "Decision cache hit / miss" not in text
+    assert "Provider latency P50 / P95" not in text
     assert "Chưa đủ bằng chứng để xác nhận luồng dữ liệu" in text
-    assert "Nguồn\\: dữ liệu đầu vào chưa xác định\\." in text
     assert "Cần xác minh caller truyền dữ liệu nào vào hàm\\." in text
-    assert "Giả định context hiện tại chưa bao phủ caller\\." in text
     assert "không phải response thô" in text
     assert "SEMGREP_SOURCE_CANARY" not in text
     assert "GITLEAKS_SECRET_CANARY" not in text
@@ -209,7 +205,7 @@ def test_llm_explanation_is_neutralized_before_rendering(tmp_path: Path) -> None
     assert "```injected block```" not in text
 
 
-def test_forbidden_value_inside_llm_explanation_fails_closed(tmp_path: Path) -> None:
+def test_unrendered_llm_evidence_is_omitted_from_report(tmp_path: Path) -> None:
     canary = "LLM_EXPLANATION_CANARY_DO_NOT_LEAK"
     finding = _finding("id", ScannerType.SEMGREP, "source")
     result = _result(finding)
@@ -218,12 +214,9 @@ def test_forbidden_value_inside_llm_explanation_fails_closed(tmp_path: Path) -> 
     batch = _batch([result.model_copy(update={"triage_decision": decision})])
     output = tmp_path / "report.md"
 
-    with pytest.raises(SastTriageError) as exc_info:
-        write_markdown_report(batch, output, forbidden_values=(canary,))
+    write_markdown_report(batch, output, forbidden_values=(canary,))
 
-    assert exc_info.value.error_code == "REPORT_LEAK_CHECK_FAILED"
-    assert canary not in str(exc_info.value)
-    assert not output.exists()
+    assert canary not in output.read_text(encoding="utf-8")
 
 
 def test_forbidden_value_fails_closed_without_echo_or_temp_file(tmp_path: Path) -> None:
@@ -273,7 +266,7 @@ def test_empty_report_is_valid_utf8_and_input_is_not_mutated(tmp_path: Path) -> 
     assert json.dumps(batch.model_dump(mode="json"), sort_keys=True) == before
 
 
-def test_scanner_errors_are_rendered_as_safe_fields(tmp_path: Path) -> None:
+def test_scanner_errors_are_omitted_from_engineering_report(tmp_path: Path) -> None:
     batch = _batch([]).model_copy(
         update={
             "scanner_errors": [
@@ -292,6 +285,5 @@ def test_scanner_errors_are_rendered_as_safe_fields(tmp_path: Path) -> None:
     write_markdown_report(batch, output)
     text = output.read_text(encoding="utf-8")
 
-    assert "## 6. Lỗi scanner" in text
-    assert r"PARSE\_INVALID\_JSON" in text
-    assert r"Scanner artifact could not be parsed\." in text
+    assert "PARSE_INVALID_JSON" not in text
+    assert "Scanner artifact could not be parsed." not in text

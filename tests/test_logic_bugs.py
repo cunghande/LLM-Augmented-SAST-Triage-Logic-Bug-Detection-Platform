@@ -442,3 +442,14 @@ def test_prompt_v14_is_specialized_for_exact_focused_evidence() -> None:
     assert "proof_obligations_satisfied" in prompt
     assert "source_symbol" in prompt
     assert "privileged_endpoint_without_authorization" in prompt
+
+
+def test_prompt_v15_requires_security_engineering_report_content() -> None:
+    prompt = build_system_message("model", "triage-prompt-v15")
+
+    assert "relative file, enclosing function or entrypoint" in prompt
+    assert "top-down data flow" in prompt
+    assert "concrete exploit preconditions" in prompt
+    assert "regression checks" in prompt
+    assert "Never repeat numeric risk-factor scores" in prompt
+    assert "Do not invent symbols" in prompt

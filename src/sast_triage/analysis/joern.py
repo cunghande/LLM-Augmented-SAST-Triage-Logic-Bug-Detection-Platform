@@ -302,12 +302,15 @@ class JoernAnalysisBackend:
         )
 
     def _docker(
-        self, *arguments: str, timeout: float = 120.0
+        self,
+        *arguments: str,
+        timeout: float = 120.0,
+        check: bool = True,
     ) -> subprocess.CompletedProcess[str]:
         try:
             return subprocess.run(
                 ("docker", *arguments),
-                check=True,
+                check=check,
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
@@ -329,9 +332,17 @@ class JoernAnalysisBackend:
 
     def _preflight(self) -> None:
         self._docker("info", "--format", "{{.ServerVersion}}", timeout=20)
-        try:
-            self._docker("image", "inspect", self._image, timeout=20)
-        except SastTriageError:
+        inspected = self._docker(
+            "image",
+            "inspect",
+            self._image,
+            timeout=20,
+            check=False,
+        )
+        if inspected.returncode == 0:
+            return
+        diagnostic = f"{inspected.stdout}\n{inspected.stderr}".casefold()
+        if "no such image" in diagnostic or "no such object" in diagnostic:
             raise SastTriageError(
                 safe_message=(
                     "The pinned Joern image is missing. Build docker/joern/Dockerfile first."
@@ -339,6 +350,11 @@ class JoernAnalysisBackend:
                 error_code="ANALYSIS_JOERN_IMAGE_MISSING",
                 retryable=False,
             ) from None
+        raise SastTriageError(
+            safe_message="Docker could not inspect the pinned Joern image.",
+            error_code="ANALYSIS_JOERN_DOCKER_UNAVAILABLE",
+            retryable=True,
+        )
 
     def _start_container(self) -> None:
         mount = (

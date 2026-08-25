@@ -42,7 +42,7 @@ def _logic_system_rubric(triage_input: TriageInput) -> str:
     sink_kind = str(triage_input.finding.metadata.get("sink_kind", ""))
     mechanism_detail = ""
     if (
-        triage_input.prompt_version == "triage-prompt-v14"
+        triage_input.prompt_version in {"triage-prompt-v14", "triage-prompt-v15"}
         and sink_kind == "privileged_endpoint_without_authorization"
     ):
         mechanism_detail = (
@@ -51,7 +51,7 @@ def _logic_system_rubric(triage_input: TriageInput) -> str:
             "guard search, and authorization-boundary trace as the required mechanism."
         )
     elif (
-        triage_input.prompt_version == "triage-prompt-v14"
+        triage_input.prompt_version in {"triage-prompt-v14", "triage-prompt-v15"}
         and sink_kind == "object_lookup_without_subject_scope"
     ):
         mechanism_detail = (

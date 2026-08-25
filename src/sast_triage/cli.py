@@ -75,7 +75,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default="fake",
         help="fake=không LLM, ollama=LLM local, real=Qwen3-14B trên Modal",
     )
-    parser.add_argument("--prompt-version", default="triage-prompt-v14")
+    parser.add_argument("--prompt-version", default="triage-prompt-v15")
     parser.add_argument("--output-schema-version", default="triage-decision-v1")
     parser.add_argument("--prompt-type", default="fake.default")
     parser.add_argument("--repository-identifier", default=None)

@@ -7,6 +7,11 @@ from typing import Any
 
 from sast_triage.errors import SastTriageError
 from sast_triage.models import BatchResult, PolicyAction
+from sast_triage.reporting.finding_content import (
+    evidence_overview,
+    finding_description,
+    finding_impact,
+)
 
 _KNOWN_SAFE_PLACEHOLDERS: frozenset[str] = frozenset(
     {
@@ -217,10 +222,10 @@ def _line_range(start_line: int, end_line: int | None) -> str:
 
 
 def _evidence_detail_lines(details: dict[str, Any] | None) -> list[str]:
-    """Render all bounded source-free Joern paths in reviewer-friendly Markdown."""
+    """Render source-free paths as copyable, top-down Markdown text."""
     if not isinstance(details, dict):
         return []
-    lines = ["", "#### Evidence Source-to-Sink chi tiết", ""]
+    lines = ["", "#### Luồng dữ liệu từ nguồn đến điểm nguy hiểm", ""]
     paths = details.get("paths")
     path_count = 0
     if isinstance(paths, list):
@@ -241,7 +246,7 @@ def _evidence_detail_lines(details: dict[str, Any] | None) -> list[str]:
                     continue
                 location = f"{step.get('file_path', '?')}:{step.get('line', '?')}"
                 lines.append(
-                    f"- Bước {_safe_text(step.get('order', '?'))}: "
+                    f"{_safe_text(step.get('order', '?'))}. "
                     f"`{_safe_text(step.get('kind', 'flow'))}` "
                     f"`{_safe_text(step.get('symbol', 'unknown'))}` tại "
                     f"`{_safe_text(location)}`"
@@ -264,40 +269,6 @@ def _evidence_detail_lines(details: dict[str, Any] | None) -> list[str]:
                 )
         lines.append("")
 
-    controls = details.get("controls")
-    if isinstance(controls, list) and controls:
-        lines.extend(["**Guard / sanitizer / control**", ""])
-        for control in controls:
-            if isinstance(control, dict):
-                location = ""
-                if control.get("file_path") is not None:
-                    location = (
-                        f" tại `{_safe_text(control.get('file_path'))}:"
-                        f"{_safe_text(control.get('line', '?'))}`"
-                    )
-                lines.append(
-                    f"- `{_safe_text(control.get('symbol', 'unknown'))}` "
-                    f"[{_safe_text(control.get('control_type', 'control'))}], "
-                    f"on_path={_safe_text(control.get('on_path'))}, "
-                    f"effective={_safe_text(control.get('effective'))}{location}"
-                )
-        lines.append("")
-
-    completeness = details.get("completeness")
-    if isinstance(completeness, dict):
-        limitations = completeness.get("limitations")
-        missing = completeness.get("missing_information")
-        lines.extend(
-            [
-                f"- Trạng thái evidence: {_safe_text(completeness.get('status', 'unknown'))}",
-                f"- Source resolved: {_safe_text(completeness.get('source_resolved', False))}",
-                f"- Sink resolved: {_safe_text(completeness.get('sink_resolved', False))}",
-                f"- Taint path complete: {_safe_text(completeness.get('taint_path_complete', False))}",
-                f"- Reachability resolved: {_safe_text(completeness.get('reachability_resolved', False))}",
-                f"- Giới hạn: {_safe_values(limitations if isinstance(limitations, list) else None)}",
-                f"- Còn thiếu: {_safe_values(missing if isinstance(missing, list) else None)}",
-            ]
-        )
     return lines
 
 
@@ -456,13 +427,7 @@ def _render_report(batch_result: BatchResult) -> str:
         "|---|---:|",
         f"| Finding đã parse | {_safe_text(metadata['total_findings_parsed'])} |",
         f"| Triage thành công | {_safe_text(metadata['findings_triaged_ok'])} |",
-        f"| Finding có lỗi | {_safe_text(metadata['findings_with_errors'])} |",
-        f"| Lỗi scanner | {_safe_text(len(batch_result.scanner_errors))} |",
         f"| Thời gian toàn run (giây) | {_safe_text(metadata['duration_seconds'])} |",
-        f"| Decision cache hit / miss | {_safe_text(metadata['decision_cache_hits'])} / {_safe_text(metadata['decision_cache_misses'])} |",
-        f"| Provider input / output token ước tính | {_safe_text(metadata['provider_input_tokens'])} / {_safe_text(metadata['provider_output_tokens'])} |",
-        f"| Provider latency P50 / P95 (ms) | {_safe_text(metadata['provider_latency_p50_ms'])} / {_safe_text(metadata['provider_latency_p95_ms'])} |",
-        f"| Chi phí ước tính (USD) | {_safe_text(metadata['estimated_cost_usd'])} |",
         "",
         "### Phân bố quyết định policy",
         "",
@@ -567,6 +532,12 @@ def _render_report(batch_result: BatchResult) -> str:
         finding = result.finding
         decision = result.triage_decision
         policy = result.policy_decision
+        overview = evidence_overview(result)
+        verdict = (
+            f"{decision.model_verdict.value} / {decision.model_confidence.value}"
+            if decision is not None
+            else "Không có quyết định LLM hợp lệ"
+        )
         lines.extend(
             [
                 "",
@@ -584,23 +555,20 @@ def _render_report(batch_result: BatchResult) -> str:
                 f"| File | {_safe_text(finding.file_path)} |",
                 f"| Dòng | {_safe_text(_line_range(finding.start_line, finding.end_line))} |",
                 f"| Severity | {_safe_text(finding.severity.value)} |",
-                f"| Metadata an toàn | {_safe_mapping(finding.metadata)} |",
-                f"| Thời gian xử lý | {_safe_text(result.processing_duration_ms)} ms |",
-                f"| Thời gian provider | {_safe_text(result.provider_duration_ms)} ms |",
-                f"| Decision cache | {_safe_text(result.decision_cache_status)} |",
-                f"| Input / output token ước tính | {_safe_text(result.input_tokens)} / {_safe_text(result.output_tokens)} |",
-                f"| Phương pháp đếm token | {_safe_text(result.token_count_method)} |",
-                f"| Chi phí ước tính | {_safe_text(result.estimated_cost_usd)} USD |",
-                f"| Cost model | {_safe_text(result.cost_model_version)} |",
-                f"| SHA-256 đầu vào triage | {_safe_text(result.triage_input_digest)} |",
+                f"| Điểm rủi ro / mức rủi ro | {_safe_text(_risk_score_text(result))} / {_safe_text(result.risk_level or finding.metadata.get('risk_level', 'Chưa tính'))} |",
+                f"| Kết luận / độ tin cậy | {_safe_text(verdict)} |",
+                f"| Độ đầy đủ luồng | {_safe_text(overview['completeness'])} |",
+                f"| Nguồn | {_safe_text(overview['source'])} |",
+                f"| Điểm nguy hiểm | {_safe_text(overview['sink'])} |",
+                f"| Kiểm soát | {_safe_text(overview['controls'])} |",
                 "",
-                "**Thông báo của scanner**",
+                "#### Mô tả kỹ thuật",
                 "",
-                f"> {_safe_text(finding.message)}",
+                _safe_text(finding_description(result)),
                 "",
-                "**Tóm tắt ngữ cảnh an toàn**",
+                "#### Tác động bảo mật",
                 "",
-                f"> {_safe_text(result.context_summary or 'Không có tóm tắt ngữ cảnh.')}",
+                f"> **Cảnh báo:** {_safe_text(finding_impact(finding))}",
             ]
         )
         lines.extend(_evidence_detail_lines(result.evidence_details))
@@ -615,130 +583,30 @@ def _render_report(batch_result: BatchResult) -> str:
         lines.extend(
             [
                 "",
-                "#### Đánh giá rủi ro và hướng khắc phục",
+                "#### Hướng khắc phục",
                 "",
-                f"- **Risk score:** {_safe_text(_risk_score_text(result))}",
-                f"- **Risk level:** {_safe_text(result.risk_level or finding.metadata.get('risk_level', 'Chưa tính'))}",
-                f"- **Scoring version:** {_safe_text(result.risk_scoring_version or 'Chưa xác định')}",
-                "- **Các thành phần điểm:**",
-            ]
-        )
-        factor_lines = _risk_factor_lines(result)
-        if factor_lines:
-            lines.extend(f"  - {_safe_text(item)}" for item in factor_lines)
-        else:
-            lines.append("  - Chưa có thành phần điểm dạng cấu trúc.")
-        lines.extend(
-            [
+                _safe_text(remediation or "Chưa có hướng khắc phục cụ thể."),
                 "",
-                "**Hướng khắc phục đề xuất**",
-                "",
-                f"> {_safe_text(remediation or 'Chưa có hướng khắc phục cụ thể.')}",
-                "",
-                "**Validation checklist**",
+                "**Kiểm thử và xác minh sau khi sửa**",
                 "",
             ]
         )
         _append_safe_list(
             lines,
             checklist,
-            empty="Chưa có validation checklist.",
+            empty="Chưa có bước kiểm thử sau sửa.",
         )
-        lines.extend(
-            [
-                "",
-                "#### Phân tích của LLM",
-                "",
-                f"- **Verdict:** {_safe_text(_verdict_text(decision))}",
-                f"- **Confidence:** {_safe_text(_confidence_text(decision))}",
-            ]
-        )
-        if decision is None:
-            lines.extend(
-                [
-                    "- **Kết luận:** Không có quyết định LLM hợp lệ. Xem mục lỗi xử lý bên dưới.",
-                    "",
-                    "> Ghi chú: Finding vẫn được giữ lại và policy chuyển sang trạng thái an toàn.",
-                ]
-            )
-        else:
-            lines.extend(
-                [
-                    f"- **Model / Prompt:** {_safe_text(decision.model_version)} / {_safe_text(decision.prompt_version)}",
-                    "",
-                    "**Kết luận ngắn gọn**",
-                    "",
-                    f"> {_safe_text(decision.summary)}",
-                    "",
-                    "**Bằng chứng LLM sử dụng**",
-                    "",
-                ]
-            )
-            _append_safe_list(
-                lines,
-                decision.evidence,
-                empty="LLM không cung cấp bằng chứng cụ thể.",
-            )
-            lines.extend(
-                ["", "**Thông tin còn thiếu / câu hỏi cần reviewer xác minh**", ""]
-            )
+        if decision is not None:
+            lines.extend(["", "**Điểm cần reviewer xác minh**", ""])
             _append_safe_list(
                 lines,
                 decision.missing_information,
-                empty="LLM không ghi nhận thông tin quan trọng còn thiếu.",
+                empty="Không còn thông tin bắt buộc cần bổ sung theo evidence hiện tại.",
             )
-            lines.extend(["", "**Giả định LLM đã sử dụng**", ""])
-            _append_safe_list(
-                lines,
-                decision.assumptions,
-                empty="LLM không khai báo giả định.",
-            )
-            lines.extend(
-                [
-                    "",
-                    "> Ghi chú: Đây là phần giải thích có cấu trúc đã qua validation, không phải",
-                    "> nội dung suy luận nội bộ và không thay thế kết luận của security reviewer.",
-                ]
-            )
-
-        lines.extend(
-            [
-                "",
-                "#### Quyết định policy của hệ thống",
-                "",
-                f"- **Action:** {_safe_text(_action_text(policy.action))}",
-                f"- **Policy version:** {_safe_text(policy.policy_version)}",
-                f"- **Đã escalated:** {_safe_text(_yes_no(policy.escalated))}",
-                f"- **Lý do escalation:** {_translated_policy_text(policy.escalation_reason)}",
-                "- **Lý do policy:**",
-            ]
-        )
-        lines.extend(
-            f"  - {_translated_policy_text(reason)}" for reason in policy.reasons
-        )
-        lines.extend(["", "#### Reviewer nên làm gì tiếp theo", ""])
-        lines.extend(
-            f"- {_safe_text(item)}" for item in _REVIEW_GUIDANCE[policy.action]
-        )
-        lines.extend(["", "#### Lỗi xử lý", ""])
-        if result.processing_errors:
-            lines.extend(
-                _render_processing_error(error) for error in result.processing_errors
-            )
-        else:
-            lines.append("- Không có lỗi xử lý cho finding này.")
-
-    lines.extend(["", "## 6. Lỗi scanner"])
-    if batch_result.scanner_errors:
-        lines.extend(
-            _render_processing_error(error) for error in batch_result.scanner_errors
-        )
-    else:
-        lines.append("- Không có lỗi scanner.")
     lines.extend(
         [
             "",
-            "## 7. Ghi chú bảo mật và giới hạn",
+            "## 6. Ghi chú bảo mật và giới hạn",
             "",
             "- Báo cáo không chứa mã nguồn thô, prompt thô, response LLM thô hoặc traceback.",
             "- Đường dẫn trong báo cáo là đường dẫn tương đối của repository.",
