@@ -176,7 +176,17 @@ một lệnh để chạy Qwen, Joern, Module 2 discovery và logic detector:
 
 ```powershell
 python -m sast_triage Sequential-Recommender
+python -m sast_triage benchmarks
+python -m sast_triage extremely-vulnerable-flask-app
 ```
+# Bước 1: Activate venv (BẮT BUỘC mỗi khi mở terminal mới)
+source "/home/cungdv/code/AI security/.venv/bin/activate"
+
+# Bước 2: Vào thư mục chứa repo mục tiêu
+cd /home/cungdv/code/target-repos
+
+# Bước 3: Chạy CLI
+python -m sast_triage extremely-vulnerable-flask-app
 
 Lệnh này tự chọn:
 

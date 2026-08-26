@@ -401,7 +401,7 @@ def _render_report(batch_result: BatchResult) -> str:
     .eyebrow {{ margin:0 0 5px; color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase; }}
     h1 {{ margin:0; font-size:34px; }} h2 {{ margin:0; font-size:22px; color:#175fb8; }} h3 {{ margin:30px 0 10px; color:var(--blue); font-size:19px; }} h4 {{ margin:18px 0 8px; }}
     .muted,.provenance {{ color:var(--muted); }} .provenance {{ font-size:12px; }}
-    .summary {{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; margin:18px 0; overflow:hidden; background:var(--line); }}
+    .summary {{ display:grid; grid-template-columns:repeat(5,1fr); gap:1px; margin:18px 0; overflow:hidden; background:var(--line); }}
     .metric {{ padding:18px; background:#fff; }} .metric strong {{ display:block; font-size:25px; color:#175fb8; }}
     .finding {{ margin:26px 0; padding:32px 38px; page-break-before:always; }}
     .finding-heading {{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }}
@@ -427,6 +427,7 @@ def _render_report(batch_result: BatchResult) -> str:
     <div class="metric"><strong>{len(batch_result.results)}</strong>Tổng số phát hiện</div>
     <div class="metric"><strong>{counts[PolicyAction.LIKELY_TP.value]}</strong>Có khả năng là lỗ hổng thật</div>
     <div class="metric"><strong>{counts[PolicyAction.MANUAL_REVIEW.value]}</strong>Cần đánh giá thủ công</div>
+    <div class="metric"><strong>{counts[PolicyAction.FP_CANDIDATE.value]}</strong>Ứng viên cảnh báo giả</div>
     <div class="metric"><strong>{counts[PolicyAction.TRIAGE_ERROR.value]}</strong>Lỗi phân loại</div>
   </section>
   <section aria-labelledby="details-heading"><p class="eyebrow">Chi tiết lỗ hổng được phát hiện</p><h2 id="details-heading">Các phát hiện</h2>{findings}</section>

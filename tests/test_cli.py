@@ -137,7 +137,7 @@ def test_cli_help_is_available() -> None:
     assert exc_info.value.code == 0
 
 
-def test_module2_discovery_is_explicitly_opt_in() -> None:
+def test_module2_discovery_is_enabled_by_default_and_can_be_disabled() -> None:
     parser = build_parser()
     common = [
         "triage",
@@ -152,11 +152,11 @@ def test_module2_discovery_is_explicitly_opt_in() -> None:
     ]
 
     default_args = parser.parse_args(common)
-    enabled_args = parser.parse_args([*common, "--module2-discovery"])
+    disabled_args = parser.parse_args([*common, "--no-module2-discovery"])
 
     assert default_args.module2 is True
-    assert default_args.module2_discovery is False
-    assert enabled_args.module2_discovery is True
+    assert default_args.module2_discovery is True
+    assert disabled_args.module2_discovery is False
 
 
 def test_focused_logic_detector_is_explicit_and_uses_prompt_v13() -> None:

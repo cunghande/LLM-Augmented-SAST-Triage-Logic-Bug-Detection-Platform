@@ -166,6 +166,25 @@ def test_html_report_contains_security_sections_and_source_to_sink_trace(
     assert "Backend phân tích: joern" in report
 
 
+def test_html_report_includes_false_positive_candidate_summary_metric(
+    tmp_path: Path,
+) -> None:
+    original = _batch().results[0]
+    result = original.model_copy(
+        update={
+            "policy_decision": original.policy_decision.model_copy(
+                update={"action": PolicyAction.FP_CANDIDATE}
+            )
+        }
+    )
+    output = tmp_path / "report.html"
+
+    write_html_report(_batch().model_copy(update={"results": [result]}), output)
+
+    report = output.read_text(encoding="utf-8")
+    assert "<strong>1</strong>Ứng viên cảnh báo giả" in report
+
+
 def test_html_report_escapes_untrusted_values(tmp_path: Path) -> None:
     output = tmp_path / "report.html"
 

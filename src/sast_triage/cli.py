@@ -99,10 +99,10 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--module2-discovery",
         action=argparse.BooleanOptionalAction,
-        default=False,
+        default=True,
         help=(
-            "Experimental: add bounded Module 2 findings in addition to scanner "
-            "findings (default: disabled)"
+            "Add bounded Module 2 cross-file findings in addition to scanner "
+            "findings (default: enabled)"
         ),
     )
     parser.add_argument(

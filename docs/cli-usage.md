@@ -97,6 +97,116 @@ python -m modal token info
 
 Không đưa Modal token vào source, `.env`, report hoặc ảnh chụp màn hình.
 
+### 2.4 Linux (Ubuntu/Debian và các distro tương tự)
+
+Phần này dùng cú pháp Bash. Đặt source công cụ, repository mục tiêu và output
+ở ba thư mục riêng; không ghi output vào repository đang quét.
+
+```bash
+mkdir -p "$HOME/code/target-repos"
+mkdir -p "$HOME/code/triage-runs"
+git clone <URL_REPOSITORY_CUA_DU_AN> "$HOME/code/sast-triage"
+cd "$HOME/code/sast-triage"
+```
+
+Kiểm tra các công cụ nền:
+
+```bash
+git --version
+docker --version
+docker info
+```
+
+Docker Engine phải đang chạy và tài khoản hiện tại phải có quyền gọi `docker`.
+Nếu `docker info` báo permission denied, thêm người dùng vào group `docker`,
+đăng xuất/đăng nhập lại, rồi chạy lại lệnh. Không dùng `sudo` để tạo output vì
+file báo cáo sau đó có thể thuộc sở hữu root.
+
+#### Cách khuyến nghị: Docker, đầy đủ Joern + scanner + triage
+
+Script Docker đóng gói Python 3.12, Semgrep, Gitleaks và build image Joern đã
+pin version. Lần đầu cần Internet, khoảng 4 GB dung lượng trống cho image và
+khoảng 8 GB RAM cấp cho Docker.
+
+```bash
+cd "$HOME/code/sast-triage"
+chmod +x scripts/run-docker.sh
+./scripts/run-docker.sh /absolute/path/to/target-repository
+```
+
+Không truyền output để script tự tạo thư mục timestamp dưới
+`triage-runs/`. Muốn tự chọn output hoặc dùng Qwen trên Modal:
+
+```bash
+./scripts/run-docker.sh \
+  /absolute/path/to/target-repository \
+  "$HOME/code/triage-runs/my-repo-modal" \
+  real
+```
+
+Trước lệnh `real`, xác thực Modal trên host một lần bằng `python -m modal setup`
+hoặc export `MODAL_TOKEN_ID` và `MODAL_TOKEN_SECRET` trong terminal hiện tại.
+Không lưu token vào Git. Docker wrapper mặc định dùng `fake`, nên thích hợp để
+kiểm tra toàn bộ scanner, Joern, Module 2, logic detector và report mà không gọi
+LLM ngoài.
+
+#### Chạy CLI native trên Linux
+
+Chọn cách này khi cần gọi CLI trực tiếp. Cần Python 3.11--3.13, Docker Engine
+đang chạy, image Joern và Semgrep/Gitleaks trong `PATH`:
+
+```bash
+cd "$HOME/code/sast-triage"
+python3 --version
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e '.[dev]'
+python -m pip install semgrep
+semgrep --version
+gitleaks version
+
+docker build --tag sast-triage-joern:4.0.600 --file docker/joern/Dockerfile .
+```
+
+Nếu distribution không có binary `gitleaks`, cài binary chính thức từ GitHub
+Releases rồi đặt nó trong `PATH`. Sau đó, chạy smoke test offline đầy đủ với
+provider fake:
+
+```bash
+python -m sast_triage scan-and-triage \
+  --repository /absolute/path/to/target-repository \
+  --output-dir "$HOME/code/triage-runs/my-repo-fake" \
+  --provider fake \
+  --semgrep-config p/python \
+  --semgrep-config p/security-audit \
+  --module2 \
+  --module2-discovery \
+  --logic-detector python-idor-business-logic \
+  --no-overwrite
+```
+
+Để dùng Ollama local, cài và chạy Ollama theo hướng dẫn của nhà cung cấp, rồi:
+
+```bash
+ollama pull qwen3:8b
+export SAST_TRIAGE_LLM_MODEL=qwen3:8b
+python -m sast_triage scan-and-triage \
+  --repository /absolute/path/to/target-repository \
+  --output-dir "$HOME/code/triage-runs/my-repo-ollama" \
+  --provider ollama \
+  --semgrep-config p/python \
+  --semgrep-config p/security-audit \
+  --module2 \
+  --no-overwrite
+```
+
+Với Modal/Qwen3-14B, xác thực bằng `python -m modal setup`, tùy chọn chọn GPU
+qua `export MODAL_GPU=B200`, rồi thay `--provider ollama` bằng `--provider real`.
+Lệnh rút gọn `python -m sast_triage /absolute/path/to/target-repository` luôn
+chọn provider `real`, hai Semgrep ruleset, Module 2 discovery và logic detector;
+nó không phải smoke test offline.
+
 ## 3. Chạy nhanh nhất với Qwen3-14B
 
 ### 3.1 Clone target
@@ -293,7 +403,7 @@ Artifact bên ngoài repository mặc định có binding `UNVERIFIED`; đây l�
 | `--semgrep-config` | Có thể lặp nhiều lần để thêm ruleset/YAML. |
 | `--gitleaks-config` | Config Gitleaks tùy chọn. |
 | `--module2` / `--no-module2` | Bật/tắt cross-file index và evidence Python. Mặc định bật. |
-| `--module2-discovery` | Thử nghiệm Sprint 3: cho phép Module 2 thêm finding mới; mặc định tắt để benchmark chỉ đo finding của scanner. |
+| `--module2-discovery` / `--no-module2-discovery` | Cho phép Module 2 thêm bounded finding cross-file; mặc định bật. Dùng `--no-module2-discovery` khi cần benchmark chỉ đo finding của scanner. |
 | `--logic-detector` | `off` (mặc định) hoặc `python-idor-business-logic` để phát hiện IDOR và business-rule bypass. |
 | `--overwrite` / `--no-overwrite` | Cho phép/chặn ghi đè file report. |
 | `--resume` | Dùng lại scanner artifact và checkpoint của cùng output dir. |
@@ -362,12 +472,12 @@ repository index. Giới hạn mặc định:
 Joern đảm nhiệm taint/dataflow. Dynamic dispatch, reflection, monkey patching
 hoặc framework wiring phức tạp vẫn có thể cần review thủ công.
 
-Mặc định, Module 2 chỉ tạo index/evidence cho finding Semgrep và Gitleaks. Nó
-không làm thay đổi tập finding của scanner. Chỉ dùng `--module2-discovery` khi
-muốn thử nghiệm discovery Sprint 3 và báo cáo riêng kết quả đó.
+Mặc định, Module 2 tạo index/evidence cho finding Semgrep và Gitleaks, đồng thời
+discovery bounded các luồng cross-file. Dùng `--no-module2-discovery` khi cần
+giữ nguyên tập finding của scanner cho một benchmark chỉ-scanner.
 
-Với mục tiêu điều tra source-to-sink liên file, phải bật
-`--module2-discovery`. Mỗi finding sẽ có `evidence_details` trong `report.json`;
+Với mục tiêu điều tra source-to-sink liên file, discovery mặc định đã bật. Mỗi
+finding sẽ có `evidence_details` trong `report.json`;
 `report.md` và `report.html` hiển thị toàn bộ path trong ngân sách, từng bước
 symbol/file/dòng, danh sách file đi qua, caller, guard/control và giới hạn còn
 thiếu. “Toàn bộ file” ở đây là toàn bộ file tham gia một đường dataflow đã được
