@@ -142,7 +142,7 @@ def test_report_contains_required_sections_counts_and_safe_findings(tmp_path: Pa
     ):
         assert section in text
     assert "| LIKELY\\_TP — Có khả năng là lỗ hổng thật | 0 |" in text
-    assert "| FP\\_CANDIDATE — Ứng viên false positive — không tự động đóng | 1 |" in text
+    assert "| FP\\_CANDIDATE — Có khả năng là cảnh báo giả — cần xác nhận | 1 |" in text
     assert "| MANUAL\\_REVIEW — Cần chuyên gia review thủ công | 1 |" in text
     assert "| Finding ID | s\\-1 |" in text
     assert "| Finding ID | g\\-1 |" in text

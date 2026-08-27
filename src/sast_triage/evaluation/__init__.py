@@ -13,8 +13,10 @@ from sast_triage.evaluation.owasp_benchmark import (
     OwaspBenchmarkDataset,
     OwaspBenchmarkScore,
     OwaspCategoryScore,
+    OwaspFindingSelection,
     load_owasp_expected_results,
     score_owasp_findings,
+    select_owasp_findings,
 )
 
 __all__ = [
@@ -26,8 +28,10 @@ __all__ = [
     "OwaspBenchmarkDataset",
     "OwaspBenchmarkScore",
     "OwaspCategoryScore",
+    "OwaspFindingSelection",
     "evaluate_batch",
     "load_benchmark",
     "load_owasp_expected_results",
     "score_owasp_findings",
+    "select_owasp_findings",
 ]

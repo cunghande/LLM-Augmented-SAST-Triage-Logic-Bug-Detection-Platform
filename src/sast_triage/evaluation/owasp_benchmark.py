@@ -87,6 +87,20 @@ class OwaspBenchmarkScore:
     categories: tuple[OwaspCategoryScore, ...]
 
 
+@dataclass(frozen=True)
+class OwaspFindingSelection:
+    """Deterministic, ground-truth-matched findings selected before triage."""
+
+    findings: tuple[NormalizedFinding, ...]
+    matched_findings: int
+    unique_matched_cases: int
+    out_of_scope_findings: int
+    duplicate_findings: int
+    vulnerable_cases: int
+    benign_cases: int
+    truncated_cases: int
+
+
 def load_owasp_expected_results(file_path: Path) -> OwaspBenchmarkDataset:
     """Nạp CSV expectedresults OWASP Benchmark mà không chứa mã nguồn."""
     try:
@@ -134,6 +148,94 @@ def _finding_category(rule_id: str, mapping: Mapping[str, str]) -> str | None:
     if len(matches) != 1:
         return None
     return matches.pop()
+
+
+def _selection_sort_key(finding: NormalizedFinding) -> tuple[str, str, int, str]:
+    """Return a stable key that does not depend on scanner output ordering."""
+    name_match = _TEST_NAME.search(finding.file_path)
+    return (
+        name_match.group(0) if name_match else "",
+        finding.rule_id,
+        finding.start_line,
+        finding.finding_instance_id,
+    )
+
+
+def select_owasp_findings(
+    dataset: OwaspBenchmarkDataset,
+    findings: tuple[NormalizedFinding, ...],
+    *,
+    max_findings: int = 100,
+    rule_category_map: Mapping[str, str] | None = None,
+) -> OwaspFindingSelection:
+    """Select at most one category-matched finding per OWASP test case.
+
+    The bounded sample preserves the vulnerable/benign ratio of the available
+    matched cases. Findings outside the expected test identity and category are
+    excluded before any provider call.
+    """
+    if max_findings <= 0 or max_findings > 100:
+        raise SastTriageError(
+            "OWASP benchmark finding limit must be between 1 and 100.",
+            "BENCHMARK_LIMIT_INVALID",
+        )
+    mapping = rule_category_map or DEFAULT_SEMGREP_RULE_CATEGORY_MAP
+    if not mapping:
+        raise SastTriageError(
+            "OWASP rule mapping is invalid.",
+            "BENCHMARK_MAPPING_INVALID",
+        )
+
+    case_by_name = {case.test_name: case for case in dataset.cases}
+    matched: list[tuple[NormalizedFinding, OwaspBenchmarkCase]] = []
+    out_of_scope = 0
+    for finding in findings:
+        if finding.scanner != ScannerType.SEMGREP:
+            out_of_scope += 1
+            continue
+        name_match = _TEST_NAME.search(finding.file_path)
+        category = _finding_category(finding.rule_id, mapping)
+        case = case_by_name.get(name_match.group(0)) if name_match else None
+        if case is None or category is None or category != case.category:
+            out_of_scope += 1
+            continue
+        matched.append((finding, case))
+
+    matched.sort(key=lambda item: _selection_sort_key(item[0]))
+    unique: dict[str, tuple[NormalizedFinding, OwaspBenchmarkCase]] = {}
+    for finding, case in matched:
+        unique.setdefault(case.test_name, (finding, case))
+
+    if not unique:
+        raise SastTriageError(
+            "No category-matched OWASP Benchmark findings were found.",
+            "BENCHMARK_NO_MATCHED_FINDINGS",
+        )
+
+    positives = [item for item in unique.values() if item[1].vulnerable]
+    negatives = [item for item in unique.values() if not item[1].vulnerable]
+    selected = list(unique.values())
+    if len(selected) > max_findings:
+        positive_limit = round(max_findings * len(positives) / len(selected))
+        positive_limit = min(len(positives), max(0, positive_limit))
+        negative_limit = min(len(negatives), max_findings - positive_limit)
+        remaining = max_findings - positive_limit - negative_limit
+        if remaining:
+            positive_limit = min(len(positives), positive_limit + remaining)
+        selected = positives[:positive_limit] + negatives[:negative_limit]
+
+    selected.sort(key=lambda item: _selection_sort_key(item[0]))
+    selected_cases = [case for _, case in selected]
+    return OwaspFindingSelection(
+        findings=tuple(finding for finding, _ in selected),
+        matched_findings=len(matched),
+        unique_matched_cases=len(unique),
+        out_of_scope_findings=out_of_scope,
+        duplicate_findings=len(matched) - len(unique),
+        vulnerable_cases=sum(case.vulnerable for case in selected_cases),
+        benign_cases=sum(not case.vulnerable for case in selected_cases),
+        truncated_cases=len(unique) - len(selected),
+    )
 
 
 def score_owasp_findings(

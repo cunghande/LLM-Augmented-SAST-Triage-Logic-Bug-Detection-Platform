@@ -93,6 +93,59 @@ def make_complete_taint_context(finding_id: str = "find123456789012") -> Sanitiz
     )
 
 
+def make_negative_proof_context(
+    finding_id: str = "find123456789012",
+) -> SanitizedContext:
+    """Create a complete path-sensitive proof that attacker input misses the sink."""
+    context = make_context(finding_id=finding_id)
+    return context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "taint_flow",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "source_user_controlled": True,
+                        "source_reaches_sink": False,
+                        "negative_taint_conclusion_proven": True,
+                        "effective_controls": ["bounded_local_final_value"],
+                    },
+                    "provenance": [
+                        "BOUNDED_LOCAL_PATH_SENSITIVE",
+                        "BOUNDED_LOCAL_NEGATIVE_PROOF",
+                    ],
+                }
+            )
+        }
+    )
+
+
+def make_intrinsic_security_proof_context(
+    finding_id: str = "find123456789012",
+) -> SanitizedContext:
+    """Create a complete bounded proof of weak-hash security usage."""
+    context = make_context(finding_id=finding_id)
+    return context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "intrinsic_usage",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "unsafe_primitive_observed": True,
+                        "security_sensitive_usage_proven": True,
+                    },
+                    "provenance": ["BOUNDED_INTRINSIC_SECURITY_USAGE"],
+                }
+            )
+        }
+    )
+
+
 def make_triage_decision(
     verdict: ModelVerdict = ModelVerdict.LIKELY_TP,
     confidence: ModelConfidence = ModelConfidence.HIGH,
@@ -399,6 +452,20 @@ def test_semgrep_likely_fp_critical_severity_escalated() -> None:
     assert res.escalated is True
 
 
+def test_high_severity_semgrep_can_be_fp_with_strong_negative_proof() -> None:
+    finding = make_finding(scanner=ScannerType.SEMGREP, severity=Severity.HIGH)
+    context = make_negative_proof_context()
+    decision = make_triage_decision(
+        verdict=ModelVerdict.LIKELY_FP,
+        confidence=ModelConfidence.HIGH,
+    )
+
+    result = apply_policy(finding, context, decision)
+
+    assert result.action == PolicyAction.FP_CANDIDATE
+    assert result.escalated is False
+
+
 def test_semgrep_likely_fp_medium_severity_fp_candidate() -> None:
     """Requirement Protected: Medium-severity Semgrep LIKELY_FP finding with HIGH confidence becomes FP_CANDIDATE.
 
@@ -563,6 +630,50 @@ def test_model_needs_review_yields_manual_review() -> None:
 
     assert res.action == PolicyAction.MANUAL_REVIEW
     assert res.escalated is False
+
+
+def test_intrinsic_security_proof_resolves_model_review_as_likely_tp() -> None:
+    """A bounded weak-hash-to-security-asset proof can resolve model abstention."""
+    finding = make_finding()
+    ctx = make_intrinsic_security_proof_context()
+    dec = make_triage_decision(verdict=ModelVerdict.NEEDS_REVIEW)
+
+    result = apply_policy(finding, ctx, dec)
+
+    assert result.action == PolicyAction.LIKELY_TP
+    assert result.escalated is True
+    assert result.escalation_reason == (
+        "Deterministic intrinsic-usage proof resolved the model abstention."
+    )
+
+
+def test_intrinsic_security_claim_without_bounded_provenance_stays_review() -> None:
+    """Projection fields alone cannot override a model abstention."""
+    ctx = make_intrinsic_security_proof_context().model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "intrinsic_usage",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "unsafe_primitive_observed": True,
+                        "security_sensitive_usage_proven": True,
+                    },
+                    "provenance": ["JOERN_INTRINSIC_USAGE"],
+                }
+            )
+        }
+    )
+
+    result = apply_policy(
+        make_finding(),
+        ctx,
+        make_triage_decision(verdict=ModelVerdict.NEEDS_REVIEW),
+    )
+
+    assert result.action == PolicyAction.MANUAL_REVIEW
 
 
 # --- 8. Consistency, Immutability & Security Tests ---

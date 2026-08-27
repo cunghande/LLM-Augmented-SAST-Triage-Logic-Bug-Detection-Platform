@@ -159,6 +159,88 @@ def test_module2_discovery_is_enabled_by_default_and_can_be_disabled() -> None:
     assert disabled_args.module2_discovery is False
 
 
+def test_owasp_benchmark_arguments_are_bounded_by_default() -> None:
+    parser = build_parser()
+    args = parser.parse_args(
+        [
+            "scan-and-triage",
+            "--repository",
+            "repo",
+            "--output-dir",
+            "output",
+            "--owasp-expected-results",
+            "expectedresults-0.1.csv",
+        ]
+    )
+
+    assert args.owasp_expected_results == "expectedresults-0.1.csv"
+    assert args.benchmark_max_findings == 100
+
+
+def test_owasp_auto_scope_is_the_batch_sent_to_triage(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo = tmp_path / "BenchmarkPython"
+    testcode = repo / "testcode"
+    testcode.mkdir(parents=True)
+    for identifier in ("00001", "00002", "99999"):
+        (testcode / f"BenchmarkTest{identifier}.py").write_text(
+            "value = input()\n",
+            encoding="utf-8",
+        )
+    (repo / "expectedresults-0.1.csv").write_text(
+        "# test name,category,real vulnerability,cwe,Benchmark version: 0.1\n"
+        "BenchmarkTest00001,cmdi,true,78\n"
+        "BenchmarkTest00002,cmdi,false,78\n",
+        encoding="utf-8",
+    )
+    semgrep = tmp_path / "semgrep.json"
+    semgrep.write_text(
+        json.dumps(
+            {
+                "results": [
+                    {
+                        "check_id": "python.audit.subprocess-shell-true",
+                        "path": f"testcode/BenchmarkTest{identifier}.py",
+                        "start": {"line": 1},
+                        "extra": {"message": "safe", "lines": "redacted"},
+                    }
+                    for identifier in ("00001", "00001", "00002", "99999")
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    gitleaks = tmp_path / "gitleaks.json"
+    gitleaks.write_text("[]", encoding="utf-8")
+    output = tmp_path / "output"
+
+    exit_code = main(
+        [
+            "triage",
+            "--repository",
+            str(repo),
+            "--semgrep-json",
+            str(semgrep),
+            "--gitleaks-json",
+            str(gitleaks),
+            "--output-dir",
+            str(output),
+            "--provider",
+            "fake",
+        ]
+    )
+
+    assert exit_code == EXIT_SUCCESS
+    report = json.loads((output / "report.json").read_text(encoding="utf-8"))
+    assert len(report["results"]) == 2
+    progress = capsys.readouterr().out
+    assert "selected=2" in progress
+    assert "Tiến độ triage 2/2" in progress
+    assert "3/2" not in progress
+
+
 def test_focused_logic_detector_is_explicit_and_uses_prompt_v13() -> None:
     parser = build_parser()
     common = [

@@ -20,6 +20,10 @@ from sast_triage.application.repository_state import read_repository_state
 from sast_triage.cache.decision_cache import DecisionCache
 from sast_triage.checkpoint import CHECKPOINT_FILENAME, TriageCheckpointStore
 from sast_triage.errors import SastTriageError
+from sast_triage.evaluation.owasp_benchmark import (
+    load_owasp_expected_results,
+    select_owasp_findings,
+)
 from sast_triage.logic.index import LOGIC_DETECTOR_CONFIG_ID
 from sast_triage.models import (
     ArtifactRepositoryMatch,
@@ -38,6 +42,22 @@ EXIT_CONFIGURATION_ERROR = 2
 EXIT_SCANNER_ERROR = 3
 EXIT_REPORT_ERROR = 4
 EXIT_PROVIDER_RESOURCE_EXHAUSTED = 5
+
+
+def _resolve_owasp_expected_results(
+    repository: Path,
+    configured_path: str | None,
+) -> Path | None:
+    """Resolve an explicit OWASP CSV or auto-detect one at repository root."""
+    if configured_path:
+        candidate = Path(configured_path)
+        if not candidate.is_absolute() and not candidate.is_file():
+            candidate = repository / candidate
+        return candidate
+    candidates = sorted(repository.glob("expectedresults-*.csv"))
+    if len(candidates) == 1:
+        return candidates[0]
+    return None
 
 
 def execute_run(args: argparse.Namespace) -> int:
@@ -106,27 +126,59 @@ def _execute_run(args: argparse.Namespace) -> int:
         gitleaks_config=args.gitleaks_config,
         progress=show_progress,
     )
+    semgrep_findings = artifacts.semgrep.findings
+    owasp_expected_results = _resolve_owasp_expected_results(
+        repository,
+        getattr(args, "owasp_expected_results", None),
+    )
+    if owasp_expected_results:
+        dataset = load_owasp_expected_results(owasp_expected_results)
+        selection = select_owasp_findings(
+            dataset,
+            semgrep_findings,
+            max_findings=getattr(args, "benchmark_max_findings", 100),
+        )
+        semgrep_findings = selection.findings
+        show_progress(
+            "3/7",
+            "OWASP benchmark scope: "
+            f"selected={len(selection.findings)}, "
+            f"vulnerable={selection.vulnerable_cases}, "
+            f"benign={selection.benign_cases}, "
+            f"duplicates={selection.duplicate_findings}, "
+            f"out_of_scope={selection.out_of_scope_findings}.",
+        )
+    effective_semgrep_result = ScannerParseResult(
+        findings=semgrep_findings,
+        errors=artifacts.semgrep.errors,
+    )
+    effective_gitleaks_result = (
+        None if owasp_expected_results else artifacts.gitleaks
+    )
     analysis_backend: AnalysisBackend = args._analysis_backend
     logic_index = analysis_backend.logic_index
     module2_result = None
     module2_findings: list[NormalizedFinding] = []
     if getattr(args, "module2", True):
         show_progress("3/7", "Đang lập chỉ mục Python theo component cho Module 2.")
-    if getattr(args, "module2_discovery", False):
+    if getattr(args, "module2_discovery", False) and not owasp_expected_results:
         show_progress("3/7", "Đang chạy discovery thử nghiệm của Module 2.")
         module2_findings.extend(
-            analysis_backend.discover_findings(artifacts.semgrep.findings)
+            analysis_backend.discover_findings(semgrep_findings)
         )
     logic_detector = getattr(args, "logic_detector", "off")
-    if logic_detector != "off":
+    if logic_detector != "off" and not owasp_expected_results:
         show_progress("3/7", f"Running logic detector={logic_detector}.")
         module2_findings.extend(
             analysis_backend.discover_logic_findings(
                 logic_detector,
-                artifacts.semgrep.findings + tuple(module2_findings),
+                semgrep_findings + tuple(module2_findings),
             )
         )
-    if getattr(args, "module2_discovery", False) or logic_detector != "off":
+    if (
+        not owasp_expected_results
+        and (getattr(args, "module2_discovery", False) or logic_detector != "off")
+    ):
         module2_result = ScannerParseResult(findings=tuple(module2_findings))
     scanner_versions = dict(artifacts.scanner_versions)
     scanner_config_ids = dict(artifacts.scanner_config_ids)
@@ -138,15 +190,16 @@ def _execute_run(args: argparse.Namespace) -> int:
             else JOERN_CONFIG_ID
         )
     findings = (
-        artifacts.semgrep.findings
-        + artifacts.gitleaks.findings
+        semgrep_findings
+        + (() if owasp_expected_results else artifacts.gitleaks.findings)
         + (() if module2_result is None else module2_result.findings)
     )
     show_progress(
         "3/7",
         f"Đã parse {len(findings)} finding: "
-        f"Semgrep={len(artifacts.semgrep.findings)}, "
-        f"Gitleaks={len(artifacts.gitleaks.findings)}.",
+        f"Semgrep={len(semgrep_findings)}, "
+        "Gitleaks="
+        f"{0 if owasp_expected_results else len(artifacts.gitleaks.findings)}.",
     )
 
     repository_id = args.repository_identifier or repository.name
@@ -194,8 +247,8 @@ def _execute_run(args: argparse.Namespace) -> int:
             batch = triage_batch(
                 repository,
                 provider,
-                semgrep_result=artifacts.semgrep,
-                gitleaks_result=artifacts.gitleaks,
+                semgrep_result=effective_semgrep_result,
+                gitleaks_result=effective_gitleaks_result,
                 module2_result=module2_result,
                 logic_index=logic_index,
                 analysis_backend=analysis_backend,

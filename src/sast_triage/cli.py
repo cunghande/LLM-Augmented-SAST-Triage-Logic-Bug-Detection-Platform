@@ -139,6 +139,20 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default=None,
         help="Đơn giá provider USD/giờ để ước tính chi phí; mặc định không tính",
     )
+    parser.add_argument(
+        "--owasp-expected-results",
+        default=None,
+        help=(
+            "OWASP Benchmark expectedresults CSV; when set, only category-matched "
+            "Semgrep cases are triaged"
+        ),
+    )
+    parser.add_argument(
+        "--benchmark-max-findings",
+        type=int,
+        default=100,
+        help="Maximum OWASP ground-truth-matched findings to triage (1-100)",
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

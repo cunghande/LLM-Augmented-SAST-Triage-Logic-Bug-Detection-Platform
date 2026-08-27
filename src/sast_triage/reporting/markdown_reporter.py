@@ -32,7 +32,7 @@ _ACTION_LABELS: dict[str, str] = {
     "TRIAGE_ERROR": "Lỗi xử lý triage — cần kiểm tra hệ thống",
     "MANUAL_REVIEW": "Cần chuyên gia review thủ công",
     "LIKELY_TP": "Có khả năng là lỗ hổng thật",
-    "FP_CANDIDATE": "Ứng viên false positive — không tự động đóng",
+    "FP_CANDIDATE": "Có khả năng là cảnh báo giả — cần xác nhận",
 }
 
 _VERDICT_LABELS: dict[str, str] = {
@@ -86,6 +86,12 @@ _POLICY_TEXT_VI: dict[str, str] = {
         "LLM đã đưa ra verdict khi bằng chứng từ nguồn đến điểm sử dụng nguy hiểm chưa đầy đủ."
     ),
     "LLM provider requested manual review.": "LLM yêu cầu chuyên gia review thủ công.",
+    "Bounded local verification proves a weak primitive protects a security-sensitive asset.": (
+        "Bộ kiểm chứng cục bộ có giới hạn đã chứng minh primitive yếu được dùng để bảo vệ tài sản nhạy cảm."
+    ),
+    "Deterministic intrinsic-usage proof resolved the model abstention.": (
+        "Bằng chứng xác định về cách dùng primitive đã giải quyết trường hợp LLM chưa kết luận."
+    ),
     "Model verdict is LIKELY_TP with HIGH confidence.": (
         "LLM đánh giá LIKELY_TP với độ tin cậy HIGH."
     ),

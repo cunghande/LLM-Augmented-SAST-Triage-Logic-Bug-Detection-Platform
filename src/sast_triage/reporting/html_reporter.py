@@ -36,7 +36,7 @@ _ACTION_LABELS = {
     PolicyAction.TRIAGE_ERROR: "Lỗi phân loại",
     PolicyAction.MANUAL_REVIEW: "Cần đánh giá thủ công",
     PolicyAction.LIKELY_TP: "Có khả năng là lỗ hổng thật",
-    PolicyAction.FP_CANDIDATE: "Ứng viên dương tính giả",
+    PolicyAction.FP_CANDIDATE: "Có khả năng là cảnh báo giả — cần xác nhận",
 }
 _SEVERITY_LABELS = {
     "CRITICAL": "NGHIÊM TRỌNG",
@@ -427,7 +427,7 @@ def _render_report(batch_result: BatchResult) -> str:
     <div class="metric"><strong>{len(batch_result.results)}</strong>Tổng số phát hiện</div>
     <div class="metric"><strong>{counts[PolicyAction.LIKELY_TP.value]}</strong>Có khả năng là lỗ hổng thật</div>
     <div class="metric"><strong>{counts[PolicyAction.MANUAL_REVIEW.value]}</strong>Cần đánh giá thủ công</div>
-    <div class="metric"><strong>{counts[PolicyAction.FP_CANDIDATE.value]}</strong>Ứng viên cảnh báo giả</div>
+    <div class="metric"><strong>{counts[PolicyAction.FP_CANDIDATE.value]}</strong>Ứng viên cảnh báo giả · {counts[PolicyAction.FP_CANDIDATE.value] / len(batch_result.results) * 100 if batch_result.results else 0:.1f}% tổng finding</div>
     <div class="metric"><strong>{counts[PolicyAction.TRIAGE_ERROR.value]}</strong>Lỗi phân loại</div>
   </section>
   <section aria-labelledby="details-heading"><p class="eyebrow">Chi tiết lỗ hổng được phát hiện</p><h2 id="details-heading">Các phát hiện</h2>{findings}</section>

@@ -41,9 +41,9 @@ Repository
 
 `triage` và `scan-and-triage` dùng chung pipeline. Module 1 và Module 2 cũng
 không phải hai pipeline cạnh tranh: Module 2 bổ sung evidence cross-file cho
-finding của scanner trước khi mọi finding đi qua cùng provider và policy. Việc
-tự tạo finding Module 2 là chế độ thử nghiệm Sprint 3, chỉ bật khi truyền
-`--module2-discovery`.
+finding của scanner trước khi mọi finding đi qua cùng provider và policy.
+Discovery bounded của Module 2 được bật mặc định; dùng
+`--no-module2-discovery` khi cần chạy benchmark chỉ-scanner.
 
 `FunctionSummary` là nền cho Sprint 2/3: Sprint 2 dùng nó để chứng minh flow
 cross-file tốt hơn; Sprint 3 có thể dùng lại cùng index để mở rộng discovery.
@@ -97,9 +97,12 @@ Không commit Modal credential. Có thể copy `.env.example` thành `.env` khi 
 Compose trực tiếp. Compose mount Docker socket để app tạo container Joern sibling;
 chỉ chạy cấu hình này với source dự án mà bạn tin cậy.
 
-## Bắt đầu nhanh trên Windows không dùng app container
+## Chạy CLI native
 
-### 1. Yêu cầu
+Phần này hướng dẫn chạy trực tiếp bằng Python thay vì app container. Docker vẫn
+phải hoạt động vì Joern chạy trong container riêng.
+
+### 1. Yêu cầu chung
 
 - Python 3.11, 3.12 hoặc 3.13 (khuyến nghị 3.12).
 - Git.
@@ -122,7 +125,7 @@ Semgrep hỗ trợ cài bằng Python trên Windows. Gitleaks cung cấp binary 
 tại trang Releases chính thức. Xem hướng dẫn chi tiết trong
 [`docs/cli-usage.md`](docs/cli-usage.md).
 
-### 2. Cài dự án
+### 2. Cài dự án trên Windows
 
 Mở PowerShell tại thư mục source:
 
@@ -147,7 +150,7 @@ python -m modal token info
 
 Bỏ qua bước này nếu chỉ dùng `--provider fake` hoặc Ollama.
 
-### 4. Chuẩn bị repository mục tiêu
+### 4. Chuẩn bị repository mục tiêu trên Windows
 
 Không clone target vào source công cụ. Đặt source, target và output thành ba thư
 mục ngang hàng:
@@ -169,7 +172,7 @@ git clone https://github.com/cunghande/Sequential-Recommender
 
 Nếu repository đã tồn tại, không clone lại.
 
-### 5. Chạy Qwen3-14B bằng một lệnh
+### 5. Chạy bằng CLI trên Windows
 
 Khi `.venv` đang được kích hoạt và PowerShell đang ở `target-repos`, chỉ cần
 một lệnh để chạy Qwen, Joern, Module 2 discovery và logic detector:
@@ -179,22 +182,36 @@ python -m sast_triage Sequential-Recommender
 python -m sast_triage benchmarks
 python -m sast_triage extremely-vulnerable-flask-app
 ```
-# Bước 1: Activate venv (BẮT BUỘC mỗi khi mở terminal mới)
+
+### 6. Chạy bằng CLI trên Linux
+
+Mỗi khi mở terminal mới, kích hoạt lại virtual environment trước khi chạy CLI.
+Ví dụ dưới đây giả định source công cụ ở `/home/cungdv/code/AI security` và
+repository mục tiêu ở `/home/cungdv/code/target-repos`.
+
+```bash
+# Bước 1: Kích hoạt virtual environment (bắt buộc cho mỗi terminal mới)
 source "/home/cungdv/code/AI security/.venv/bin/activate"
 
-# Bước 2: Vào thư mục chứa repo mục tiêu
+# Bước 2: Chuyển đến thư mục chứa repository mục tiêu
 cd /home/cungdv/code/target-repos
 
-# Bước 3: Chạy CLI
+# Bước 3: Chạy triage đầy đủ cho repository cần quét
 python -m sast_triage extremely-vulnerable-flask-app
+```
+
+Lệnh rút gọn ở trên tự bật Qwen3-14B-AWQ trên Modal, Semgrep, Gitleaks, Joern,
+Evidence Agent, same-file/cross-file discovery và detector logic IDOR/business
+rule. Cần hoàn tất `python -m modal setup` và bảo đảm Docker Engine đang chạy.
 
 Lệnh này tự chọn:
 
 - `Qwen/Qwen3-14B-AWQ` trên Modal B200;
 - Semgrep `p/python` và `p/security-audit`;
 - Gitleaks built-in rules;
-- Module 2 index, discovery thử nghiệm và detector IDOR/business logic;
-- decision cache 7 ngày tại `D:\Code\triage-cache\Sequential-Recommender`;
+- Module 2 index, cross-file discovery và detector IDOR/business logic;
+- decision cache 7 ngày tại thư mục `triage-cache/<repository>` cạnh
+  `target-repos`;
 - telemetry cache/token/latency và chi phí B200 ước tính 6,25 USD/GPU-giờ;
 - output mới có timestamp, không ghi đè run cũ.
 
@@ -238,8 +255,8 @@ Policy action:
 
 | Action | Ý nghĩa |
 |---|---|
-| `AUTO_ACCEPT` | Evidence đủ để chấp nhận lỗi thật theo policy. |
-| `AUTO_REJECT` | Evidence đủ để xác định cảnh báo giả theo policy. |
+| `LIKELY_TP` | Có khả năng là lỗ hổng thật; vẫn cần reviewer xác nhận. |
+| `FP_CANDIDATE` | Ứng viên cảnh báo giả có evidence phù hợp; không tự động đóng. |
 | `MANUAL_REVIEW` | Chưa đủ evidence hoặc có bất đồng cần con người xem. |
 | `TRIAGE_ERROR` | Finding gặp lỗi xử lý nhưng vẫn được giữ trong báo cáo. |
 

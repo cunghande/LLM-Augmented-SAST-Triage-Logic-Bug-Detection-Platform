@@ -51,6 +51,16 @@ def test_repository_shortcut_preserves_extra_options(tmp_path: Path) -> None:
     assert arguments[-1] == "--no-module2"
 
 
+def test_repository_shortcut_reports_the_explicit_provider(tmp_path: Path) -> None:
+    repository = tmp_path / "target-repos" / "sample-repo"
+
+    arguments = entrypoint._expand_repository_shortcut(
+        [str(repository), "--provider", "fake"]
+    )
+
+    assert entrypoint._argument_value(arguments, "--provider") == "fake"
+
+
 def test_repository_shortcut_allows_disabling_full_analysis_defaults(
     tmp_path: Path,
 ) -> None:

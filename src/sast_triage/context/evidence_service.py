@@ -5,7 +5,12 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, replace
 
-from sast_triage.analysis.base import AnalysisBackend, GraphEvidence, GraphStep
+from sast_triage.analysis.base import (
+    AnalysisBackend,
+    GraphControl,
+    GraphEvidence,
+    GraphStep,
+)
 from sast_triage.analysis.rule_semantics import (
     RuleMechanism,
     mechanism_for_rule_id,
@@ -24,6 +29,10 @@ from sast_triage.context.evidence_models import (
     SourceEvidence,
     TaintPathEvidence,
     TaintStep,
+)
+from sast_triage.context.local_verifier import (
+    verify_intrinsic_security_usage,
+    verify_sanitized_python_flow,
 )
 from sast_triage.logic import LogicBugClass, LogicCandidate
 from sast_triage.logic.index import LogicFindingIndex
@@ -186,6 +195,69 @@ def _scanner_structural_fallback_graph(
         reachability_resolved=True,
         provenance=("SCANNER_MATCH", "SANITIZED_CONTEXT", "CONFIGURATION_ASSIGNMENT"),
     )
+
+
+def _merge_local_verification(
+    finding: NormalizedFinding,
+    sanitized_context: SanitizedContext,
+    graph: GraphEvidence,
+) -> GraphEvidence:
+    """Merge only source-free, fail-closed local verification facts."""
+    snippet = sanitized_context.sanitized_snippet
+    context_start = sanitized_context.context_start_line
+    if not snippet or context_start is None or sanitized_context.truncated:
+        return graph
+    verification = verify_sanitized_python_flow(
+        finding,
+        snippet,
+        context_start_line=context_start,
+    )
+    intrinsic = verify_intrinsic_security_usage(
+        finding,
+        snippet,
+        context_start_line=context_start,
+    )
+    if intrinsic.security_sensitive_usage_proven:
+        graph = graph.merge(GraphEvidence(provenance=intrinsic.provenance))
+    if verification.negative_taint_proven:
+        return graph.merge(
+            GraphEvidence(
+                controls=(
+                    GraphControl(
+                        symbol="bounded_local_final_value",
+                        control_type="path_sensitive_negative_taint_proof",
+                        on_path=True,
+                        effective=True,
+                        file_path=finding.file_path,
+                        line=finding.start_line,
+                    ),
+                ),
+                source_reaches_sink=False,
+                path_complete=True,
+                reachability_resolved=True,
+                provenance=(
+                    *verification.provenance,
+                    "BOUNDED_LOCAL_NEGATIVE_PROOF",
+                ),
+            )
+        )
+    if verification.unresolved_guard_observed:
+        return graph.merge(
+            GraphEvidence(
+                controls=(
+                    GraphControl(
+                        symbol="bounded_local_guard",
+                        control_type="path_sensitive_guard_candidate",
+                        on_path=True,
+                        effective=None,
+                        file_path=finding.file_path,
+                        line=finding.start_line,
+                    ),
+                ),
+                provenance=verification.provenance,
+            )
+        )
+    return graph
 
 
 def _graph_evidence_package(
@@ -487,6 +559,10 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
             ),
             "negative_taint_conclusion_proven": negative_taint_proven,
             "unsafe_primitive_observed": bool(intrinsic_usage and sink is not None),
+            "security_sensitive_usage_proven": (
+                intrinsic_usage
+                and "BOUNDED_INTRINSIC_SECURITY_USAGE" in evidence.provenance
+            ),
             "unsafe_configuration_observed": bool(configuration and sink is not None),
             "effective_controls": effective_controls,
             "has_evidence_conflict": (
@@ -495,9 +571,12 @@ def project_evidence(evidence: EvidencePackage) -> dict[str, object]:
                     evidence.sink is None
                     if intrinsic_usage or configuration
                     else (
-                        evidence.source is None
-                        or evidence.sink is None
-                        or not evidence.taint_path.complete
+                        not negative_taint_proven
+                        and (
+                            evidence.source is None
+                            or evidence.sink is None
+                            or not evidence.taint_path.complete
+                        )
                     )
                 )
             ),
@@ -898,12 +977,17 @@ def build_evidence_context(
             max_tool_calls=max_tool_calls,
             max_depth=max_depth,
         ).expand()
-        evidence = _graph_evidence_package(
+        verified_graph = _merge_local_verification(
             finding,
             sanitized_context,
             graph_expansion.evidence,
         )
-        report_graph = graph_expansion.evidence
+        evidence = _graph_evidence_package(
+            finding,
+            sanitized_context,
+            verified_graph,
+        )
+        report_graph = verified_graph
         expansion_tool_calls = graph_expansion.tool_calls
         expansion_tool_names = graph_expansion.tool_names
     else:

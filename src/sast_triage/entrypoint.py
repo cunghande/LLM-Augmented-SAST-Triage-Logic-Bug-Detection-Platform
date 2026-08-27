@@ -119,13 +119,14 @@ def _prepare_arguments(arguments: list[str]) -> tuple[list[str], bool]:
 
 
 def _argument_value(arguments: list[str], option: str) -> str | None:
+    selected: str | None = None
     for index, value in enumerate(arguments):
         if value == option and index + 1 < len(arguments):
-            return arguments[index + 1]
+            selected = arguments[index + 1]
         prefix = f"{option}="
         if value.startswith(prefix):
-            return value[len(prefix) :]
-    return None
+            selected = value[len(prefix) :]
+    return selected
 
 
 def _display_path(path: Path) -> str:

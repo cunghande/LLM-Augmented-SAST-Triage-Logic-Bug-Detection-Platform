@@ -5,7 +5,7 @@ into system policy decisions (PolicyDecision).
 
 Security & Conservative Principles:
 - Does NOT execute code or call external services.
-- Never promotes high-severity Semgrep or non-test Gitleaks findings to FP_CANDIDATE.
+- High-severity Semgrep requires a bounded path-sensitive negative proof for FP_CANDIDATE.
 - Context unavailable or sanitization issues default to MANUAL_REVIEW.
 - Never outputs raw source text, secrets, or exception payloads in reasons.
 """
@@ -30,7 +30,7 @@ from sast_triage.models import (
     TriageDecision,
 )
 
-POLICY_VERSION: str = "conservative-policy-v2"
+POLICY_VERSION: str = "conservative-policy-v4"
 
 
 def _evidence_is_incomplete(context: SanitizedContext) -> bool:
@@ -80,6 +80,29 @@ def _fp_has_deterministic_support(
     )
 
 
+def _fp_has_strong_negative_proof(context: SanitizedContext) -> bool:
+    """Return true only for the bounded path-sensitive negative-proof contract."""
+    snippet = context.sanitized_snippet
+    if not snippet or not snippet.lstrip().startswith("{"):
+        return False
+    try:
+        payload = json.loads(snippet)
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    verification = payload.get("deterministic_verification")
+    provenance = payload.get("provenance")
+    return (
+        isinstance(verification, dict)
+        and verification.get("evidence_complete") is True
+        and verification.get("has_evidence_conflict") is False
+        and verification.get("negative_taint_conclusion_proven") is True
+        and isinstance(provenance, list)
+        and "BOUNDED_LOCAL_NEGATIVE_PROOF" in provenance
+    )
+
+
 def _tp_has_deterministic_support(
     finding: NormalizedFinding,
     context: SanitizedContext,
@@ -109,12 +132,23 @@ def _tp_has_deterministic_support(
 
     mechanism = verification.get("mechanism")
     if mechanism == "taint_flow":
+        controls = payload.get("security_controls")
+        if isinstance(controls, dict) and any(
+            isinstance(control, dict) and control.get("effective") is None
+            for group in controls.values()
+            if isinstance(group, list)
+            for control in group
+        ):
+            return False
         return (
             verification.get("source_user_controlled") is True
             and verification.get("source_reaches_sink") is True
         )
     if mechanism == "intrinsic_usage":
-        return verification.get("unsafe_primitive_observed") is True
+        return (
+            verification.get("unsafe_primitive_observed") is True
+            and verification.get("security_sensitive_usage_proven") is True
+        )
     if mechanism == "configuration":
         return verification.get("unsafe_configuration_observed") is True
     if mechanism == "logic_pattern":
@@ -127,6 +161,36 @@ def _tp_has_deterministic_support(
     # A generic rule-specific projection is not enough to auto-resolve a
     # configuration/framework finding. Keep it visible for manual review.
     return False
+
+
+def _has_decisive_intrinsic_security_proof(context: SanitizedContext) -> bool:
+    """Return true for a complete bounded weak-primitive-to-security-asset proof.
+
+    This deliberately excludes ordinary taint, configuration, and logic evidence.
+    It is only strong enough to resolve an LLM abstention when the local verifier
+    has followed the weak primitive's result into a security-sensitive use.
+    """
+    snippet = context.sanitized_snippet
+    if not snippet or not snippet.lstrip().startswith("{"):
+        return False
+    try:
+        payload = json.loads(snippet)
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    verification = payload.get("deterministic_verification")
+    provenance = payload.get("provenance")
+    return (
+        isinstance(verification, dict)
+        and verification.get("mechanism") == "intrinsic_usage"
+        and verification.get("evidence_complete") is True
+        and verification.get("has_evidence_conflict") is False
+        and verification.get("unsafe_primitive_observed") is True
+        and verification.get("security_sensitive_usage_proven") is True
+        and isinstance(provenance, list)
+        and "BOUNDED_INTRINSIC_SECURITY_USAGE" in provenance
+    )
 
 
 def apply_policy(
@@ -252,6 +316,21 @@ def apply_policy(
 
     # 5. Rule 4 — Model Verdict là NEEDS_REVIEW
     if triage_decision.model_verdict == ModelVerdict.NEEDS_REVIEW:
+        if (
+            finding.finding_type == FindingType.SAST
+            and _has_decisive_intrinsic_security_proof(context)
+        ):
+            return PolicyDecision(
+                action=PolicyAction.LIKELY_TP,
+                reasons=[
+                    "Bounded local verification proves a weak primitive protects a security-sensitive asset."
+                ],
+                policy_version=POLICY_VERSION,
+                escalated=True,
+                escalation_reason=(
+                    "Deterministic intrinsic-usage proof resolved the model abstention."
+                ),
+            )
         return PolicyDecision(
             action=PolicyAction.MANUAL_REVIEW,
             reasons=["LLM provider requested manual review."],
@@ -320,7 +399,9 @@ def apply_policy(
                 escalated=True,
                 escalation_reason="Model FP opinion lacks deterministic benign-path support.",
             )
-        if finding.severity in (Severity.CRITICAL, Severity.HIGH):
+        if finding.severity in (Severity.CRITICAL, Severity.HIGH) and not (
+            _fp_has_strong_negative_proof(context)
+        ):
             return PolicyDecision(
                 action=PolicyAction.MANUAL_REVIEW,
                 reasons=["High-severity Semgrep findings cannot become FP candidates."],
