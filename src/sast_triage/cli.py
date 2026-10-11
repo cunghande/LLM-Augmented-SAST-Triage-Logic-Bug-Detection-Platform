@@ -1,6 +1,7 @@
 """Giao diện dòng lệnh cho SAST Triage."""
 
 import argparse
+import os
 from pathlib import Path
 
 from sast_triage.application.console import show_error
@@ -123,9 +124,17 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         help="Tiếp tục các finding đã lưu trong checkpoint",
     )
     parser.add_argument(
+        "--cache",
+        action="store_true",
+        default=False,
+        help="Bật nhanh cache với thư mục mặc định .sast_triage_cache",
+    )
+    parser.add_argument(
         "--decision-cache-dir",
-        default=None,
-        help="Thư mục cache TriageDecision đã validate; bỏ qua để tắt cache",
+        "--cache-dir",
+        dest="decision_cache_dir",
+        default=os.getenv("SAST_TRIAGE_CACHE_DIR"),
+        help="Thư mục cache TriageDecision đã validate; có thể đặt qua SAST_TRIAGE_CACHE_DIR (mặc định: tắt)",
     )
     parser.add_argument(
         "--decision-cache-ttl-hours",

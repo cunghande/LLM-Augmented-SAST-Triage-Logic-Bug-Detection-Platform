@@ -52,7 +52,10 @@ def test_semgrep_runner_accepts_multiple_explicit_configs(tmp_path: Path) -> Non
 def test_gitleaks_findings_exit_code_is_success(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
-    with patch("sast_triage.runners.scanners.subprocess.run") as run:
+    with (
+        patch("sast_triage.runners.scanners.shutil.which", return_value="/usr/bin/gitleaks"),
+        patch("sast_triage.runners.scanners.subprocess.run") as run,
+    ):
         run.return_value.returncode = 1
         run.return_value.stdout = b"[]"
         result = GitleaksRunner().run(repo, tmp_path / "run")
@@ -72,7 +75,10 @@ def test_gitleaks_runner_normalizes_absolute_result_paths(tmp_path: Path) -> Non
             "EndLine": 1,
         }
     ]
-    with patch("sast_triage.runners.scanners.subprocess.run") as run:
+    with (
+        patch("sast_triage.runners.scanners.shutil.which", return_value="/usr/bin/gitleaks"),
+        patch("sast_triage.runners.scanners.subprocess.run") as run,
+    ):
         run.return_value.returncode = 1
         run.return_value.stdout = json.dumps(artifact_payload).encode("utf-8")
         result = GitleaksRunner().run(repo, tmp_path / "run")
@@ -96,7 +102,10 @@ def test_gitleaks_runner_rejects_result_path_outside_repository(tmp_path: Path) 
             "EndLine": 1,
         }
     ]
-    with patch("sast_triage.runners.scanners.subprocess.run") as run:
+    with (
+        patch("sast_triage.runners.scanners.shutil.which", return_value="/usr/bin/gitleaks"),
+        patch("sast_triage.runners.scanners.subprocess.run") as run,
+    ):
         run.return_value.returncode = 1
         run.return_value.stdout = json.dumps(artifact_payload).encode("utf-8")
         result = GitleaksRunner().run(repo, tmp_path / "run")

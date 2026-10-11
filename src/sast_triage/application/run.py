@@ -98,6 +98,8 @@ def _execute_run(args: argparse.Namespace) -> int:
             "DECISION_CACHE_INVALID_CONFIGURATION",
         )
     cache_directory = getattr(args, "decision_cache_dir", None)
+    if not cache_directory and getattr(args, "cache", False):
+        cache_directory = ".sast_triage_cache"
     decision_cache = (
         DecisionCache(
             Path(cache_directory),

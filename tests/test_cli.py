@@ -454,3 +454,37 @@ def test_cli_checkpoints_modal_exhaustion_and_resumes_with_ollama(
     report = json.loads((output / "report.json").read_text(encoding="utf-8"))
     assert len(report["results"]) == 2
     assert report["run_metadata"]["triage_provider"] == "real-modal-qwen -> ollama"
+
+
+def test_cli_cache_options(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    out = tmp_path / "out"
+
+    # Test --cache flag
+    args = build_parser().parse_args([
+        "scan-and-triage",
+        "--repository", str(repo),
+        "--output-dir", str(out),
+        "--cache",
+    ])
+    assert args.cache is True
+    assert args.decision_cache_dir is None
+
+    # Test --cache-dir alias
+    args = build_parser().parse_args([
+        "scan-and-triage",
+        "--repository", str(repo),
+        "--output-dir", str(out),
+        "--cache-dir", str(tmp_path / "custom_cache"),
+    ])
+    assert args.decision_cache_dir == str(tmp_path / "custom_cache")
+
+    # Test SAST_TRIAGE_CACHE_DIR env var
+    monkeypatch.setenv("SAST_TRIAGE_CACHE_DIR", str(tmp_path / "env_cache"))
+    args = build_parser().parse_args([
+        "scan-and-triage",
+        "--repository", str(repo),
+        "--output-dir", str(out),
+    ])
+    assert args.decision_cache_dir == str(tmp_path / "env_cache")

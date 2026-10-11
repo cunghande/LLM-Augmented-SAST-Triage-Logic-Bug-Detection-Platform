@@ -1,6 +1,7 @@
 """Offline tests cho adapter Qwen3-14B Modal của CLI."""
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -41,9 +42,12 @@ from sast_triage.triage.qwen14b_modal_app import MODEL_ID
 print(MODEL_ID)
 """
 
+    src_dir = str(Path(__file__).resolve().parents[1] / "src")
     completed = subprocess.run(
         [sys.executable, "-c", script],
         cwd=tmp_path,
+        env={**os.environ, "PYTHONPATH": src_dir},
+        stdin=subprocess.DEVNULL,
         capture_output=True,
         check=False,
         text=True,

@@ -24,14 +24,25 @@ __all__ = [
     "OWASP_RULE_MAPPING_VERSION",
     "BenchmarkDataset",
     "BenchmarkRecord",
+    "BenchmarkThresholds",
     "OwaspBenchmarkCase",
     "OwaspBenchmarkDataset",
     "OwaspBenchmarkScore",
     "OwaspCategoryScore",
     "OwaspFindingSelection",
+    "RegressionCheckResult",
+    "check_regression",
     "evaluate_batch",
     "load_benchmark",
     "load_owasp_expected_results",
+    "render_regression_markdown",
     "score_owasp_findings",
     "select_owasp_findings",
 ]
+
+from sast_triage.evaluation.regression import (
+    BenchmarkThresholds,
+    RegressionCheckResult,
+    check_regression,
+    render_regression_markdown,
+)
