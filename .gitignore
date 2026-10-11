@@ -24,3 +24,11 @@ benchmarks/ExternalTargets/
 # Target và kết quả chạy nếu vô tình tạo bên trong source
 target-repos/
 triage-runs/
+output/
+tmp/
+.tmp/
+.codex-build/
+.presentation-work/
+.sast_triage_cache/
+triage-cache/
+benchmark-regression-output/

@@ -36,7 +36,7 @@ Repository
   → TriageInput
   → LLM verdict đã validate
   → PolicyDecision
-  → report.json + report.md + report.html
+  → report.json + report.html
 ```
 
 `triage` và `scan-and-triage` dùng chung pipeline. Module 1 và Module 2 cũng
@@ -230,7 +230,6 @@ Output có dạng:
 
 ```text
 D:\Code\triage-runs\Sequential-Recommender-qwen14b-YYYYMMDD-HHMMSSZ\
-├── report.md
 ├── report.json
 ├── report.html
 ├── run-metadata.json
@@ -244,9 +243,8 @@ Cold start Modal có thể mất khoảng 4–7 phút. Chờ đến khi CLI in `
 
 ## Đọc kết quả
 
-- `report.md`: báo cáo chính cho reviewer/mentor.
-- `report.json`: dữ liệu đầy đủ cho đánh giá tự động.
 - `report.html`: báo cáo security trực quan, có thể mở trực tiếp hoặc in thành PDF.
+- `report.json`: dữ liệu đầy đủ cho đánh giá tự động.
 - `run-metadata.json`: commit, scanner version/config, model và binding.
 - `scanner-artifacts/`: artifact nội bộ; không nên gửi ra ngoài vì có thể chứa
   source snippet hoặc dữ liệu nhạy cảm.

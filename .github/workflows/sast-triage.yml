@@ -58,12 +58,6 @@ jobs:
             --cache-dir .sast_triage_cache \
             --logic-detector python-idor-business-logic
 
-      - name: Publish Job Summary
-        run: |
-          if [ -f output/report.md ]; then
-            cat output/report.md >> $GITHUB_STEP_SUMMARY
-          fi
-
       - name: Upload Security Reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -71,6 +65,5 @@ jobs:
           name: sast-triage-reports
           path: |
             output/report.json
-            output/report.md
             output/report.html
           retention-days: 14

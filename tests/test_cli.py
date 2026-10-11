@@ -101,7 +101,6 @@ def test_triage_cli_writes_all_reports_and_metadata(tmp_path: Path, capsys) -> N
     exit_code = main(["triage", "--repository", str(repo), "--semgrep-json", str(semgrep), "--gitleaks-json", str(gitleaks), "--output-dir", str(output), "--provider", "fake"])
     assert exit_code == EXIT_SUCCESS
     assert (output / "report.json").is_file()
-    assert (output / "report.md").is_file()
     assert (output / "report.html").is_file()
     assert (output / "run-metadata.json").is_file()
     assert "x = 1" not in (output / "report.json").read_text(encoding="utf-8")

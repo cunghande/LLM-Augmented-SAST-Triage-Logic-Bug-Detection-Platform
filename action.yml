@@ -74,11 +74,3 @@ runs:
           ARGS+=(--logic-detector "${{ inputs.logic-detector }}")
         fi
         sast-triage "${ARGS[@]}"
-
-    - name: Publish Step Summary
-      if: inputs.post-summary == 'true'
-      shell: bash
-      run: |
-        if [ -f "${{ inputs.output-dir }}/report.md" ]; then
-          cat "${{ inputs.output-dir }}/report.md" >> "$GITHUB_STEP_SUMMARY"
-        fi

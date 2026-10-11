@@ -20,7 +20,6 @@ from sast_triage.parsers.gitleaks import parse_gitleaks_json
 from sast_triage.parsers.semgrep import parse_semgrep_json
 from sast_triage.pipeline.batch import triage_batch
 from sast_triage.reporting.json_reporter import write_json_report
-from sast_triage.reporting.markdown_reporter import write_markdown_report
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TARGET_ROOT = PROJECT_ROOT / "benchmarks" / "ExternalTargets"
@@ -55,11 +54,10 @@ def _triage_branch(branch: str, commit_sha: str, provider: ModalQwenProvider) ->
 
 
 def _write_reports(branch: str, result: BatchResult) -> None:
-    """Ghi hai báo cáo canonical JSON và Markdown cho một nhánh."""
+    """Ghi báo cáo canonical JSON cho một nhánh."""
     output_dir = ARTIFACT_ROOT / f"djangogoat-{branch}" / "qwen"
     output_dir.mkdir(parents=True, exist_ok=True)
     write_json_report(result, output_dir / "report.json", overwrite=True)
-    write_markdown_report(result, output_dir / "report.md", overwrite=True)
 
 
 def _summary(result: BatchResult) -> dict[str, object]:

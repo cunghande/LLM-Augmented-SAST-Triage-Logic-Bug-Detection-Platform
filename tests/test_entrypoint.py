@@ -124,13 +124,13 @@ def test_display_path_keeps_sibling_output_useful(
     tmp_path: Path, monkeypatch
 ) -> None:
     current = tmp_path / "target-repos"
-    report = tmp_path / "triage-runs" / "run-01" / "report.md"
+    report = tmp_path / "triage-runs" / "run-01" / "report.json"
     current.mkdir()
     monkeypatch.chdir(current)
 
     displayed = entrypoint._display_path(report)
 
-    assert displayed == str(Path("..") / "triage-runs" / "run-01" / "report.md")
+    assert displayed == str(Path("..") / "triage-runs" / "run-01" / "report.json")
 
 
 def test_ollama_provider_remains_an_independent_cli_choice(monkeypatch) -> None:
@@ -169,7 +169,6 @@ def test_entrypoint_prints_report_summary(tmp_path: Path, monkeypatch, capsys) -
             encoding="utf-8",
         )
         (output / "report.json").write_text("{}", encoding="utf-8")
-        (output / "report.md").write_text("# report\n", encoding="utf-8")
         (output / "report.html").write_text("<!doctype html>\n", encoding="utf-8")
         return 0
 
