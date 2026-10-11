@@ -7,7 +7,7 @@ name = "sast-triage"
 version = "0.1.0"
 description = "LLM-Augmented SAST Triage & Logic Bug Detection Platform"
 readme = "README.md"
-requires-python = ">=3.11, <3.14"
+requires-python = ">=3.11, <3.15"
 dependencies = [
     # Modal SDK is required by the built-in `--provider real` Qwen3-14B adapter.
     # The standard library cannot authenticate, package, or invoke Modal GPU functions.
