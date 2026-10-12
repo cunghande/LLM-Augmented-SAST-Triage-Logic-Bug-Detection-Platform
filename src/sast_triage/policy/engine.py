@@ -412,14 +412,20 @@ def apply_policy(
         )
 
     # 8. Rules 7 & 8 — Model Verdict là LIKELY_FP với Confidence HIGH
-    # Kiểm tra context bị cắt ngắn hoặc sanitize thất bại có chặn FP candidate không
-    if context.truncated or has_sanitization_failed:
+    # Kiểm tra context bị cắt ngắn, sanitize thất bại, hoặc có prompt injection có chặn FP candidate không
+    has_prompt_injection = MissingContextReason.PROMPT_INJECTION_FLAGGED in context.missing_context_reasons
+    if context.truncated or has_sanitization_failed or has_prompt_injection:
+        reason = (
+            "Suspected prompt injection payload detected in context; FP candidate status is blocked."
+            if has_prompt_injection
+            else "Context is truncated or has sanitization issues; FP candidate status is blocked."
+        )
         return PolicyDecision(
             action=PolicyAction.MANUAL_REVIEW,
-            reasons=["Truncated or sanitized context prevents automatic FP candidate classification."],
+            reasons=[reason],
             policy_version=POLICY_VERSION,
             escalated=True,
-            escalation_reason="Context is truncated or has sanitization issues; FP candidate status is blocked.",
+            escalation_reason=reason,
         )
 
     # Rule 7 — Scanner Semgrep

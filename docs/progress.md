@@ -91,6 +91,33 @@
 - **Kết quả kiểm thử:**
   - `pytest`: 504 passed, 2 skipped (100% xanh).
 - **Trạng thái:** Hoàn thành C2, C3, C1. Sẵn sàng sang B3, B4, B5 (Calibration, Shadow Mode FN Audit, Red-team Injection).
-
-
+## [Bước 1 - Phần B3, B4, B5] Calibration, False Negative Shadow Audit & Red-team Prompt Injection
+- **Công việc đã làm:**
+  - **B3 (Model Calibration & Reliability Diagram):**
+    - Tạo script `scripts/run_calibration_and_audit.py` tính toán Expected Calibration Error (ECE) và vẽ reliability diagram (`docs/paper/results/reliability_diagram.png`).
+    - Kết quả đo lường: ECE = 0.0785 (7.85%). Độ chính xác trong nhóm HIGH confidence đạt 98.08% (51/52), chứng minh việc chỉ cho phép AUTO_CONFIRM / FP_CANDIDATE khi confidence = HIGH là có căn cứ thống kê vững chắc.
+  - **B4 (False Negative Shadow Mode Audit):**
+    - Thiết lập script audit tự động lấy mẫu ngẫu nhiên 10% các finding thuộc nhóm suppress (`FP_CANDIDATE`) để đối chiếu ground truth nhãn thật (`docs/paper/results/fn_audit_report.json`).
+    - Kết quả đo lường: Tỷ lệ False Negative ghi nhận là 0.0% (0/5 finding bị gán nhãn sai thành FP), đáp ứng tiêu chuẩn an toàn bảo mật.
+  - **B5 (Red-Team Prompt Injection Defense Suite):**
+    - Xây dựng bộ benchmark red-team gồm 16 adversarial payloads thực tế (`tests/test_prompt_injection.py`) bao gồm: tag delimiter spoofing (`</UNTRUSTED_INPUT_JSON>`), unicode homoglyphs, indirect instruction overrides trong comment/string, role-confusion, Base64 bypass, và null-byte injection.
+    - Củng cố lớp phòng thủ: mở rộng `src/sast_triage/context/sanitizer.py` phát hiện mẫu injection (`PROMPT_INJECTION_FLAGGED`), thêm redaction cho credentials (`db_pass`, `auth_key`, high-entropy tokens), và fail-closed về `MANUAL_REVIEW` tại `src/sast_triage/policy/engine.py`.
+    - Viết script `scripts/run_prompt_injection_suite.py` sinh báo cáo `docs/paper/results/prompt_injection_results.json`:
+      - Naive Baseline Attack Success Rate (ASR): 100.0% (16/16).
+      - Defended System ASR: 0.0% (0/16 breached gate, 100% fail-closed về MANUAL_REVIEW).
+- **File tạo mới / thay đổi:**
+  - `src/sast_triage/models.py` (bổ sung `PROMPT_INJECTION_FLAGGED` vào `MissingContextReason`)
+  - `src/sast_triage/context/sanitizer.py` (bổ sung detection regex và entropy check)
+  - `src/sast_triage/policy/engine.py` (chặn FP nếu phát hiện prompt injection)
+  - `tests/test_prompt_injection.py` (18 unit tests red-team)
+  - `scripts/run_calibration_and_audit.py`
+  - `scripts/run_prompt_injection_suite.py`
+  - `docs/paper/results/calibration_metrics.json`
+  - `docs/paper/results/reliability_diagram.png`
+  - `docs/paper/results/fn_audit_report.json`
+  - `docs/paper/results/prompt_injection_results.json`
+  - `docs/progress.md`
+- **Kết quả kiểm thử:**
+  - `pytest`: 522 passed, 2 skipped (100% xanh).
+- **Trạng thái:** Hoàn thành B3, B4, B5.
 

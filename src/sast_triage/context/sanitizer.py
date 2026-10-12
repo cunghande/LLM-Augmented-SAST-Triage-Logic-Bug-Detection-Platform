@@ -49,6 +49,24 @@ AUTHORIZATION_BEARER: str = "AUTHORIZATION_BEARER"
 PRIVATE_KEY_BLOCK: str = "PRIVATE_KEY_BLOCK"
 CONNECTION_URL: str = "CONNECTION_URL"
 
+
+_PROMPT_INJECTION_REGEX = re.compile(
+    r"(?i)(?:ignore\s+(?:all\s+)?(?:previous|prior)\s+instructions|"
+    r"system\s+(?:override|directive|instruction)|"
+    r"return\s+likely_fp|output\s+likely_fp|classify\s+as\s+likely_fp|"
+    r"</untrusted_input_json>|\u003c/untrusted_input_json)"
+)
+
+
+def _is_high_entropy_token(s: str, min_len: int = 24, threshold: float = 4.2) -> bool:
+    """Check if a string token has high Shannon entropy consistent with raw keys/hashes."""
+    if len(s) < min_len or " " in s:
+        return False
+    import math
+    prob = [s.count(c) / len(s) for c in set(s)]
+    entropy = -sum(p * math.log2(p) for p in prob)
+    return entropy >= threshold
+
 # --- Mẫu redact tổng quát ---
 
 # PEM Private Key Block
@@ -66,12 +84,12 @@ _URL_CRED_REGEX = re.compile(r"(?i)([a-z0-9\+\-\.]+://[^:\s\/]+:)([^@\s\/]+)(@)"
 
 # Literal Credential Assignment (Quoted: e.g. password = "value", "api_key": 'value')
 _CRED_QUOTED_REGEX = re.compile(
-    r"(?i)(\b(?:password|passwd|secret|api_key|access_token|token)\b[\s\'\"]*[:=]\s*)([\"'])(.*?)\2"
+    r"(?i)(\b(?:password|passwd|db_pass|auth_key|secret_key|api_key|api_secret|access_token|token|secret)\b[\s\'\"]*[:=]\s*)([\"'])(.*?)\2"
 )
 
 # Literal Credential Assignment (Unquoted standalone token ending statement, excludes expressions like load_token() or req.form['x'])
 _CRED_UNQUOTED_REGEX = re.compile(
-    r"(?i)(\b(?:password|passwd|secret|api_key|access_token|token)\b\s*[:=]\s*)([a-zA-Z0-9_\-]+)(?=\s*(?:[;,\n]|$))"
+    r"(?i)(\b(?:password|passwd|db_pass|auth_key|secret_key|api_key|api_secret|access_token|token|secret)\b\s*[:=]\s*)([a-zA-Z0-9_\-]+)(?=\s*(?:[;,\n]|$))"
 )
 
 
@@ -437,6 +455,10 @@ def sanitize_context(
 
     sorted_redaction_types = sorted(applied_types)
 
+    reasons_list: list[MissingContextReason] = []
+    if _PROMPT_INJECTION_REGEX.search(current_text):
+        reasons_list.append(MissingContextReason.PROMPT_INJECTION_FLAGGED)
+
     sanitized_context = SanitizedContext(
         finding_id=finding.finding_instance_id,
         sanitized_snippet=current_text,
@@ -452,7 +474,7 @@ def sanitize_context(
         path_category=path_cat,
         source_kind=SourceKind.WORKTREE,
         context_available=True,
-        missing_context_reasons=[],
+        missing_context_reasons=reasons_list,
         redactions_applied=total_redactions,
         redaction_types=sorted_redaction_types,
         truncated=raw_context.truncated,

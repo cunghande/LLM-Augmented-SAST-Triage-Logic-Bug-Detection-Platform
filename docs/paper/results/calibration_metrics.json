@@ -1,0 +1,54 @@
+{
+  "expected_calibration_error_ece": 0.0785,
+  "total_evaluated_samples": 219,
+  "high_confidence_total": 104,
+  "high_confidence_correct": 102,
+  "high_confidence_accuracy_pct": 98.08,
+  "reliability_bins": [
+    {
+      "bin_range": [
+        0.0,
+        0.2
+      ],
+      "count": 0,
+      "avg_confidence": 0.0,
+      "avg_accuracy": 0.0
+    },
+    {
+      "bin_range": [
+        0.2,
+        0.4
+      ],
+      "count": 36,
+      "avg_confidence": 0.3,
+      "avg_accuracy": 0.3611
+    },
+    {
+      "bin_range": [
+        0.4,
+        0.6
+      ],
+      "count": 79,
+      "avg_confidence": 0.6,
+      "avg_accuracy": 0.6835
+    },
+    {
+      "bin_range": [
+        0.6,
+        0.8
+      ],
+      "count": 0,
+      "avg_confidence": 0.0,
+      "avg_accuracy": 0.0
+    },
+    {
+      "bin_range": [
+        0.8,
+        1.0
+      ],
+      "count": 104,
+      "avg_confidence": 0.9,
+      "avg_accuracy": 0.9808
+    }
+  ]
+}

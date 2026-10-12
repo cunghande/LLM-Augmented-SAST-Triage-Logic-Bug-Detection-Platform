@@ -1,0 +1,31 @@
+{
+  "audit_mode": "shadow_mode_random_sampling",
+  "sample_percentage": 10.0,
+  "total_sampled_findings": 21,
+  "suppression_candidates_sampled": 10,
+  "total_false_negatives_observed": 0,
+  "overall_false_negative_rate_pct": 0.0,
+  "severity_breakdown": {
+    "CRITICAL": {
+      "total_sampled": 0,
+      "false_negatives": 0,
+      "true_fps": 0
+    },
+    "HIGH": {
+      "total_sampled": 0,
+      "false_negatives": 0,
+      "true_fps": 0
+    },
+    "MEDIUM": {
+      "total_sampled": 21,
+      "false_negatives": 0,
+      "true_fps": 10
+    },
+    "LOW": {
+      "total_sampled": 0,
+      "false_negatives": 0,
+      "true_fps": 0
+    }
+  },
+  "audit_conclusion": "No false negatives observed in shadow audit. Conservative PolicyEngine prevented suppression of all sampled true vulnerabilities."
+}
