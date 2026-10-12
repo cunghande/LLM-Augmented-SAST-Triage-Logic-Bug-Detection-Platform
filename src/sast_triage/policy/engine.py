@@ -13,6 +13,7 @@ Security & Conservative Principles:
 import json
 
 from sast_triage.errors import SastTriageError
+from sast_triage.triage.post_verifier import verify_post_triage_decision
 from sast_triage.models import (
     ArtifactRepositoryMatch,
     FindingType,
@@ -282,6 +283,18 @@ def apply_policy(
             escalated=True,
             escalation_reason="Artifact binding is unverified or partial.",
         )
+
+    # Rule 2.1 — Deterministic Post-LLM Verifier Check (C3)
+    if triage_decision is not None and getattr(triage_decision, "structured_evidence", None):
+        post_verif = verify_post_triage_decision(triage_decision, context, finding)
+        if not post_verif.is_valid:
+            return PolicyDecision(
+                action=PolicyAction.MANUAL_REVIEW,
+                reasons=[f"Post-LLM verifier rejection: {'; '.join(post_verif.violations)}"],
+                policy_version=POLICY_VERSION,
+                escalated=True,
+                escalation_reason=post_verif.escalation_reason,
+            )
 
     # Các cờ helper cho lỗi
     has_sanitize_error = any(err.stage == ProcessingStage.SANITIZE for err in processing_errors)

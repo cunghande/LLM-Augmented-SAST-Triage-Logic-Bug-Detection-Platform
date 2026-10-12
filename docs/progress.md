@@ -66,4 +66,31 @@
   - `pytest`: 499 passed, 2 skipped (100% xanh).
 - **Trạng thái:** Hoàn thành C5, C4. Sẵn sàng sang C2, C3, C1 (Output cấu trúc, Post-LLM Verifier, Luật tất định).
 
+---
+
+## [Bước 1 - Phần C2, C3, C1] Output Cấu Trúc, Post-LLM Verifier & Luật Tất Định
+- **Công việc đã làm:**
+  - **C2 (Evidence-first Structured Output):**
+    - Thêm enum `EvidenceRole` (SOURCE, GUARD, SINK, STEP) và model `StructuredEvidence` (file, line, symbol, role, description) vào `src/sast_triage/models.py`.
+    - Cập nhật model `TriageDecision` đặt trường `structured_evidence` lên trước `model_verdict` và `model_confidence` để bắt buộc model đưa bằng chứng trước khi chọn verdict.
+  - **C3 (Deterministic Post-LLM Verifier):**
+    - Tạo module `src/sast_triage/triage/post_verifier.py` với hàm `verify_post_triage_decision`:
+      1. Đối chiếu mọi symbol và file được LLM viện dẫn xem có thực sự tồn tại trong `SanitizedContext` hay không (loại bỏ symbol hallucinated).
+      2. Kiểm tra nếu LLM viện dẫn có guard/sanitizer (`EvidenceRole.GUARD`) mà phân tích tĩnh không tìm thấy effective control thì lập tức fail-closed.
+      3. Phát hiện mâu thuẫn trực tiếp giữa phán quyết LIKELY_TP và bằng chứng chứng minh âm tính (`BOUNDED_LOCAL_NEGATIVE_PROOF`).
+    - Tích hợp `verify_post_triage_decision` trực tiếp vào `apply_policy` trong `src/sast_triage/policy/engine.py` (Rule 2.1), tự động hạ phán quyết về `MANUAL_REVIEW` khi vi phạm.
+  - **C1 (Deterministic Rules in Code):**
+    - Xác nhận và củng cố các luật tất định trong code: `_tp_has_deterministic_support` chặn LIKELY_TP khi thiếu source/sink hoặc `source_user_controlled is False`; luật constant overwrite và intrinsic security usage được kiểm chứng tĩnh.
+  - Tạo bộ unit test toàn diện `tests/test_post_verifier.py` kiểm tra mọi nhánh của post-verifier.
+- **File tạo mới / thay đổi:**
+  - `src/sast_triage/models.py`
+  - `src/sast_triage/triage/post_verifier.py`
+  - `src/sast_triage/policy/engine.py`
+  - `tests/test_post_verifier.py`
+  - `docs/progress.md`
+- **Kết quả kiểm thử:**
+  - `pytest`: 504 passed, 2 skipped (100% xanh).
+- **Trạng thái:** Hoàn thành C2, C3, C1. Sẵn sàng sang B3, B4, B5 (Calibration, Shadow Mode FN Audit, Red-team Injection).
+
+
 

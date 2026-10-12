@@ -340,15 +340,35 @@ class TriageInput(BaseDomainModel):
         return self
 
 
-class TriageDecision(BaseDomainModel):
-    """Quyết định triage do LLM provider tạo ra."""
+class EvidenceRole(str, Enum):
+    """Vai trò cấu trúc của mấu chốt bằng chứng triage."""
 
+    SOURCE = "source"
+    GUARD = "guard"
+    SINK = "sink"
+    STEP = "step"
+
+
+class StructuredEvidence(BaseDomainModel):
+    """Bằng chứng tham chiếu có cấu trúc (file, line, symbol, role)."""
+
+    file: str
+    line: int | None = None
+    symbol: str
+    role: EvidenceRole
+    description: str | None = None
+
+
+class TriageDecision(BaseDomainModel):
+    """Quyết định triage do LLM provider tạo ra, định dạng evidence-first."""
+
+    structured_evidence: list[StructuredEvidence] = Field(default_factory=list)
+    missing_information: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
     model_verdict: ModelVerdict
     model_confidence: ModelConfidence
     summary: str
     evidence: list[str] = Field(default_factory=list)
-    missing_information: list[str] = Field(default_factory=list)
-    assumptions: list[str] = Field(default_factory=list)
     model_version: str
     prompt_version: str
 
