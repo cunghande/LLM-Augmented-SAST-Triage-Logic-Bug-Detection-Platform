@@ -30,7 +30,27 @@ from sast_triage.models import (
     TriageDecision,
 )
 
-POLICY_VERSION: str = "conservative-policy-v4"
+POLICY_VERSION: str = "conservative-policy-v5"
+
+
+_DANGEROUS_CWES = frozenset({
+    "CWE-89", "CWE-78", "CWE-77", "CWE-22", "CWE-502", "CWE-94", "CWE-95", "CWE-918", "CWE-601"
+})
+
+
+def _is_dangerous_cwe(finding: NormalizedFinding) -> bool:
+    """Return True if the finding belongs to a critical injection/execution/traversal CWE."""
+    metadata = finding.metadata or {}
+    raw = metadata.get("cwe", [])
+    if isinstance(raw, str):
+        raw = [raw]
+    for item in raw:
+        item_str = str(item).upper()
+        for dangerous in _DANGEROUS_CWES:
+            if dangerous in item_str:
+                return True
+    rule_id = finding.rule_id.lower()
+    return any(danger in rule_id for danger in ("sqli", "command-injection", "path-traversal", "deserialization", "eval", "rce"))
 
 
 def _evidence_is_incomplete(context: SanitizedContext) -> bool:
@@ -391,28 +411,35 @@ def apply_policy(
 
     # Rule 7 — Scanner Semgrep
     if finding.finding_type == FindingType.SAST:
-        if _fp_has_deterministic_support(finding, context) is False:
+        support = _fp_has_deterministic_support(finding, context)
+        if support is not True:
             return PolicyDecision(
                 action=PolicyAction.MANUAL_REVIEW,
                 reasons=["Structured evidence does not safely support FP candidate status."],
                 policy_version=POLICY_VERSION,
                 escalated=True,
-                escalation_reason="Model FP opinion lacks deterministic benign-path support.",
+                escalation_reason=(
+                    "Model FP opinion lacks deterministic benign-path support."
+                    if support is False
+                    else "Deterministic evidence is missing or unverified (cannot auto-suppress without positive proof)."
+                ),
             )
-        if finding.severity in (Severity.CRITICAL, Severity.HIGH) and not (
-            _fp_has_strong_negative_proof(context)
-        ):
+        is_high_or_dangerous = (
+            finding.severity in (Severity.CRITICAL, Severity.HIGH)
+            or (finding.severity == Severity.MEDIUM and _is_dangerous_cwe(finding))
+        )
+        if is_high_or_dangerous and not _fp_has_strong_negative_proof(context):
             return PolicyDecision(
                 action=PolicyAction.MANUAL_REVIEW,
-                reasons=["High-severity Semgrep findings cannot become FP candidates."],
+                reasons=["High-severity or dangerous CWE Semgrep findings cannot become FP candidates without strong negative proof."],
                 policy_version=POLICY_VERSION,
                 escalated=True,
-                escalation_reason=f"Severity '{finding.severity.value}' is too high for automatic FP candidate classification.",
+                escalation_reason=f"Severity '{finding.severity.value}' / dangerous mechanism requires bounded local negative proof for automatic FP candidate classification.",
             )
 
         return PolicyDecision(
             action=PolicyAction.FP_CANDIDATE,
-            reasons=["Semgrep finding classified as FP_CANDIDATE."],
+            reasons=["Semgrep finding verified by deterministic support and classified as FP_CANDIDATE."],
             policy_version=POLICY_VERSION,
             escalated=False,
             escalation_reason=None,

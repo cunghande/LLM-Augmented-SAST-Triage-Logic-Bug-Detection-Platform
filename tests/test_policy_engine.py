@@ -72,6 +72,26 @@ def make_context(
     )
 
 
+def make_benign_support_context(finding_id: str = "find123456789012") -> SanitizedContext:
+    context = make_context(finding_id=finding_id)
+    return context.model_copy(
+        update={
+            "sanitized_snippet": json.dumps(
+                {
+                    "context_completeness": {"status": "complete"},
+                    "deterministic_verification": {
+                        "mechanism": "taint_flow",
+                        "evidence_complete": True,
+                        "has_evidence_conflict": False,
+                        "source_user_controlled": False,
+                        "source_reaches_sink": False,
+                    },
+                }
+            )
+        }
+    )
+
+
 def make_complete_taint_context(finding_id: str = "find123456789012") -> SanitizedContext:
     """Create a safe evidence projection proving a complete unsafe taint path."""
     context = make_context(finding_id=finding_id)
@@ -467,13 +487,13 @@ def test_high_severity_semgrep_can_be_fp_with_strong_negative_proof() -> None:
 
 
 def test_semgrep_likely_fp_medium_severity_fp_candidate() -> None:
-    """Requirement Protected: Medium-severity Semgrep LIKELY_FP finding with HIGH confidence becomes FP_CANDIDATE.
+    """Requirement Protected: Medium-severity Semgrep LIKELY_FP finding with HIGH confidence and deterministic support becomes FP_CANDIDATE.
 
     Expected Result: action == FP_CANDIDATE, escalated == False.
     Test Category: Semgrep Policy
     """
     finding = make_finding(scanner=ScannerType.SEMGREP, severity=Severity.MEDIUM)
-    ctx = make_context()
+    ctx = make_benign_support_context()
     dec = make_triage_decision(verdict=ModelVerdict.LIKELY_FP, confidence=ModelConfidence.HIGH)
 
     res = apply_policy(finding, ctx, dec)
@@ -483,19 +503,60 @@ def test_semgrep_likely_fp_medium_severity_fp_candidate() -> None:
 
 
 def test_semgrep_likely_fp_low_severity_fp_candidate() -> None:
-    """Requirement Protected: Low-severity Semgrep LIKELY_FP finding with HIGH confidence becomes FP_CANDIDATE.
+    """Requirement Protected: Low-severity Semgrep LIKELY_FP finding with HIGH confidence and deterministic support becomes FP_CANDIDATE.
 
     Expected Result: action == FP_CANDIDATE, escalated == False.
     Test Category: Semgrep Policy
     """
     finding = make_finding(scanner=ScannerType.SEMGREP, severity=Severity.LOW)
-    ctx = make_context()
+    ctx = make_benign_support_context()
     dec = make_triage_decision(verdict=ModelVerdict.LIKELY_FP, confidence=ModelConfidence.HIGH)
 
     res = apply_policy(finding, ctx, dec)
 
     assert res.action == PolicyAction.FP_CANDIDATE
     assert res.escalated is False
+
+
+def test_semgrep_likely_fp_without_deterministic_support_escalates_to_manual_review() -> None:
+    """C4 Gate: Any Semgrep LIKELY_FP finding without deterministic support escalates to MANUAL_REVIEW."""
+    finding = make_finding(scanner=ScannerType.SEMGREP, severity=Severity.MEDIUM)
+    ctx = make_context()  # Empty unstructured snippet
+    dec = make_triage_decision(verdict=ModelVerdict.LIKELY_FP, confidence=ModelConfidence.HIGH)
+
+    res = apply_policy(finding, ctx, dec)
+
+    assert res.action == PolicyAction.MANUAL_REVIEW
+    assert res.escalated is True
+    assert "cannot auto-suppress without positive proof" in str(res.escalation_reason)
+
+
+def test_semgrep_likely_fp_medium_severity_dangerous_cwe_requires_negative_proof() -> None:
+    """C4 Gate: Medium-severity Semgrep finding with dangerous CWE requires strong negative proof."""
+    finding = NormalizedFinding(
+        finding_instance_id="find123456789012",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.django.security.injection.sql",
+        file_path="src/views.py",
+        start_line=10,
+        end_line=12,
+        severity=Severity.MEDIUM,
+        message="SQL injection risk",
+        metadata={"cwe": ["CWE-89: SQL Injection"]},
+    )
+    # Generic benign support without BOUNDED_LOCAL_NEGATIVE_PROOF must escalate
+    ctx_generic = make_benign_support_context()
+    dec = make_triage_decision(verdict=ModelVerdict.LIKELY_FP, confidence=ModelConfidence.HIGH)
+    res_generic = apply_policy(finding, ctx_generic, dec)
+    assert res_generic.action == PolicyAction.MANUAL_REVIEW
+    assert res_generic.escalated is True
+
+    # With strong negative proof, it can become FP_CANDIDATE
+    ctx_strong = make_negative_proof_context()
+    res_strong = apply_policy(finding, ctx_strong, dec)
+    assert res_strong.action == PolicyAction.FP_CANDIDATE
+    assert res_strong.escalated is False
 
 
 def test_semgrep_truncated_context_fp_blocked() -> None:

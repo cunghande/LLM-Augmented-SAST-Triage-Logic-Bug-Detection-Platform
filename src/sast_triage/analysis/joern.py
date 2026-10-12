@@ -21,6 +21,7 @@ from sast_triage.analysis.base import (
     GraphControl,
     GraphEvidence,
     GraphStep,
+    QueryResultStatus,
 )
 from sast_triage.analysis.rule_semantics import sink_only_evidence_is_sufficient
 from sast_triage.errors import SastTriageError
@@ -599,6 +600,8 @@ class JoernAnalysisBackend:
                     ),
                 ),
                 provenance=("JOERN_CPG", "JOERN_DATAFLOW"),
+                query_status=QueryResultStatus.NOT_FOUND_COMPLETE,
+                status_reason="NO_TAINT_PATH_OBSERVED",
             )
         first = paths[0]
         source = first[0]
@@ -614,6 +617,8 @@ class JoernAnalysisBackend:
             # the target method. The dedicated reachability tool resolves it.
             reachability_resolved=False,
             provenance=("JOERN_CPG", "JOERN_DATAFLOW"),
+            query_status=QueryResultStatus.FOUND,
+            status_reason="TAINT_PATH_FOUND",
         )
 
     def _reachability(
@@ -645,6 +650,8 @@ class JoernAnalysisBackend:
             reachability_resolved=bool(callers),
             limitations=(() if callers else ("JOERN_ENTRYPOINT_NOT_RESOLVED",)),
             provenance=("JOERN_CPG", "JOERN_CALL_GRAPH"),
+            query_status=QueryResultStatus.FOUND if callers else QueryResultStatus.NOT_FOUND_COMPLETE,
+            status_reason="CALLERS_FOUND" if callers else "NO_CALLERS_FOUND",
         )
 
     def _controls(
@@ -687,6 +694,8 @@ class JoernAnalysisBackend:
             controls=tuple(controls),
             limitations=(() if controls else ("JOERN_SECURITY_CONTROL_NOT_FOUND",)),
             provenance=("JOERN_CPG", "JOERN_CONTROL_FLOW"),
+            query_status=QueryResultStatus.FOUND if controls else QueryResultStatus.NOT_FOUND_COMPLETE,
+            status_reason="CONTROLS_FOUND" if controls else "NO_CONTROLS_FOUND",
         )
 
     def initial_evidence(self, finding: NormalizedFinding) -> GraphEvidence:
@@ -750,6 +759,8 @@ class JoernAnalysisBackend:
             return GraphEvidence(
                 limitations=(f"JOERN_{tool_name.upper()}_FAILED",),
                 provenance=("JOERN_CPG",),
+                query_status=QueryResultStatus.UNKNOWN,
+                status_reason=f"JOERN_{tool_name.upper()}_FAILED",
             )
         raise RuntimeError("Allowlisted Joern tool returned no result.")
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import TYPE_CHECKING, Protocol
 
 from sast_triage.models import NormalizedFinding
@@ -44,6 +45,14 @@ class GraphControl:
     line: int | None = None
 
 
+class QueryResultStatus(str, Enum):
+    """Trạng thái 3 giá trị của truy vấn bằng chứng tĩnh (CPG/AST)."""
+
+    FOUND = "FOUND"
+    NOT_FOUND_COMPLETE = "NOT_FOUND_COMPLETE"
+    UNKNOWN = "UNKNOWN"
+
+
 @dataclass(frozen=True, slots=True)
 class GraphEvidence:
     """Safe graph projection; it never contains source code or literal values."""
@@ -64,9 +73,19 @@ class GraphEvidence:
     reachability_resolved: bool = False
     limitations: tuple[str, ...] = ()
     provenance: tuple[str, ...] = ()
+    query_status: QueryResultStatus = QueryResultStatus.UNKNOWN
+    status_reason: str | None = None
 
     def merge(self, other: GraphEvidence) -> GraphEvidence:
         """Merge new graph facts without discarding earlier safe evidence."""
+        # Query status merges to FOUND if either found, else NOT_FOUND_COMPLETE if either complete, else UNKNOWN
+        if other.query_status == QueryResultStatus.FOUND or self.query_status == QueryResultStatus.FOUND:
+            merged_status = QueryResultStatus.FOUND
+        elif other.query_status == QueryResultStatus.NOT_FOUND_COMPLETE or self.query_status == QueryResultStatus.NOT_FOUND_COMPLETE:
+            merged_status = QueryResultStatus.NOT_FOUND_COMPLETE
+        else:
+            merged_status = other.query_status or self.query_status
+
         return GraphEvidence(
             source_type=other.source_type or self.source_type,
             source_file=other.source_file or self.source_file,
@@ -97,6 +116,8 @@ class GraphEvidence:
             or other.reachability_resolved,
             limitations=tuple(dict.fromkeys((*self.limitations, *other.limitations))),
             provenance=tuple(dict.fromkeys((*self.provenance, *other.provenance))),
+            query_status=merged_status,
+            status_reason=other.status_reason or self.status_reason,
         )
 
     def fingerprint(self) -> tuple[object, ...]:
@@ -116,6 +137,7 @@ class GraphEvidence:
             self.path_complete,
             self.reachability_resolved,
             self.provenance,
+            self.query_status,
         )
 
 
