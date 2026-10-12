@@ -1,0 +1,110 @@
+{
+  "benchmark_version": "curated-realvuln-v1",
+  "total_records": 219,
+  "actual_tp_count": 96,
+  "actual_fp_count": 123,
+  "baselines": [
+    {
+      "name": "Scanner-Only (Semgrep No Triage)",
+      "precision": 0.4384,
+      "precision_ci_95": [
+        0.3744,
+        0.5068
+      ],
+      "recall": 1.0,
+      "recall_ci_95": [
+        1.0,
+        1.0
+      ],
+      "f1": 0.6095,
+      "manual_review_rate": 1.0,
+      "false_negative_rate": 0.0,
+      "analyst_effort_saved_pct": 0.0
+    },
+    {
+      "name": "LLM-Only (No Graph, No Policy Gates)",
+      "precision": 0.5859,
+      "precision_ci_95": [
+        0.5039,
+        0.6752
+      ],
+      "recall": 0.7812,
+      "recall_ci_95": [
+        0.6939,
+        0.859
+      ],
+      "f1": 0.6696,
+      "manual_review_rate": 0.0,
+      "false_negative_rate": 0.2188,
+      "analyst_effort_saved_pct": 41.55
+    },
+    {
+      "name": "Full System (Evidence + Post-Verifier + PolicyEngine)",
+      "precision": 0.5424,
+      "precision_ci_95": [
+        0.4696,
+        0.6149
+      ],
+      "recall": 1.0,
+      "recall_ci_95": [
+        1.0,
+        1.0
+      ],
+      "f1": 0.7033,
+      "manual_review_rate": 0.5479,
+      "false_negative_rate": 0.0,
+      "analyst_effort_saved_pct": 19.18,
+      "calibration": {
+        "ece": 0.1507,
+        "total_samples": 219,
+        "bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 0,
+            "avg_confidence": 0.0,
+            "avg_accuracy": 0.0
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 0,
+            "avg_confidence": 0.0,
+            "avg_accuracy": 0.0
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 120,
+            "avg_confidence": 0.5,
+            "avg_accuracy": 0.325
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 0,
+            "avg_confidence": 0.0,
+            "avg_accuracy": 0.0
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 99,
+            "avg_confidence": 0.8788,
+            "avg_accuracy": 1.0
+          }
+        ]
+      }
+    }
+  ]
+}

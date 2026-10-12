@@ -81,3 +81,33 @@ def load_benchmark_from_dict(raw: dict[str, object]):
         json.dump(raw, handle)
         path = Path(handle.name)
     return load_benchmark(path)
+
+
+def test_compute_binary_metric_ci() -> None:
+    from sast_triage.evaluation.metrics import compute_binary_metric_ci
+
+    # 10 samples: 8 TP actual, 8 predicted positive, 7 true positives
+    data = [(True, True)] * 7 + [(False, True)] * 1 + [(True, False)] * 1 + [(False, False)] * 1
+    low, high = compute_binary_metric_ci(data, metric_name="precision", n_bootstraps=200, ci=0.95)
+    assert 0.0 <= low <= high <= 1.0
+    assert high >= 0.7  # expected around 7/8 = 0.875
+
+    # Empty data
+    assert compute_binary_metric_ci([]) == (0.0, 0.0)
+
+
+def test_compute_calibration_ece() -> None:
+    from sast_triage.evaluation.metrics import compute_calibration_ece
+
+    # Perfect calibration: high confidence -> always 1, low confidence -> always 0
+    confidences = [0.9, 0.9, 0.9, 0.1, 0.1]
+    accuracies = [1, 1, 1, 0, 0]
+    res = compute_calibration_ece(confidences, accuracies, n_bins=5)
+    assert "ece" in res
+    assert res["ece"] >= 0.0
+    assert len(res["bins"]) == 5
+    assert res["total_samples"] == 5
+
+    # Empty data
+    assert compute_calibration_ece([], []) == {"ece": 0.0, "bins": []}
+
