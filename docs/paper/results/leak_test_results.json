@@ -1,0 +1,49 @@
+{
+  "benchmark_name": "Canary Secret Leakage Benchmark (B6)",
+  "total_canaries_tested": 5,
+  "total_leaked": 0,
+  "leakage_rate_percent": 0.0,
+  "protection_success_rate_percent": 100.0,
+  "details": [
+    {
+      "canary_type": "db_pass",
+      "secret_length": 25,
+      "redacted_successfully": true,
+      "leak_in_context": false,
+      "leak_in_prompt": false,
+      "leak_in_serialized": false
+    },
+    {
+      "canary_type": "auth_key",
+      "secret_length": 28,
+      "redacted_successfully": true,
+      "leak_in_context": false,
+      "leak_in_prompt": false,
+      "leak_in_serialized": false
+    },
+    {
+      "canary_type": "base64_secret",
+      "secret_length": 40,
+      "redacted_successfully": true,
+      "leak_in_context": false,
+      "leak_in_prompt": false,
+      "leak_in_serialized": false
+    },
+    {
+      "canary_type": "jwt_secret",
+      "secret_length": 29,
+      "redacted_successfully": true,
+      "leak_in_context": false,
+      "leak_in_prompt": false,
+      "leak_in_serialized": false
+    },
+    {
+      "canary_type": "high_entropy_hex",
+      "secret_length": 32,
+      "redacted_successfully": true,
+      "leak_in_context": false,
+      "leak_in_prompt": false,
+      "leak_in_serialized": false
+    }
+  ]
+}

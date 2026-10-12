@@ -1,0 +1,23 @@
+{
+  "benchmark_name": "Cost, Latency & Token Efficiency (B8)",
+  "num_findings_evaluated": 219,
+  "token_metrics": {
+    "average_raw_context_tokens": 977.9,
+    "average_sanitized_prompt_tokens": 574.8,
+    "measured_token_reduction_percent": 41.22,
+    "replaces_assumed_estimate": "70-80% -> measured 41.2%"
+  },
+  "latency_metrics": {
+    "average_local_sanitization_ms": 0.075,
+    "cache_miss_lookup_ms": 0.3353,
+    "cache_hit_lookup_ms": 0.4137,
+    "cache_speedup_factor": 0.8,
+    "execution_mode": "strictly_sequential_no_async_sprint_1"
+  },
+  "financial_cost_estimation": {
+    "model_reference": "Qwen2.5-Coder-14B (Modal / vLLM @ $0.15/M tokens)",
+    "raw_cost_per_1000_findings_usd": 0.1467,
+    "sanitized_cost_per_1000_findings_usd": 0.0862,
+    "savings_per_1000_findings_usd": 0.0605
+  }
+}
