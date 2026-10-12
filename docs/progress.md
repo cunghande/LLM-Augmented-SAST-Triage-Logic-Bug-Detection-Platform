@@ -121,3 +121,28 @@
   - `pytest`: 522 passed, 2 skipped (100% xanh).
 - **Trạng thái:** Hoàn thành B3, B4, B5.
 
+## [Bước 1 - Phần D1, D2] Thiết Kế Lại Agent: Bounded Evidence Collector & Category-Specific Evidence Schemas
+- **Công việc đã làm:**
+  - **D1 (Đổi tên & Mô tả đúng thực tế kỹ thuật):**
+    - Đổi tên `GraphEvidenceExpansionAgent` thành `BoundedEvidenceCollector` và `GraphEvidenceExpansionResult` thành `BoundedEvidenceCollectionResult` trong `src/sast_triage/context/evidence_agent.py`. Giữ alias tương thích ngược để không phá vỡ import cũ.
+    - Cập nhật docstring phân tách rõ 2 tầng:
+      - **Tầng 1 (Bounded Evidence Collector):** Quy trình tất định (deterministic workflow) duyệt code property graph / AST với ngân sách cố định (số bước, độ sâu, timeout), không có LLM chọn tool.
+      - **Tầng 2 (LLM Triage Reasoner):** Mô hình ngôn ngữ chỉ nhận dữ kiện cấu trúc đã sanitize để suy luận theo structured output schema.
+  - **D2 (Category-Specific Evidence Schema):**
+    - Thêm enum `VulnerabilityCategory` (INJECTION, CRYPTO_SECRETS, IDOR, MASS_ASSIGNMENT, TOCTOU, GENERAL_TAINT, CONFIGURATION).
+    - Thêm hàm `classify_vulnerability_category(finding)` phân loại chính xác dựa trên CWE allowlist và semantic tokens.
+    - Thay thế điều kiện `_sufficient()` chung chung bằng các schema kiểm tra riêng biệt cho từng nhóm:
+      - Injection/Taint: yêu cầu source, sink, reachability, path_complete và guard control.
+      - Crypto/Secrets: yêu cầu sink symbol xác định hàm nhạy cảm.
+      - IDOR: yêu cầu sink query, reachability và tenant/owner authorization control.
+      - Mass Assignment: yêu cầu model sink và allowlist inspection.
+      - TOCTOU: yêu cầu mutation sink, reachability và transaction/lock control.
+    - Bổ sung unit test toàn diện trong `tests/test_analysis_backends.py` kiểm tra phân loại category và logic sufficiency.
+- **File tạo mới / thay đổi:**
+  - `src/sast_triage/context/evidence_agent.py`
+  - `tests/test_analysis_backends.py`
+  - `docs/progress.md`
+- **Kết quả kiểm thử:**
+  - `pytest`: 526 passed, 2 skipped (100% xanh).
+- **Trạng thái:** Hoàn thành toàn bộ các mục P0 (B1, B2, C5, C4, C2, C3, C1, B3, B4, B5, D1, D2).
+

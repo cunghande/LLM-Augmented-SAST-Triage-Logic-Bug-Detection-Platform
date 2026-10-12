@@ -21,7 +21,12 @@ from sast_triage.analysis.joern import (
     _sink_call_regex,
 )
 from sast_triage.analysis.rule_semantics import RuleMechanism, rule_mechanism
-from sast_triage.context.evidence_agent import GraphEvidenceExpansionAgent
+from sast_triage.context.evidence_agent import (
+    BoundedEvidenceCollector,
+    GraphEvidenceExpansionAgent,
+    VulnerabilityCategory,
+    classify_vulnerability_category,
+)
 from sast_triage.context.evidence_service import build_evidence_context
 from sast_triage.errors import SastTriageError
 from sast_triage.models import (
@@ -529,3 +534,123 @@ def test_graph_projection_does_not_retain_source_canary() -> None:
         provenance=("JOERN_CPG",),
     )
     assert canary not in repr(asdict(evidence))
+
+
+def test_bounded_evidence_collector_category_classification() -> None:
+    # 1. Injection
+    f_inj = _finding()
+    assert classify_vulnerability_category(f_inj) == VulnerabilityCategory.INJECTION
+
+    # 2. Crypto
+    f_crypto = NormalizedFinding(
+        finding_instance_id="f-crypto",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.hashlib.insecure-hash.md5",
+        file_path="src/hash.py",
+        start_line=1,
+        severity=Severity.MEDIUM,
+        message="Use of MD5 hash",
+        metadata={"cwe": ["CWE-328"]},
+    )
+    assert classify_vulnerability_category(f_crypto) == VulnerabilityCategory.CRYPTO_SECRETS
+
+    # 3. IDOR
+    f_idor = NormalizedFinding(
+        finding_instance_id="f-idor",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.django.idor.missing-user-filter",
+        file_path="src/views.py",
+        start_line=10,
+        severity=Severity.HIGH,
+        message="Missing user ownership filter in query",
+        metadata={"cwe": ["CWE-639"]},
+    )
+    assert classify_vulnerability_category(f_idor) == VulnerabilityCategory.IDOR
+
+    # 4. Mass Assignment
+    f_mass = NormalizedFinding(
+        finding_instance_id="f-mass",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.django.mass-assignment",
+        file_path="src/forms.py",
+        start_line=15,
+        severity=Severity.HIGH,
+        message="Direct model binding without fields allowlist",
+        metadata={"cwe": ["CWE-915"]},
+    )
+    assert classify_vulnerability_category(f_mass) == VulnerabilityCategory.MASS_ASSIGNMENT
+
+    # 5. TOCTOU
+    f_toctou = NormalizedFinding(
+        finding_instance_id="f-toctou",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.race-condition.toctou",
+        file_path="src/transfer.py",
+        start_line=20,
+        severity=Severity.HIGH,
+        message="Read-then-write without atomic transaction",
+        metadata={"cwe": ["CWE-367"]},
+    )
+    assert classify_vulnerability_category(f_toctou) == VulnerabilityCategory.TOCTOU
+
+
+def test_bounded_evidence_collector_category_schemas() -> None:
+    backend = _SequenceBackend()
+
+    # Injection: requires source, sink, reachability, guard
+    f_inj = _finding()
+    collector_inj = BoundedEvidenceCollector(backend, f_inj, GraphEvidence(sink_symbol="cursor.execute"))
+    assert collector_inj._sufficient(GraphEvidence(sink_symbol="cursor.execute")) is False
+    assert collector_inj._sufficient(
+        GraphEvidence(
+            sink_symbol="cursor.execute",
+            source_type="request_param",
+            source_reaches_sink=True,
+            path_complete=True,
+            reachability_resolved=True,
+            provenance=("JOERN_CONTROL_FLOW",),
+        )
+    ) is True
+
+    # Crypto: requires sink symbol
+    f_crypto = NormalizedFinding(
+        finding_instance_id="f-crypto-2",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.hashlib.insecure-hash.md5",
+        file_path="src/hash.py",
+        start_line=1,
+        severity=Severity.MEDIUM,
+        message="MD5 hash",
+        metadata={"cwe": ["CWE-328"]},
+    )
+    collector_crypto = BoundedEvidenceCollector(backend, f_crypto, GraphEvidence(sink_symbol="hashlib.md5"))
+    assert collector_crypto._sufficient(GraphEvidence(sink_symbol="hashlib.md5")) is True
+    assert collector_crypto._sufficient(GraphEvidence(sink_symbol=None)) is False
+
+    # IDOR: requires sink, reachability resolved, control flow inspected
+    f_idor = NormalizedFinding(
+        finding_instance_id="f-idor-2",
+        scanner=ScannerType.SEMGREP,
+        finding_type=FindingType.SAST,
+        rule_id="python.django.idor.missing-user-filter",
+        file_path="src/views.py",
+        start_line=10,
+        severity=Severity.HIGH,
+        message="IDOR risk",
+        metadata={"cwe": ["CWE-639"]},
+    )
+    collector_idor = BoundedEvidenceCollector(backend, f_idor, GraphEvidence(sink_symbol="User.objects.get"))
+    assert collector_idor._sufficient(GraphEvidence(sink_symbol="User.objects.get")) is False
+    assert collector_idor._sufficient(
+        GraphEvidence(
+            sink_symbol="User.objects.get",
+            reachability_resolved=True,
+            provenance=("JOERN_CONTROL_FLOW",),
+        )
+    ) is True
+
