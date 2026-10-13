@@ -50,52 +50,82 @@ cross-file tốt hơn; Sprint 3 có thể dùng lại cùng index để mở r�
 Summary chỉ chứa identifier, đường dẫn tương đối, dòng và loại flow/control;
 không chứa source code hoặc literal bí mật.
 
-## Chạy bằng Docker sau khi clone (khuyến nghị)
+## Hướng Dẫn Chạy Thử Dự Án (Quickstart)
 
-Máy mới chỉ cần Git, Docker Desktop/Engine đang chạy Linux containers và khoảng
-8 GB RAM dành cho Docker. Image ứng dụng đã chứa Python 3.12, Semgrep 1.170.0,
-Gitleaks 8.30.1 và Docker CLI; Compose build riêng Joern 4.0.600 đã pin checksum.
+Hệ thống hỗ trợ 2 hình thức chạy thử tùy theo nhu cầu của bạn:
 
-Windows PowerShell:
+---
 
+### LỰA CHỌN 1: Chạy Thử Nghiệm Ngay (KHÔNG CẦN BẬT DOCKER)
+> **Khuyên dùng để test thử nhanh thuật toán, độ chính xác và khả năng phòng thủ.**  
+> Bạn không cần cài đặt hoặc bật Docker, không cần API key ngoài. Toàn bộ logic chạy 100% bằng Python cục bộ.
+
+Kích hoạt môi trường ảo:
 ```powershell
-git clone <URL_REPOSITORY_CUA_DU_AN> sast-triage
-cd sast-triage
-.\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo"
+# Windows PowerShell
+cd "D:\Code\AI security"
+.\.venv\Scripts\Activate.ps1
 ```
 
-Linux/macOS:
+Sau đó bạn có thể chạy thử các kịch bản sau:
 
-```bash
-git clone <URL_REPOSITORY_CUA_DU_AN> sast-triage
-cd sast-triage
-chmod +x scripts/run-docker.sh
-./scripts/run-docker.sh /absolute/path/to/target-repo
-```
+1. **Chạy toàn bộ 544 bài kiểm thử tự động (Unit & Integration Tests):**
+   ```powershell
+   pytest
+   ```
+2. **Chạy thực nghiệm Controlled Agent Ablation trên 219 finding thật:**
+   *So sánh 4 cấu hình: Agent Off (Tier-1) vs Escalation vs Always vs Self-Consistency.*
+   ```powershell
+   python scripts/run_agent_ablation.py
+   ```
+   *Kết quả xuất ra tại `docs/paper/results/agent_ablation_results.json` và biểu đồ `agent_ablation_chart.png`.*
 
-Script tự động:
+3. **Chạy thử nghiệm Red-Team Tool & Code Injection (Suite C - 12 mẫu):**
+   *Kiểm tra khả năng chặn Path Traversal (`../../etc/passwd`), SQL/Command injection trong symbol và comment override.*
+   ```powershell
+   python scripts/run_tool_injection_redteam.py
+   ```
 
-1. build image ứng dụng và image Joern;
-2. kiểm tra Docker, Joern, Semgrep và Gitleaks;
-3. mount target read-only;
-4. tạo output mới có timestamp trong `triage-runs/`;
-5. chạy Joern source-to-sink, Semgrep, Gitleaks và logic detector.
+4. **Chạy thử nghiệm Red-Team Prompt Injection (Suite B - 16 mẫu):**
+   ```powershell
+   python scripts/run_prompt_injection_suite.py
+   ```
 
-Mặc định dùng `provider=fake` để kiểm tra end-to-end mà không cần tài khoản ngoài.
-Để dùng Qwen trên Modal, đặt `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` trong environment
-rồi chạy:
+5. **Chạy đánh giá So sánh 3 Baseline (Scanner vs LLM-Only vs Full System):**
+   ```powershell
+   python scripts/run_eval_baseline.py
+   ```
 
-```powershell
-.\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo" -Provider real
-```
+6. **Chạy đo đạc Token tiết kiệm, Độ trễ và Chi phí thực tế:**
+   ```powershell
+   python scripts/benchmark_cost_tokens.py
+   ```
 
-```bash
-./scripts/run-docker.sh /absolute/path/to/target-repo "" real
-```
+---
 
-Không commit Modal credential. Có thể copy `.env.example` thành `.env` khi muốn gọi
-Compose trực tiếp. Compose mount Docker socket để app tạo container Joern sibling;
-chỉ chạy cấu hình này với source dự án mà bạn tin cậy.
+### LỰA CHỌN 2: Quét Live Một Repository Thật (CẦN BẬT DOCKER DESKTOP)
+> **Khi nào cần bật Docker?**  
+> Khi bạn muốn quét một thư mục mã nguồn thật bằng scanner (Semgrep, Gitleaks) và dựng đồ thị phân tích luồng dữ liệu liên hàm (CPG) bằng **Joern**. Joern được đóng gói sẵn trong Docker container cách ly để bảo đảm an toàn.
+
+1. **Yêu cầu:** Bật **Docker Desktop** (chế độ Linux containers đang hoạt động).
+2. **Chạy tự động bằng script (Khuyến nghị):**
+   *Windows PowerShell:*
+   ```powershell
+   # Quét repository với provider giả lập (offline, không cần tài khoản Modal)
+   .\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo"
+
+   # Hoặc quét với model thật Qwen trên Modal (yêu cầu đặt MODAL_TOKEN_ID trong environment):
+   .\scripts\run-docker.ps1 -TargetRepository "D:\Code\target-repo" -Provider real
+   ```
+   *Linux/macOS:*
+   ```bash
+   ./scripts/run-docker.sh /absolute/path/to/target-repo
+   ```
+3. **Chạy bằng lệnh CLI Python trực tiếp (khi Docker đang chạy ngầm):**
+   ```powershell
+   # Quét tự động một repository (mặc định bật escalation agent):
+   python -m sast_triage "D:\Code\target-repo" --agent-mode escalate
+   ```
 
 ## Chạy CLI native
 

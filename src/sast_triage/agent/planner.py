@@ -14,7 +14,7 @@ from sast_triage.models import NormalizedFinding, SanitizedContext
 class AgentPlanner:
     """Invokes the LLM Planner role to select the next allowlisted tool call."""
 
-    def __init__(self, provider: TriageProvider | None = None) -> None:
+    def __init__(self, provider: Any = None) -> None:
         self._provider = provider
 
     def plan_next_action(

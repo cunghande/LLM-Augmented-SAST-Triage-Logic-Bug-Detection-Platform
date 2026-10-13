@@ -21,7 +21,7 @@ from sast_triage.models import (
 class AgentJudge:
     """Evaluates verified facts in the EvidenceLedger to produce an AppSec verdict."""
 
-    def __init__(self, provider: TriageProvider | None = None) -> None:
+    def __init__(self, provider: Any = None) -> None:
         self._provider = provider
 
     def evaluate(

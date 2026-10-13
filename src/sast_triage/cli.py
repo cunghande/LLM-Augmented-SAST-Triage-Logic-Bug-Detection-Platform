@@ -116,6 +116,15 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         ),
     )
     parser.add_argument(
+        "--agent-mode",
+        choices=("off", "escalate", "always"),
+        default="off",
+        help=(
+            "Chế độ Controlled Agent: off (mặc định), escalate (tự động leo thang khi "
+            "thiếu chứng cứ), always (luôn kích hoạt agent)"
+        ),
+    )
+    parser.add_argument(
         "--overwrite", action=argparse.BooleanOptionalAction, default=True
     )
     parser.add_argument(
