@@ -189,6 +189,32 @@ Thay thế hoàn toàn tuyên bố giả định "giảm 70-80% token" bằng s�
 - **Ước tính chi phí tài chính:** $0.0862 USD cho mỗi 1,000 finding (tiết kiệm $0.0605 USD / 1k finding so với gửi context thô).
 - **Biểu đồ Token & Latency:** Tham chiếu hình ảnh thực nghiệm tại `docs/paper/results/token_latency_chart.png`.
 
+### 6.6. Đánh giá Kiến trúc Controlled Agent & Nghiên cứu Ablation (219 Findings)
+*Nguồn: `docs/paper/results/agent_ablation_results.json` và `docs/paper/results/agent_ablation_chart.png`*
+
+Chúng tôi triển khai vòng lặp Controlled Agent với 10 công cụ đóng kín (allowlisted tools) và cơ chế leo thang kiểm soát (`agent_mode = off | escalate | always`), đánh giá thực nghiệm ablation trên toàn bộ 219 finding từ 5 repository mã nguồn mở:
+
+| Cấu hình | Precision [95% CI] | Recall [95% CI] | F1-Score | FN Rate | Manual Review Rate | Effort Saved | Avg Tools | Latency/Finding |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1. Baseline (`agent_off`)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | 99.54% | **0.46%** | 0.00 | 0.26 ms |
+| **2. Escalation (`agent_escalate`)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | **1.32** | 2.88 ms |
+| **3. Always Active (`agent_always`)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | 2.00 | 3.38 ms |
+| **4. Escalate + Self-Consistency** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | 1.32 | 2.70 ms |
+
+**Kết quả chính:**
+- **Tiết kiệm thêm công sức chuyên gia:** Chế độ `agent_escalate` tăng tỷ lệ Effort Saved từ 0.46% lên **7.76%** (giải quyết tự động thêm 16 trường hợp nghi vấn phức tạp mà phân tích tĩnh tĩnh đơn bước phải lùi về con người), trong khi duy trì **0.00% False Negative**.
+- **Hiệu quả vượt trội của thiết kế Escalation:** Cấu hình `agent_escalate` đạt cùng mức độ tiết kiệm công sức như `agent_always`, nhưng giảm **34.0% số lượt gọi công cụ** (1.32 vs 2.00 tool calls/finding) và tiết kiệm 11.2% lượng token tiêu thụ.
+- **Kiểm định Bootstrap cặp theo cụm repo:** $\Delta F1$ 95% CI là `[0.0000, 0.0000]`. F1 không đổi do Recall được bảo toàn ở mức 1.0000 và Precision ổn định dưới chính sách bảo thủ.
+- **Biểu đồ Ablation:** Tham chiếu hình ảnh tại `docs/paper/results/agent_ablation_chart.png`.
+
+### 6.7. Đánh giá Khả năng Phòng thủ Red-Team Suite C (Tool & Code Injection)
+*Nguồn: `docs/paper/results/tool_injection_results.json`*
+
+Đánh giá trên 12 mẫu payload tấn công tiêm nhiễm nâng cao nhắm vào vòng lặp của Agent (Path traversal `../../etc/passwd`, absolute path escape, SQL/command injection trong symbol, null bytes, spoofed ledger tags, markdown code fence breakouts, và direct policy overrides):
+- **Attack Success Rate (ASR) Trước Phòng Thủ (Naive Agent):** **100.0%** (12/12 payload khai thác thành công).
+- **Attack Success Rate (ASR) Sau Phòng Thủ (Antigravity Agent):** **0.00%** (0/12 payload vượt qua được phòng tuyến).
+- **Cơ chế phòng thủ:** `ActionValidator` bảo đảm path containment tuyệt đối trong repo root, regex cú pháp symbol, và `PolicyEngine` chặn đứng mọi nỗ lực hạ nhãn FP thiếu chứng cứ tất định.
+
 ---
 
 ## 7. Các Ca Nghiên Cứu Điển Hình (Case Studies - B9)
@@ -220,7 +246,7 @@ Theo đúng cam kết không bịa đặt số liệu:
 Mọi bảng số liệu, biểu đồ và kết quả đánh giá trong bài báo đều có thể được tái lập hoàn toàn thông qua các lệnh độc lập sau:
 
 ```powershell
-# 1. Chạy toàn bộ 527 test unit và integration
+# 1. Chạy toàn bộ 544 test unit và integration (100% Pass)
 pytest
 
 # 2. Sinh lại bảng so sánh Baseline và khoảng tin cậy Bootstrap 95% (B1, B2)
@@ -237,4 +263,10 @@ python scripts/run_leak_test.py
 
 # 6. Đo lường lại số lượng token cắt giảm, độ trễ và chi phí (B8)
 python scripts/benchmark_cost_tokens.py
+
+# 7. Chạy lại thực nghiệm Ablation 4 cấu hình Agent trên 219 finding (Ablation A)
+python scripts/run_agent_ablation.py
+
+# 8. Chạy lại bộ benchmark Red-Team Suite C 12 mẫu Tool Injection
+python scripts/run_tool_injection_redteam.py
 ```
