@@ -171,7 +171,7 @@ def run_baseline_comparison(
         "fp_candidates_count": full_fp_candidates,
         "likely_tps_count": full_likely_tps,
         "analyst_effort_saved_pct": round(((total_records - full_manual_reviews) / total_records) * 100.0, 2),
-        "calibration_ece": round(calib_ece, 4),
+        "calibration_ece": round(calib_ece["ece"], 4),
     }
 
     results = {
