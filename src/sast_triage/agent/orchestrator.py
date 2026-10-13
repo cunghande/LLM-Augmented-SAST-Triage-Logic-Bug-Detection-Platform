@@ -279,7 +279,8 @@ class ControlledTriageAgent:
                     )
 
             # 5. Verify & Apply Policy
-            verified_decision = verify_post_triage_decision(finding, context, judge_decision)
+            post_ver_res = verify_post_triage_decision(judge_decision, context, finding)
+            verified_decision = post_ver_res.verified_decision
             policy_decision = apply_policy(finding, context, verified_decision)
 
             return AgentTriageResult(

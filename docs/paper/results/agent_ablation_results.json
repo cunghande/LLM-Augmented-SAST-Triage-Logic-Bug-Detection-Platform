@@ -1,0 +1,291 @@
+{
+  "benchmark_name": "Controlled Agent Ablation Study (219 Findings)",
+  "dataset_summary": {
+    "total_evaluated": 219,
+    "repositories": [
+      "realvuln-damn-vulnerable-flask-application",
+      "realvuln-djangoat",
+      "realvuln-dvpwa",
+      "realvuln-pygoat",
+      "realvuln-vulpy"
+    ]
+  },
+  "configurations": {
+    "agent_off": {
+      "label": "Baseline (Agent Off)",
+      "mode": "off",
+      "self_consistency": false,
+      "counts": {
+        "total_findings": 219,
+        "actual_tps": 96,
+        "actual_fps": 123,
+        "predicted_positives": 219,
+        "predicted_tps": 96,
+        "false_negatives": 0,
+        "manual_reviews": 218,
+        "suppressed_fps": 0,
+        "escalated_to_agent_count": 0
+      },
+      "performance_metrics": {
+        "precision": 0.4384,
+        "precision_ci_95": [
+          0.3744,
+          0.5068
+        ],
+        "recall": 1.0,
+        "recall_ci_95": [
+          1.0,
+          1.0
+        ],
+        "f1_score": 0.6095,
+        "false_negative_rate_percent": 0.0,
+        "manual_review_rate_percent": 99.54,
+        "analyst_effort_saved_percent": 0.46
+      },
+      "efficiency_metrics": {
+        "average_tool_calls_per_finding": 0.0,
+        "average_tokens_per_finding": 580.0,
+        "average_latency_ms": 0.26
+      },
+      "agent_quality_metrics": {
+        "valid_action_rate_percent": 100.0,
+        "blocked_action_rate_percent": 0.0,
+        "tool_distribution": {}
+      }
+    },
+    "agent_escalate": {
+      "label": "Controlled Escalation",
+      "mode": "escalate",
+      "self_consistency": false,
+      "counts": {
+        "total_findings": 219,
+        "actual_tps": 96,
+        "actual_fps": 123,
+        "predicted_positives": 219,
+        "predicted_tps": 96,
+        "false_negatives": 0,
+        "manual_reviews": 202,
+        "suppressed_fps": 0,
+        "escalated_to_agent_count": 144
+      },
+      "performance_metrics": {
+        "precision": 0.4384,
+        "precision_ci_95": [
+          0.3744,
+          0.5068
+        ],
+        "recall": 1.0,
+        "recall_ci_95": [
+          1.0,
+          1.0
+        ],
+        "f1_score": 0.6095,
+        "false_negative_rate_percent": 0.0,
+        "manual_review_rate_percent": 92.24,
+        "analyst_effort_saved_percent": 7.76
+      },
+      "efficiency_metrics": {
+        "average_tool_calls_per_finding": 1.32,
+        "average_tokens_per_finding": 764.1,
+        "average_latency_ms": 2.88
+      },
+      "agent_quality_metrics": {
+        "valid_action_rate_percent": 100.0,
+        "blocked_action_rate_percent": 0.0,
+        "tool_distribution": {
+          "read_function": 144,
+          "find_callees": 131,
+          "DONE": 144,
+          "get_route_decorators": 13
+        }
+      }
+    },
+    "agent_always": {
+      "label": "Agent Always Active",
+      "mode": "always",
+      "self_consistency": false,
+      "counts": {
+        "total_findings": 219,
+        "actual_tps": 96,
+        "actual_fps": 123,
+        "predicted_positives": 219,
+        "predicted_tps": 96,
+        "false_negatives": 0,
+        "manual_reviews": 202,
+        "suppressed_fps": 0,
+        "escalated_to_agent_count": 219
+      },
+      "performance_metrics": {
+        "precision": 0.4384,
+        "precision_ci_95": [
+          0.3744,
+          0.5068
+        ],
+        "recall": 1.0,
+        "recall_ci_95": [
+          1.0,
+          1.0
+        ],
+        "f1_score": 0.6095,
+        "false_negative_rate_percent": 0.0,
+        "manual_review_rate_percent": 92.24,
+        "analyst_effort_saved_percent": 7.76
+      },
+      "efficiency_metrics": {
+        "average_tool_calls_per_finding": 2.0,
+        "average_tokens_per_finding": 860.0,
+        "average_latency_ms": 3.38
+      },
+      "agent_quality_metrics": {
+        "valid_action_rate_percent": 100.0,
+        "blocked_action_rate_percent": 0.0,
+        "tool_distribution": {
+          "read_function": 219,
+          "find_callees": 205,
+          "DONE": 219,
+          "get_route_decorators": 14
+        }
+      }
+    },
+    "agent_escalate_sc": {
+      "label": "Escalate + Self-Consistency",
+      "mode": "escalate",
+      "self_consistency": true,
+      "counts": {
+        "total_findings": 219,
+        "actual_tps": 96,
+        "actual_fps": 123,
+        "predicted_positives": 219,
+        "predicted_tps": 96,
+        "false_negatives": 0,
+        "manual_reviews": 202,
+        "suppressed_fps": 0,
+        "escalated_to_agent_count": 144
+      },
+      "performance_metrics": {
+        "precision": 0.4384,
+        "precision_ci_95": [
+          0.3744,
+          0.5068
+        ],
+        "recall": 1.0,
+        "recall_ci_95": [
+          1.0,
+          1.0
+        ],
+        "f1_score": 0.6095,
+        "false_negative_rate_percent": 0.0,
+        "manual_review_rate_percent": 92.24,
+        "analyst_effort_saved_percent": 7.76
+      },
+      "efficiency_metrics": {
+        "average_tool_calls_per_finding": 1.32,
+        "average_tokens_per_finding": 764.1,
+        "average_latency_ms": 2.7
+      },
+      "agent_quality_metrics": {
+        "valid_action_rate_percent": 100.0,
+        "blocked_action_rate_percent": 0.0,
+        "tool_distribution": {
+          "read_function": 144,
+          "find_callees": 131,
+          "DONE": 144,
+          "get_route_decorators": 13
+        }
+      }
+    }
+  },
+  "paired_bootstrap_significance": {
+    "agent_escalate": {
+      "delta_mean": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0
+    },
+    "agent_always": {
+      "delta_mean": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0
+    },
+    "agent_escalate_sc": {
+      "delta_mean": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0
+    }
+  },
+  "flipped_decisions_analysis": {
+    "total_flipped": 16,
+    "flipped_correctly_count": 2,
+    "flipped_cases": [
+      {
+        "finding_id": "c2c4ce11727f6a4e",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "41f6c2869c396cf0",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "c1de863b6142afcb",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "54d2378a27f2f88c",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "eca00eae604afbb5",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "TP",
+        "flipped_correctly": true
+      },
+      {
+        "finding_id": "8dedbe457df79e20",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "c52ce207b70e3e93",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "23b78c9db63c4791",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "1ad821499b031383",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      },
+      {
+        "finding_id": "1f9ddfeef2e108be",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "FP",
+        "flipped_correctly": false
+      }
+    ]
+  }
+}
