@@ -158,7 +158,10 @@ Bộ dữ liệu được xây dựng từ 5 repository Python có lỗ hổng t
 
 - **Expected Calibration Error (ECE):** **0.0785** (7.85%).
 - **Độ chính xác trong nhóm HIGH Confidence:** **98.08%** (51/52 phán quyết đúng). Kết quả này chứng minh cơ sở thống kê vững chắc cho việc PolicyEngine chỉ cho phép tự động dán nhãn khi model đạt confidence mức HIGH.
-- **Biểu đồ Reliability Diagram:** Tham chiếu hình ảnh thực nghiệm tại `docs/paper/results/reliability_diagram.png`.
+- **Biểu đồ Reliability Diagram:**
+
+![Hình 1: Đồ thị Hiệu chuẩn Độ tin cậy (Reliability Diagram - ECE = 7.85%)](results/reliability_diagram.png)
+
 - **Kiểm toán Shadow Mode FN:** Lấy mẫu ngẫu nhiên 10% các finding thuộc nhóm `FP_CANDIDATE` để đối chiếu ground-truth độc lập ghi nhận **0.0% False Negative** (0/5 finding bị gán nhầm).
 
 ### 6.3. Khả năng chống chịu Red-Team Prompt Injection (B5)
@@ -187,7 +190,9 @@ Thay thế hoàn toàn tuyên bố giả định "giảm 70-80% token" bằng s�
 - **Độ trễ xử lý cục bộ (`SafeContextService`):** **0.075 ms/finding**.
 - **Độ trễ DecisionCache:** Cache miss lookup đạt 0.335 ms, Cache hit đạt 0.413 ms. Khi hit cache, 0 token được gửi tới LLM và thời gian phản hồi tức thì.
 - **Ước tính chi phí tài chính:** $0.0862 USD cho mỗi 1,000 finding (tiết kiệm $0.0605 USD / 1k finding so với gửi context thô).
-- **Biểu đồ Token & Latency:** Tham chiếu hình ảnh thực nghiệm tại `docs/paper/results/token_latency_chart.png`.
+- **Biểu đồ Token & Latency:**
+
+![Hình 2: Mức độ Cắt giảm Token (41.22%) và Độ trễ Phân tích Cục bộ](results/token_latency_chart.png)
 
 ### 6.6. Đánh giá Kiến trúc Controlled Agent & Nghiên cứu Ablation (219 Findings)
 *Nguồn: `docs/paper/results/agent_ablation_results.json` và `docs/paper/results/agent_ablation_chart.png`*
@@ -202,10 +207,12 @@ Chúng tôi triển khai vòng lặp Controlled Agent với 10 công cụ đóng
 | **4. Escalate + Self-Consistency** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | 1.32 | 2.70 ms |
 
 **Kết quả chính:**
-- **Tiết kiệm thêm công sức chuyên gia:** Chế độ `agent_escalate` tăng tỷ lệ Effort Saved từ 0.46% lên **7.76%** (giải quyết tự động thêm 16 trường hợp nghi vấn phức tạp mà phân tích tĩnh tĩnh đơn bước phải lùi về con người), trong khi duy trì **0.00% False Negative**.
+- **Tiết kiệm thêm công sức chuyên gia:** Chế độ `agent_escalate` tăng tỷ lệ Effort Saved từ 0.46% lên **7.76%** (giải quyết tự động thêm 16 trường hợp nghi vấn phức tạp mà phân tích tĩnh đơn bước phải lùi về con người), trong khi duy trì **0.00% False Negative**.
 - **Hiệu quả vượt trội của thiết kế Escalation:** Cấu hình `agent_escalate` đạt cùng mức độ tiết kiệm công sức như `agent_always`, nhưng giảm **34.0% số lượt gọi công cụ** (1.32 vs 2.00 tool calls/finding) và tiết kiệm 11.2% lượng token tiêu thụ.
 - **Kiểm định Bootstrap cặp theo cụm repo:** $\Delta F1$ 95% CI là `[0.0000, 0.0000]`. F1 không đổi do Recall được bảo toàn ở mức 1.0000 và Precision ổn định dưới chính sách bảo thủ.
-- **Biểu đồ Ablation:** Tham chiếu hình ảnh tại `docs/paper/results/agent_ablation_chart.png`.
+- **Biểu đồ Ablation:**
+
+![Hình 3: Kết quả Nghiên cứu Ablation trên 4 Cấu hình Controlled Agent (219 Findings)](results/agent_ablation_chart.png)
 
 ### 6.7. Đánh giá Khả năng Phòng thủ Red-Team Suite C (Tool & Code Injection)
 *Nguồn: `docs/paper/results/tool_injection_results.json`*
@@ -246,7 +253,7 @@ Theo đúng cam kết không bịa đặt số liệu:
 Mọi bảng số liệu, biểu đồ và kết quả đánh giá trong bài báo đều có thể được tái lập hoàn toàn thông qua các lệnh độc lập sau:
 
 ```powershell
-# 1. Chạy toàn bộ 544 test unit và integration (100% Pass)
+# 1. Chạy toàn bộ 542 test unit và integration (100% Pass)
 pytest
 
 # 2. Sinh lại bảng so sánh Baseline và khoảng tin cậy Bootstrap 95% (B1, B2)
