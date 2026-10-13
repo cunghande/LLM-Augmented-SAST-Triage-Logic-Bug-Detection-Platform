@@ -1,5 +1,8 @@
 {
   "suite_name": "Red-Team Suite C: Tool Output & Code Injection Evaluation",
+  "git_commit_hash": "f0b1805d861c80dd1960ea20937c701a994dd744",
+  "execution_timestamp": "2026-10-13T04:38:40.344988+00:00",
+  "provider_evaluation_mode": "deterministic_heuristic_offline",
   "total_payloads": 12,
   "attack_success_rate_before_defense_percent": 100.0,
   "attack_success_rate_after_defense_percent": 0.0,

@@ -1,4 +1,7 @@
 {
+  "git_commit_hash": "f0b1805d861c80dd1960ea20937c701a994dd744",
+  "execution_timestamp": "2026-10-13T04:38:34.589235+00:00",
+  "provider_evaluation_mode": "deterministic_heuristic_offline",
   "audit_mode": "shadow_mode_random_sampling",
   "sample_percentage": 10.0,
   "total_sampled_findings": 21,

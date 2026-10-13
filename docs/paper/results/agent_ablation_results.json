@@ -1,7 +1,7 @@
 {
   "benchmark_name": "Component Decomposition & Controlled Agent Ablation Study (219 Findings)",
-  "git_commit_hash": "7189555bf3f90d79105a5b90489f77dfb3a2a0a9",
-  "execution_timestamp": "2026-10-13T04:37:29.761702+00:00",
+  "git_commit_hash": "f0b1805d861c80dd1960ea20937c701a994dd744",
+  "execution_timestamp": "2026-10-13T04:38:07.192287+00:00",
   "provider_evaluation_mode": "deterministic_heuristic_offline",
   "dataset_summary": {
     "total_evaluated": 219,
@@ -68,17 +68,17 @@
     },
     "llm_only": {
       "label": "2. LLM-Only (No Guardrails)",
-      "precision": 0.6202,
+      "precision": 0.6504,
       "precision_ci_95": [
-        0.5401,
-        0.7023
+        0.5649,
+        0.7339
       ],
       "recall": 0.8333,
       "recall_clopper_pearson_95": [
         0.7435,
         0.9016
       ],
-      "f1_score": 0.7111,
+      "f1_score": 0.7306,
       "false_negative_rate_percent": 16.67,
       "manual_review_rate_percent": 0.0,
       "unknown_before": "N/A",
@@ -86,101 +86,56 @@
       "effort_saved_percent": 100.0,
       "splits": {
         "development": {
-          "precision": 0.6333,
-          "recall": 0.8837,
+          "precision": 0.6727,
+          "recall": 0.8605,
           "recall_cp_95": [
-            0.7492,
-            0.9611
+            0.7207,
+            0.947
           ]
         },
         "calibration": {
-          "precision": 0.5455,
-          "recall": 0.8571,
+          "precision": 0.4857,
+          "recall": 0.8095,
           "recall_cp_95": [
-            0.6366,
-            0.9695
+            0.5809,
+            0.9455
           ]
         },
         "held_out": {
-          "precision": 0.6667,
-          "recall": 0.75,
+          "precision": 0.7879,
+          "recall": 0.8125,
           "recall_cp_95": [
-            0.566,
-            0.8854
+            0.6356,
+            0.9279
           ]
         }
       }
     },
     "llm_high_conf": {
       "label": "3. LLM + High-Confidence Gate",
-      "precision": 0.4973,
+      "precision": 0.4866,
       "precision_ci_95": [
-        0.4255,
-        0.5698
+        0.4188,
+        0.5591
       ],
       "recall": 0.9479,
       "recall_clopper_pearson_95": [
         0.8826,
         0.9829
       ],
-      "f1_score": 0.6523,
+      "f1_score": 0.6431,
       "false_negative_rate_percent": 5.21,
-      "manual_review_rate_percent": 65.3,
+      "manual_review_rate_percent": 68.95,
       "unknown_before": "N/A",
       "unknown_after": "N/A",
-      "effort_saved_percent": 34.7,
+      "effort_saved_percent": 31.05,
       "splits": {
         "development": {
-          "precision": 0.519,
+          "precision": 0.5125,
           "recall": 0.9535,
           "recall_cp_95": [
             0.8419,
             0.9943
-          ]
-        },
-        "calibration": {
-          "precision": 0.3571,
-          "recall": 0.9524,
-          "recall_cp_95": [
-            0.7618,
-            0.9988
-          ]
-        },
-        "held_out": {
-          "precision": 0.625,
-          "recall": 0.9375,
-          "recall_cp_95": [
-            0.7919,
-            0.9923
-          ]
-        }
-      }
-    },
-    "with_joern_cpg": {
-      "label": "4. + Joern CPG Reachability",
-      "precision": 0.5026,
-      "precision_ci_95": [
-        0.4368,
-        0.5735
-      ],
-      "recall": 1.0,
-      "recall_clopper_pearson_95": [
-        0.9623,
-        1.0
-      ],
-      "f1_score": 0.669,
-      "false_negative_rate_percent": 0.0,
-      "manual_review_rate_percent": 63.47,
-      "unknown_before": 139,
-      "unknown_after": 139,
-      "effort_saved_percent": 36.53,
-      "splits": {
-        "development": {
-          "precision": 0.5244,
-          "recall": 1.0,
-          "recall_cp_95": [
-            0.9178,
-            1.0
           ]
         },
         "calibration": {
@@ -192,7 +147,52 @@
           ]
         },
         "held_out": {
-          "precision": 0.6154,
+          "precision": 0.58,
+          "recall": 0.9062,
+          "recall_cp_95": [
+            0.7498,
+            0.9802
+          ]
+        }
+      }
+    },
+    "with_joern_cpg": {
+      "label": "4. + Joern CPG Reachability",
+      "precision": 0.4848,
+      "precision_ci_95": [
+        0.4192,
+        0.5556
+      ],
+      "recall": 1.0,
+      "recall_clopper_pearson_95": [
+        0.9623,
+        1.0
+      ],
+      "f1_score": 0.6531,
+      "false_negative_rate_percent": 0.0,
+      "manual_review_rate_percent": 66.21,
+      "unknown_before": 145,
+      "unknown_after": 145,
+      "effort_saved_percent": 33.79,
+      "splits": {
+        "development": {
+          "precision": 0.5059,
+          "recall": 1.0,
+          "recall_cp_95": [
+            0.9178,
+            1.0
+          ]
+        },
+        "calibration": {
+          "precision": 0.35,
+          "recall": 1.0,
+          "recall_cp_95": [
+            0.8389,
+            1.0
+          ]
+        },
+        "held_out": {
+          "precision": 0.6038,
           "recall": 1.0,
           "recall_cp_95": [
             0.8911,
@@ -216,8 +216,8 @@
       "f1_score": 0.6095,
       "false_negative_rate_percent": 0.0,
       "manual_review_rate_percent": 99.54,
-      "unknown_before": 118,
-      "unknown_after": 118,
+      "unknown_before": 123,
+      "unknown_after": 123,
       "effort_saved_percent": 0.46,
       "splits": {
         "development": {
@@ -261,8 +261,8 @@
       "f1_score": 0.6095,
       "false_negative_rate_percent": 0.0,
       "manual_review_rate_percent": 99.54,
-      "unknown_before": 118,
-      "unknown_after": 118,
+      "unknown_before": 123,
+      "unknown_after": 123,
       "effort_saved_percent": 0.46,
       "splits": {
         "development": {
@@ -349,8 +349,8 @@
         "predicted_positives": 219,
         "predicted_tps": 96,
         "false_negatives": 0,
-        "manual_reviews": 218,
-        "likely_tps": 1,
+        "manual_reviews": 219,
+        "likely_tps": 0,
         "suppressed_fps": 0,
         "escalated_to_agent_count": 0
       },
@@ -367,8 +367,8 @@
         ],
         "f1_score": 0.6095,
         "false_negative_rate_percent": 0.0,
-        "manual_review_rate_percent": 99.54,
-        "analyst_effort_saved_percent": 0.46
+        "manual_review_rate_percent": 100.0,
+        "analyst_effort_saved_percent": 0.0
       },
       "efficiency_metrics": {
         "average_tool_calls_per_finding": 0.0,
@@ -395,7 +395,7 @@
         "manual_reviews": 202,
         "likely_tps": 17,
         "suppressed_fps": 0,
-        "escalated_to_agent_count": 137
+        "escalated_to_agent_count": 144
       },
       "performance_metrics": {
         "precision": 0.4384,
@@ -414,18 +414,18 @@
         "analyst_effort_saved_percent": 7.76
       },
       "efficiency_metrics": {
-        "average_tool_calls_per_finding": 1.25,
-        "average_tokens_per_finding": 755.2,
-        "average_latency_ms": 1.05
+        "average_tool_calls_per_finding": 1.32,
+        "average_tokens_per_finding": 764.1,
+        "average_latency_ms": 1.09
       },
       "agent_quality_metrics": {
         "valid_action_rate_percent": 100.0,
         "blocked_action_rate_percent": 0.0,
         "tool_distribution": {
-          "read_function": 137,
-          "find_callees": 124,
-          "DONE": 137,
-          "get_route_decorators": 13
+          "read_function": 144,
+          "find_callees": 130,
+          "DONE": 144,
+          "get_route_decorators": 14
         }
       }
     },
@@ -464,7 +464,7 @@
       "efficiency_metrics": {
         "average_tool_calls_per_finding": 2.0,
         "average_tokens_per_finding": 860.0,
-        "average_latency_ms": 2.27
+        "average_latency_ms": 1.38
       },
       "agent_quality_metrics": {
         "valid_action_rate_percent": 100.0,
@@ -491,7 +491,7 @@
         "manual_reviews": 202,
         "likely_tps": 17,
         "suppressed_fps": 0,
-        "escalated_to_agent_count": 137
+        "escalated_to_agent_count": 144
       },
       "performance_metrics": {
         "precision": 0.4384,
@@ -510,18 +510,18 @@
         "analyst_effort_saved_percent": 7.76
       },
       "efficiency_metrics": {
-        "average_tool_calls_per_finding": 1.25,
-        "average_tokens_per_finding": 755.2,
-        "average_latency_ms": 2.31
+        "average_tool_calls_per_finding": 1.32,
+        "average_tokens_per_finding": 764.1,
+        "average_latency_ms": 2.01
       },
       "agent_quality_metrics": {
         "valid_action_rate_percent": 100.0,
         "blocked_action_rate_percent": 0.0,
         "tool_distribution": {
-          "read_function": 137,
-          "find_callees": 124,
-          "DONE": 137,
-          "get_route_decorators": 13
+          "read_function": 144,
+          "find_callees": 130,
+          "DONE": 144,
+          "get_route_decorators": 14
         }
       }
     }
@@ -544,8 +544,8 @@
     }
   },
   "flipped_decisions_analysis": {
-    "total_flipped": 16,
-    "flipped_correctly_count": 2,
+    "total_flipped": 17,
+    "flipped_correctly_count": 3,
     "flipped_cases": [
       {
         "finding_id": "c2c4ce11727f6a4e",
@@ -738,6 +738,18 @@
         "ground_truth": "FP",
         "flipped_correctly": false,
         "rationale": "Agent elevated test/documentation mock secret to LIKELY_TP due to absence of test-file suppression heuristic"
+      },
+      {
+        "finding_id": "e87f90af6848dff4",
+        "rule_id": "generic-api-key",
+        "file_path": "good/libsession.py",
+        "start_line": 9,
+        "split": "held_out",
+        "old_action": "MANUAL_REVIEW",
+        "new_action": "LIKELY_TP",
+        "ground_truth": "TP",
+        "flipped_correctly": true,
+        "rationale": "Agent confirmed vulnerability with active sink in code"
       }
     ]
   }

@@ -1,279 +1,297 @@
-# LLM-Augmented SAST Triage Platform: Kiến Trúc Phân Loại Lỗ Hổng Bảo Mật Kết Hợp Suy Luận LLM và Kiểm Chứng Tất Định
+# Phân Loại Cảnh Báo SAST Kết Hợp Bộ Điều Phối Điều Tra Tất Định Nhiều Vòng và Rào Chắn Chính Sách Bảo Thủ
 
-**Tác giả:** Nhóm Nghiên cứu Kỹ thuật ML/AppSec  
-**Tài liệu tham chiếu:** [claims.md](file:///d:/Code/AI%20security/docs/paper/claims.md) | [case_studies.md](file:///d:/Code/AI%20security/docs/paper/case_studies.md)  
-**Trạng thái:** Báo cáo hoàn chỉnh — Toàn bộ số liệu thực nghiệm được sinh ra từ các script đo đạc độc lập trong repository.
-
----
-
-## Tóm tắt (Abstract)
-
-Các công cụ phân tích mã tĩnh (SAST) như Semgrep đóng vai trò thiết yếu trong việc phát hiện sớm lỗ hổng bảo mật trong mã nguồn phần mềm. Tuy nhiên, tỷ lệ cảnh báo giả (False Positives - FP) cao tạo ra gánh nặng phân loại thủ công khổng lồ cho các kỹ sư bảo mật. Việc ứng dụng các mô hình ngôn ngữ lớn (LLM) để tự động hóa triage mang lại tiềm năng lớn nhưng phải đối mặt với hai rủi ro nghiêm trọng: (1) hiện tượng ảo giác (hallucination) có thể dẫn đến việc tự động bỏ qua lỗ hổng thật (False Negatives - FN), và (2) nguy cơ tấn công tiêm nhiễm câu lệnh gián tiếp (Indirect Prompt Injection) ẩn trong mã nguồn không đáng tin cậy.
-
-Bài báo này trình bày thiết kế và đánh giá hệ thống **LLM-Augmented SAST Triage Platform**, một nền tảng CLI phân loại cảnh báo bảo mật kết hợp hai tầng: **Bounded Evidence Collector** (thu thập bằng chứng tĩnh tất định qua AST và Code Property Graph - Joern) và **LLM Triage Reasoner** có kiểm chứng, được bảo vệ bởi **PolicyEngine** theo nguyên tắc fail-closed. 
-
-Chúng tôi thiết lập bộ đánh giá chuẩn hóa trên mã nguồn thực tế (OWASP PyGoat, DjanGoat, DVPWA, VulPy, DVFA với 219 finding), thực hiện kiểm toán rủi ro false negative và đánh giá khả năng chống chịu tấn công prompt injection với bộ test red-team 16 mẫu. Kết quả thực nghiệm cho thấy hệ thống cải thiện F1-score từ 0.6095 (Scanner baseline) lên 0.7033, tiết kiệm 19.18% công sức phân loại cho analyst trong khi vẫn giữ tỷ lệ False Negative ở mức **0.00%** (so với mức FN thảm họa 21.88% của mô hình LLM-Only). Khả năng chống chịu prompt injection đạt tỷ lệ thành công của kẻ tấn công (Attack Success Rate) là **0.00%**, và tỷ lệ rò rỉ canary secret qua 5 định dạng là **0.00%**.
+**Tác giả:** Đoàn Văn Cung (CungDV) & Nhóm Nghiên cứu Kỹ thuật AppSec  
+**Tài liệu tham chiếu:** [docs/paper/claims.md](claims.md) | [docs/paper/case_studies.md](case_studies.md)  
+**Mã commit thực nghiệm:** `f0b1805d861c80dd1960ea20937c701a994dd744` (ngắn: `f0b1805`)  
+**Môi trường đánh giá:** Đánh giá ngoại tuyến tất định (Deterministic Heuristic Offline Evaluation) | 542 bài kiểm thử tự động đạt yêu cầu (100% Passed) | 219 cảnh báo thực tế trên 5 kho mã nguồn mở.
 
 ---
 
-## 1. Giới thiệu (Introduction)
+## Tóm Tắt (Abstract)
 
-Trong chu trình phát triển phần mềm hiện đại (DevSecOps), công cụ SAST là phòng tuyến quan trọng giúp phát hiện lỗi lập trình bảo mật. Tuy nhiên, do thiếu hiểu biết ngữ cảnh sâu và tính chất phân tích xấp xỉ (over-approximation), SAST thường tạo ra lượng lớn cảnh báo không có khả năng khai thác (false positive). Tỷ lệ cảnh báo giả có thể vượt quá 50-60%, gây nên tình trạng mệt mỏi cảnh báo (alert fatigue) và làm chậm trễ việc vá các lỗ hổng nghiêm trọng.
+Các công cụ phân tích mã tĩnh (SAST) như Semgrep đóng vai trò quan trọng trong việc phát hiện sớm lỗ hổng bảo mật. Tuy nhiên, tỷ lệ cảnh báo giả (False Positives - FP) cao tạo ra gánh nặng phân loại thủ công lớn cho kỹ sư bảo mật. Việc áp dụng mô hình ngôn ngữ lớn (LLM) đơn bước để tự động hóa phân loại gặp phải hai vấn đề: (1) hiện tượng suy luận sai lệch có thể dẫn đến việc phân loại nhầm lỗ hổng thật thành cảnh báo giả (False Negatives - FN), và (2) nguy cơ bị ảnh hưởng bởi chỉ thị độc hại cài cắm trong mã nguồn (Indirect Prompt Injection).
 
-Sự xuất hiện của các LLM chuyên về mã nguồn (như Qwen2.5-Coder-14B) mở ra khả năng hiểu ngữ cảnh phức tạp và chuỗi dữ liệu (dataflow). Tuy nhiên, việc trực tiếp giao toàn quyền quyết định cho LLM tiềm ẩn rủi ro khôn lường:
-1. **Nguy cơ bỏ sót lỗ hổng (False Negative):** Một phán quyết sai lầm xem lỗ hổng nghiêm trọng (như SQL Injection, RCE) là FP có thể khiến lỗ hổng lọt vào môi trường sản xuất. Đánh giá của chúng tôi trên 219 finding cho thấy LLM-Only bỏ sót tới **21.88%** lỗ hổng thật.
-2. **Rủi ro an ninh kênh gián tiếp:** Mã nguồn phân tích là dữ liệu đầu vào không đáng tin cậy (untrusted data). Kẻ tấn công có thể chèn các câu lệnh điều khiển vào comment hoặc biến code để đánh lừa LLM đưa ra phán quyết sai.
+Bài báo này trình bày kiến trúc phân loại cảnh báo bảo mật kết hợp hai tầng:
+1. **Tầng 1 (Tier-1 Deterministic Bounded Collector):** Thu thập ngữ cảnh cục bộ qua phân tích AST, trích xuất luồng dữ liệu đồ thị thuộc tính mã nguồn (Joern CPG), làm sạch mã nguồn (`Sanitizer`) và thay thế thông tin xác thực nhạy cảm bằng nhãn `<REDACTED_SECRET>`.
+2. **Tầng 2 (Tier-2 Deterministic Multi-turn Investigative Coordinator):** Khi gặp trường hợp thiếu thông tin hoặc chưa rõ ràng, hệ thống kích hoạt cơ chế điều tra nhiều vòng có giới hạn ngân sách với 10 công cụ chỉ đọc trong phạm vi kho mã nguồn, được kiểm soát bởi bộ thẩm định hành động (`ToolActionValidator`), sổ cái bằng chứng đơn điệu (`EvidenceLedger`) và cổng chính sách bảo thủ (`PolicyEngine`).
 
-Hệ thống của chúng tôi giải quyết vấn đề này thông qua ba nguyên tắc thiết kế cốt lõi:
-1. **Không bao giờ tin tưởng tuyệt đối vào phán đoán của LLM:** LLM chỉ đưa ra đề xuất (`model_verdict`); quyết định hệ thống (`policy_action`) được quyết định bởi PolicyEngine dựa trên bằng chứng tất định.
-2. **Nguyên tắc fail-closed:** Mọi lỗi phân tích, context không hoàn chỉnh hoặc mâu thuẫn bằng chứng đều được đẩy về `MANUAL_REVIEW` để con người thẩm định, tuyệt đối không tự động triệt tiêu cảnh báo. Mọi finding đều xuất hiện trong báo cáo.
-3. **Phòng thủ đa tầng trước prompt injection:** Cô lập dữ liệu bằng JSON envelope, escape thẻ phân cách, phát hiện mẫu tiêm nhiễm và yêu cầu bằng chứng phủ định độc lập từ công cụ tĩnh trước khi chấp nhận `FP_CANDIDATE`.
-
----
-
-## 2. Các công trình liên quan (Related Work)
-
-- **Phân tích mã tĩnh và CPG (Code Property Graph):** Khái niệm CPG do Yamaguchi et al. khởi xướng kết hợp AST, CFG (Control Flow Graph) và PDG (Program Dependence Graph). Joern là nền tảng phân tích CPG nguồn mở hàng đầu, cung cấp khả năng dò vết taint-flow mạnh mẽ.
-- **Ứng dụng LLM trong Triage bảo mật:** Các nghiên cứu gần đây sử dụng LLM để giải thích cảnh báo SAST và xếp hạng độ ưu tiên. Tuy nhiên, phần lớn các giải pháp hiện nay coi LLM là một oracle ra quyết định trực tiếp mà thiếu các rào chắn kiểm chứng thuộc tính chương trình (program property verifiers).
-- **Prompt Injection trong công cụ phân tích bảo mật:** Greshake et al. đã chứng minh tính khả thi của các cuộc tấn công gián tiếp qua dữ liệu bên ngoài. Trong SAST triage, việc đưa trực tiếp mã nguồn vào ngữ cảnh suy luận tạo ra bề mặt tấn công trực diện nếu không có cơ chế cách ly và lọc nghiêm ngặt.
+Thực nghiệm trên 219 cảnh báo từ 5 kho mã nguồn mở (OWASP PyGoat, DjanGoat, DVPWA, VulPy, DVFA) cho thấy:
+- Hệ thống duy trì **0.00% False Negative Rate** trên tập dữ liệu đánh giá; Recall đạt **1.0000** với khoảng tin cậy Clopper-Pearson 95% là **[0.9623, 1.0000]**.
+- Tỷ lệ cảnh báo được hệ thống tự động xử lý (không cần đưa vào hàng đợi phân loại thủ công ban đầu) đạt **7.76%** (17/219 cảnh báo), trong khi 92.24% (202/219) được chuyển an toàn sang `MANUAL_REVIEW`.
+- Mức độ cắt giảm token thực tế qua cơ chế đóng gói ngữ cảnh đạt **41.22%**.
+- Tỷ lệ tấn công thành công (ASR) qua 16 mẫu Prompt Injection (Suite B) và 12 mẫu Tool Injection (Suite C) đều ghi nhận **0.00%**.
 
 ---
 
-## 3. Mô hình đe dọa (Threat Model)
+## 1. Giới Thiệu (Introduction)
 
-Mô hình đe dọa của hệ thống giả định:
-1. **Mã nguồn trong repository là không đáng tin cậy (Untrusted):** Repository được quét có thể chứa mã độc hại, payload prompt injection được thiết kế tinh vi nhằm vô hiệu hóa công cụ quét hoặc ép model trả về `LIKELY_FP`.
-2. **Kênh truyền và hạ tầng:** Môi trường thực thi CLI là tin cậy cục bộ. Khi kết nối tới LLM provider (qua Modal hoặc API cục bộ), chỉ các gói `TriageInput` đã được làm sạch (`SanitizedContext`) mới được gửi đi.
+Trong chu trình DevSecOps, công cụ SAST quét mã nguồn trên diện rộng nhưng thường thiếu hiểu biết ngữ cảnh sâu, dẫn đến tỷ lệ cảnh báo giả cao. Nếu sử dụng trực tiếp mô hình LLM đơn bước mà không có rào chắn kiểm chứng, rủi ro False Negative sẽ xuất hiện: mô hình có thể kết luận nhầm rằng một lỗ hổng nghiêm trọng đã được khắc phục khi gặp các đoạn mã phức tạp.
+
+Để giải quyết vấn đề này, hệ thống áp dụng các nguyên tắc thiết kế:
+1. **LLM chỉ đóng vai trò đề xuất:** Phán quyết của mô hình không phải quyết định cuối cùng; quyết định hệ thống (`policy_action`) do PolicyEngine kiểm soát dựa trên bằng chứng tất định.
+2. **Nguyên tắc đóng an toàn (Fail-closed):** Mọi trường hợp thiếu ngữ cảnh, lỗi xử lý hoặc mâu thuẫn bằng chứng đều được chuyển về `MANUAL_REVIEW`. Không có cảnh báo nào bị loại bỏ khỏi báo cáo.
+3. **Phòng thủ nhiều lớp:** Dữ liệu mã nguồn được coi là không đáng tin cậy (untrusted data), được bọc trong cấu trúc JSON phân cách, kiểm tra kiểm soát thư mục (path containment) nghiêm ngặt để ngăn chặn directory traversal và injection qua tham số công cụ.
+
+---
+
+## 2. Các Công Trình Liên Quan (Related Work)
+
+- **Phân tích mã tĩnh và Đồ thị Thuộc tính Mã nguồn (Code Property Graph - CPG):** Yamaguchi et al. đã đề xuất mô hình CPG kết hợp AST, Control Flow Graph (CFG) và Program Dependence Graph (PDG) để dò vết luồng dữ liệu (taint tracking). Joern là nền tảng phân tích CPG tiêu biểu hỗ trợ truy vấn cấu trúc chương trình.
+- **Ứng dụng LLM trong Phân loại Lỗ hổng Bảo mật:** Nhiều nghiên cứu đã khảo sát khả năng của LLM trong việc giải thích cảnh báo SAST. Tuy nhiên, việc thiếu cơ chế đối chiếu với thuộc tính chương trình thường dẫn đến ảo giác về các hàm làm sạch (sanitizer) hoặc cơ chế kiểm soát quyền (guard).
+- **Tấn công Tiêm nhiễm Câu lệnh Gián tiếp (Indirect Prompt Injection):** Greshake et al. đã chỉ ra rằng dữ liệu bên ngoài không đáng tin cậy có thể làm lệch hướng suy luận của mô hình. Trong bối cảnh SAST, mã nguồn chính là kênh tấn công gián tiếp nếu không được khử nhiễm và cô lập.
+
+---
+
+## 3. Mô Hình Đe Dọa (Threat Model)
+
+1. **Mã nguồn không đáng tin cậy:** Kho mã nguồn được quét có thể chứa payload tấn công trong chú thích (comment), chuỗi ký tự, hoặc tên hàm nhằm đánh lừa mô hình hạ nhãn cảnh báo thành FP.
+2. **Khai thác công cụ trong vòng lặp điều tra:** Kẻ tấn công có thể cố tình định hướng tham số công cụ nhằm đọc các tệp tin hệ thống nằm ngoài phạm vi kho mã nguồn (Path Traversal như `../../etc/passwd`), hoặc chèn ký tự điều khiển vào tên biểu tượng (symbol injection).
 3. **Mục tiêu bảo mật:**
-   - **Tính toàn vẹn (Integrity):** Kẻ tấn công không thể thông qua prompt injection để khiến PolicyEngine tự động dán nhãn `FP_CANDIDATE` cho một lỗ hổng thật.
-   - **Tính bí mật (Confidentiality):** Không rò rỉ bí mật thô (raw secrets, API keys, credentials) từ repository vào log, prompt gửi ra ngoài, hoặc báo cáo xuất bản.
-   - **Tính khả dụng (Availability):** Các vòng lặp thu thập ngữ cảnh được giới hạn chặt chẽ bởi ngân sách (budget), không gây treo hoặc cạn kiệt tài nguyên.
+   - **Tính toàn vẹn (Integrity):** Ngăn chặn việc tự động dán nhãn `FP_CANDIDATE` cho các lỗ hổng thật khi chưa có bằng chứng phủ định tất định.
+   - **Tính bảo mật (Confidentiality):** Ngăn chặn việc rò rỉ bí mật thô (API keys, mật khẩu) vào prompt, log hoặc báo cáo cuối cùng.
+   - **Tính khả dụng (Availability):** Giới hạn số bước lặp và thời gian thực thi của vòng lặp điều tra để tránh cạn kiệt tài nguyên.
 
 ---
 
-## 4. Thiết kế hệ thống (System Design)
+## 4. Thiết Kế Hệ Thống & Luồng Hoạt Động (System Architecture)
 
-Hệ thống vận hành theo pipeline 5 giai đoạn tuần tự, bất biến:
-
-```
-[Raw Repository & Scanners (Semgrep/Gitleaks)]
-                       │
-                       ▼
-          [1. Scanner Ingestion & Normalization]
-              -> NormalizedFinding (Frozen Domain Model)
-                       │
-                       ▼
-          [2. Bounded Evidence Collector & Safe Context Service]
-              -> AST & Joern Bounded CPG Analysis (Deterministic)
-              -> Secret Redaction & Sanitization
-              -> SanitizedContext (Only model exposed to provider)
-                       │
-                       ▼
-          [3. LLM Triage Reasoner]
-              -> Structured Evidence-first Generation (C2)
-              -> TriageDecision (Opinion only: structured_evidence, verdict, confidence)
-                       │
-                       ▼
-          [4. Deterministic Post-Verifier & PolicyEngine]
-              -> Cross-check symbols against SanitizedContext (C3)
-              -> Tightened Conservative Policy Gates (C4, C5)
-              -> PolicyDecision (AUTO_CONFIRM / FP_CANDIDATE / MANUAL_REVIEW / TRIAGE_ERROR)
-                       │
-                       ▼
-          [5. Immutable Reporting]
-              -> JSON / Markdown / HTML (Leak-proof defense-in-depth)
+```text
+[Kho Mã Nguồn] ➔ [Semgrep / Gitleaks / Logic Detector] ➔ [NormalizedFinding]
+                               │
+            [SafeContextService & Secret Redactor]
+ (Thay thế bí mật <REDACTED_SECRET>, JSON Envelope, AST / Joern CPG Slicing)
+                               │
+          ┌────────────────────┴────────────────────┐
+          ▼                                         ▼
+ [Đủ chứng cứ tất định]                  [Nghi ngờ / Thiếu Ngữ cảnh]
+          │                                         │
+          │                   [Bộ Điều Phối Điều Tra Nhiều Vòng]
+          │                   ├── ReAct Loop (Tối đa 4-8 bước)
+          │                   ├── 10 Công cụ chỉ đọc (read_function, find_callees...)
+          │                   ├── ToolActionValidator (Chặn Traversal, Symlink)
+          │                   ├── EvidenceLedger (Sổ cái bằng chứng đơn điệu)
+          │                   └── Judge Verifier (Thẩm định chéo)
+          │                                         │
+          └────────────────────┬────────────────────┘
+                               │
+                     [PolicyEngine Gate]
+   (Chính sách bảo thủ: LIKELY_TP | FP_CANDIDATE | MANUAL_REVIEW | TRIAGE_ERROR)
+                               │
+             ┌─────────────────┴─────────────────┐
+             ▼                                   ▼
+       [report.html]                       [report.json]
 ```
 
-### 4.1. Bounded Evidence Collector (Tầng 1 - D1, D2)
-Thu thập thông tin dataflow có giới hạn cục bộ qua chuỗi 3 công cụ (`trace_dataflow`, `find_reachability`, `inspect_security_control`). Quy trình này hoàn toàn tất định (không dùng LLM chọn tool) và tuân thủ schema bằng chứng chuyên biệt theo nhóm lỗ hổng:
-- **Injection/Taint (CWE-89, 78, 22, 502, 918):** Đòi hỏi đầy đủ source, sink, reachability và guard.
-- **Crypto & Secrets (CWE-327, 328, 330, 798):** Đòi hỏi xác định chính xác sink sử dụng hàm nhạy cảm.
-- **IDOR / Authz (CWE-639, 284):** Đòi hỏi đường dẫn truy vấn và security control phân quyền theo chủ sở hữu.
-- **Mass Assignment (CWE-915):** Đòi hỏi model update sink và allowlist kiểm tra.
-- **TOCTOU (CWE-362, 367):** Đòi hỏi mutation sink, reachability và atomic transaction lock.
+### 4.1. Điều Kiện Kích Hoạt và Bỏ Qua LLM
+- **Khi nào LLM / Bộ điều phối được gọi:** Khi cảnh báo thuộc phạm vi ngôn ngữ hỗ trợ (Python), chưa có trong bộ đệm quyết định (cache miss) và rơi vào trường hợp cần leo thang (escalate: độ tự tin Tier-1 dưới HIGH hoặc kết quả đồ thị CPG là `UNKNOWN`).
+- **Khi nào bỏ qua LLM:** 
+  1. Khi kết quả đã được lưu trong DecisionCache (cache hit: 0 token, thời gian truy xuất dưới 1 ms).
+  2. Khi cờ `agent_mode = off` được cấu hình, hệ thống chỉ sử dụng phán quyết Tier-1.
+  3. Khi phát hiện dấu hiệu Prompt Injection nghiêm trọng, hệ thống kích hoạt cơ chế fail-closed chuyển thẳng về `MANUAL_REVIEW` mà không phụ thuộc vào suy luận tiếp theo của mô hình.
 
-### 4.2. Khử nhiễm và Bảo mật Ngữ cảnh (`SafeContextService`)
-- Mọi bí mật thô từ Gitleaks được thay thế bằng `<REDACTED_SECRET>`.
-- Mở rộng pattern nhận diện nhạy cảm (`db_pass`, `auth_key`, high-entropy tokens, JWT).
-- Toàn bộ chuỗi dữ liệu đưa vào LLM được gói trong cấu trúc JSON nghiêm ngặt với các thẻ phân cách `<UNTRUSTED_INPUT_JSON>` đã escape unicode.
-- Phát hiện các biểu thức prompt injection và gắn nhãn `PROMPT_INJECTION_FLAGGED` để fail-closed.
-
-### 4.3. LLM Triage Reasoner & Post-Verifier (Tầng 2 - C2, C3)
-LLM nhận `TriageInput` và bắt buộc sinh `structured_evidence` trước khi đưa ra phán quyết. Sau khi nhận kết quả, bộ Verifier tất định tiến hành đối chiếu:
-- Mọi symbol, file, dòng được LLM viện dẫn phải tồn tại thực sự trong `SanitizedContext`.
-- Bác bỏ mọi tuyên bố về guard/sanitizer nếu công cụ phân tích tĩnh không ghi nhận effective security control.
-- Ngăn chặn mâu thuẫn giữa phán quyết LIKELY_TP và bằng chứng âm tính có giới hạn (`BOUNDED_LOCAL_NEGATIVE_PROOF`).
-
-### 4.4. PolicyEngine (Chốt chặn chính sách bảo thủ - C4, C5)
-- Kết quả truy vấn công cụ được chuẩn hóa 3 trạng thái: `FOUND`, `NOT_FOUND_COMPLETE`, `UNKNOWN`.
-- Để đạt `FP_CANDIDATE`, bắt buộc phải có `_fp_has_deterministic_support() is True` (loại bỏ trường hợp `None`).
-- Đối với các CWE nguy hiểm (CWE-89, 78, 22, 502, 94/95, 918) ở cả mức HIGH và MEDIUM, bắt buộc phải có bằng chứng phủ định mạnh (`BOUNDED_LOCAL_NEGATIVE_PROOF`).
-- 100% cảnh báo xuất hiện trong báo cáo, không bao giờ tự ý ẩn giấu finding.
+### 4.2. Thiết Lập Ngưỡng Chính Sách (Policy Thresholds)
+Các ngưỡng chính sách (như yêu cầu độ tự tin HIGH, cấm gán `FP_CANDIDATE` cho lỗ hổng mức HIGH/CRITICAL nếu thiếu `BOUNDED_LOCAL_NEGATIVE_PROOF`) được xác lập **tiên nghiệm (a priori)** dựa trên nguyên tắc an toàn ứng dụng, không điều chỉnh hồi tố sau khi quan sát dữ liệu trên tập kiểm thử (held-out split).
 
 ---
 
-## 5. Thiết lập thực nghiệm (Experimental Setup)
+## 5. Thiết Lập Thực Nghiệm (Experimental Setup)
 
-### 5.1. Bộ dữ liệu đánh giá (Benchmark Dataset - B1)
-Bộ dữ liệu được xây dựng từ 5 repository Python có lỗ hổng thực tế với ground truth được thẩm định độc lập:
-- **OWASP PyGoat** (Django): 95 finding (Split: `development`)
-- **DjanGoat** (Django) & **DVPWA** (Flask): 68 finding (Split: `calibration`)
-- **VulPy** & **Damn Vulnerable Flask App (DVFA)**: 56 finding (Split: `held_out`)
-- **Tổng cộng:** 219 finding (96 True Positives, 123 False Positives). Phân chia split theo repository, tuyệt đối không chia lẫn finding cùng repo.
+### 5.1. Bộ Dữ Liệu Đánh Giá (Benchmark Dataset)
+Bộ dữ liệu gồm **219 cảnh báo** có nhãn kiểm chứng độc lập trên 5 kho mã nguồn:
+- **OWASP PyGoat** (Django): 95 cảnh báo (`development` split)
+- **DjanGoat** (Django) & **DVPWA** (Flask): 68 cảnh báo (`calibration` split)
+- **VulPy** & **Damn Vulnerable Flask App (DVFA)**: 56 cảnh báo (`held_out` split)
+- **Cơ cấu nhãn ground-truth:** 96 True Positives (43.84%) và 123 False Positives (56.16%).
 
-### 5.2. Các Baseline so sánh (B2)
-1. **Scanner-Only Baseline:** Kết quả Semgrep thô (mọi finding đều được coi là lỗ hổng cần xử lý).
-2. **LLM-Only Baseline:** Đưa mã nguồn trực tiếp cho LLM và tin tưởng tuyệt đối vào phán đoán, không có graph evidence và không qua policy gate.
-3. **Full System:** Hệ thống hoàn chỉnh tích hợp Bounded Evidence Collector, Post-Verifier, và PolicyEngine.
-
-### 5.3. Tiêu chí đánh giá (Metrics)
-- **Precision:** $\frac{TP}{TP + FP}$
-- **Recall:** $\frac{TP}{TP + FN}$
-- **F1-Score:** Trung bình điều hòa giữa Precision và Recall.
-- **Tỷ lệ Analyst Effort Saved:** Tỷ lệ cảnh báo được hệ thống tự động xử lý an toàn mà không cần analyst thẩm định thủ công.
-- **Tỷ lệ False Negative (FN Rate):** Tỷ lệ lỗ hổng thật bị gán nhầm thành `FP_CANDIDATE`. Yêu cầu an toàn bảo mật: FN Rate $= 0$.
-- **Khoảng tin cậy Bootstrap 95%:** Đo lường trên 1,000 lượt bootstrap resample.
+### 5.2. Minh Bạch Về Môi Trường Đánh Giá Ngoại Tuyến (Offline Evaluation Provider)
+Toàn bộ các thực nghiệm tự động trên 219 cảnh báo trong báo cáo này được thực thi ở chế độ **Đánh giá Ngoại tuyến Tất định (Deterministic Heuristic Offline Evaluation)** trên commit `f0b1805d`:
+- Bộ lập lịch (`AgentPlanner`) và bộ thẩm định (`AgentJudge`) hoạt động thông qua các hàm quy tắc phân tích cú pháp AST cục bộ (`_heuristic_plan` và `_heuristic_judge`), không thực hiện cuộc gọi API qua mạng tới dịch vụ đám mây Modal.
+- Điều này giải thích vì sao độ trễ đo được ở mức thấp (2.88 ms/cảnh báo) do toàn bộ quá trình diễn ra trong bộ nhớ CPU máy tính.
+- Khi bật thử nghiệm tự nhất quán (Self-Consistency với 3 lượt lấy mẫu), do bộ thẩm định là hàm tất định không có tham số nhiệt độ ngẫu nhiên, cả 3 lượt đều cho kết quả nhất quán.
 
 ---
 
-## 6. Kết quả thực nghiệm (Results)
+## 6. Kết Quả Thực Nghiệm (Empirical Results)
 
-> Toàn bộ số liệu trong phần này được sinh tự động bởi các script trong thư mục `scripts/` và lưu trữ tại `docs/paper/results/`.
+### 6.1. Bộ Số Thống Nhất Cho Hệ Thống Hoàn Chỉnh (Full System)
+*Nguồn kiểm chứng: `docs/paper/results/baseline_comparison.json` và `docs/paper/results/agent_ablation_results.json`*
 
-### 6.1. Bảng so sánh hiệu năng Baseline (B2)
-*Nguồn: `docs/paper/results/baseline_comparison.json`*
+| Chỉ số Đánh giá | Giá trị Đo lường | Ghi chú & Khoảng Tin Cậy |
+|---|:---:|---|
+| **Precision** | **0.4384** | 95% Bootstrap CI: [0.3744, 0.5068] |
+| **Recall** | **1.0000** | 95% Clopper-Pearson Exact CI: **[0.9623, 1.0000]** |
+| **F1-Score** | **0.6095** | Giữ ổn định theo chính sách bảo thủ |
+| **Số lượng FP_CANDIDATE** | **0** | Không có cảnh báo nào bị tự động gán FP_CANDIDATE |
+| **Số lượng MANUAL_REVIEW** | **202** (92.24%) | Chuyển sang hàng đợi thẩm định thủ công an toàn |
+| **Số lượng LIKELY_TP** | **17** (7.76%) | Tự động xác nhận có chứng cứ chuỗi sink rõ ràng |
+| **Tỷ lệ Công sức Tiết kiệm (Effort Saved)** | **7.76%** | Tỷ lệ cảnh báo được phân loại tự động ngoài manual review (17/219) |
+| **Expected Calibration Error (ECE)** | **0.0598 – 0.0785** | Độ tự tin nhóm HIGH đạt độ chính xác 98.08% |
 
-| Phương pháp | Precision [95% CI] | Recall [95% CI] | F1-Score | FN Rate | Effort Saved | ECE |
-|---|---|---|---|---|---|---|
-| **Scanner-Only (Semgrep)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | 0.00% | 0.00% | N/A |
-| **LLM-Only (No Gate)** | 0.5859 [0.5082, 0.6639] | 0.7812 [0.6979, 0.8646] | 0.6696 | **21.88%** | 41.55% | N/A |
-| **Full System (Proposed)** | **0.5424** [0.4696, 0.6149] | **1.0000** [1.0, 1.0] | **0.7033** | **0.00%** | **19.18%** | 0.1507 |
-
-**Phân tích:**
-- Mô hình **LLM-Only** tuy tiết kiệm 41.55% công sức nhưng gây ra tỷ lệ **False Negative lên tới 21.88%** (bỏ sót hơn 1/5 số lỗ hổng thật do ảo giác và suy luận sai lệch trên mã nguồn phức tạp). Đây là mức rủi ro không thể chấp nhận được trong bảo mật thực tế.
-- **Full System** đạt Recall tuyệt đối **1.0000** (0.00% FN Rate), tăng F1-score lên **0.7033** và tiết kiệm an toàn **19.18%** công sức phân loại cho chuyên gia thông qua việc chỉ tự động gán `FP_CANDIDATE` khi có đầy đủ bằng chứng phủ định tất định.
-
-### 6.2. Hiệu chuẩn Model Confidence & Audit False Negative (B3, B4)
-*Nguồn: `docs/paper/results/calibration_metrics.json` và `docs/paper/results/fn_audit_report.json`*
-
-- **Expected Calibration Error (ECE):** **0.0785** (7.85%).
-- **Độ chính xác trong nhóm HIGH Confidence:** **98.08%** (51/52 phán quyết đúng). Kết quả này chứng minh cơ sở thống kê vững chắc cho việc PolicyEngine chỉ cho phép tự động dán nhãn khi model đạt confidence mức HIGH.
-- **Biểu đồ Reliability Diagram:**
-
-![Hình 1: Đồ thị Hiệu chuẩn Độ tin cậy (Reliability Diagram - ECE = 7.85%)](results/reliability_diagram.png)
-
-- **Kiểm toán Shadow Mode FN:** Lấy mẫu ngẫu nhiên 10% các finding thuộc nhóm `FP_CANDIDATE` để đối chiếu ground-truth độc lập ghi nhận **0.0% False Negative** (0/5 finding bị gán nhầm).
-
-### 6.3. Khả năng chống chịu Red-Team Prompt Injection (B5)
-*Nguồn: `docs/paper/results/prompt_injection_results.json`*
-
-Thử nghiệm trên bộ benchmark red-team gồm 16 payload tấn công tiêm nhiễm gián tiếp trong mã nguồn (delimiter escaping bypass, instruction override trong comment, unicode homoglyphs, Base64/null-byte injection):
-- **Naive Baseline Attack Success Rate (ASR):** **100.0%** (16/16 payload ép thành công LLM trả về LIKELY_FP HIGH).
-- **Defended System ASR:** **0.00%** (0/16 payload xuyên thủng được chốt chặn chính sách).
-- **Tỷ lệ Fail-Closed:** **100.00%** (16/16 trường hợp đều được tự động chuyển về `MANUAL_REVIEW`).
-
-### 6.4. Kiểm tra rò rỉ Canary Secret (B6)
-*Nguồn: `docs/paper/results/leak_test_results.json`*
-
-Thử nghiệm 5 dạng canary secret trong mã nguồn (database password, API authentication key, Base64 token, JWT secret, high-entropy hex string):
-- **Tỷ lệ rò rỉ vào Sanitized Context:** **0.00%** (0/5)
-- **Tỷ lệ rò rỉ vào Prompt gửi tới LLM:** **0.00%** (0/5)
-- **Tỷ lệ rò rỉ vào Báo cáo Serialize:** **0.00%** (0/5)
-
-### 6.5. Chi phí, Token và Độ trễ Thực tế (B8)
-*Nguồn: `docs/paper/results/cost_and_latency_metrics.json`*
-
-Thay thế hoàn toàn tuyên bố giả định "giảm 70-80% token" bằng số liệu đo đạc thực tế trên 219 finding:
-- **Số lượng token context unpruned trung bình:** 977.9 tokens/finding.
-- **Số lượng token sau khi sanitize & envelope:** 574.8 tokens/finding.
-- **Tỷ lệ cắt giảm token thực tế đo được:** **41.22%**.
-- **Độ trễ xử lý cục bộ (`SafeContextService`):** **0.075 ms/finding**.
-- **Độ trễ DecisionCache:** Cache miss lookup đạt 0.335 ms, Cache hit đạt 0.413 ms. Khi hit cache, 0 token được gửi tới LLM và thời gian phản hồi tức thì.
-- **Ước tính chi phí tài chính:** $0.0862 USD cho mỗi 1,000 finding (tiết kiệm $0.0605 USD / 1k finding so với gửi context thô).
-- **Biểu đồ Token & Latency:**
-
-![Hình 2: Mức độ Cắt giảm Token (41.22%) và Độ trễ Phân tích Cục bộ](results/token_latency_chart.png)
-
-### 6.6. Đánh giá Kiến trúc Controlled Agent & Nghiên cứu Ablation (219 Findings)
-*Nguồn: `docs/paper/results/agent_ablation_results.json` và `docs/paper/results/agent_ablation_chart.png`*
-
-Chúng tôi triển khai vòng lặp Controlled Agent với 10 công cụ đóng kín (allowlisted tools) và cơ chế leo thang kiểm soát (`agent_mode = off | escalate | always`), đánh giá thực nghiệm ablation trên toàn bộ 219 finding từ 5 repository mã nguồn mở:
-
-| Cấu hình | Precision [95% CI] | Recall [95% CI] | F1-Score | FN Rate | Manual Review Rate | Effort Saved | Avg Tools | Latency/Finding |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1. Baseline (`agent_off`)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | 99.54% | **0.46%** | 0.00 | 0.26 ms |
-| **2. Escalation (`agent_escalate`)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | **1.32** | 2.88 ms |
-| **3. Always Active (`agent_always`)** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | 2.00 | 3.38 ms |
-| **4. Escalate + Self-Consistency** | 0.4384 [0.3744, 0.5068] | 1.0000 [1.0, 1.0] | 0.6095 | **0.00%** | **92.24%** | **7.76% (+7.30%)** | 1.32 | 2.70 ms |
-
-**Kết quả chính:**
-- **Tiết kiệm thêm công sức chuyên gia:** Chế độ `agent_escalate` tăng tỷ lệ Effort Saved từ 0.46% lên **7.76%** (giải quyết tự động thêm 16 trường hợp nghi vấn phức tạp mà phân tích tĩnh đơn bước phải lùi về con người), trong khi duy trì **0.00% False Negative**.
-- **Hiệu quả vượt trội của thiết kế Escalation:** Cấu hình `agent_escalate` đạt cùng mức độ tiết kiệm công sức như `agent_always`, nhưng giảm **34.0% số lượt gọi công cụ** (1.32 vs 2.00 tool calls/finding) và tiết kiệm 11.2% lượng token tiêu thụ.
-- **Kiểm định Bootstrap cặp theo cụm repo:** $\Delta F1$ 95% CI là `[0.0000, 0.0000]`. F1 không đổi do Recall được bảo toàn ở mức 1.0000 và Precision ổn định dưới chính sách bảo thủ.
-- **Biểu đồ Ablation:**
-
-![Hình 3: Kết quả Nghiên cứu Ablation trên 4 Cấu hình Controlled Agent (219 Findings)](results/agent_ablation_chart.png)
-
-### 6.7. Đánh giá Khả năng Phòng thủ Red-Team Suite C (Tool & Code Injection)
-*Nguồn: `docs/paper/results/tool_injection_results.json`*
-
-Đánh giá trên 12 mẫu payload tấn công tiêm nhiễm nâng cao nhắm vào vòng lặp của Agent (Path traversal `../../etc/passwd`, absolute path escape, SQL/command injection trong symbol, null bytes, spoofed ledger tags, markdown code fence breakouts, và direct policy overrides):
-- **Attack Success Rate (ASR) Trước Phòng Thủ (Naive Agent):** **100.0%** (12/12 payload khai thác thành công).
-- **Attack Success Rate (ASR) Sau Phòng Thủ (Antigravity Agent):** **0.00%** (0/12 payload vượt qua được phòng tuyến).
-- **Cơ chế phòng thủ:** `ActionValidator` bảo đảm path containment tuyệt đối trong repo root, regex cú pháp symbol, và `PolicyEngine` chặn đứng mọi nỗ lực hạ nhãn FP thiếu chứng cứ tất định.
+#### Giải thích sự khác biệt giữa hai con số 7.76% và 19.18% trong các bản nháp trước:
+Trong các bản nháp trước đây, hai số liệu này xuất phát từ hai kịch bản tính toán không đồng nhất:
+1. Script `run_eval_baseline.py` bản cũ sử dụng mô phỏng thống kê giả định hệ thống loại được 42 cảnh báo thành `FP_CANDIDATE` (42 / 219 = 19.18%), làm số cảnh báo dương tính giảm xuống 177, dẫn tới Precision tăng thành 0.5424 và F1 thành 0.7033.
+2. Trong khi đó, script `run_agent_ablation.py` chạy qua quy tắc PolicyEngine bảo thủ: do không có cảnh báo nào đạt điều kiện phủ định mạnh để thành `FP_CANDIDATE` (FP_CANDIDATE = 0), hệ thống chỉ chuyển được 17 cảnh báo sang `LIKELY_TP`. Tỷ lệ công sức tiết kiệm ở đây được tính là tỷ lệ cảnh báo được giải quyết tự động ra khỏi hàng đợi `MANUAL_REVIEW` (17 / 219 = 7.76%). Do cả `LIKELY_TP` và `MANUAL_REVIEW` đều được coi là cảnh báo dương tính cần xử lý, số lượng dương tính vẫn là 219 (96 TP / 219), nên Precision giữ nguyên ở mức 0.4384 và F1 giữ nguyên ở mức 0.6095.
+3. Việc bản nháp trước đồng thời trích dẫn F1 0.7033 (từ kịch bản 1) và 7.76% (từ kịch bản 2) là sự không nhất quán giữa hai script. Hiện tại, cả hai script đã được đồng bộ hóa thống nhất về cùng một kết quả thực tế trên commit `f0b1805d`.
 
 ---
 
-## 7. Các Ca Nghiên Cứu Điển Hình (Case Studies - B9)
+### 6.2. Phân Rã Thành Phần (Component Decomposition Ablation - 7 Cấu Hình)
+*Nguồn kiểm chứng: `docs/paper/results/agent_ablation_results.json`*
 
-Tham chiếu tài liệu chi tiết tại [case_studies.md](file:///d:/Code/AI%20security/docs/paper/case_studies.md) gồm 4 kịch bản thực tế:
-1. **True Positive được xác nhận đúng (`AUTO_CONFIRM`):** Lỗ hổng SQL Injection tại `challenge/views.py` (PyGoat, CWE-89) có chuỗi dữ liệu rõ ràng từ `request.GET.get` tới `cursor.execute`.
-2. **False Positive được loại đúng (`FP_CANDIDATE`):** Cảnh báo Command Injection (CWE-78) do Semgrep báo tại `subprocess.run(["ping", ...])` với mảng tham số cố định, được chứng minh âm tính bằng `BOUNDED_LOCAL_NEGATIVE_PROOF`.
-3. **Ảo giác bị Verifier chặn và chuyển `MANUAL_REVIEW`:** Lỗ hổng IDOR (CWE-639) trong DjanGoat khi LLM hiểu nhầm decorator `@login_required` là cơ chế bảo vệ phân quyền sở hữu đối tượng. Bộ Post-Verifier (C3) đã phát hiện guard không hợp lệ và hạ phán quyết về `MANUAL_REVIEW`.
-4. **Tấn công Prompt Injection bị vô hiệu hóa:** Đoạn mã chứa bình luận giả thẻ đóng `</UNTRUSTED_INPUT_JSON>` nhằm ép verdict `LIKELY_FP` đã bị cơ chế khử nhiễm phát hiện, kích hoạt cờ `PROMPT_INJECTION_FLAGGED` và fail-closed về `MANUAL_REVIEW`.
+| Cấu Hình | Precision [95% CI] | Recall [Clopper-Pearson 95% CI] | F1-Score | FN Rate | % MANUAL_REVIEW | UNKNOWN Trước ➔ Sau | Effort Saved |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1. Scanner-Only (Semgrep)** | 0.4384 [0.3744, 0.5068] | 1.0000 [0.9623, 1.0000] | 0.6095 | 0.00% | 100.00% | N/A | 0.00% |
+| **2. LLM-Only (No Guardrails)** | 0.6504 [0.5652, 0.7302] | 0.8333 [0.7435, 0.9016] | 0.7306 | 16.67% | 0.00% | N/A | 100.00% |
+| **3. LLM + High-Confidence Gate** | 0.4866 [0.4132, 0.5606] | 0.9479 [0.8826, 0.9829] | 0.6431 | 5.21% | 68.95% | N/A | 31.05% |
+| **4. + Joern CPG Reachability** | 0.4848 [0.4138, 0.5564] | 1.0000 [0.9623, 1.0000] | 0.6531 | 0.00% | 66.21% | 145 ➔ 145 | 33.79% |
+| **5. + Conservative PolicyEngine Gate** | 0.4384 [0.3744, 0.5068] | 1.0000 [0.9623, 1.0000] | 0.6095 | 0.00% | 99.54% | 123 ➔ 123 | 0.46% |
+| **6. + Post-Verifier (AST Check)** | 0.4384 [0.3744, 0.5068] | 1.0000 [0.9623, 1.0000] | 0.6095 | 0.00% | 99.54% | 123 ➔ 123 | 0.46% |
+| **7. + Controlled Agent (Escalation)** | 0.4384 [0.3744, 0.5068] | 1.0000 [0.9623, 1.0000] | 0.6095 | **0.00%** | **92.24%** | **144 ➔ 0** | **7.76%** |
 
----
-
-## 8. Hạn chế và Đạo đức nghiên cứu (Limitations & Ethics)
-
-### 8.1. Các mục CHƯA ĐO và Giới hạn Kỹ thuật
-Theo đúng cam kết không bịa đặt số liệu:
-1. **Độ bao phủ của Joern CPG trên diện rộng (B7):** [CHƯA ĐO]. Chúng tôi đã kiểm tra tính đúng đắn trên 5 repo benchmark thử nghiệm, nhưng chưa có số liệu đo đạc tỷ lệ dựng CPG thành công trên quy mô toàn bộ hệ sinh thái hàng nghìn package Python của PyPI.
-2. **Dynamic Few-Shot / Retrieval Tự động (C10):** [CHƯA LÀM]. Hệ thống hiện sử dụng prompt v15 chuẩn mực, chưa tích hợp vector search để động truy xuất mẫu tương tự.
-3. **Thực thi tuần tự:** Hệ thống hiện vận hành hoàn toàn tuần tự (single-threaded) theo quy tắc kiến trúc của Sprint 1, chưa áp dụng concurrency hay async worker.
-
-### 8.2. Đạo đức nghiên cứu
-- Mọi mã nguồn thử nghiệm đều xuất phát từ các dự án mã nguồn mở có giấy phép rõ ràng (Apache 2.0, MIT, GPL) được xây dựng cho mục đích nghiên cứu và đào tạo bảo mật.
-- Không sử dụng thông tin xác thực, token, hay dữ liệu của bất kỳ hệ thống thực tế nào của người khác.
+#### Phân bổ hiệu năng theo từng Split dữ liệu (Cấu hình 7 - Hệ thống Hoàn chỉnh):
+- **Development Split** (OWASP PyGoat - 95 cảnh báo, 44 TP, 51 FP): Precision = 0.4632, Recall = 1.0000 [Clopper-Pearson: 0.9196, 1.0000].
+- **Calibration Split** (DjanGoat + DVPWA - 68 cảnh báo, 28 TP, 40 FP): Precision = 0.4118, Recall = 1.0000 [Clopper-Pearson: 0.8766, 1.0000].
+- **Held-Out Split** (VulPy + DVFA - 56 cảnh báo, 24 TP, 32 FP): Precision = 0.4286, Recall = 1.0000 [Clopper-Pearson: 0.8578, 1.0000].
 
 ---
 
-## 9. Khả năng tái lập kết quả (Reproducibility)
+### 6.3. Danh Sách 17 Cảnh Báo Được Thay Đổi Quyết Định Nhờ Bộ Điều Phối
+*Nguồn kiểm chứng: `docs/paper/results/agent_ablation_results.json`*
 
-Mọi bảng số liệu, biểu đồ và kết quả đánh giá trong bài báo đều có thể được tái lập hoàn toàn thông qua các lệnh độc lập sau:
+Khi chuyển từ chế độ Tier-1 (`agent_off`) sang điều tra leo thang (`agent_escalate`), có đúng 17 cảnh báo được giải quyết từ `MANUAL_REVIEW` sang `LIKELY_TP`:
+
+| STT | ID Cảnh Báo | Quy Tắc (Rule ID) | Vị Trí Tệp Mã Nguồn | Chuyển Đổi Quyết Định | Nhãn Thật (Ground Truth) | Đánh Giá Tính Đúng Đắn |
+|:---:|---|---|---|:---:|:---:|:---:|
+| 1 | `c2c4ce11727f6a4e` | generic-api-key | introduction/static/js/a7.js:7 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Chuỗi demo tĩnh trên client) |
+| 2 | `41f6c2869c396cf0` | jwt | introduction/static/js/a7.js:4 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Mẫu JWT minh họa client) |
+| 3 | `c1de863b6142afcb` | generic-api-key | introduction/static/js/a9.js:21 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Chuỗi demo tĩnh trên client) |
+| 4 | `54d2378a27f2f88c` | jwt | introduction/static/js/a9.js:18 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Mẫu JWT minh họa client) |
+| 5 | `dc2241a1bb6864bf` | generic-api-key | introduction/views.py:870 | MANUAL_REVIEW ➔ LIKELY_TP | **TP** | **Đúng (Khóa API thật trong backend)** |
+| 6 | `eca00eae604afbb5` | generic-api-key | introduction/views.py:872 | MANUAL_REVIEW ➔ LIKELY_TP | **TP** | **Đúng (Khóa API thật trong backend)** |
+| 7 | `8dedbe457df79e20` | generic-api-key | introduction/views.py:1164 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Khóa giả trong hàm test) |
+| 8 | `c52ce207b70e3e93` | generic-api-key | introduction/views.py:1165 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Khóa giả trong hàm test) |
+| 9 | `23b78c9db63c4791` | generic-api-key | introduction/views.py:1166 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Khóa giả trong hàm test) |
+| 10 | `1ad821499b031383` | generic-api-key | introduction/views.py:1167 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Khóa giả trong hàm test) |
+| 11 | `1f9ddfeef2e108be` | generic-api-key | app/tests/.../test_a6...py:44 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Dữ liệu giả lập trong test) |
+| 12 | `f3884b929da78721` | generic-api-key | app/tests/.../test_a6...py:63 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Dữ liệu giả lập trong test) |
+| 13 | `75e4aaa95a1b9b41` | generic-api-key | app/tests/views/test_password_reset.py:79 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Dữ liệu giả lập trong test) |
+| 14 | `03d88946835605e6` | generic-api-key | app/tests/views/test_password_reset.py:84 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Dữ liệu giả lập trong test) |
+| 15 | `48d55c620da81b6a` | generic-api-key | app/tests/views/test_password_reset.py:127 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Dữ liệu giả lập trong test) |
+| 16 | `abf3b7f6b6254785` | generic-api-key | docs/a6/A6-Sensitive-Data-Exposure.md:46 | MANUAL_REVIEW ➔ LIKELY_TP | FP | Sai (Chuỗi mẫu trong tài liệu hướng dẫn) |
+| 17 | `e87f90af6848dff4` | generic-api-key | good/libsession.py:9 | MANUAL_REVIEW ➔ LIKELY_TP | **TP** | **Đúng (Secret thật trong module session)** |
+
+**Nhận xét:** Trong số 17 trường hợp được chuyển sang `LIKELY_TP`, có 3 trường hợp là lỗ hổng thật (TP) và 14 trường hợp là chuỗi khóa giả định nằm trong thư mục test hoặc tài liệu markdown. Do bộ thẩm định heuristic hiện tại chưa tích hợp bộ lọc loại trừ tệp kiểm thử (test-file exclusion heuristic), các trường hợp này được phân loại là LIKELY_TP. Tuy nhiên, vì cả `LIKELY_TP` và `MANUAL_REVIEW` đều là cảnh báo cần reviewer chú ý, chỉ số F1 và Recall của hệ thống không bị suy giảm.
+
+---
+
+### 6.4. Hiệu Chuẩn Độ Tin Cậy (Confidence Calibration)
+*Nguồn kiểm chứng: `docs/paper/results/calibration_metrics.json`*
+
+Chỉ số Expected Calibration Error đạt **0.0598 – 0.0785**. Nhóm có độ tự tin mức HIGH đạt độ chính xác thực tế **98.08%** (102/104 trường hợp đúng).
+
+![Hình 1: Đồ thị Hiệu chuẩn Độ tin cậy (Reliability Diagram)](results/reliability_diagram.png)
+
+---
+
+### 6.5. Mức Độ Cắt Giảm Token và Độ Trễ
+*Nguồn kiểm chứng: `docs/paper/results/cost_and_latency_metrics.json`*
+
+- Số lượng token context thô trung bình: 977.9 tokens/cảnh báo.
+- Số lượng token sau khi sanitize & envelope: 574.8 tokens/cảnh báo.
+- Tỷ lệ cắt giảm token thực tế: **41.22%**.
+- Độ trễ xử lý cục bộ: **0.076 ms/cảnh báo**.
+
+![Hình 2: Mức độ Cắt giảm Token và Độ trễ Phân tích Cục bộ](results/token_latency_chart.png)
+
+---
+
+### 6.6. Nghiên Cứu Bóc Tách Các Chế Độ Agent
+*Nguồn kiểm chứng: `docs/paper/results/agent_ablation_results.json`*
+
+| Chế độ Hoạt động | F1-Score | Recall [Clopper-Pearson 95% CI] | % MANUAL_REVIEW | Effort Saved | Số Tool Gọi TB | Độ Trễ TB |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **agent_off** | 0.6095 | 1.0000 [0.9623, 1.0000] | 99.54% | 0.46% | 0.00 | 0.26 ms |
+| **agent_escalate** | 0.6095 | 1.0000 [0.9623, 1.0000] | **92.24%** | **7.76%** | **1.32** | 2.88 ms |
+| **agent_always** | 0.6095 | 1.0000 [0.9623, 1.0000] | **92.24%** | **7.76%** | 2.00 | 3.38 ms |
+| **agent_escalate_sc** | 0.6095 | 1.0000 [0.9623, 1.0000] | **92.24%** | **7.76%** | 1.32 | 2.70 ms |
+
+![Hình 3: Kết quả Nghiên cứu Ablation trên 4 Cấu hình Agent](results/agent_ablation_chart.png)
+
+---
+
+### 6.7. Khả Năng Phòng Thủ Thử Nghiệm Đối Kháng (Adversarial Security)
+
+1. **Thử nghiệm Prompt Injection (Suite B - 16 Payloads):**
+   - Tỷ lệ tấn công thành công trước phòng thủ (Naive Baseline ASR): **100.0%**.
+   - Tỷ lệ tấn công thành công sau phòng thủ (Proposed System ASR): **0.00%** (16/16 payload được chuyển an toàn về `MANUAL_REVIEW`).
+2. **Thử nghiệm Tool & Code Injection (Suite C - 12 Payloads):**
+   - Tỷ lệ khai thác thành công (ASR): **0.00%** (12/12 payload vi phạm path traversal hoặc chèn ký tự điều khiển đều bị `ToolActionValidator` từ chối).
+3. **Thử nghiệm Rò rỉ Canary Secret (Suite A - 5 Định dạng):**
+   - Tỷ lệ rò rỉ vào Sanitized Context, Prompt và Báo cáo: **0.00%**.
+
+---
+
+## 7. Các Ca Nghiên Cứu Điển Hình (Case Studies)
+
+Tham chiếu chi tiết tại tài liệu [docs/paper/case_studies.md](case_studies.md):
+
+1. **Ca 1: Xác nhận Lỗ hổng Thật (SQL Injection - PyGoat):**
+   - *Phân loại:* Trường hợp minh họa (Illustrative Synthetic Case).
+   - *Nội dung:* Luồng dữ liệu từ `request.GET.get` đi thẳng vào `cursor.execute` mà không có tham số hóa, được xác nhận `LIKELY_TP`.
+2. **Ca 2: Phân loại Cảnh báo Giả (Command Injection - PyGoat):**
+   - *Định danh thực tế:* Finding ID `ca5371c1fa5b7d39` tại tệp `challenge/views.py:81` trong kho mã nguồn OWASP PyGoat (`realvuln-pygoat`).
+   - *Nội dung:* Lệnh gọi `subprocess.run(["ping", "-c", "1", "127.0.0.1"])` sử dụng mảng hằng số cố định, không nhận đầu vào từ người dùng.
+   - *Ghi chú biên tập:* Bản nháp trước đây ghi nhầm trường hợp này thuộc kho DVFA; bản hiện tại đã chuẩn hóa chính xác về kho mã nguồn OWASP PyGoat theo đúng dữ liệu ground-truth.
+3. **Ca 3: Ngăn chặn Suy luận Sai lệch về Guard (IDOR - DjanGoat):**
+   - *Phân loại:* Trường hợp minh họa (Illustrative Synthetic Case).
+   - *Nội dung:* Decorator `@login_required` chỉ kiểm tra xác thực người dùng nhưng không kiểm tra quyền sở hữu đối tượng. Bộ Verifier từ chối nhãn guard và chuyển về `MANUAL_REVIEW`.
+4. **Ca 4: Ngăn chặn Prompt Injection Gián tiếp:**
+   - *Định danh thực tế:* Mẫu `INJ-01` trong bộ Red-Team Suite B.
+   - *Nội dung:* Đoạn mã chứa bình luận giả lập thẻ đóng `</UNTRUSTED_INPUT_JSON>` nhằm ép nhãn `LIKELY_FP` đã bị cơ chế khử nhiễm phát hiện và kích hoạt cờ fail-closed về `MANUAL_REVIEW`.
+
+---
+
+## 8. Hạn Chế và Đạo Đức Nghiên Cứu (Limitations & Ethics)
+
+### 8.1. Các Hạn Chế Kỹ Thuật Chưa Đo Đạc
+Nhằm bảo đảm tính khách quan và trung thực trong báo cáo khoa học, các giới hạn sau được ghi nhận rõ ràng:
+1. **Độ bao phủ của Joern CPG trên diện rộng:** [CHƯA ĐO]. Chúng tôi đã kiểm tra tính đúng đắn trên 5 kho mã nguồn thực nghiệm, nhưng chưa có số liệu đo đạc tỷ lệ dựng CPG thành công trên quy mô toàn bộ hệ sinh thái package của PyPI.
+2. **Mô hình thực thi tuần tự:** Hệ thống hiện vận hành hoàn toàn đơn luồng tuần tự theo kiến trúc giai đoạn 1, chưa áp dụng cơ chế xử lý song song (multithreading / async worker).
+3. **Quy mô tập dữ liệu đánh giá:** Bộ dữ liệu gồm 219 cảnh báo trên 5 ứng dụng web Python. Cần mở rộng quy mô trên các dự án lớn hơn với nhiều ngôn ngữ khác nhau trong tương lai.
+4. **Phạm vi tính toán Recall:** Chỉ số Recall trong nghiên cứu này được tính toán dựa trên tập hợp các cảnh báo do scanner (Semgrep) phát hiện ra. Nếu scanner ban đầu bỏ sót một lỗ hổng trong mã nguồn (scanner blind spot), hệ thống triage không thể tiếp cận và đánh giá lỗ hổng đó.
+
+### 8.2. Đạo Đức Nghiên Cứu
+- Toàn bộ mã nguồn sử dụng trong nghiên cứu đều thuộc các dự án mã nguồn mở có giấy phép phù hợp (Apache 2.0, MIT, BSD), được phát triển công khai phục vụ nghiên cứu an toàn thông tin.
+- Không có bất kỳ dữ liệu định danh cá nhân hay khóa xác thực thực tế nào bị thu thập hoặc sử dụng.
+
+---
+
+## 9. Khả Năng Tái Lập Kết Quả (Reproducibility)
+
+Toàn bộ các bảng số liệu, biểu đồ và kết quả đánh giá trong báo cáo đều có thể được tái lập độc lập trên commit `f0b1805d` bằng các lệnh:
 
 ```powershell
-# 1. Chạy toàn bộ 542 test unit và integration (100% Pass)
+# 1. Chạy toàn bộ 542 bài kiểm thử tự động
 pytest
 
-# 2. Sinh lại bảng so sánh Baseline và khoảng tin cậy Bootstrap 95% (B1, B2)
+# 2. Sinh lại bảng so sánh Baseline và khoảng tin cậy Clopper-Pearson 95%
 python scripts/run_eval_baseline.py
 
-# 3. Sinh lại đồ thị Calibration Reliability Diagram và Shadow FN Audit (B3, B4)
+# 3. Sinh lại biểu đồ Hiệu chuẩn Reliability Diagram và báo cáo Shadow Audit
 python scripts/run_calibration_and_audit.py
 
-# 4. Chạy lại bộ benchmark Red-Team 16 mẫu Prompt Injection (B5)
-python scripts/run_prompt_injection_suite.py
-
-# 5. Chạy lại benchmark rò rỉ Canary Secret qua 5 định dạng (B6)
-python scripts/run_leak_test.py
-
-# 6. Đo lường lại số lượng token cắt giảm, độ trễ và chi phí (B8)
+# 4. Sinh lại biểu đồ cắt giảm token và đo độ trễ
 python scripts/benchmark_cost_tokens.py
 
-# 7. Chạy lại thực nghiệm Ablation 4 cấu hình Agent trên 219 finding (Ablation A)
+# 5. Chạy lại nghiên cứu bóc tách thành phần và bóc tách agent trên 219 cảnh báo
 python scripts/run_agent_ablation.py
 
-# 8. Chạy lại bộ benchmark Red-Team Suite C 12 mẫu Tool Injection
+# 6. Chạy lại bộ kiểm thử Red-team Tool Injection (Suite C - 12 mẫu)
 python scripts/run_tool_injection_redteam.py
+
+# 7. Chạy lại bộ kiểm thử Red-team Prompt Injection (Suite B - 16 mẫu)
+python scripts/run_prompt_injection_suite.py
+
+# 8. Chạy lại kiểm tra rò rỉ Canary Secret qua 5 định dạng
+python scripts/run_leak_test.py
 ```

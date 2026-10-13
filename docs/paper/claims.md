@@ -15,7 +15,7 @@
 | **CLM-05** | PolicyEngine là chốt chặn fail-closed: lỗi triage luôn chuyển về `TRIAGE_ERROR` hoặc `MANUAL_REVIEW`, không bao giờ tự ý loại bỏ finding | `tests/test_policy_engine.py`, `tests/test_json_reporter.py` | **ĐÃ CHỨNG MINH** | Bất biến kiến trúc: 100% finding xuất hiện trong báo cáo bất kể phán quyết. |
 | **CLM-06** | Mức độ cắt giảm token qua việc tinh lọc ngữ cảnh mã nguồn (B8) | `scripts/benchmark_cost_tokens.py`, `docs/paper/results/cost_and_latency_metrics.json` | **ĐÃ CHỨNG MINH (ĐÃ ĐO THẬT)** | Đo trên 219 finding: Cắt giảm **41.22%** token (từ 977.9 xuống 574.8 tokens/finding). **ĐÃ XÓA** con số ước lượng 70-80%. |
 | **CLM-07** | Hệ thống loại bỏ ảo giác guard/sanitizer của LLM thông qua Post-Verifier tất định (C2, C3) | `src/sast_triage/triage/post_verifier.py`, `tests/test_post_verifier.py` | **ĐÃ CHỨNG MINH** | Verifier kiểm tra symbol tồn tại, đối chiếu negative proof và bác bỏ tuyên bố guard không có thực. |
-| **CLM-08** | Cải thiện F1 từ 0.6095 lên 0.7033 và tiết kiệm 19.18% công sức phân loại so với Scanner Baseline (B1, B2) | `scripts/run_eval_baseline.py`, `docs/paper/results/baseline_comparison.json` | **ĐÃ CHỨNG MINH (ĐÃ ĐO THẬT)** | Đo trên 219 real findings: Full System đạt F1=0.7033, Recall=1.0000 [1.0, 1.0], Precision=0.5424 [0.4696, 0.6149]. |
+| **CLM-08** | Tỷ lệ công sức phân loại được xử lý tự động đạt 7.76% (17/219) với Recall 1.0000 [Clopper-Pearson: 0.9623, 1.0000], F1 0.6095 và 0.00% False Negative (B1, B2) | `scripts/run_eval_baseline.py`, `docs/paper/results/baseline_comparison.json`, `docs/paper/results/agent_ablation_results.json` | **ĐÃ XÁC MINH (ĐÃ ĐO THẬT)** | Đo trên 219 real findings: Full System đạt F1=0.6095, Recall=1.0000 [Clopper-Pearson: 0.9623, 1.0000], Precision=0.4384 [0.3744, 0.5068], 202 MANUAL_REVIEW (92.24%), 17 LIKELY_TP (7.76%), 0 FP_CANDIDATE. |
 | **CLM-09** | LLM-Only baseline gây nguy cơ False Negative nghiêm trọng (21.88% FN rate), trong khi Full System giữ FN rate ở mức 0.0% (B2, B4) | `scripts/run_eval_baseline.py`, `scripts/run_calibration_and_audit.py`, `docs/paper/results/fn_audit_report.json` | **ĐÃ CHỨNG MINH (ĐÃ ĐO THẬT)** | LLM-Only bỏ sót 21.88% lỗ hổng thật. Full System nhờ cổng Policy C4 giữ FN rate ở mức **0.00%**. Audit mẫu 10% xác nhận 0 FN. |
 | **CLM-10** | Khả năng phòng thủ trước các payload prompt injection gián tiếp trong code (B5) | `tests/test_prompt_injection.py`, `scripts/run_prompt_injection_suite.py`, `docs/paper/results/prompt_injection_results.json` | **ĐÃ CHỨNG MINH (ĐÃ ĐO THẬT)** | 16 adversarial payloads: Naive ASR = 100.0%, Defended System ASR = **0.00%** (100% fail-closed về MANUAL_REVIEW). |
 | **CLM-11** | Model confidence được cân chỉnh tốt (ECE = 0.0785), nhóm HIGH confidence đạt độ chính xác 98.08% (B3) | `scripts/run_calibration_and_audit.py`, `docs/paper/results/calibration_metrics.json`, `reliability_diagram.png` | **ĐÃ CHỨNG MINH (ĐÃ ĐO THẬT)** | Expected Calibration Error: **7.85%**. HIGH confidence accuracy: **98.08%** (51/52). |
@@ -31,7 +31,7 @@
 ## Lệnh Chạy Lại Kiểm Chứng Toàn Bộ Tuyên Bố
 
 ```bash
-# 1. Chạy toàn bộ test suite (544 tests xanh)
+# 1. Chạy toàn bộ test suite (542 tests xanh)
 pytest
 
 # 2. Sinh lại bảng so sánh baseline và khoảng tin cậy Bootstrap 95% (B1, B2)

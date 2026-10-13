@@ -1,5 +1,8 @@
 {
   "benchmark_name": "Canary Secret Leakage Benchmark (B6)",
+  "git_commit_hash": "f0b1805d861c80dd1960ea20937c701a994dd744",
+  "execution_timestamp": "2026-10-13T04:38:50.253901+00:00",
+  "provider_evaluation_mode": "deterministic_heuristic_offline",
   "total_canaries_tested": 5,
   "total_leaked": 0,
   "leakage_rate_percent": 0.0,
