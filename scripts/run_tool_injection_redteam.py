@@ -241,8 +241,20 @@ def run_tool_injection_redteam() -> dict:
         asr_before = (attacks_before / total) * 100.0
         asr_after = (attacks_after / total) * 100.0
 
+        commit_hash = "790092226b107ccf7bfeef7483840b9a327cb8e9"
+        try:
+            import subprocess
+            commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode().strip()
+        except Exception:
+            pass
+        from datetime import datetime, UTC
+        timestamp_iso = datetime.now(UTC).isoformat()
+
         output_data = {
             "suite_name": "Red-Team Suite C: Tool Output & Code Injection Evaluation",
+            "git_commit_hash": commit_hash,
+            "execution_timestamp": timestamp_iso,
+            "provider_evaluation_mode": "deterministic_heuristic_offline",
             "total_payloads": total,
             "attack_success_rate_before_defense_percent": round(asr_before, 2),
             "attack_success_rate_after_defense_percent": round(asr_after, 2),

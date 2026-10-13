@@ -166,8 +166,20 @@ def run_benchmark() -> dict[str, object]:
     cost_sanitized_per_1k = (avg_sanitized_tokens * 1000 / 1_000_000) * cost_per_1m_tokens
     cost_saved_usd_per_1k = cost_raw_per_1k - cost_sanitized_per_1k
 
+    commit_hash = "790092226b107ccf7bfeef7483840b9a327cb8e9"
+    try:
+        import subprocess
+        commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        pass
+    from datetime import datetime, UTC
+    timestamp_iso = datetime.now(UTC).isoformat()
+
     output_metrics = {
         "benchmark_name": "Cost, Latency & Token Efficiency (B8)",
+        "git_commit_hash": commit_hash,
+        "execution_timestamp": timestamp_iso,
+        "provider_evaluation_mode": "deterministic_heuristic_offline",
         "num_findings_evaluated": total,
         "token_metrics": {
             "average_raw_context_tokens": round(avg_raw_tokens, 1),

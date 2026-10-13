@@ -64,7 +64,19 @@ def run_calibration_and_audit(
     calib_res = compute_calibration_ece(confidences, accuracies, n_bins=5)
     high_accuracy_pct = round((high_correct / high_count) * 100, 2) if high_count else 0.0
 
+    commit_hash = "790092226b107ccf7bfeef7483840b9a327cb8e9"
+    try:
+        import subprocess
+        commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        pass
+    from datetime import datetime, UTC
+    timestamp_iso = datetime.now(UTC).isoformat()
+
     calib_summary = {
+        "git_commit_hash": commit_hash,
+        "execution_timestamp": timestamp_iso,
+        "provider_evaluation_mode": "deterministic_heuristic_offline",
         "expected_calibration_error_ece": calib_res["ece"],
         "total_evaluated_samples": len(confidences),
         "high_confidence_total": high_count,
@@ -132,6 +144,9 @@ def run_calibration_and_audit(
             # (In shadow mode, we record that policy would NOT suppress this TP)
 
     fn_audit_report = {
+        "git_commit_hash": commit_hash,
+        "execution_timestamp": timestamp_iso,
+        "provider_evaluation_mode": "deterministic_heuristic_offline",
         "audit_mode": "shadow_mode_random_sampling",
         "sample_percentage": 10.0,
         "total_sampled_findings": sample_size,

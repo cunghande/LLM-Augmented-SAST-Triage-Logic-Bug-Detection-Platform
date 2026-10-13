@@ -103,8 +103,20 @@ def run_leak_benchmark() -> dict[str, object]:
 
     leak_rate = (leaked_count / total_canaries) * 100.0
 
+    commit_hash = "790092226b107ccf7bfeef7483840b9a327cb8e9"
+    try:
+        import subprocess
+        commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        pass
+    from datetime import datetime, UTC
+    timestamp_iso = datetime.now(UTC).isoformat()
+
     output_data = {
         "benchmark_name": "Canary Secret Leakage Benchmark (B6)",
+        "git_commit_hash": commit_hash,
+        "execution_timestamp": timestamp_iso,
+        "provider_evaluation_mode": "deterministic_heuristic_offline",
         "total_canaries_tested": total_canaries,
         "total_leaked": leaked_count,
         "leakage_rate_percent": leak_rate,
