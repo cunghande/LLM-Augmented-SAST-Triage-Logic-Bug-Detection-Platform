@@ -143,6 +143,7 @@ def triage_batch(
     model_version: str | None = None,
     decision_cache: DecisionCache | None = None,
     provider_cost_per_hour_usd: float | None = None,
+    agent_mode: str = "off",
 ) -> BatchResult:
     """Triage một batch finding tĩnh từ kết quả scanner Semgrep và Gitleaks.
 
@@ -324,6 +325,7 @@ def triage_batch(
             analysis_backend=analysis_backend,
             decision_cache=decision_cache,
             provider_cost_per_hour_usd=provider_cost_per_hour_usd,
+            agent_mode=agent_mode,
         )
         result_by_id[finding.finding_instance_id] = result
         if progress_callback is not None:

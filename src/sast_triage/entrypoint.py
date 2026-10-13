@@ -75,6 +75,8 @@ def _expand_repository_shortcut(arguments: list[str]) -> list[str]:
         full_analysis_options.extend(
             ("--decision-cache-ttl-hours", _DEFAULT_CACHE_TTL_HOURS)
         )
+    if not _has_option(extra_arguments, "--agent-mode"):
+        full_analysis_options.extend(("--agent-mode", "escalate"))
     selected_provider = _argument_value(extra_arguments, "--provider") or "real"
     if (
         selected_provider == "real"

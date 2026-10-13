@@ -200,6 +200,7 @@ def triage_finding(
     analysis_backend: AnalysisBackend | None = None,
     decision_cache: DecisionCache | None = None,
     provider_cost_per_hour_usd: float | None = None,
+    agent_mode: str = "off",
 ) -> TriageResult:
     """Triage một NormalizedFinding qua trích xuất context, LLM triage và policy.
 
@@ -475,6 +476,36 @@ def triage_finding(
             escalated=False,
             escalation_reason=None,
         )
+
+    # 4b. Controlled Agent Escalation (nếu được bật)
+    if (
+        agent_mode in ("escalate", "always")
+        and finding.finding_type == FindingType.SAST
+        and sanitized is not None
+        and sanitized.context_available
+    ):
+        from sast_triage.agent.models import AgentMode
+        from sast_triage.agent.orchestrator import ControlledTriageAgent
+        from sast_triage.models import ModelConfidence
+
+        should_escalate_agent = (
+            agent_mode == "always"
+            or (policy_dec is not None and policy_dec.action == PolicyAction.MANUAL_REVIEW)
+            or (triage_dec is None)
+            or (triage_dec.model_confidence != ModelConfidence.HIGH)
+        )
+        if should_escalate_agent:
+            agent = ControlledTriageAgent(
+                repository_root=repository_root,
+                agent_mode=AgentMode(agent_mode),
+            )
+            agent_res = agent.triage(
+                finding,
+                sanitized,
+                tier1_decision=triage_dec,
+            )
+            triage_dec = agent_res.triage_decision
+            policy_dec = agent_res.policy_decision
 
     # 5. Tạo Context Summary và tổng hợp TriageResult
     summary_str = _build_context_summary(sanitized)

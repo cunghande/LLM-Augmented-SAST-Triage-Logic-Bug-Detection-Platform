@@ -36,6 +36,8 @@ def test_repository_shortcut_builds_real_qwen_scan(tmp_path: Path) -> None:
         str(expected_cache),
         "--decision-cache-ttl-hours",
         "168",
+        "--agent-mode",
+        "escalate",
         "--provider-cost-per-hour-usd",
         "6.25",
     ]

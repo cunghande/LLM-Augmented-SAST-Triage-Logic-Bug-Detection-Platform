@@ -277,6 +277,7 @@ def _execute_run(args: argparse.Namespace) -> int:
                 ),
                 decision_cache=decision_cache,
                 provider_cost_per_hour_usd=provider_cost_per_hour_usd,
+                agent_mode=getattr(args, "agent_mode", "off"),
             )
     except SastTriageError as exc:
         if exc.error_code == "TRIAGE_PROVIDER_RESOURCE_EXHAUSTED":
