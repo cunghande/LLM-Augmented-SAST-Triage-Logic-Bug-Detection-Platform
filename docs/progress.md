@@ -173,3 +173,28 @@
   - `pytest`: 535 passed, 2 skipped (100% xanh).
 - **Trạng thái:** Hoàn thành Bước 1. Sẵn sàng sang Bước 2 (Planner, Judge, Agent Loop & Fallback).
 
+## [Kịch Bản Agent Thật - Bước 2] Tách Vai Planner/Judge, Vòng Lặp Điều Phối & Fallback Fail-Closed
+- **Công việc đã làm:**
+  - **Tách hai vai trò (`src/sast_triage/agent/planner.py`, `src/sast_triage/agent/judge.py`):**
+    - `AgentPlanner`: Chỉ nhìn thấy sổ bằng chứng đã xác thực trong `<UNTRUSTED_EVIDENCE_LEDGER>`, chọn hành động hợp lệ tiếp theo hoặc trả về `DONE`.
+    - `AgentJudge`: Chỉ đánh giá sự thật trong `EvidenceLedger` để phán quyết verdict và bắt buộc sinh `structured_evidence` trước verdict.
+    - Prompts được tách riêng với phiên bản ghim: `agent-planner-v1` và `agent-judge-v1`.
+  - **Vòng lặp điều phối có kiểm soát (`src/sast_triage/agent/orchestrator.py`):**
+    - Hỗ trợ 3 chế độ `agent_mode = off | escalate | always` (mặc định `off`).
+    - Chế độ `escalate`: Chỉ leo thang khi evidence chưa hoàn tất, tool trả `UNKNOWN`, hoặc Tier-1 không đạt HIGH confidence.
+    - Ngân sách cứng: tối đa 4 vòng lặp, 4 tool calls, timeout 30s.
+    - Caching kết quả tool theo `(file_path, enclosing_function, canonical_signature)` để tái sử dụng ngay lập tức cho các finding cùng hàm.
+    - Tích hợp self-consistency tùy chọn ($k=3$ mẫu, bất đồng thì fail-closed về `MANUAL_REVIEW`).
+    - Fallback an toàn: Bất kỳ ngoại lệ nào đều rơi về quyết định an toàn của Tier-1 hoặc `MANUAL_REVIEW`, không bao giờ mất finding. Phán quyết của agent vẫn bắt buộc phải đi qua `verify_post_triage_decision` và PolicyEngine (`conservative-policy-v5`).
+  - Tạo bộ unit test toàn diện `tests/test_agent_orchestrator.py` (4 tests).
+- **File tạo mới / thay đổi:**
+  - `src/sast_triage/agent/prompts.py`
+  - `src/sast_triage/agent/planner.py`
+  - `src/sast_triage/agent/judge.py`
+  - `src/sast_triage/agent/orchestrator.py`
+  - `tests/test_agent_orchestrator.py`
+  - `docs/progress.md`
+- **Kết quả kiểm thử:**
+  - `pytest`: 539 passed, 2 skipped (100% xanh).
+- **Trạng thái:** Hoàn thành Bước 2. Sẵn sàng sang Bước 3 (Ablation Study A trên 219 finding).
+
