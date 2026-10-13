@@ -146,3 +146,30 @@
   - `pytest`: 526 passed, 2 skipped (100% xanh).
 - **Trạng thái:** Hoàn thành toàn bộ các mục P0 (B1, B2, C5, C4, C2, C3, C1, B3, B4, B5, D1, D2).
 
+## [Kịch Bản Agent Thật - Bước 1] Mở Rộng Tool AST/CPG, ActionValidator & EvidenceLedger
+- **Công việc đã làm:**
+  - **Tool Registry (`src/sast_triage/agent/tools.py`):**
+    - Cài đặt 6 công cụ mới dựa trên AST bounded (giới hạn tối đa 60 dòng code, 5 callers/callees): `read_function`, `find_callers`, `find_callees`, `get_route_decorators`, `get_model_schema`, `check_lock_or_transaction`.
+    - Tích hợp passthrough cho 3 công cụ Joern sẵn có: `trace_dataflow`, `find_reachability`, `inspect_security_control`.
+    - Toàn bộ 9 công cụ đều chuẩn hóa trả về 3 trạng thái: `FOUND`, `NOT_FOUND_COMPLETE`, `UNKNOWN` kèm lý do và structured facts.
+  - **ActionValidator (`src/sast_triage/agent/validator.py`):**
+    - Kiểm soát nghiêm ngặt whitelist công cụ cho phép (`ALLOWLISTED_TOOLS`).
+    - Kiểm tra schema tham số chi tiết theo từng loại tool.
+    - Thực thi kiểm tra path containment và chống Path Traversal (`../`, absolute path, drive letters).
+    - Tạo chữ ký chuẩn hóa canonical signature `tool:path:symbol` và chống lặp truy vấn (Duplicate Query Check).
+  - **EvidenceLedger (`src/sast_triage/agent/ledger.py`):**
+    - Lưu trữ sổ bằng chứng append-only, phân tách rõ ràng facts thực tế khỏi suy luận của mô hình.
+    - Hỗ trợ format phong bì dữ liệu `<UNTRUSTED_EVIDENCE_LEDGER>` phục vụ prompt cho Planner và Judge.
+  - Tạo bộ unit test toàn diện `tests/test_agent_tools_and_validator.py` (10 tests).
+- **File tạo mới / thay đổi:**
+  - `src/sast_triage/agent/__init__.py`
+  - `src/sast_triage/agent/models.py`
+  - `src/sast_triage/agent/ledger.py`
+  - `src/sast_triage/agent/validator.py`
+  - `src/sast_triage/agent/tools.py`
+  - `tests/test_agent_tools_and_validator.py`
+  - `docs/progress.md`
+- **Kết quả kiểm thử:**
+  - `pytest`: 535 passed, 2 skipped (100% xanh).
+- **Trạng thái:** Hoàn thành Bước 1. Sẵn sàng sang Bước 2 (Planner, Judge, Agent Loop & Fallback).
+
