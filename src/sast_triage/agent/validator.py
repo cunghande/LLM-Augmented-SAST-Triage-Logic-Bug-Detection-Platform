@@ -23,7 +23,7 @@ ALLOWLISTED_TOOLS = frozenset({
     "DONE",
 })
 
-_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_\.]*$")
+_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
 
 
 class ActionValidator:
