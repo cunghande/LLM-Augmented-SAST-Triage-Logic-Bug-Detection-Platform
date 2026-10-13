@@ -67,20 +67,39 @@ Repository Mục Tiêu
 
 ### 1. Cách chạy ngắn nhất (Full tính năng - Đã gồm Agent)
 
-Chỉ cần mở terminal, chuyển tới thư mục repository cần quét và chạy:
+Hệ thống hỗ trợ 2 cách gõ lệnh cực kỳ tiện lợi:
+
+#### Cách 1: Đứng từ thư mục cha `target-repos` và chỉ định tên repository
+Khi virtual environment đang kích hoạt, bạn chỉ cần gõ tên repo:
 
 ```powershell
-# Di chuyển vào repository mục tiêu:
-cd "D:\Code\target-repo"
+# Chuyển vào thư mục chứa các repo cần quét:
+cd "D:\Code\target-repos"
 
-# Quét đầy đủ tính năng (Semgrep, Gitleaks, Joern CPG và Controlled Agent):
+# Chạy full tính năng (tự động bật Semgrep, Gitleaks, Joern CPG, Module 2, Logic Detector và Controlled Agent):
+python -m sast_triage Sequential-Recommender
+python -m sast_triage benchmarks
+python -m sast_triage extremely-vulnerable-flask-app
+```
+
+#### Cách 2: Đứng trực tiếp bên trong repository mục tiêu (dùng dấu `.`)
+```powershell
+# Di chuyển thẳng vào repository mục tiêu:
+cd "D:\Code\target-repos\extremely-vulnerable-flask-app"
+
+# Quét ngay tại thư mục hiện tại:
 python -m sast_triage .
 ```
+*(Hoặc dùng lệnh console `sast-triage .`)*
 
-*Hoặc nếu bạn đã cài package bằng pip:*
-```powershell
-sast-triage .
-```
+> **Cả 2 cách trên đều HOÀN TOÀN TƯƠNG ĐƯƠNG** và tự động:
+> - Tự động thiết lập cấu hình scanner: Semgrep (`p/python`, `p/security-audit`) + Gitleaks.
+> - Tự động dựng và truy vấn đồ thị mã nguồn Joern CPG.
+> - Tự động bật Module 2 discovery và detector `python-idor-business-logic`.
+> - Tự động bật **Controlled Agent đa vòng** (`--agent-mode escalate`).
+> - Tự động xuất báo cáo mới ra thư mục `triage-runs/<repo>-qwen14b-YYYYMMDD-HHMMSSZ/`.
+> - Tự động lưu cache quyết định 7 ngày tại `triage-cache/<repo>`.
+> - Sử dụng model Qwen3-14B trên Modal (nếu muốn chạy offline hoàn toàn không tốn credit Modal, chỉ cần thêm `--provider fake`).
 
 > **Lưu ý:** Lệnh trên mặc định chạy chế độ `--agent-mode escalate` (kích hoạt Agent khi gặp finding nghi ngờ), sử dụng model Qwen3-14B trên Modal (nếu có cấu hình) hoặc tự fallback sang model cục bộ.
 
