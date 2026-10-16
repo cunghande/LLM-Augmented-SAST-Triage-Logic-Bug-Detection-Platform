@@ -1,0 +1,278 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[final]{acl}
+\usepackage[T5]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,vietnamese]{babel}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{booktabs,array,tabularx}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\hypersetup{hidelinks}
+% Numeric citations and numbered references, overriding ACL's unlabelled list.
+\setcitestyle{numbers,square,comma}
+\makeatletter
+\renewenvironment{thebibliography}[1]{%
+  \section*{References}%
+  \phantomsection
+  \addcontentsline{toc}{section}{References}%
+  \small
+  \list{\@biblabel{\the\c@NAT@ctr}}{\@bibsetup{#1}\global\c@NAT@ctr\z@}%
+  \let\p@NAT@ctr\@empty
+  \renewcommand\theNAT@ctr{\arabic{NAT@ctr}}%
+  \sloppy\clubpenalty4000\widowpenalty4000
+}{\endlist}
+\makeatother
+\newcommand{\unchecked}{\(\square\)}
+\newcommand{\checked}{\(\boxtimes\)}
+\setlength{\emergencystretch}{2em}
+\newcommand{\code}[1]{{\small\texttt{\detokenize{#1}}}}
+\title{LLM Augmented SAST}
+\author{Đỗ Văn Cung \\
+Lớp 12423TN \\
+Bài tập lớn môn Deep Learning}
+\begin{document}
+\maketitle
+\pagestyle{plain}
+\thispagestyle{plain}
+
+\renewcommand{\abstractname}{Abstract}
+\begin{abstract}
+Bài báo trình bày thiết kế và hiện thực hệ thống hỗ trợ phân loại cảnh báo bảo mật cho kho mã nguồn Python. Hệ thống tiếp nhận kết quả từ Semgrep và Gitleaks, chuẩn hóa phát hiện, trích xuất ngữ cảnh, che dữ liệu nhạy cảm và sử dụng mô hình ngôn ngữ lớn để đề xuất phân loại. Quyết định cuối cùng được kiểm soát bằng chính sách bảo thủ, trong đó thiếu bằng chứng hoặc lỗi xử lý dẫn đến yêu cầu thẩm định thay vì tự động loại bỏ cảnh báo. Kiến trúc kết hợp thu thập bằng chứng giới hạn dựa trên cây cú pháp trừu tượng và đồ thị thuộc tính mã nguồn với cơ chế điều tra nhiều vòng có kiểm soát. Bài báo mô tả các ranh giới dữ liệu, cơ chế bảo vệ bí mật, kiểm soát đường dẫn và kiểm chứng đầu ra. Tập dữ liệu hiện có gồm 219 cảnh báo với nhãn tham chiếu từ năm kho mã nguồn Python. Qua đối chiếu mã đánh giá, bài báo phân biệt thống kê dữ liệu, kiểm thử phần mềm và mô phỏng ngoại tuyến; các kết quả mô phỏng không được sử dụng để khẳng định chất lượng suy luận của LLM. Đóng góp chính là một kiến trúc triage có khả năng truy vết cùng quy trình đánh giá hướng đến triển khai an toàn.
+\end{abstract}
+
+\section{Giới thiệu}
+Phân tích bảo mật mã nguồn tĩnh (Static Application Security Testing, SAST) hỗ trợ phát hiện các mẫu lập trình có nguy cơ gây lỗ hổng trước khi ứng dụng được triển khai. Tuy nhiên, một cảnh báo từ bộ quét chưa đủ để kết luận rằng chương trình có thể bị khai thác. Người phân tích còn phải xác định nguồn dữ liệu, vị trí sử dụng dữ liệu nhạy cảm, điều kiện thực thi và các cơ chế kiểm soát hiện hữu. Quá trình thẩm định này được gọi là phân loại cảnh báo, hay \textit{triage}.
+
+Mô hình ngôn ngữ lớn (Large Language Model, LLM) cung cấp một hướng tiếp cận bổ sung: diễn giải mã nguồn và tổng hợp bằng chứng thành nhận định có cấu trúc. Tuy nhiên, sự hợp lý về ngôn ngữ không đồng nghĩa với tính đúng đắn của suy luận bảo mật. Mô hình có thể suy diễn một bước kiểm tra quyền không tồn tại, bỏ qua đường truyền dữ liệu hoặc coi chú thích do người viết mã cung cấp là bằng chứng đáng tin cậy. Khi nhận định như vậy được dùng để hạ mức ưu tiên cảnh báo, hệ thống có nguy cơ bỏ sót vấn đề cần xử lý.
+
+Đề tài xây dựng công cụ CLI tích hợp phân tích tĩnh, ngữ cảnh mã nguồn và đề xuất từ LLM trong một pipeline thống nhất. Câu hỏi thiết kế trung tâm là: \textit{làm thế nào để hỗ trợ triage bằng LLM mà vẫn giữ quyền quyết định và khả năng kiểm chứng ở tầng hệ thống?}
+
+Các đóng góp của đề tài gồm: (i) tổ chức pipeline với hợp đồng dữ liệu tách biệt giữa scanner, ngữ cảnh, provider và policy; (ii) thiết kế cơ chế thu thập bằng chứng và điều tra bổ sung có giới hạn; (iii) đưa ra quy trình bảo vệ dữ liệu và xử lý thất bại theo hướng bảo thủ; và (iv) xây dựng cách diễn giải kết quả đánh giá phù hợp với nguồn gốc bằng chứng. Phạm vi bài báo là hệ thống hỗ trợ quyết định; việc xác nhận và khắc phục lỗ hổng vẫn cần quy trình chuyên môn của người vận hành.
+
+\section{Cơ sở lý thuyết và công nghệ}
+\subsection{Phân tích tĩnh và phát hiện bí mật}
+Semgrep và Gitleaks đảm nhiệm hai nhiệm vụ bổ sung trong dự án. Semgrep cung cấp cảnh báo dựa trên quy tắc phân tích mã; Gitleaks phát hiện chuỗi có khả năng là thông tin xác thực hoặc bí mật. Cả hai tạo ra đầu vào cho triage, nhưng cách xử lý dữ liệu khác nhau. Đặc biệt, giá trị bí mật do Gitleaks phát hiện phải được che ngay tại parser, trước khi đưa thông tin sang thành phần tiếp theo.
+
+Thông tin vị trí, mã quy tắc và mức nghiêm trọng giúp định danh cảnh báo. Tuy nhiên, để đánh giá tính khả thi của một đường khai thác, hệ thống cần thêm ngữ cảnh: hàm bao quanh, lời gọi liên quan và bằng chứng về nguồn dữ liệu hoặc điều kiện bảo vệ. Đây là vai trò của tầng phân tích chương trình.
+
+\subsection{AST và đồ thị thuộc tính mã nguồn}
+Cây cú pháp trừu tượng (Abstract Syntax Tree, AST) biểu diễn cấu trúc chương trình, hỗ trợ xác định hàm, biểu thức và vị trí gọi. Đồ thị thuộc tính mã nguồn (Code Property Graph, CPG) kết hợp các khía cạnh cú pháp, luồng điều khiển và phụ thuộc chương trình trong một biểu diễn chung \citep{yamaguchi2014}. Dự án sử dụng hướng tiếp cận này thông qua thành phần tích hợp Joern để bổ sung bằng chứng cho việc phân loại.
+
+Không tìm thấy đường truyền dữ liệu trong một truy vấn hữu hạn không đồng nghĩa với việc đường truyền đó không tồn tại trong chương trình. Kết quả truy vấn do đó cần phân biệt tìm thấy, không tìm thấy trong phạm vi khảo sát và không đủ khả năng kết luận. Cách biểu diễn này đặc biệt cần thiết đối với mã Python có lời gọi động hoặc cấu hình framework nằm ngoài ngữ cảnh đang xét.
+
+\subsection{LLM chuyên biệt cho mã nguồn}
+Các mô hình chuyên về mã nguồn, chẳng hạn họ Qwen2.5-Coder \citep{hui2024}, là một lựa chọn cho thành phần diễn giải ngữ cảnh. Trong kiến trúc của đề tài, provider được đặt sau ranh giới làm sạch dữ liệu và trả về đối tượng theo schema. Việc thay đổi mô hình phải giữ nguyên hợp đồng đầu vào, đầu ra và cơ chế kiểm chứng.
+
+Khả năng của một mô hình trên các bài toán lập trình không tự động chứng minh chất lượng triage bảo mật. Đánh giá hệ thống cần ghi nhận rõ phiên bản mô hình, cấu hình sinh, prompt, dữ liệu và chính sách quyết định. Các bộ lập kế hoạch hoặc thẩm định chạy bằng heuristic ngoại tuyến phải được báo cáo riêng với suy luận từ mô hình thực.
+
+\subsection{Prompt injection gián tiếp}
+Prompt injection gián tiếp xuất hiện khi chỉ dẫn do đối tượng tấn công kiểm soát được đặt trong dữ liệu bên ngoài rồi được ứng dụng đưa vào ngữ cảnh của LLM \citep{greshake2023}. Trong bài toán này, chú thích, docstring và kết quả đọc mã đều có thể chứa chỉ dẫn nhằm thay đổi phán quyết. Vì vậy, mã nguồn được xem là dữ liệu không đáng tin cậy trong toàn bộ quy trình.
+
+Tách vùng dữ liệu khỏi chỉ dẫn, kiểm tra schema và giới hạn công cụ là các lớp kiểm soát bổ sung cho nhau. Không lớp nào, khi đứng riêng, đủ cơ sở để tuyên bố loại trừ mọi hình thức prompt injection.
+
+\section{Dữ liệu và phát biểu bài toán}
+\subsection{Đầu vào và ràng buộc repository}
+Đầu vào gồm kho mã nguồn Python và artifact do scanner sinh ra. Hai chế độ sử dụng là đọc artifact có sẵn và quét rồi triage; cả hai đi qua một pipeline chung. Trước khi lấy ngữ cảnh, hệ thống phải xác minh artifact thuộc đúng repository. Việc ghép kết quả từ repository này với mã nguồn của repository khác có thể tạo ra nhận định có vẻ hợp lệ nhưng sai đối tượng.
+
+Gọi $f_i$ là phát hiện thứ $i$, $c_i$ là ngữ cảnh đã làm sạch và $e_i$ là bằng chứng phân tích. Quá trình ra quyết định được biểu diễn như sau:
+\begin{align}
+ d_i &= M(f_i,c_i,e_i),\\
+ a_i &= \Pi(f_i,c_i,e_i,d_i),
+\end{align}
+trong đó $M$ là thành phần đề xuất, còn $\Pi$ là chính sách của hệ thống. Nếu thành phần đề xuất thất bại, $d_i$ không tồn tại và pipeline ghi nhận lỗi an toàn. Mỗi phát hiện vẫn phải có kết quả trong báo cáo.
+
+\subsection{Tập dữ liệu tham chiếu}
+Tệp \path{benchmarks/curated_benchmark.json} chứa 219 cảnh báo từ năm kho mã nguồn, với 96 nhãn TP và 123 nhãn FP. Bảng~\ref{tab:data} thể hiện phân bố theo tập. Đây là nhãn tham chiếu trong artifact hiện có, chưa được bài báo này xác nhận lại bằng một đợt thẩm định độc lập.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Tập dữ liệu & Số mẫu & TP & FP\\
+\midrule
+Development & 95 & 43 & 52\\
+Calibration & 68 & 21 & 47\\
+Held-out & 56 & 32 & 24\\
+\midrule
+Tổng & 219 & 96 & 123\\
+\bottomrule
+\end{tabular}
+\caption{Phân bố nhãn tham chiếu trong artifact của dự án.}
+\label{tab:data}
+\end{table}
+
+Development tương ứng với PyGoat; calibration gồm DjanGoat và DVPWA; held-out gồm VulPy và Damn Vulnerable Flask Application. Chia theo repository giúp hạn chế việc các đoạn mã gần nhau xuất hiện ở cả tập phát triển và tập đánh giá. Tuy nhiên, chỉ có nhãn split chưa chứng minh dữ liệu đã được giữ kín trong quá trình phát triển.
+
+Một số bản ghi được gán FP theo lý do không có mục lỗ hổng tham chiếu khớp với vị trí và quy tắc. Tiêu chí này cần được kiểm tra thủ công: thiếu mục tương ứng trong danh sách lỗ hổng không phải bằng chứng chương trình an toàn. Do đó, chất lượng nhãn là một điều kiện tiên quyết trước khi dùng tập dữ liệu để so sánh mô hình.
+
+\section{Kiến trúc và phương pháp}
+\subsection{Pipeline thống nhất}
+Hình~\ref{fig:pipeline} mô tả các bước xử lý chính. Parser chuẩn hóa dữ liệu từ scanner; dịch vụ ngữ cảnh kiểm soát truy cập mã nguồn; tầng bằng chứng cung cấp dữ kiện; provider đề xuất phân loại; policy và reporter tạo kết quả cuối cùng. Cách tổ chức này cho phép thay đổi scanner hoặc mô hình mà không nhân bản logic triage.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+ node distance=4mm,
+ block/.style={draw,rounded corners=2pt,align=center,text width=6.5cm,minimum height=7mm,font=\small},
+ arr/.style={-{Stealth[length=1.7mm]},thick}]
+\node[block] (scan) {Semgrep / Gitleaks và artifact};
+\node[block,below=of scan] (parse) {Xác minh repository và chuẩn hóa};
+\node[block,below=of parse] (safe) {Trích xuất ngữ cảnh và che bí mật};
+\node[block,below=of safe] (evidence) {Thu thập bằng chứng AST / CPG};
+\node[block,below=of evidence] (model) {Đề xuất phân loại / điều tra bổ sung};
+\node[block,below=of model] (policy) {Kiểm chứng và chính sách bảo thủ};
+\node[block,below=of policy] (report) {Kiểm tra dữ liệu đầu ra và báo cáo};
+\draw[arr] (scan)--(parse);
+\draw[arr] (parse)--(safe);
+\draw[arr] (safe)--(evidence);
+\draw[arr] (evidence)--(model);
+\draw[arr] (model)--(policy);
+\draw[arr] (policy)--(report);
+\end{tikzpicture}
+\caption{Luồng xử lý và các điểm kiểm soát của hệ thống.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Hợp đồng dữ liệu}
+Sáu kiểu dữ liệu công khai phân tách trách nhiệm giữa các thành phần. \code{NormalizedFinding} lưu dữ kiện scanner an toàn; \code{SanitizedContext} chứa ngữ cảnh đã xử lý; \code{TriageInput} đóng gói đầu vào provider. Ba kiểu còn lại là \code{TriageDecision}, \code{PolicyDecision} và \code{TriageResult}, lần lượt biểu diễn đề xuất, quyết định của hệ thống và kết quả tổng hợp.
+
+Các model đi qua ranh giới thành phần được thiết kế bất biến bằng Pydantic v2. Nhờ đó, một kết quả đã hoàn tất không bị sửa ngầm trong bước xuất báo cáo. Trạng thái làm việc tạm thời của bộ điều phối không phải là dữ liệu báo cáo và không được serialize như metadata công khai.
+
+\subsection{Thu thập ngữ cảnh an toàn}
+\code{SafeContextService} là ranh giới xử lý mã nguồn thô. Dịch vụ resolve đường dẫn gốc và đường dẫn ứng viên, rồi kiểm tra quan hệ chứa thực sự để ngăn traversal, đường dẫn tuyệt đối nằm ngoài repository và symlink thoát phạm vi. Ngữ cảnh được chọn theo cấu trúc hàm hoặc phạm vi giới hạn quanh cảnh báo để tránh đưa toàn bộ repository vào prompt.
+
+Ngữ cảnh của cả Semgrep và Gitleaks đều cần làm sạch. Một cảnh báo về SQL injection vẫn có thể nằm cạnh mật khẩu hoặc khóa truy cập. Đối với Gitleaks, che bí mật trong parser chưa đủ vì file nguồn vẫn có thể chứa cùng giá trị. Bởi vậy, ngữ cảnh trích xuất được kiểm tra lại và dùng placeholder \code{<REDACTED_SECRET>}.
+
+Lỗi đọc file hoặc thiếu ngữ cảnh được giữ như một trạng thái xử lý. Pipeline không bỏ phát hiện chỉ vì không lấy được mã nguồn. Đây là cơ sở để policy chuyển trường hợp chưa đủ bằng chứng sang thẩm định thủ công hoặc ghi nhận lỗi triage.
+
+\subsection{Thu thập bằng chứng và điều tra bổ sung}
+Tầng đầu thu thập bằng chứng trong phạm vi xác định, bao gồm thông tin biểu tượng, vị trí gọi và kết quả truy vấn chương trình. Khi thông tin chưa đủ, bộ điều phối có thể thực hiện thêm các bước tra cứu qua tập công cụ được cho phép. Mỗi hành động phải được thẩm định trước khi thực thi; ngân sách bước điều tra và điều kiện dừng giới hạn chi phí xử lý.
+
+Sổ bằng chứng lưu kết quả tra cứu để phân biệt dữ kiện đã quan sát với giả thuyết cần kiểm tra. Việc có một hàm mang tên kiểm tra quyền không chứng minh hàm đó bảo vệ đường thực thi liên quan. Tương tự, tìm thấy sanitizer trong repository chưa đủ để kết luận rằng dữ liệu nguy hiểm đã đi qua sanitizer trước khi tới sink.
+
+Trong mã hiện có, bộ lập kế hoạch có đường thực thi heuristic khi không có provider phù hợp. Vì vậy, việc chạy được vòng điều tra nhiều bước không tự thân chứng minh mô hình đã sử dụng công cụ. Báo cáo thực nghiệm cần xác định chính xác thành phần nào được điều khiển bằng LLM và thành phần nào chạy tất định.
+
+\subsection{Kiểm chứng và chính sách bảo thủ}
+Đầu ra provider phải được validate theo schema trước khi sử dụng. Bộ kiểm chứng bổ sung đối chiếu những nhận định có thể kiểm tra, chẳng hạn sự tồn tại của biểu tượng hoặc bằng chứng liên quan đến cơ chế bảo vệ. Bước này không phải chứng minh hình thức cho toàn bộ tính an toàn của chương trình.
+
+Chính sách phân loại cuối cùng gồm bốn trạng thái trong Bảng~\ref{tab:actions}. Độ tự tin do mô hình cung cấp chỉ là một tín hiệu; việc hạ ưu tiên cần thêm bằng chứng đáp ứng điều kiện chính sách. Lỗi provider tạo quyết định triage rỗng, hành động \code{TRIAGE_ERROR} và thông tin lỗi đã làm sạch.
+
+\begin{table}[t]
+\centering\small
+\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+Trạng thái & Ý nghĩa xử lý\\
+\midrule
+\code{LIKELY_TP} & Có căn cứ ưu tiên xác minh và khắc phục.\\
+\code{FP_CANDIDATE} & Ứng viên cảnh báo giả; vẫn lưu trong báo cáo.\\
+\code{MANUAL_REVIEW} & Cần người phân tích bổ sung đánh giá.\\
+\code{TRIAGE_ERROR} & Không hoàn tất xử lý; giữ cảnh báo và lỗi an toàn.\\
+\bottomrule
+\end{tabularx}
+\caption{Quyết định vận hành độc lập với đề xuất từ LLM.}
+\label{tab:actions}
+\end{table}
+
+\section{Triển khai và kiểm thử}
+Hệ thống được triển khai bằng Python, sử dụng Pydantic v2 cho hợp đồng dữ liệu và giao diện CLI để vận hành pipeline. Các module parser, context, triage, policy và reporter tương ứng với các trách nhiệm trong kiến trúc. Thành phần AST/Joern và bộ điều phối điều tra bổ sung mở rộng khả năng thu thập bằng chứng mà vẫn cần tuân thủ các ranh giới dữ liệu.
+
+Báo cáo phải bảo toàn danh sách phát hiện, đồng thời không chứa bí mật thô, prompt nguyên bản, phản hồi nguyên bản của LLM hoặc traceback. Reporter có nhiệm vụ kiểm tra rò rỉ thêm một lần trước khi ghi. Đường dẫn repository tuyệt đối không thuộc nội dung báo cáo mặc định.
+
+Các nhóm kiểm thử trong dự án bao gồm validation model, parser, policy, đường dẫn, prompt injection và rò rỉ bí mật. Canary test đưa một bí mật giả đã biết vào đầu vào để kiểm tra xem giá trị đó có xuất hiện trong dữ liệu serialize, prompt, log hoặc báo cáo hay không. Fixture phục vụ kiểm chứng hành vi phần mềm; chúng không thay thế benchmark đánh giá chất lượng mô hình.
+
+Với một tình huống SQL injection, quy trình cần xác định nguồn tham số, cách xây dựng câu truy vấn và cơ chế tham số hóa. Nếu lời gọi cơ sở dữ liệu nằm ở hàm khác mà bộ thu thập chưa truy vết được, trạng thái phù hợp là tiếp tục điều tra hoặc thẩm định thủ công. Đây là ví dụ quy trình, không phải một kết quả thực nghiệm mới.
+
+\section{Đánh giá và phân tích bằng chứng}
+\subsection{Phân biệt các mức bằng chứng}
+Bài báo sử dụng kiểm tra artifact và mã đánh giá để xác định phạm vi các kết luận có thể đưa ra. Thống kê số bản ghi và nhãn phản ánh cấu trúc dữ liệu. Kiểm thử chức năng phản ánh hành vi trong các tình huống cụ thể. Thực nghiệm mô hình đòi hỏi đầu ra suy luận thực cùng cấu hình có thể truy vết. Ba loại bằng chứng này cần được báo cáo riêng.
+
+Trong \path{scripts/run_eval_baseline.py}, nhánh mang tên LLM-only sinh phán đoán bằng hàm băm của định danh và nhãn tham chiếu. Đây là mô phỏng, không phải phép đo chất lượng một LLM. Cùng script còn gán trực tiếp một số tổng đếm cho cấu hình toàn hệ thống. Các con số đó không đủ để xác nhận hiệu quả pipeline trên từng cảnh báo.
+
+Trong \path{scripts/benchmark_cost_tokens.py}, ngữ cảnh nền được tạo tổng hợp và token được ước lượng từ số ký tự chia cho 3,8. Tỷ lệ giảm dung lượng từ phép tính này không tương đương với mức giảm token do tokenizer của mô hình đo trên mã nguồn thực. Bài báo vì vậy không sử dụng các kết quả trên như bằng chứng về độ chính xác, tiết kiệm chi phí hoặc hiệu năng suy luận LLM.
+
+\subsection{Chỉ số cho triage bảo thủ}
+Một giao thức đánh giá phù hợp cần báo cáo cả chất lượng quyết định và tỷ lệ chuyển người xử lý. Gọi $N$ là tổng cảnh báo, $N_m$ là số cảnh báo cần thẩm định, $N_e$ là số lỗi và $N_a$ là số quyết định được tự động hoàn tất theo chính sách. Khi các nhóm đã được định nghĩa loại trừ nhau:
+\begin{equation}
+ C_{\mathrm{auto}}=\frac{N_a}{N},\qquad
+ R_{\mathrm{manual}}=\frac{N_m}{N}.
+\end{equation}
+Tỷ lệ lỗi $N_e/N$ cần được báo cáo riêng để tránh coi thất bại xử lý là tự động hóa thành công. $C_{\mathrm{auto}}$ là độ bao phủ quyết định, không phải phần trăm thời gian lao động tiết kiệm. Muốn đo công sức phải có thời gian thao tác hoặc nghiên cứu với người phân tích.
+
+Recall trong triage cũng cần được diễn giải theo quy tắc ánh xạ. Nếu mọi cảnh báo được giữ lại đều tính là dương tính, hệ thống giữ toàn bộ đầu vào có thể đạt recall bằng 1 trên tập cảnh báo đã gán nhãn. Giá trị này không chứng minh scanner đã tìm thấy mọi lỗ hổng trong repository, cũng không chứng minh LLM đã phân loại đúng. Chất lượng của các quyết định tự động và số lỗ hổng thật bị hạ ưu tiên cần được phân tích riêng.
+
+\subsection{Giao thức thực nghiệm đề xuất}
+Để đo chất lượng mô hình, trước hết cần rà soát nhãn tham chiếu, ghi lý do gán nhãn và xử lý bất đồng giữa người đánh giá. Sau đó cố định commit của repository, tập quy tắc scanner, prompt, cấu hình provider và chính sách trước khi chạy tập held-out. Mỗi cảnh báo cần có bản ghi quyết định đã làm sạch và trạng thái thành công hoặc thất bại để đối chiếu.
+
+Các cấu hình so sánh nên gồm scanner đơn thuần, LLM một bước, LLM kèm bằng chứng và hệ thống có chính sách cùng điều tra bổ sung. Mỗi cấu hình chạy trên cùng danh sách cảnh báo; không sinh dự đoán dựa trên nhãn đúng. Token được đo bằng tokenizer hoặc usage của provider, độ trễ đo từ thực thi đầy đủ và chi phí được tính theo môi trường vận hành thực tế.
+
+Đối với đánh giá bảo mật, các thử nghiệm prompt injection, tool injection và canary cần ghi rõ payload, tiêu chí thành công và vị trí quan sát dữ liệu. Không ghi nhận sự cố trong một tập thử hữu hạn chỉ cho phép kết luận về tập thử đó. Các lần gọi LLM có tính ngẫu nhiên cần được lặp lại để đánh giá độ ổn định; lặp heuristic tất định không cung cấp cùng loại bằng chứng.
+
+\section{Thảo luận và hạn chế}
+Chính sách bảo thủ tạo ra đánh đổi giữa khả năng tự động hóa và khối lượng thẩm định. Nếu bằng chứng chưa đủ, việc giữ cảnh báo giúp tránh kết luận an toàn thiếu căn cứ nhưng không làm giảm ngay công việc của người vận hành. Vì vậy, giá trị của hệ thống còn nằm ở chất lượng bằng chứng và mức độ dễ kiểm tra của báo cáo.
+
+Phạm vi dữ liệu hiện tại nhỏ và tập trung vào các ứng dụng phục vụ nghiên cứu hoặc thực hành bảo mật. Chưa có cơ sở suy rộng sang repository thương mại quy mô lớn, framework khác hoặc ngôn ngữ khác. Nhãn tham chiếu được tạo theo đối sánh cũng cần kiểm định trước khi đưa ra kết luận định lượng về hiệu quả triage.
+
+Phân tích chương trình bị giới hạn bởi lời gọi động, thư viện ngoài, cấu hình thời gian chạy và phạm vi truy vấn. Làm sạch dữ liệu có thể loại bỏ một phần thông tin hữu ích, trong khi bí mật có định dạng mới có thể nằm ngoài bộ nhận diện hiện tại. Những giới hạn này cần được phản ánh trong trạng thái ngữ cảnh và quyết định vận hành.
+
+Hướng phát triển tiếp theo là hoàn thiện đánh giá với provider thực, bổ sung nhãn được thẩm định độc lập và đo hiệu quả hỗ trợ người phân tích. Các thử nghiệm mở rộng phải bảo toàn nguyên tắc không tự động loại bỏ phát hiện và không đưa dữ liệu nhạy cảm vào đầu ra.
+
+\section{Kết luận}
+Bài báo trình bày hệ thống triage cảnh báo bảo mật kết hợp scanner, phân tích chương trình và LLM dưới sự kiểm soát của chính sách bảo thủ. Kiến trúc tách biệt đề xuất của mô hình với quyết định vận hành, bảo vệ ngữ cảnh qua các ranh giới dữ liệu và giữ lại mọi phát hiện để truy vết. Phân tích artifact cho thấy cần tách thống kê dữ liệu và kiểm thử hệ thống khỏi mô phỏng hiệu năng. Với phạm vi bằng chứng hiện có, đóng góp của đề tài nằm ở thiết kế và hiện thực nền tảng hỗ trợ triage; hiệu quả của LLM và mức giảm công sức thực tế cần được xác nhận bằng giao thức thực nghiệm đã nêu.
+
+% References are embedded so copying main.tex does not require a new .bib file.
+\begin{thebibliography}{9}
+\bibitem{yamaguchi2014}
+Fabian Yamaguchi, Nico Golde, Daniel Arp và Konrad Rieck.
+2014. Modeling and Discovering Vulnerabilities with Code Property Graphs.
+Trong \textit{2014 IEEE Symposium on Security and Privacy}, trang 590--604.
+\href{https://doi.org/10.1109/SP.2014.44}{doi:10.1109/SP.2014.44}.
+
+\bibitem{hui2024}
+Binyuan Hui và cộng sự.
+2024. \textit{Qwen2.5-Coder Technical Report}.
+arXiv:2409.12186.
+\url{https://arxiv.org/abs/2409.12186}.
+
+\bibitem{greshake2023}
+Kai Greshake, Sahar Abdelnabi, Shailesh Mishra, Christoph Endres,
+Thorsten Holz và Mario Fritz.
+2023. \textit{Not what you've signed up for: Compromising Real-World
+LLM-Integrated Applications with Indirect Prompt Injection}.
+arXiv:2302.12173.
+\url{https://arxiv.org/abs/2302.12173}.
+\end{thebibliography}
+\clearpage
+
+\section*{Lời cảm ơn}
+Em xin trân trọng cảm ơn thầy cô giảng dạy môn Deep Learning đã cung cấp nền tảng kiến thức để em thực hiện đề tài \textit{LLM Augmented SAST}. Em cũng xin cảm ơn cộng đồng phát triển phần mềm mã nguồn mở và các tác giả của những công trình được trích dẫn trong báo cáo. Các công cụ, tài liệu và kết quả nghiên cứu này là nguồn tham khảo quan trọng trong quá trình tìm hiểu, thiết kế và trình bày hệ thống.
+
+\section*{Lời tuyên bố sử dụng AI}
+Trong quá trình thực hiện đề tài \textit{LLM Augmented SAST}, việc sử dụng công cụ trí tuệ nhân tạo (AI) được khai báo theo các nội dung dưới đây.
+
+% Các lựa chọn Yes/No theo xác nhận của tác giả.
+% 70% là mức đề xuất tạm thời; tác giả cần rà soát trước khi nộp.
+% Để đánh dấu một lựa chọn, đổi \unchecked thành \checked tại lựa chọn đó.
+\begin{enumerate}
+  \item Sử dụng AI hỗ trợ viết báo cáo:\\
+        \checked\ Yes \qquad \unchecked\ No.
+  \item Sử dụng AI hỗ trợ sinh các biểu đồ:\\
+        \checked\ Yes \qquad \unchecked\ No.
+  \item Sử dụng AI hỗ trợ sinh giao diện:\\
+        \unchecked\ Yes \qquad \checked\ No.
+  \item Sử dụng AI hỗ trợ sinh test cases:\\
+        \checked\ Yes \qquad \unchecked\ No.
+  \item Sử dụng bao nhiêu \% AI: \textbf{70\%} (ước tính sơ bộ).
+\end{enumerate}
+
+\noindent\textit{Tỷ lệ 70\% là mức ước tính đề xuất, chưa được đo lường; tác giả cần rà soát và xác nhận theo thực tế sử dụng trước khi nộp báo cáo.}
+
+\renewcommand{\contentsname}{Mục lục}
+\tableofcontents
+\clearpage
+
+\end{document}
